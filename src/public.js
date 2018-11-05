@@ -5,7 +5,12 @@
  *  Use the core library functions for fastest-possible calculations.
  */
 
-import * as Input from './input'
+import * as Input from './input';
+import * as Intersection from './intersection';
+
+// export * from './intersection';
+
+export { Intersection }
 
 /** n-dimensional vector */
 export function Vector() {
@@ -60,10 +65,16 @@ export function Vector() {
 	const rotateZ = function(angle, origin) {
 		return transform( Matrix().rotation(angle, origin) );
 	}
-	const rotateZ90 = function() { return Vector(-_v[1], _v[0]); }
-	const rotateZ180 = function() { return Vector(-_v[0], -_v[1]); }
-	const rotateZ270 = function() { return Vector(_v[1], -_v[0]); }
-	const reflect = function(){
+	const rotateZ90 = function() {
+		return Vector(-_v[1], _v[0]);
+	}
+	const rotateZ180 = function() {
+		return Vector(-_v[0], -_v[1]);
+	}
+	const rotateZ270 = function() {
+		return Vector(_v[1], -_v[0]);
+	}
+	const reflect = function() {
 		let reflect = get_line(...arguments);
 		return transform( Matrix().reflection(reflect.vector, reflect.point) );
 	}
@@ -122,7 +133,7 @@ export function Vector() {
 /** 
  * 2D Matrix with translation component in x,y
  */
-export function Matrix(){
+export function Matrix() {
 	let _m = Input.get_matrix(...arguments);
 
 	const inverse = function() {
@@ -161,7 +172,9 @@ export function Matrix(){
 	} );
 }
 // static methods
-Matrix.identity = function(){ return Matrix(1,0,0,1,0,0); }
+Matrix.identity = function() {
+	return Matrix(1,0,0,1,0,0);
+}
 Matrix.rotation = function(angle, origin) {
 	var a = Math.cos(angle);
 	var b = Math.sin(angle);

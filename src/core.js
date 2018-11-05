@@ -2,61 +2,26 @@
 
 // all points are array syntax [x,y]
 // all edges are array syntax [[x,y], [x,y]]
-// all infinite lines are defined as point and vector
-// all polygons are an ordered set of points in either winding direction
+// all infinite lines are defined as point and vector, both [x,y]
+// all polygons are an ordered set of points ([x,y]), either winding direction
 
 export const EPSILON_LOW  = 3e-6;
 export const EPSILON      = 1e-10;
 export const EPSILON_HIGH = 1e-14;
 
-/** is a point inside of a convex polygon? 
- * including along the boundary within epsilon 
- *
- * @param poly is an array of points [ [x,y], [x,y]...]
- * @returns {boolean} true if point is inside polygon
- */
-export function polygon_contains_point(poly, point, epsilon = EPSILON){
-	if(poly == undefined || !(poly.length > 0)){ return false; }
-	return poly.map( (p,i,arr) => {
-		let nextP = arr[(i+1)%arr.length];
-		let a = [ nextP[0]-p[0], nextP[1]-p[1] ];
-		let b = [ point[0]-p[0], point[1]-p[1] ];
-		return a[0] * b[1] - a[1] * b[0] > -epsilon;
-	}).map((s,i,arr) => s == arr[0]).reduce((prev,curr) => prev && curr, true)
+function distance2(a, b){
+	return Math.sqrt(
+		Math.pow(a[0] - b[0], 2) +
+		Math.pow(a[1] - b[1], 2)
+	);
 }
 
-/** is a point collinear to an edge, between endpoints, within an epsilon */
-export function edge_collinear(edgeP0, edgeP1, point, epsilon = EPSILON){
-	// distance between endpoints A,B should be equal to point->A + point->B
-	let dEdge = Math.sqrt(Math.pow(edgeP0[0]-edgeP1[0],2) + Math.pow(edgeP0[1]-edgeP1[1],2));
-	let dP0 = Math.sqrt(Math.pow(point[0]-edgeP0[0],2) + Math.pow(point[1]-edgeP0[1],2));
-	let dP1 = Math.sqrt(Math.pow(point[0]-edgeP1[0],2) + Math.pow(point[1]-edgeP1[1],2));
-	return Math.abs(dEdge - dP0 - dP1) < epsilon
-}
-
-/** is a point collinear to a line, within an epsilon */
-export function line_collinear(linePoint, lineVector, point, epsilon = EPSILON){
-	let pointPoint = [point[0] - linePoint[0], point[1] - linePoint[1]];
-	let cross = pointPoint[0]*lineVector[1] - pointPoint[1]*lineVector[0];
-	return Math.abs(cross) < epsilon;
-}
-
-
-/** do two convex polygons overlap one another */
-export function overlaps(ps1, ps2){
-	// convert array of points into edges [point, nextPoint]
-	let e1 = ps1.map((p,i,arr) => [p, arr[(i+1)%arr.length]] )
-	let e2 = ps2.map((p,i,arr) => [p, arr[(i+1)%arr.length]] )
-	for(let i = 0; i < e1.length; i++){
-		for(let j = 0; j < e2.length; j++){
-			if(edge_intersection(e1[i][0], e1[i][1], e2[j][0], e2[j][1]) != undefined){
-				return true;
-			}
-		}
-	}
-	if(polygon_contains_point(ps1, ps2[0])){ return true; }
-	if(polygon_contains_point(ps2, ps1[0])){ return true; }
-	return false;
+function distance3(a, b){
+	return Math.sqrt(
+		Math.pow(a[0] - b[0], 2) +
+		Math.pow(a[1] - b[1], 2) +
+		Math.pow(a[2] - b[2], 2)
+	);
 }
 
 /** clip an infinite line in a polygon, returns an edge or undefined if no intersection */
