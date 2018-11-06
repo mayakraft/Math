@@ -4,7 +4,7 @@
  *  endpoints, use "exclusive" functions
  */
 
-import { EPSILON } from './core'
+import { EPSILON, points_equivalent } from './core'
 
 
 export function line_line(aPt, aVec, bPt, bVec, epsilon){
@@ -30,8 +30,6 @@ export function edge_edge(a0, a1, b0, b1, epsilon){
 	return vector_intersection(a0, aVec, b0, bVec, edge_edge_comp, epsilon);
 }
 
-
-
 export function line_edge_exclusive(point, vec, edge0, edge1){
 	let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
 	let x = vector_intersection(point, vec, edge0, edgeVec, line_edge_comp);
@@ -41,7 +39,6 @@ export function line_edge_exclusive(point, vec, edge0, edge1){
 	}
 	return x;
 }
-
 
 /** comparison functions for a generalized vector intersection function */
 const line_line_comp = function() { return true; }

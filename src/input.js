@@ -7,9 +7,11 @@ export function is_number(n) {
  *  example: 15.0000000000000002 into 15
  * the adjustable epsilon is default 15, Javascripts 16 digit float
  */
-export function clean_number(num, decimalPlaces = 15){
-	if (num == undefined) { return undefined; }
-	return parseFloat(num.toFixed(decimalPlaces));
+export function clean_number(num, decimalPlaces = 15) {
+	// todo, this fails when num is a string, consider checking
+	return (num == null
+		? undefined
+		: parseFloat(num.toFixed(decimalPlaces)));
 }
 
 /** 

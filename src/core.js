@@ -67,7 +67,7 @@ export function multiply_matrices(m1, m2){
 
 
 /** are two points equivalent within an epsilon */
-function points_equivalent(a, b, epsilon = EPSILON){
+export function points_equivalent(a, b, epsilon = EPSILON){
 	// rectangular bounds test for faster calculation
 	return Math.abs(a[0]-b[0]) < epsilon && Math.abs(a[1]-b[1]) < epsilon;
 }

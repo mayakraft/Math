@@ -16,6 +16,9 @@ import * as core from './core';
 
 export { core };
 
+let input = Input;
+export { input };
+
 /** n-dimensional vector */
 export function Vector() {
 	let _v = Input.get_vec(...arguments);
