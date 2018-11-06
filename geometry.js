@@ -1,2 +1,575 @@
 /* Geometry (c) Robby Kraft, MIT License */
-(function(a,b){"object"==typeof exports&&"undefined"!=typeof module?b(exports):"function"==typeof define&&define.amd?define(["exports"],b):b(a.Geometry={})})(this,function(a){"use strict";var i=Math.sin,j=Math.cos,k=Math.sqrt,l=Math.pow,m=Math.abs;function c(){let a=Array.from(arguments);if(0==a.length)return[];if(null!=a[0].vector&&a[0].vector.constructor==Array)return a[0].vector;let b=a.filter(a=>a.constructor===Array);if(1<=b.length)return b[0];let c=a.filter(a=>!isNaN(a));return 1<=c.length?c:isNaN(a[0].x)?[]:["x","y","z"].map(b=>a[0][b]).filter(b=>null!=b)}function e(){let a=Array.from(arguments),b=a.filter(a=>!isNaN(a)),c=a.filter(a=>a.constructor===Array);if(0==a.length)return[];if(null!=a[0].m&&a[0].m.constructor==Array&&(b=a[0].m.slice()),0==b.length&&1<=c.length&&(b=c[0]),6<=b.length)return b.slice(0,6);if(4<=b.length){let a=b.slice(0,4);return a[4]=0,a[5]=0,a}return[1,0,0,1,0,0]}function f(a,c,d=n){return!!(null!=a&&0<a.length)&&a.map((e,f,g)=>{let h=g[(f+1)%g.length],i=[h[0]-e[0],h[1]-e[1]],a=[c[0]-e[0],c[1]-e[1]];return i[0]*a[1]-i[1]*a[0]>-d}).map((a,b,c)=>a==c[0]).reduce((a,b)=>a&&b,!0)}function g(){let d=c(...arguments);const a=function(){let a=d.map(a=>a*a).reduce((a,b)=>a+b);return k(a)},b=function(){let e=c(...arguments),b=d.slice();return null==b[2]&&(b[2]=0),null==e[2]&&(e[2]=0),b[1]*e[2]-b[2]*e[1]-(b[0]*e[2]-b[2]*e[0])+(b[0]*e[1]-b[1]*e[0])},f=function(){let a=e(...arguments);return g(d[0]*a[0]+d[1]*a[2]+a[4],d[0]*a[1]+d[1]*a[3]+a[5])};return Object.freeze({normalize:function(){let b=a(),c=d.map(a=>a/b);return g(c)},magnitude:a,dot:function(){let a=c(...arguments),b=d.length<a.length?d.length:a.length;return Array.from(Array(b)).map((b,c)=>d[c]*a[c]).reduce((a,b)=>a+b,0)},cross:function(){return b(...arguments)},distanceTo:function(){let a=c(...arguments),b=d.length<a.length?d.length:a.length,e=Array.from(Array(b)).map((b,c)=>l(d[c]-a[c],2)).reduce((a,b)=>a+b,0);return k(e)},transform:f,rotateZ:function(a,b){return f(h().rotation(a,b))},rotateZ90:function(){return g(-d[1],d[0])},rotateZ180:function(){return g(-d[0],-d[1])},rotateZ270:function(){return g(d[1],-d[0])},reflect:function(){let a=get_line(...arguments);return f(h().reflection(a.vector,a.point))},lerp:function(a,b){let e=c(a),f=d.length<e.length?d.length:e.length,h=Array.from(Array(f)).map((a,c)=>d[c]*b+e[c]*(1-b));return g(h)},equivalent:function(a,b=EPSILON_HIGH){let e=c(a),f=d.length<e.length?d.slice():e,g=d.length<e.length?e:d.slice();for(var h=f.length;h<g.length;h++)f[h]=0;return g.map((a,c)=>m(f[c]-g[c])<b).reduce((a,b)=>a&&b,!0)},scale:function(a){return g(d.map(b=>b*a))},midpoint:function(){let a=c(...arguments),b=d.length<a.length?d.slice():a,e=d.length<a.length?a:d.slice();for(var f=b.length;f<e.length;f++)b[f]=0;return g(e.map((a,c)=>.5*(b[c]+e[c])))},get vector(){return d},get x(){return d[0]},get y(){return d[1]},get z(){return d[2]}})}function h(){let f=e(...arguments);return Object.freeze({inverse:function(){var e=f[0]*f[3]-f[1]*f[2];if(!e||isNaN(e)||!isFinite(f[4])||!isFinite(f[5]))return;let g=f[3]/e,a=-f[1]/e,b=-f[2]/e,c=f[0]/e,d=(f[2]*f[5]-f[3]*f[4])/e,i=(f[1]*f[4]-f[0]*f[5])/e;return h(g,a,b,c,d,i)},multiply:function(){let g=e(...arguments),i=f[0]*g[0]+f[2]*g[1],a=f[0]*g[2]+f[2]*g[3],c=f[0]*g[4]+f[2]*g[5]+f[4],j=f[1]*g[0]+f[3]*g[1],b=f[1]*g[2]+f[3]*g[3],d=f[1]*g[4]+f[3]*g[5]+f[5];return h(i,j,a,b,c,d)},transform:function(){let a=c(...arguments);return g(a[0]*f[0]+a[1]*f[2]+f[4],a[0]*f[1]+a[1]*f[3]+f[5])},get m(){return f}})}const n=1e-10,o=function(){return!0},p=function(a,b,c=n){return b>=-c},q=function(a,b,c=n){return b>=-c&&b<=1+c},r=function(a,b,c=n){return a>=-c&&b>=-c},s=function(a,b,c=n){return a>=-c&&b>=-c&&b<=1+c},t=function(a,b,c=n){return a>=-c&&a<=1+c&&b>=-c&&b<=1+c};var u=function(a,b,c,d,e,f=n){function g(c,a){return c[0]*a[1]-a[0]*c[1]}var h=g(b,d);if(!(m(h)<f)){var i=g([c[0]-a[0],c[1]-a[1]],d),j=g([a[0]-c[0],a[1]-c[1]],b),k=i/h;if(e(k,j/-h,f))return[a[0]+b[0]*k,a[1]+b[1]*k]}},v=Object.freeze({line_line:function(a,b,c,d,e){return u(a,b,c,d,o,e)},line_ray:function(a,b,c,d,e){return u(a,b,c,d,p,e)},line_edge:function(a,b,c,d,e){let f=[d[0]-c[0],d[1]-c[1]];return u(a,b,c,f,q,e)},ray_ray:function(a,b,c,d,e){return u(a,b,c,d,r,e)},ray_edge:function(a,b,c,d,e){let f=[d[0]-c[0],d[1]-c[1]];return u(a,b,c,f,s,e)},edge_edge:function(a,b,c,d,e){let f=[b[0]-a[0],b[1]-a[1]],g=[d[0]-c[0],d[1]-c[1]];return u(a,f,c,g,t,e)},line_edge_exclusive:function(a,b,c,d){let e=[d[0]-c[0],d[1]-c[1]],f=u(a,b,c,e,q);return null==f||points_equivalent(f,c)||points_equivalent(f,d)?void 0:f},point_on_line:function(a,b,c,d=n){let e=[c[0]-a[0],c[1]-a[1]],f=e[0]*b[1]-e[1]*b[0];return m(f)<d},point_on_edge:function(a,b,c,d=n){let e=k(l(a[0]-b[0],2)+l(a[1]-b[1],2)),f=k(l(c[0]-a[0],2)+l(c[1]-a[1],2)),g=k(l(c[0]-b[0],2)+l(c[1]-b[1],2));return m(e-f-g)<d},point_in_polygon:f,polygons_overlap:function(a,b){let c=a.map((a,b,c)=>[a,c[(b+1)%c.length]]),d=b.map((a,b,c)=>[a,c[(b+1)%c.length]]);for(let e=0;e<c.length;e++)for(let a=0;a<d.length;a++)if(edge_edge_intersection(c[e][0],c[e][1],d[a][0],d[a][1])!=null)return!0;return!!f(a,b[0])||!!f(b,a[0])}});h.identity=function(){return h(1,0,0,1,0,0)},h.rotation=function(e,f){var g=j(e),a=i(e),b=-i(e),c=j(e),d=null==f?0:f[0],k=null==f?0:f[1];return h(g,a,b,c,d,k)},h.reflection=function(e,f){let g=Math.atan2(e[1],e[0]),k=j(g),l=i(g),m=j(-g),n=i(-g),o=k*m+l*n,a=k*-n+l*m,b=l*m+-k*n,c=l*-n+-k*m,d=f[0]+o*-f[0]+-f[1]*b,p=f[1]+a*-f[0]+-f[1]*c;return h(o,a,b,c,d,p)},a.Intersection=v,a.Vector=g,a.Matrix=h,Object.defineProperty(a,"__esModule",{value:!0})});
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+	typeof define === 'function' && define.amd ? define(['exports'], factory) :
+	(factory((global.Geometry = {})));
+}(this, (function (exports) { 'use strict';
+
+	/** 
+	 * this searches user-provided inputs for a valid n-dimensional vector 
+	 * which includes objects {x:, y:}, arrays [x,y], or sequences of numbers
+	 * 
+	 * @returns (number[]) array of number components
+	 *   invalid/no input returns an emptry array
+	*/
+	function get_vec(){
+		let params = Array.from(arguments);
+		if(params.length == 0) { return []; }
+		if(params[0].vector != null && params[0].vector.constructor == Array){
+			return params[0].vector; // Vector type
+		}
+		let arrays = params.filter((param) => param.constructor === Array);
+		if(arrays.length >= 1) { return arrays[0]; }
+		let numbers = params.filter((param) => !isNaN(param));
+		if(numbers.length >= 1) { return numbers; }
+		if(!isNaN(params[0].x)){
+			// todo, we are relying on convention here. should 'w' be included?
+			// todo: if y is not defined but z is, it will move z to index 1
+			return ['x','y','z'].map(c => params[0][c]).filter(a => a != null);
+		}
+		return [];
+	}
+
+	/** 
+	 * this searches user-provided inputs for a valid n-dimensional vector 
+	 * which includes objects {x:, y:}, arrays [x,y], or sequences of numbers
+	 * 
+	 * @returns (number[]) array of number components
+	 *  invalid/no input returns the identity matrix
+	*/
+	function get_matrix(){
+		let params = Array.from(arguments);
+		let numbers = params.filter((param) => !isNaN(param));
+		let arrays = params.filter((param) => param.constructor === Array);
+		if(params.length == 0) { return [1,0,0,1,0,0]; }
+		if(params[0].m != null && params[0].m.constructor == Array){
+			numbers = params[0].m.slice(); // Matrix type
+		}
+		if(numbers.length == 0 && arrays.length >= 1){ numbers = arrays[0]; }
+		if(numbers.length >= 6){ return numbers.slice(0,6); }
+		else if(numbers.length >= 4){
+			let m = numbers.slice(0,4);
+			m[4] = 0;
+			m[5] = 0;
+			return m;
+		}
+		return [1,0,0,1,0,0];
+	}
+
+	// Geometry for .fold file origami
+
+	// all points are array syntax [x,y]
+	// all edges are array syntax [[x,y], [x,y]]
+	// all infinite lines are defined as point and vector, both [x,y]
+	// all polygons are an ordered set of points ([x,y]), either winding direction
+
+	const EPSILON_LOW  = 3e-6;
+	const EPSILON      = 1e-10;
+	const EPSILON_HIGH$1 = 1e-14;
+
+	/** apply a matrix transform on a point */
+	function transform_point(point, matrix){
+		return [ point[0] * matrix[0] + point[1] * matrix[2] + matrix[4],
+		         point[0] * matrix[1] + point[1] * matrix[3] + matrix[5] ];
+	}
+
+	/** 
+	 * These all standardize a row-column order
+	 */
+
+	function make_matrix_reflection(vector, origin){
+		// the line of reflection passes through origin, runs along vector
+		let angle = Math.atan2(vector[1], vector[0]);
+		let cosAngle = Math.cos(angle);
+		let sinAngle = Math.sin(angle);
+		let _cosAngle = Math.cos(-angle);
+		let _sinAngle = Math.sin(-angle);
+		let a = cosAngle *  _cosAngle +  sinAngle * _sinAngle;
+		let b = cosAngle * -_sinAngle +  sinAngle * _cosAngle;
+		let c = sinAngle *  _cosAngle + -cosAngle * _sinAngle;
+		let d = sinAngle * -_sinAngle + -cosAngle * _cosAngle;
+		let tx = origin[0] + a * -origin[0] + -origin[1] * c;
+		let ty = origin[1] + b * -origin[0] + -origin[1] * d;
+		return [a, b, c, d, tx, ty];
+	}
+	function make_matrix_inverse(m){
+		var det = m[0] * m[3] - m[1] * m[2];
+		if (!det || isNaN(det) || !isFinite(m[4]) || !isFinite(m[5])){ return undefined; }
+		return [ m[3]/det, -m[1]/det, -m[2]/det, m[0]/det, 
+		         (m[2]*m[5] - m[3]*m[4])/det, (m[1]*m[4] - m[0]*m[5])/det ];
+	}
+	function multiply_matrices(m1, m2){
+		let a = m1[0] * m2[0] + m1[2] * m2[1];
+		let c = m1[0] * m2[2] + m1[2] * m2[3];
+		let tx = m1[0] * m2[4] + m1[2] * m2[5] + m1[4];
+		let b = m1[1] * m2[0] + m1[3] * m2[1];
+		let d = m1[1] * m2[2] + m1[3] * m2[3];
+		let ty = m1[1] * m2[4] + m1[3] * m2[5] + m1[5];
+		return [a, b, c, d, tx, ty];
+	}
+
+	// need to test:
+	// do two polygons overlap if they share a point in common? share an edge?
+
+	var core = /*#__PURE__*/Object.freeze({
+		EPSILON_LOW: EPSILON_LOW,
+		EPSILON: EPSILON,
+		EPSILON_HIGH: EPSILON_HIGH$1,
+		transform_point: transform_point,
+		make_matrix_reflection: make_matrix_reflection,
+		make_matrix_inverse: make_matrix_inverse,
+		multiply_matrices: multiply_matrices
+	});
+
+	/** 
+	 *  all intersection functions are inclusive and return true if 
+	 *  intersection lies directly on an edge's endpoint. to exclude
+	 *  endpoints, use "exclusive" functions
+	 */
+
+
+	function line_line(aPt, aVec, bPt, bVec, epsilon){
+		return vector_intersection(aPt, aVec, bPt, bVec, line_line_comp, epsilon);
+	}
+	function line_ray(linePt, lineVec, rayPt, rayVec, epsilon){
+		return vector_intersection(linePt, lineVec, rayPt, rayVec, line_ray_comp, epsilon);
+	}
+	function line_edge(point, vec, edge0, edge1, epsilon){
+		let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
+		return vector_intersection(point, vec, edge0, edgeVec, line_edge_comp, epsilon);
+	}
+	function ray_ray(aPt, aVec, bPt, bVec, epsilon){
+		return vector_intersection(aPt, aVec, bPt, bVec, ray_ray_comp, epsilon);
+	}
+	function ray_edge(rayPt, rayVec, edge0, edge1, epsilon){
+		let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
+		return vector_intersection(rayPt, rayVec, edge0, edgeVec, ray_edge_comp, epsilon);
+	}
+	function edge_edge(a0, a1, b0, b1, epsilon){
+		let aVec = [a1[0]-a0[0], a1[1]-a0[1]];
+		let bVec = [b1[0]-b0[0], b1[1]-b0[1]];
+		return vector_intersection(a0, aVec, b0, bVec, edge_edge_comp, epsilon);
+	}
+
+
+
+	function line_edge_exclusive(point, vec, edge0, edge1){
+		let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
+		let x = vector_intersection(point, vec, edge0, edgeVec, line_edge_comp);
+		if (x == null){ return undefined; }
+		if(points_equivalent(x, edge0) || points_equivalent(x, edge1)){
+			return undefined;
+		}
+		return x;
+	}
+
+
+	/** comparison functions for a generalized vector intersection function */
+	const line_line_comp = function() { return true; };
+	const line_ray_comp = function(t0, t1, epsilon = EPSILON) {
+		return t1 >= -epsilon;
+	};
+	const line_edge_comp = function(t0, t1, epsilon = EPSILON) {
+		return t1 >= -epsilon && t1 <= 1+epsilon;
+	};
+	const ray_ray_comp = function(t0, t1, epsilon = EPSILON){
+		return t0 >= -epsilon && t1 >= -epsilon;
+	};
+	const ray_edge_comp = function(t0, t1, epsilon = EPSILON){
+		return t0 >= -epsilon && t1 >= -epsilon && t1 <= 1+epsilon;
+	};
+	const edge_edge_comp = function(t0, t1, epsilon = EPSILON) {
+		return t0 >= -epsilon && t0 <= 1+epsilon &&
+		       t1 >= -epsilon && t1 <= 1+epsilon;
+	};
+
+
+	/** 
+	 * the generalized vector intersection function
+	 * requires a compFunction to describe valid bounds checking 
+	 * line always returns true, ray is true for t > 0, edge must be between 0 < t < 1
+	*/
+	var vector_intersection = function(aPt, aVec, bPt, bVec, compFunction, epsilon = EPSILON){
+		function det(a,b){ return a[0] * b[1] - b[0] * a[1]; }
+		var denominator0 = det(aVec, bVec);
+		var denominator1 = -denominator0;
+		if(Math.abs(denominator0) < epsilon){ return undefined; } /* parallel */
+		var numerator0 = det([bPt[0]-aPt[0], bPt[1]-aPt[1]], bVec);
+		var numerator1 = det([aPt[0]-bPt[0], aPt[1]-bPt[1]], aVec);
+		var t0 = numerator0 / denominator0;
+		var t1 = numerator1 / denominator1;
+		if(compFunction(t0, t1, epsilon)) {
+			return [aPt[0] + aVec[0]*t0, aPt[1] + aVec[1]*t0];
+		}
+	};
+
+
+
+	/** 
+	 *  Boolean tests
+	 *  collinearity, overlap, contains
+	 */
+
+
+	// line_collinear - prev name
+	/** is a point collinear to a line, within an epsilon */
+	function point_on_line(linePoint, lineVector, point, epsilon = EPSILON){
+		let pointPoint = [point[0] - linePoint[0], point[1] - linePoint[1]];
+		let cross = pointPoint[0]*lineVector[1] - pointPoint[1]*lineVector[0];
+		return Math.abs(cross) < epsilon;
+	}
+
+	// edge_collinear - prev name
+	/** is a point collinear to an edge, between endpoints, within an epsilon */
+	function point_on_edge(edge0, edge1, point, epsilon = EPSILON){
+		// distance between endpoints A,B should be equal to point->A + point->B
+		let dEdge = Math.sqrt(Math.pow(edge0[0]-edge1[0],2) + Math.pow(edge0[1]-edge1[1],2));
+		let dP0 = Math.sqrt(Math.pow(point[0]-edge0[0],2) + Math.pow(point[1]-edge0[1],2));
+		let dP1 = Math.sqrt(Math.pow(point[0]-edge1[0],2) + Math.pow(point[1]-edge1[1],2));
+		return Math.abs(dEdge - dP0 - dP1) < epsilon;
+	}
+
+	/** is a point inside of a convex polygon? 
+	 * including along the boundary within epsilon 
+	 *
+	 * @param poly is an array of points [ [x,y], [x,y]...]
+	 * @returns {boolean} true if point is inside polygon
+	 */
+	function point_in_polygon(poly, point, epsilon = EPSILON){
+		if(poly == undefined || !(poly.length > 0)){ return false; }
+		return poly.map( (p,i,arr) => {
+			let nextP = arr[(i+1)%arr.length];
+			let a = [ nextP[0]-p[0], nextP[1]-p[1] ];
+			let b = [ point[0]-p[0], point[1]-p[1] ];
+			return a[0] * b[1] - a[1] * b[0] > -epsilon;
+		}).map((s,i,arr) => s == arr[0]).reduce((prev,curr) => prev && curr, true)
+	}
+
+	/** do two convex polygons overlap one another */
+	function polygons_overlap(ps1, ps2){
+		// convert array of points into edges [point, nextPoint]
+		let e1 = ps1.map((p,i,arr) => [p, arr[(i+1)%arr.length]] );
+		let e2 = ps2.map((p,i,arr) => [p, arr[(i+1)%arr.length]] );
+		for(let i = 0; i < e1.length; i++){
+			for(let j = 0; j < e2.length; j++){
+				if(edge_edge_intersection(e1[i][0], e1[i][1], e2[j][0], e2[j][1]) != undefined){
+					return true;
+				}
+			}
+		}
+		if(point_in_polygon(ps1, ps2[0])){ return true; }
+		if(point_in_polygon(ps2, ps1[0])){ return true; }
+		return false;
+	}
+
+
+
+	/** 
+	 *  Clipping operations
+	 *  
+	 */
+
+
+
+	/** clip an infinite line in a polygon, returns an edge or undefined if no intersection */
+	function clip_line_in_poly(poly, linePoint, lineVector){
+		let intersections = poly
+			.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // poly points into edge pairs
+			.map(function(el){ return line_edge_intersection(linePoint, lineVector, el[0], el[1]); })
+			.filter(function(el){return el != undefined; });
+		switch(intersections.length){
+		case 0: return undefined;
+		case 1: return [intersections[0], intersections[0]]; // degenerate edge
+		case 2: return intersections;
+		default:
+		// special case: line intersects directly on a poly point (2 edges, same point)
+		//  filter to unique points by [x,y] comparison.
+			for(let i = 1; i < intersections.length; i++){
+				if( !points_equivalent(intersections[0], intersections[i])){
+					return [intersections[0], intersections[i]];
+				}
+			}
+		}
+	}
+
+	function clipEdge(edge){
+		var intersections = this.edges
+			.map(function(el){ return intersectionEdgeEdge(edge, el); })
+			.filter(function(el){return el !== undefined; })
+			// filter out intersections equivalent to the edge points themselves
+			.filter(function(el){ 
+				return !el.equivalent(edge.nodes[0]) &&
+				       !el.equivalent(edge.nodes[1]); });
+		switch(intersections.length){
+			case 0:
+				if(this.contains(edge.nodes[0])){ return edge; } // completely inside
+				return undefined;  // completely outside
+			case 1:
+				if(this.contains(edge.nodes[0])){
+					return new Edge(edge.nodes[0], intersections[0]);
+				}
+				return new Edge(edge.nodes[1], intersections[0]);
+			case 2: return new Edge(intersections[0], intersections[1]);
+			// default: throw "clipping edge in a convex polygon resulting in 3 or more points";
+			default:
+				for(var i = 1; i < intersections.length; i++){
+					if( !intersections[0].equivalent(intersections[i]) ){
+						return new Edge(intersections[0], intersections[i]);
+					}
+				}
+		}
+	}
+	function clipLine(line){
+		var intersections = this.edges
+			.map(function(el){ return intersectionLineEdge(line, el); })
+			.filter(function(el){return el !== undefined; });
+		switch(intersections.length){
+			case 0: return undefined;
+			case 1: return new Edge(intersections[0], intersections[0]); // degenerate edge
+			case 2: return new Edge(intersections[0], intersections[1]);
+			// default: throw "clipping line in a convex polygon resulting in 3 or more points";
+			default:
+				for(var i = 1; i < intersections.length; i++){
+					if( !intersections[0].equivalent(intersections[i]) ){
+						return new Edge(intersections[0], intersections[i]);
+					}
+				}
+		}
+	}
+	function clipRay(ray){
+		var intersections = this.edges
+			.map(function(el){ return intersectionRayEdge(ray, el); })
+			.filter(function(el){return el !== undefined; });
+		switch(intersections.length){
+			case 0: return undefined;
+			case 1: return new Edge(ray.origin, intersections[0]);
+			case 2: return new Edge(intersections[0], intersections[1]);
+			// default: throw "clipping ray in a convex polygon resulting in 3 or more points";
+			default:
+				for(var i = 1; i < intersections.length; i++){
+					if( !intersections[0].equivalent(intersections[i]) ){
+						return new Edge(intersections[0], intersections[i]);
+					}
+				}
+		}
+	}
+
+	var Intersection = /*#__PURE__*/Object.freeze({
+		line_line: line_line,
+		line_ray: line_ray,
+		line_edge: line_edge,
+		ray_ray: ray_ray,
+		ray_edge: ray_edge,
+		edge_edge: edge_edge,
+		line_edge_exclusive: line_edge_exclusive,
+		point_on_line: point_on_line,
+		point_on_edge: point_on_edge,
+		point_in_polygon: point_in_polygon,
+		polygons_overlap: polygons_overlap,
+		clip_line_in_poly: clip_line_in_poly,
+		clipEdge: clipEdge,
+		clipLine: clipLine,
+		clipRay: clipRay
+	});
+
+	/**
+	 *  Geometry library
+	 *  The goal of this user-facing library is to type check all arguments for a
+	 *  likely use case, which might slow runtime by a small fraction.
+	 *  Use the core library functions for fastest-possible calculations.
+	 */
+
+	// export * from './intersection';
+	let intersection = Intersection;
+
+	/** n-dimensional vector */
+	function Vector() {
+		let _v = get_vec(...arguments);
+
+		const normalize = function() {
+			let m = magnitude();
+			let components = _v.map(c => c / m);
+			return Vector(components);
+		};
+		const magnitude = function() {
+			let sum = _v
+				.map(component => component * component)
+				.reduce((prev,curr) => prev + curr);
+			return Math.sqrt(sum);
+		};
+		const dot = function() {
+			let vec = get_vec(...arguments);
+			let length = (_v.length < vec.length) ? _v.length : vec.length;
+			return Array.from(Array(length))
+				.map((_,i) => _v[i] * vec[i])
+				.reduce((prev,curr) => prev + curr, 0);
+		};
+		const cross3 = function() {
+			let b = get_vec(...arguments);
+			let a = _v.slice();
+			if(a[2] == null){ a[2] = 0; }
+			if(b[2] == null){ b[2] = 0; }
+			return (a[1]*b[2] - a[2]*b[1]) - (a[0]*b[2] - a[2]*b[0]) + (a[0]*b[1] - a[1]*b[0]);
+		};
+		const cross = function() {
+			return cross3(...arguments);
+		};
+		const distanceTo = function() {
+			let vec = get_vec(...arguments);
+			let length = (_v.length < vec.length) ? _v.length : vec.length;
+			let sum = Array.from(Array(length))
+				.map((_,i) => Math.pow(_v[i] - vec[i], 2))
+				.reduce((prev, curr) => prev + curr, 0);
+			return Math.sqrt(sum);
+		};
+		const transform = function() {
+			let m = get_matrix(...arguments);
+			return Vector(_v[0] * m[0] + _v[1] * m[2] + m[4],
+			              _v[0] * m[1] + _v[1] * m[3] + m[5]);
+		};
+		const rotateZ = function(angle, origin) {
+			return transform( Matrix().rotation(angle, origin) );
+		};
+		const rotateZ90 = function() {
+			return Vector(-_v[1], _v[0]);
+		};
+		const rotateZ180 = function() {
+			return Vector(-_v[0], -_v[1]);
+		};
+		const rotateZ270 = function() {
+			return Vector(_v[1], -_v[0]);
+		};
+		const reflect = function() {
+			let reflect = get_line(...arguments);
+			return transform( Matrix().reflection(reflect.vector, reflect.point) );
+		};
+		const lerp = function(point, pct) {
+			let vec = get_vec(point);
+			let inv = 1.0 - pct;
+			let length = (_v.length < vec.length) ? _v.length : vec.length;
+			let components = Array.from(Array(length))
+				.map((_,i) => _v[i] * pct + vec[i] * inv);
+			return Vector(components);
+		};
+		const equivalent = function(vector, epsilon = EPSILON_HIGH) {
+			// rect bounding box for now, much cheaper than radius calculation
+			let vec = get_vec(vector);
+			let sm = (_v.length < vec.length) ? _v.slice() : vec;
+			let lg = (_v.length < vec.length) ? vec : _v.slice();
+			for(var i = sm.length; i < lg.length; i++){ sm[i] = 0; }
+			return lg.map((_,i) => Math.abs(sm[i] - lg[i]) < epsilon)
+				.reduce((prev,curr) => prev && curr, true);
+		};
+		const scale = function(mag) {
+			return Vector( _v.map(v => v * mag) );
+		};
+		const midpoint = function() {
+			let vec = get_vec(...arguments);
+			let sm = (_v.length < vec.length) ? _v.slice() : vec;
+			let lg = (_v.length < vec.length) ? vec : _v.slice();
+			for(var i = sm.length; i < lg.length; i++){ sm[i] = 0; }
+			return Vector(lg.map((_,i) => (sm[i] + lg[i]) * 0.5));
+		};
+
+		return Object.freeze( {
+			normalize,
+			magnitude,
+			dot,
+			cross,
+			distanceTo,
+			transform,
+			rotateZ,
+			rotateZ90,
+			rotateZ180,
+			rotateZ270,
+			reflect,
+			lerp,
+			equivalent,
+			scale,
+			midpoint,
+			get vector() { return _v; },
+			get x() { return _v[0]; },
+			get y() { return _v[1]; },
+			get z() { return _v[2]; },
+		} );
+	}
+
+
+	/** 
+	 * 2D Matrix with translation component in x,y
+	 */
+	function Matrix() {
+		let _m = get_matrix(...arguments);
+
+		const inverse = function() {
+			var det = _m[0] * _m[3] - _m[1] * _m[2];
+			if (!det || isNaN(det) || !isFinite(_m[4]) || !isFinite(_m[5])) {
+				return undefined;
+			}
+			let a =  _m[3]/det;
+			let b = -_m[1]/det;
+			let c = -_m[2]/det;
+			let d =  _m[0]/det;
+			let tx = (_m[2]*_m[5] - _m[3]*_m[4])/det;
+			let ty = (_m[1]*_m[4] - _m[0]*_m[5])/det;
+			return Matrix(a, b, c, d, tx, ty);
+		};
+		const multiply = function() {
+			let m2 = get_matrix(...arguments);
+			let a = _m[0] * m2[0] + _m[2] * m2[1];
+			let c = _m[0] * m2[2] + _m[2] * m2[3];
+			let tx = _m[0] * m2[4] + _m[2] * m2[5] + _m[4];
+			let b = _m[1] * m2[0] + _m[3] * m2[1];
+			let d = _m[1] * m2[2] + _m[3] * m2[3];
+			let ty = _m[1] * m2[4] + _m[3] * m2[5] + _m[5];
+			return Matrix(a, b, c, d, tx, ty);
+		};
+		const transform = function(){
+			let v = get_vec(...arguments);
+			return Vector(v[0] * _m[0] + v[1] * _m[2] + _m[4],
+			              v[0] * _m[1] + v[1] * _m[3] + _m[5]);
+		};
+		return Object.freeze( {
+			inverse,
+			multiply,
+			transform,
+			get m() { return _m; },
+		} );
+	}
+	// static methods
+	Matrix.identity = function() {
+		return Matrix(1,0,0,1,0,0);
+	};
+	Matrix.rotation = function(angle, origin) {
+		var a = Math.cos(angle);
+		var b = Math.sin(angle);
+		var c = -Math.sin(angle);
+		var d = Math.cos(angle);
+		var tx = (origin != null) ? origin[0] : 0;
+		var ty = (origin != null) ? origin[1] : 0;
+		return Matrix(a, b, c, d, tx, ty);
+	};
+	Matrix.reflection = function(vector, origin) {
+		// the line of reflection passes through origin, runs along vector
+		let angle = Math.atan2(vector[1], vector[0]);
+		let cosAngle = Math.cos(angle);
+		let sinAngle = Math.sin(angle);
+		let _cosAngle = Math.cos(-angle);
+		let _sinAngle = Math.sin(-angle);
+		let a = cosAngle *  _cosAngle +  sinAngle * _sinAngle;
+		let b = cosAngle * -_sinAngle +  sinAngle * _cosAngle;
+		let c = sinAngle *  _cosAngle + -cosAngle * _sinAngle;
+		let d = sinAngle * -_sinAngle + -cosAngle * _cosAngle;
+		let tx = origin[0] + a * -origin[0] + -origin[1] * c;
+		let ty = origin[1] + b * -origin[0] + -origin[1] * d;
+		return Matrix(a, b, c, d, tx, ty);
+	};
+
+	exports.intersection = intersection;
+	exports.core = core;
+	exports.Vector = Vector;
+	exports.Matrix = Matrix;
+
+	Object.defineProperty(exports, '__esModule', { value: true });
+
+})));

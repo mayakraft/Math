@@ -48,7 +48,7 @@ export function get_matrix(){
 	let params = Array.from(arguments);
 	let numbers = params.filter((param) => !isNaN(param));
 	let arrays = params.filter((param) => param.constructor === Array);
-	if(params.length == 0) { return []; }
+	if(params.length == 0) { return [1,0,0,1,0,0]; }
 	if(params[0].m != null && params[0].m.constructor == Array){
 		numbers = params[0].m.slice(); // Matrix type
 	}

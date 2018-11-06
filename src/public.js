@@ -9,8 +9,12 @@ import * as Input from './input';
 import * as Intersection from './intersection';
 
 // export * from './intersection';
+let intersection = Intersection;
+export { intersection }
 
-export { Intersection }
+import * as core from './core';
+
+export { core };
 
 /** n-dimensional vector */
 export function Vector() {

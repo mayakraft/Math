@@ -24,27 +24,6 @@ function distance3(a, b){
 	);
 }
 
-/** clip an infinite line in a polygon, returns an edge or undefined if no intersection */
-export function clip_line_in_poly(poly, linePoint, lineVector){
-	let intersections = poly
-		.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // poly points into edge pairs
-		.map(function(el){ return line_edge_intersection(linePoint, lineVector, el[0], el[1]); })
-		.filter(function(el){return el != undefined; });
-	switch(intersections.length){
-	case 0: return undefined;
-	case 1: return [intersections[0], intersections[0]]; // degenerate edge
-	case 2: return intersections;
-	default:
-	// special case: line intersects directly on a poly point (2 edges, same point)
-	//  filter to unique points by [x,y] comparison.
-		for(let i = 1; i < intersections.length; i++){
-			if( !points_equivalent(intersections[0], intersections[i])){
-				return [intersections[0], intersections[i]];
-			}
-		}
-	}
-}
-
 /** apply a matrix transform on a point */
 export function transform_point(point, matrix){
 	return [ point[0] * matrix[0] + point[1] * matrix[2] + matrix[4],
@@ -55,7 +34,7 @@ export function transform_point(point, matrix){
  * These all standardize a row-column order
  */
 
-export function make_matrix_reflection(origin, vector){
+export function make_matrix_reflection(vector, origin){
 	// the line of reflection passes through origin, runs along vector
 	let angle = Math.atan2(vector[1], vector[0]);
 	let cosAngle = Math.cos(angle);

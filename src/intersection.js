@@ -170,3 +170,65 @@ export function clip_line_in_poly(poly, linePoint, lineVector){
 		}
 	}
 }
+
+export function clipEdge(edge){
+	var intersections = this.edges
+		.map(function(el){ return intersectionEdgeEdge(edge, el); })
+		.filter(function(el){return el !== undefined; })
+		// filter out intersections equivalent to the edge points themselves
+		.filter(function(el){ 
+			return !el.equivalent(edge.nodes[0]) &&
+			       !el.equivalent(edge.nodes[1]); });
+	switch(intersections.length){
+		case 0:
+			if(this.contains(edge.nodes[0])){ return edge; } // completely inside
+			return undefined;  // completely outside
+		case 1:
+			if(this.contains(edge.nodes[0])){
+				return new Edge(edge.nodes[0], intersections[0]);
+			}
+			return new Edge(edge.nodes[1], intersections[0]);
+		case 2: return new Edge(intersections[0], intersections[1]);
+		// default: throw "clipping edge in a convex polygon resulting in 3 or more points";
+		default:
+			for(var i = 1; i < intersections.length; i++){
+				if( !intersections[0].equivalent(intersections[i]) ){
+					return new Edge(intersections[0], intersections[i]);
+				}
+			}
+	}
+}
+export function clipLine(line){
+	var intersections = this.edges
+		.map(function(el){ return intersectionLineEdge(line, el); })
+		.filter(function(el){return el !== undefined; });
+	switch(intersections.length){
+		case 0: return undefined;
+		case 1: return new Edge(intersections[0], intersections[0]); // degenerate edge
+		case 2: return new Edge(intersections[0], intersections[1]);
+		// default: throw "clipping line in a convex polygon resulting in 3 or more points";
+		default:
+			for(var i = 1; i < intersections.length; i++){
+				if( !intersections[0].equivalent(intersections[i]) ){
+					return new Edge(intersections[0], intersections[i]);
+				}
+			}
+	}
+}
+export function clipRay(ray){
+	var intersections = this.edges
+		.map(function(el){ return intersectionRayEdge(ray, el); })
+		.filter(function(el){return el !== undefined; });
+	switch(intersections.length){
+		case 0: return undefined;
+		case 1: return new Edge(ray.origin, intersections[0]);
+		case 2: return new Edge(intersections[0], intersections[1]);
+		// default: throw "clipping ray in a convex polygon resulting in 3 or more points";
+		default:
+			for(var i = 1; i < intersections.length; i++){
+				if( !intersections[0].equivalent(intersections[i]) ){
+					return new Edge(intersections[0], intersections[i]);
+				}
+			}
+	}
+}
