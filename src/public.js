@@ -5,6 +5,9 @@
  *  Use the core library functions for fastest-possible calculations.
  */
 
+// For now, this library is implicitly 2D.
+// however a lot of types and operations are built to function in n-dimensions.
+
 import * as Input from './input';
 import * as Intersection from './intersection';
 
@@ -12,34 +15,62 @@ import * as Intersection from './intersection';
 let intersection = Intersection;
 export { intersection }
 
-import * as core from './core';
+import * as Core from './core';
 
-export { core };
+export { Core };
 
-let input = Input;
-export { input };
+export { Input };
+
+/** 
+ * 2D Matrix (2x3) with translation component in x,y
+ */
+export function Matrix() {
+	let _m = Input.get_matrix(...arguments);
+
+	const inverse = function() {
+		return Matrix( Core.make_matrix2_inverse(_m) );
+	}
+	const multiply = function() {
+		let m2 = Input.get_matrix(...arguments);
+		return Matrix( Core.multiply_matrices2(_m, m2) );
+	}
+	const transform = function(){
+		let v = Input.get_vec(...arguments);
+		return Vector( Core.multiply_vector2_matrix2(v, _m) );
+	}
+	return Object.freeze( {
+		inverse,
+		multiply,
+		transform,
+		get m() { return _m; },
+	} );
+}
+// static methods
+Matrix.identity = function() {
+	return Matrix(1,0,0,1,0,0);
+}
+Matrix.rotation = function(angle, origin) {
+	return Matrix( Core.make_matrix2_rotation(angle, origin) );
+}
+Matrix.reflection = function(vector, origin) {
+	return Matrix( Core.make_matrix2_reflection(vector, origin) );
+}
 
 /** n-dimensional vector */
 export function Vector() {
 	let _v = Input.get_vec(...arguments);
 
 	const normalize = function() {
-		let m = magnitude();
-		let components = _v.map(c => c / m);
-		return Vector(components);
+		return Vector( Core.normalize(_v) );
 	}
 	const magnitude = function() {
-		let sum = _v
-			.map(component => component * component)
-			.reduce((prev,curr) => prev + curr);
-		return Math.sqrt(sum);
+		return Core.magnitude(_v);
 	}
 	const dot = function() {
 		let vec = Input.get_vec(...arguments);
-		let length = (_v.length < vec.length) ? _v.length : vec.length;
-		return Array.from(Array(length))
-			.map((_,i) => _v[i] * vec[i])
-			.reduce((prev,curr) => prev + curr, 0);
+		return _v.length > vec.length
+			? Core.dot(vec, _v)
+			: Core.dot(_v, vec);
 	}
 	// todo, generalize the cross product formula
 	const cross2 = function() {
@@ -66,11 +97,12 @@ export function Vector() {
 	}
 	const transform = function() {
 		let m = Input.get_matrix(...arguments);
-		return Vector(_v[0] * m[0] + _v[1] * m[2] + m[4],
-		              _v[0] * m[1] + _v[1] * m[3] + m[5]);
+		return Vector( Core.multiply_vector2_matrix2(_v, m) );
 	}
+	// these are implicitly 2D functions, and will convert the vector into 2D
 	const rotateZ = function(angle, origin) {
-		return transform( Matrix().rotation(angle, origin) );
+		var m = Core.make_matrix2_rotation(angle, origin);
+		return Vector( Core.multiply_vector2_matrix2(_v, m) );
 	}
 	const rotateZ90 = function() {
 		return Vector(-_v[1], _v[0]);
@@ -82,11 +114,12 @@ export function Vector() {
 		return Vector(_v[1], -_v[0]);
 	}
 	const reflect = function() {
-		let reflect = get_line(...arguments);
-		return transform( Matrix().reflection(reflect.vector, reflect.point) );
+		let reflect = Input.get_line(...arguments);
+		let m = Core.make_matrix2_reflection(reflect.vector, reflect.point);
+		return Vector( Core.multiply_vector2_matrix2(_v, m) );
 	}
-	const lerp = function(point, pct) {
-		let vec = Input.get_vec(point);
+	const lerp = function(vector, pct) {
+		let vec = Input.get_vec(vector);
 		let inv = 1.0 - pct;
 		let length = (_v.length < vec.length) ? _v.length : vec.length;
 		let components = Array.from(Array(length))
@@ -136,73 +169,31 @@ export function Vector() {
 	} );
 }
 
-
-/** 
- * 2D Matrix with translation component in x,y
- */
-export function Matrix() {
-	let _m = Input.get_matrix(...arguments);
-
-	const inverse = function() {
-		var det = _m[0] * _m[3] - _m[1] * _m[2];
-		if (!det || isNaN(det) || !isFinite(_m[4]) || !isFinite(_m[5])) {
-			return undefined;
+export function Line(){
+	const betweenPoints = function(){
+		let points = gimme2Points(...arguments);
+		return {
+			point: [points[0][0], points[0][1], points[0][2]],
+			direction: normalize([
+				points[1][0] - points[0][0],
+				points[1][1] - points[0][1],
+				points[1][2] - points[0][2]
+			])
 		}
-		let a =  _m[3]/det;
-		let b = -_m[1]/det;
-		let c = -_m[2]/det;
-		let d =  _m[0]/det;
-		let tx = (_m[2]*_m[5] - _m[3]*_m[4])/det;
-		let ty = (_m[1]*_m[4] - _m[0]*_m[5])/det;
-		return Matrix(a, b, c, d, tx, ty);
 	}
-	const multiply = function() {
-		let m2 = Input.get_matrix(...arguments);
-		let a = _m[0] * m2[0] + _m[2] * m2[1];
-		let c = _m[0] * m2[2] + _m[2] * m2[3];
-		let tx = _m[0] * m2[4] + _m[2] * m2[5] + _m[4];
-		let b = _m[1] * m2[0] + _m[3] * m2[1];
-		let d = _m[1] * m2[2] + _m[3] * m2[3];
-		let ty = _m[1] * m2[4] + _m[3] * m2[5] + _m[5];
-		return Matrix(a, b, c, d, tx, ty);
+	const perpendicularBisector = function(){
+		// perpendicular bisector in 3D gives you a plane.
+		// we're going to assume this plane intersects with the z=0 plane.
+		// figure out a user friendly way to ask for this second plane
+		let points = gimme2Points(...arguments);
+		let vec = normalize([
+			points[1][0] - points[0][0],
+			points[1][1] - points[0][1],
+			points[1][2] - points[0][2]
+		]);
+		return {
+			point: midpoint(points[0], points[1]),
+			direction: cross(vec, [0,0,1])
+		}
 	}
-	const transform = function(){
-		let v = Input.get_vec(...arguments);
-		return Vector(v[0] * _m[0] + v[1] * _m[2] + _m[4],
-		              v[0] * _m[1] + v[1] * _m[3] + _m[5]);
-	}
-	return Object.freeze( {
-		inverse,
-		multiply,
-		transform,
-		get m() { return _m; },
-	} );
-}
-// static methods
-Matrix.identity = function() {
-	return Matrix(1,0,0,1,0,0);
-}
-Matrix.rotation = function(angle, origin) {
-	var a = Math.cos(angle);
-	var b = Math.sin(angle);
-	var c = -Math.sin(angle);
-	var d = Math.cos(angle);
-	var tx = (origin != null) ? origin[0] : 0;
-	var ty = (origin != null) ? origin[1] : 0;
-	return Matrix(a, b, c, d, tx, ty);
-}
-Matrix.reflection = function(vector, origin) {
-	// the line of reflection passes through origin, runs along vector
-	let angle = Math.atan2(vector[1], vector[0]);
-	let cosAngle = Math.cos(angle);
-	let sinAngle = Math.sin(angle);
-	let _cosAngle = Math.cos(-angle);
-	let _sinAngle = Math.sin(-angle);
-	let a = cosAngle *  _cosAngle +  sinAngle * _sinAngle;
-	let b = cosAngle * -_sinAngle +  sinAngle * _cosAngle;
-	let c = sinAngle *  _cosAngle + -cosAngle * _sinAngle;
-	let d = sinAngle * -_sinAngle + -cosAngle * _cosAngle;
-	let tx = origin[0] + a * -origin[0] + -origin[1] * c;
-	let ty = origin[1] + b * -origin[0] + -origin[1] * d;
-	return Matrix(a, b, c, d, tx, ty);
 }

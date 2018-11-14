@@ -4,7 +4,7 @@
  *  endpoints, use "exclusive" functions
  */
 
-import { EPSILON, points_equivalent } from './core'
+import { EPSILON, equivalent2 } from './core'
 
 
 export function line_line(aPt, aVec, bPt, bVec, epsilon){
@@ -34,7 +34,7 @@ export function line_edge_exclusive(point, vec, edge0, edge1){
 	let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
 	let x = vector_intersection(point, vec, edge0, edgeVec, line_edge_comp);
 	if (x == null){ return undefined; }
-	if(points_equivalent(x, edge0) || points_equivalent(x, edge1)){
+	if(equivalent2(x, edge0) || equivalent2(x, edge1)){
 		return undefined;
 	}
 	return x;
@@ -161,7 +161,7 @@ export function clip_line_in_poly(poly, linePoint, lineVector){
 	// special case: line intersects directly on a poly point (2 edges, same point)
 	//  filter to unique points by [x,y] comparison.
 		for(let i = 1; i < intersections.length; i++){
-			if( !points_equivalent(intersections[0], intersections[i])){
+			if( !equivalent2(intersections[0], intersections[i])){
 				return [intersections[0], intersections[i]];
 			}
 		}

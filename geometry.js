@@ -71,7 +71,7 @@ function get_matrix(){
  * 
  * @returns ({ point:[], vector:[] })
 */
-function get_line$1(){
+function get_line(){
 	let params = Array.from(arguments);
 	if(params.length == 0) { return {vector: [], point: []}; }
 	// let numbers = params.filter((param) => !isNaN(param));
@@ -88,12 +88,12 @@ function get_line$1(){
 	return {vector: [], point: []};
 }
 
-var Input = /*#__PURE__*/Object.freeze({
+var input = /*#__PURE__*/Object.freeze({
 	is_number: is_number,
 	clean_number: clean_number,
 	get_vec: get_vec,
 	get_matrix: get_matrix,
-	get_line: get_line$1
+	get_line: get_line
 });
 
 // Geometry for .fold file origami
@@ -107,17 +107,38 @@ const EPSILON_LOW  = 3e-6;
 const EPSILON      = 1e-10;
 const EPSILON_HIGH$1 = 1e-14;
 
+function normalize$1(v) {
+	let m = magnitude(v);
+	return v.map(c => c / m);
+}
+function magnitude(v) {
+	let sum = v
+		.map(component => component * component)
+		.reduce((prev,curr) => prev + curr);
+	return Math.sqrt(sum);
+}
+
+
+// these require that the two arguments are the same size.
+// also valid is the second argument larger than the first
+// the extra will get ignored as the iterator maps to the first length
+function dot(a, b) {
+	return a
+		.map((ai,i) => ai * b[i])
+		.reduce((prev,curr) => prev + curr, 0);
+}
+
+
 /** apply a matrix transform on a point */
-function transform_point(point, matrix){
-	return [ point[0] * matrix[0] + point[1] * matrix[2] + matrix[4],
-	         point[0] * matrix[1] + point[1] * matrix[3] + matrix[5] ];
+function multiply_vector2_matrix2(vector, matrix){
+	return [ vector[0] * matrix[0] + vector[1] * matrix[2] + matrix[4],
+	         vector[0] * matrix[1] + vector[1] * matrix[3] + matrix[5] ];
 }
 
 /** 
  * These all standardize a row-column order
  */
-
-function make_matrix_reflection(vector, origin){
+function make_matrix2_reflection(vector, origin){
 	// the line of reflection passes through origin, runs along vector
 	let angle = Math.atan2(vector[1], vector[0]);
 	let cosAngle = Math.cos(angle);
@@ -132,13 +153,28 @@ function make_matrix_reflection(vector, origin){
 	let ty = origin[1] + b * -origin[0] + -origin[1] * d;
 	return [a, b, c, d, tx, ty];
 }
-function make_matrix_inverse(m){
+function make_matrix2_rotation(angle, origin){
+	var a = Math.cos(angle);
+	var b = Math.sin(angle);
+	var c = -Math.sin(angle);
+	var d = Math.cos(angle);
+	var tx = (origin != null) ? origin[0] : 0;
+	var ty = (origin != null) ? origin[1] : 0;
+	return [a, b, c, d, tx, ty];
+}
+function make_matrix2_inverse(m){
 	var det = m[0] * m[3] - m[1] * m[2];
 	if (!det || isNaN(det) || !isFinite(m[4]) || !isFinite(m[5])){ return undefined; }
-	return [ m[3]/det, -m[1]/det, -m[2]/det, m[0]/det, 
-	         (m[2]*m[5] - m[3]*m[4])/det, (m[1]*m[4] - m[0]*m[5])/det ];
+	return [
+		m[3]/det,
+		-m[1]/det,
+		-m[2]/det,
+		m[0]/det, 
+		(m[2]*m[5] - m[3]*m[4])/det,
+		(m[1]*m[4] - m[0]*m[5])/det
+	];
 }
-function multiply_matrices(m1, m2){
+function multiply_matrices2(m1, m2){
 	let a = m1[0] * m2[0] + m1[2] * m2[1];
 	let c = m1[0] * m2[2] + m1[2] * m2[3];
 	let tx = m1[0] * m2[4] + m1[2] * m2[5] + m1[4];
@@ -148,9 +184,11 @@ function multiply_matrices(m1, m2){
 	return [a, b, c, d, tx, ty];
 }
 
+// these are all hard-coded to certain vector lengths
+// the length is specified by the number at the end of the function name
 
 /** are two points equivalent within an epsilon */
-function points_equivalent(a, b, epsilon = EPSILON){
+function equivalent2(a, b, epsilon = EPSILON){
 	// rectangular bounds test for faster calculation
 	return Math.abs(a[0]-b[0]) < epsilon && Math.abs(a[1]-b[1]) < epsilon;
 }
@@ -162,11 +200,15 @@ var core = /*#__PURE__*/Object.freeze({
 	EPSILON_LOW: EPSILON_LOW,
 	EPSILON: EPSILON,
 	EPSILON_HIGH: EPSILON_HIGH$1,
-	transform_point: transform_point,
-	make_matrix_reflection: make_matrix_reflection,
-	make_matrix_inverse: make_matrix_inverse,
-	multiply_matrices: multiply_matrices,
-	points_equivalent: points_equivalent
+	normalize: normalize$1,
+	magnitude: magnitude,
+	dot: dot,
+	multiply_vector2_matrix2: multiply_vector2_matrix2,
+	make_matrix2_reflection: make_matrix2_reflection,
+	make_matrix2_rotation: make_matrix2_rotation,
+	make_matrix2_inverse: make_matrix2_inverse,
+	multiply_matrices2: multiply_matrices2,
+	equivalent2: equivalent2
 });
 
 /** 
@@ -203,7 +245,7 @@ function line_edge_exclusive(point, vec, edge0, edge1){
 	let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
 	let x = vector_intersection(point, vec, edge0, edgeVec, line_edge_comp);
 	if (x == null){ return undefined; }
-	if(points_equivalent(x, edge0) || points_equivalent(x, edge1)){
+	if(equivalent2(x, edge0) || equivalent2(x, edge1)){
 		return undefined;
 	}
 	return x;
@@ -330,7 +372,7 @@ function clip_line_in_poly(poly, linePoint, lineVector){
 	// special case: line intersects directly on a poly point (2 edges, same point)
 	//  filter to unique points by [x,y] comparison.
 		for(let i = 1; i < intersections.length; i++){
-			if( !points_equivalent(intersections[0], intersections[i])){
+			if( !equivalent2(intersections[0], intersections[i])){
 				return [intersections[0], intersections[i]];
 			}
 		}
@@ -427,29 +469,56 @@ var Intersection = /*#__PURE__*/Object.freeze({
 // export * from './intersection';
 let intersection = Intersection;
 
-let input = Input;
+/** 
+ * 2D Matrix (2x3) with translation component in x,y
+ */
+function Matrix() {
+	let _m = get_matrix(...arguments);
+
+	const inverse = function() {
+		return Matrix( make_matrix2_inverse(_m) );
+	};
+	const multiply = function() {
+		let m2 = get_matrix(...arguments);
+		return Matrix( multiply_matrices2(_m, m2) );
+	};
+	const transform = function(){
+		let v = get_vec(...arguments);
+		return Vector( multiply_vector2_matrix2(v, _m) );
+	};
+	return Object.freeze( {
+		inverse,
+		multiply,
+		transform,
+		get m() { return _m; },
+	} );
+}
+// static methods
+Matrix.identity = function() {
+	return Matrix(1,0,0,1,0,0);
+};
+Matrix.rotation = function(angle, origin) {
+	return Matrix( make_matrix2_rotation(angle, origin) );
+};
+Matrix.reflection = function(vector, origin) {
+	return Matrix( make_matrix2_reflection(vector, origin) );
+};
 
 /** n-dimensional vector */
 function Vector() {
 	let _v = get_vec(...arguments);
 
 	const normalize = function() {
-		let m = magnitude();
-		let components = _v.map(c => c / m);
-		return Vector(components);
+		return Vector( normalize$1(_v) );
 	};
-	const magnitude = function() {
-		let sum = _v
-			.map(component => component * component)
-			.reduce((prev,curr) => prev + curr);
-		return Math.sqrt(sum);
+	const magnitude$$1 = function() {
+		return magnitude(_v);
 	};
-	const dot = function() {
+	const dot$$1 = function() {
 		let vec = get_vec(...arguments);
-		let length = (_v.length < vec.length) ? _v.length : vec.length;
-		return Array.from(Array(length))
-			.map((_,i) => _v[i] * vec[i])
-			.reduce((prev,curr) => prev + curr, 0);
+		return _v.length > vec.length
+			? dot(vec, _v)
+			: dot(_v, vec);
 	};
 	const cross3 = function() {
 		let b = get_vec(...arguments);
@@ -471,11 +540,12 @@ function Vector() {
 	};
 	const transform = function() {
 		let m = get_matrix(...arguments);
-		return Vector(_v[0] * m[0] + _v[1] * m[2] + m[4],
-		              _v[0] * m[1] + _v[1] * m[3] + m[5]);
+		return Vector( multiply_vector2_matrix2(_v, m) );
 	};
+	// these are implicitly 2D functions, and will convert the vector into 2D
 	const rotateZ = function(angle, origin) {
-		return transform( Matrix().rotation(angle, origin) );
+		var m = make_matrix2_rotation(angle, origin);
+		return Vector( multiply_vector2_matrix2(_v, m) );
 	};
 	const rotateZ90 = function() {
 		return Vector(-_v[1], _v[0]);
@@ -488,10 +558,11 @@ function Vector() {
 	};
 	const reflect = function() {
 		let reflect = get_line(...arguments);
-		return transform( Matrix().reflection(reflect.vector, reflect.point) );
+		let m = make_matrix2_reflection(reflect.vector, reflect.point);
+		return Vector( multiply_vector2_matrix2(_v, m) );
 	};
-	const lerp = function(point, pct) {
-		let vec = get_vec(point);
+	const lerp = function(vector, pct) {
+		let vec = get_vec(vector);
 		let inv = 1.0 - pct;
 		let length = (_v.length < vec.length) ? _v.length : vec.length;
 		let components = Array.from(Array(length))
@@ -520,8 +591,8 @@ function Vector() {
 
 	return Object.freeze( {
 		normalize,
-		magnitude,
-		dot,
+		magnitude: magnitude$$1,
+		dot: dot$$1,
 		cross,
 		distanceTo,
 		transform,
@@ -541,75 +612,7 @@ function Vector() {
 	} );
 }
 
-
-/** 
- * 2D Matrix with translation component in x,y
- */
-function Matrix() {
-	let _m = get_matrix(...arguments);
-
-	const inverse = function() {
-		var det = _m[0] * _m[3] - _m[1] * _m[2];
-		if (!det || isNaN(det) || !isFinite(_m[4]) || !isFinite(_m[5])) {
-			return undefined;
-		}
-		let a =  _m[3]/det;
-		let b = -_m[1]/det;
-		let c = -_m[2]/det;
-		let d =  _m[0]/det;
-		let tx = (_m[2]*_m[5] - _m[3]*_m[4])/det;
-		let ty = (_m[1]*_m[4] - _m[0]*_m[5])/det;
-		return Matrix(a, b, c, d, tx, ty);
-	};
-	const multiply = function() {
-		let m2 = get_matrix(...arguments);
-		let a = _m[0] * m2[0] + _m[2] * m2[1];
-		let c = _m[0] * m2[2] + _m[2] * m2[3];
-		let tx = _m[0] * m2[4] + _m[2] * m2[5] + _m[4];
-		let b = _m[1] * m2[0] + _m[3] * m2[1];
-		let d = _m[1] * m2[2] + _m[3] * m2[3];
-		let ty = _m[1] * m2[4] + _m[3] * m2[5] + _m[5];
-		return Matrix(a, b, c, d, tx, ty);
-	};
-	const transform = function(){
-		let v = get_vec(...arguments);
-		return Vector(v[0] * _m[0] + v[1] * _m[2] + _m[4],
-		              v[0] * _m[1] + v[1] * _m[3] + _m[5]);
-	};
-	return Object.freeze( {
-		inverse,
-		multiply,
-		transform,
-		get m() { return _m; },
-	} );
+function Line$1(){
 }
-// static methods
-Matrix.identity = function() {
-	return Matrix(1,0,0,1,0,0);
-};
-Matrix.rotation = function(angle, origin) {
-	var a = Math.cos(angle);
-	var b = Math.sin(angle);
-	var c = -Math.sin(angle);
-	var d = Math.cos(angle);
-	var tx = (origin != null) ? origin[0] : 0;
-	var ty = (origin != null) ? origin[1] : 0;
-	return Matrix(a, b, c, d, tx, ty);
-};
-Matrix.reflection = function(vector, origin) {
-	// the line of reflection passes through origin, runs along vector
-	let angle = Math.atan2(vector[1], vector[0]);
-	let cosAngle = Math.cos(angle);
-	let sinAngle = Math.sin(angle);
-	let _cosAngle = Math.cos(-angle);
-	let _sinAngle = Math.sin(-angle);
-	let a = cosAngle *  _cosAngle +  sinAngle * _sinAngle;
-	let b = cosAngle * -_sinAngle +  sinAngle * _cosAngle;
-	let c = sinAngle *  _cosAngle + -cosAngle * _sinAngle;
-	let d = sinAngle * -_sinAngle + -cosAngle * _cosAngle;
-	let tx = origin[0] + a * -origin[0] + -origin[1] * c;
-	let ty = origin[1] + b * -origin[0] + -origin[1] * d;
-	return Matrix(a, b, c, d, tx, ty);
-};
 
-export { intersection, core, input, Vector, Matrix };
+export { intersection, core as Core, input as Input, Matrix, Vector, Line$1 as Line };
