@@ -20,7 +20,6 @@ export function magnitude(v) {
 	return Math.sqrt(sum);
 }
 
-
 // these require that the two arguments are the same size.
 // also valid is the second argument larger than the first
 // the extra will get ignored as the iterator maps to the first length
@@ -30,6 +29,12 @@ export function dot(a, b) {
 		.reduce((prev,curr) => prev + curr, 0);
 }
 
+export function midpoint(a, b){
+	return a.map((ai,i) => (ai+b[i])*0.5);
+}
+
+
+////////////////////////////////
 
 /** apply a matrix transform on a point */
 export function multiply_vector2_matrix2(vector, matrix){
@@ -95,27 +100,27 @@ export function equivalent2(a, b, epsilon = EPSILON){
 	return Math.abs(a[0]-b[0]) < epsilon && Math.abs(a[1]-b[1]) < epsilon;
 }
 
-function midpoint2(a, b){
-	var aZ = a[2] == null ? 0 : a[2];
-	var bZ = b[2] == null ? 0 : b[2];
-	return [(a[0]+b[0])*0.5, (a[1]+b[1])*0.5, (aZ+bZ)*0.5];
+
+export function cross2(a, b){
+	return [ a[0]*b[1], a[1]*b[0] ];
 }
-function cross2(a, b){
+
+export function cross3(a, b) {
 	return [
 		a[1]*b[2] - a[2]*b[1],
-		a[2]*b[0] - a[0]*b[2],
+		a[0]*b[2] - a[2]*b[0],
 		a[0]*b[1] - a[1]*b[0]
 	];
 }
 
-function distance2(a, b){
+export function distance2(a, b){
 	return Math.sqrt(
 		Math.pow(a[0] - b[0], 2) +
 		Math.pow(a[1] - b[1], 2)
 	);
 }
 
-function distance3(a, b){
+export function distance3(a, b){
 	return Math.sqrt(
 		Math.pow(a[0] - b[0], 2) +
 		Math.pow(a[1] - b[1], 2) +
@@ -123,16 +128,14 @@ function distance3(a, b){
 	);
 }
 
-
-
 function bisect_lines(a, b){
 	if( a.parallel(b) ){
-		return [new Line( a.point.midpoint(b.point), a.direction)];
+		return [new Line( a.point.midpoint2(b.point), a.direction)];
 	} else{
 		var intersection = intersectionLineLine(a, b);
 		var vectors = bisectVectors(a.direction, b.direction);
 		vectors[1] = vectors[1].rotate90();
-		if(Math.abs(a.direction.cross(vectors[1])) < Math.abs(a.direction.cross(vectors[0]))){
+		if(Math.abs(a.direction.cross2(vectors[1])) < Math.abs(a.direction.cross2(vectors[0]))){
 			var swap = vectors[0];
 			vectors[0] = vectors[1];
 			vectors[1] = swap;

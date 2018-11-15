@@ -40,9 +40,6 @@ export function get_vec(){
 }
 
 /** 
- * this searches user-provided inputs for a valid n-dimensional vector 
- * which includes objects {x:, y:}, arrays [x,y], or sequences of numbers
- * 
  * @returns (number[]) array of number components
  *  invalid/no input returns the identity matrix
 */
@@ -66,19 +63,32 @@ export function get_matrix(){
 }
 
 /** 
- * this searches user-provided inputs for a valid n-dimensional vector 
- * which includes objects {x:, y:}, arrays [x,y], or sequences of numbers
- * 
  * @returns ({ point:[], vector:[] })
 */
 export function get_line(){
 	let params = Array.from(arguments);
+	let numbers = params.filter((param) => !isNaN(param));
+	let arrays = params.filter((param) => param.constructor === Array);
 	if(params.length == 0) { return {vector: [], point: []}; }
-	// let numbers = params.filter((param) => !isNaN(param));
-	// if(numbers.length >= 1) { return numbers; }
-	if(params[0].constructor === Array){
-		// if(params[0].length == 2){ }
-		// Vector(line.nodes[1].x, line.nodes[1].y).subtract(origin)
+	if(!isNaN(params[0]) && numbers.length >= 4){
+		return {
+			point: [params[0], params[1]],
+			vector: [params[2], params[3]]
+		};
+	}
+	if(arrays.length > 0){
+		if(arrays.length == 2){
+			return {
+				point: [arrays[0][0], arrays[0][1]],
+				vector: [arrays[1][0], arrays[1][1]]
+			};
+		}
+		if(arrays.length == 4){
+			return {
+				point: [arrays[0], arrays[1]],
+				vector: [arrays[2], arrays[3]]
+			};
+		}
 	}
 	if(params[0].constructor === Object){
 		let vector = [], point = [];
@@ -86,7 +96,24 @@ export function get_line(){
 		else if (params[0].direction != null) { vector = get_vec(params[0].direction); }
 		if (params[0].point != null)       { point = get_vec(params[0].point); }
 		else if (params[0].origin != null) { point = get_vec(params[0].origin); }
-		return {vector, point};
+		return {point, vector};
 	}
-	return {vector: [], point: []};
+	return {point: [], vector: []};
 }
+
+export function get_two_vec2(){
+	let params = Array.from(arguments);
+	let numbers = params.filter((param) => !isNaN(param));
+	let arrays = params.filter((param) => param.constructor === Array);
+	if(numbers.length >= 4){
+		return [
+			[numbers[0], numbers[1]],
+			[numbers[2], numbers[3]]
+		];
+	}
+	if(arrays.length >= 2 && !isNaN(arrays[0][0])){
+		return arrays;
+	}
+}
+
+

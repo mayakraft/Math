@@ -72,20 +72,12 @@ export function Vector() {
 			? Core.dot(vec, _v)
 			: Core.dot(_v, vec);
 	}
-	// todo, generalize the cross product formula
-	const cross2 = function() {
-		let vec = Input.get_vec(...arguments);
-		return _v[0] * vec[1] - _v[1] * vec[0];
-	}
-	const cross3 = function() {
+	const cross = function() {
 		let b = Input.get_vec(...arguments);
 		let a = _v.slice();
 		if(a[2] == null){ a[2] = 0; }
 		if(b[2] == null){ b[2] = 0; }
-		return (a[1]*b[2] - a[2]*b[1]) - (a[0]*b[2] - a[2]*b[0]) + (a[0]*b[1] - a[1]*b[0]);
-	}
-	const cross = function() {
-		return cross3(...arguments);
+		return Vector( Core.cross3(a, b) );
 	}
 	const distanceTo = function() {
 		let vec = Input.get_vec(...arguments);
@@ -170,30 +162,36 @@ export function Vector() {
 }
 
 export function Line(){
+	// let point, vector;
+	let {vector, point} = Input.get_line(...arguments);
+
 	const betweenPoints = function(){
 		let points = gimme2Points(...arguments);
 		return {
 			point: [points[0][0], points[0][1], points[0][2]],
-			direction: normalize([
+			vector: Core.normalize([
 				points[1][0] - points[0][0],
 				points[1][1] - points[0][1],
 				points[1][2] - points[0][2]
 			])
 		}
 	}
-	const perpendicularBisector = function(){
-		// perpendicular bisector in 3D gives you a plane.
-		// we're going to assume this plane intersects with the z=0 plane.
-		// figure out a user friendly way to ask for this second plane
-		let points = gimme2Points(...arguments);
-		let vec = normalize([
-			points[1][0] - points[0][0],
-			points[1][1] - points[0][1],
-			points[1][2] - points[0][2]
-		]);
-		return {
-			point: midpoint(points[0], points[1]),
-			direction: cross(vec, [0,0,1])
-		}
-	}
+
+	return Object.freeze( {
+		get vector() { return vector; },
+		get point() { return point; },
+	} );	
+}
+
+Line.perpendicularBisector = function() {
+	let points = Input.get_two_vec2(...arguments);
+	let vec = Core.normalize([
+		points[1][0] - points[0][0],
+		points[1][1] - points[0][1]
+	]);
+	return Line({
+		point: Core.midpoint(points[0], points[1]),
+		vector: [vec[1], -vec[0]]
+		// vector: Core.cross3(vec, [0,0,1])
+	});
 }
