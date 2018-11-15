@@ -92,6 +92,14 @@ export function Vector() {
 		let m = Input.get_matrix(...arguments);
 		return Vector( Core.multiply_vector2_matrix2(_v, m) );
 	}
+	const add = function(){
+		let vec = Input.get_vec(...arguments);
+		return Vector( _v.map((v,i) => v + vec[i]) );
+	}
+	const subtract = function(){
+		let vec = Input.get_vec(...arguments);
+		return Vector( _v.map((v,i) => v - vec[i]) );
+	}
 	// these are implicitly 2D functions, and will convert the vector into 2D
 	const rotateZ = function(angle, origin) {
 		var m = Core.make_matrix2_rotation(angle, origin);
@@ -146,6 +154,8 @@ export function Vector() {
 		cross,
 		distanceTo,
 		transform,
+		add,
+		subtract,
 		rotateZ,
 		rotateZ90,
 		rotateZ180,
@@ -163,8 +173,7 @@ export function Vector() {
 }
 
 export function Line(){
-	// let point, vector;
-	let {vector, point} = Input.get_line(...arguments);
+	let {point, vector} = Input.get_line(...arguments);
 
 	const isParallel = function(){
 		let line2 = Input.get_line(...arguments);
@@ -178,7 +187,6 @@ export function Line(){
 		get point() { return point; },
 	} );
 }
-
 Line.makeBetweenPoints = function(){
 	let points = Input.get_two_vec2(...arguments);
 	return Line({
@@ -189,7 +197,6 @@ Line.makeBetweenPoints = function(){
 		])
 	});
 }
-
 Line.makePerpendicularBisector = function() {
 	let points = Input.get_two_vec2(...arguments);
 	let vec = Core.normalize([
@@ -202,6 +209,35 @@ Line.makePerpendicularBisector = function() {
 		// vector: Core.cross3(vec, [0,0,1])
 	});
 }
+
+
+export function Ray(){
+	let {point, vector} = Input.get_line(...arguments);
+
+	return Object.freeze( {
+		get vector() { return vector; },
+		get point() { return point; },
+		get origin() { return point; },
+	} );
+}
+
+
+export function Edge(){
+	let _endpoints = Input.get_two_vec2(...arguments);
+
+	const vector = function(){
+		return Vector(
+			_endpoints[1][0] - _endpoints[0][0],
+			_endpoints[1][1] - _endpoints[0][1]
+		);
+	}
+
+	return Object.freeze( {
+		vector,
+		get endpoints() { return _endpoints; },
+	} );
+}
+
 
 export function Circle(){
 	let _origin, _radius;
@@ -236,3 +272,4 @@ export function Circle(){
 		get radius() { return _radius; },
 	} );
 }
+
