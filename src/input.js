@@ -115,5 +115,3 @@ export function get_two_vec2(){
 		return arrays;
 	}
 }
-
-

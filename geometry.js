@@ -514,6 +514,38 @@
 		}
 	}
 
+	function intersection_circle_line(center, radius, p0, p1){
+		var r_squared =  Math.pow(radius, 2);
+		var x1 = p0[0] - center[0];
+		var y1 = p0[1] - center[1];
+		var x2 = p1[0] - center[0];
+		var y2 = p1[1] - center[1];
+		var dx = x2 - x1;
+		var dy = y2 - y1;
+		var dr_squared = dx*dx + dy*dy;
+		var D = x1*y2 - x2*y1;
+		function sgn(x){ if(x < 0){return -1;} return 1; }
+		var x1 = (D*dy + sgn(dy)*dx*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
+		var x2 = (D*dy - sgn(dy)*dx*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
+		var y1 = (-D*dx + Math.abs(dy)*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
+		var y2 = (-D*dx - Math.abs(dy)*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
+		let x1NaN = isNaN(x1);
+		let x2NaN = isNaN(x2);
+		if(!x1NaN && !x2NaN){
+			return [
+				[x1 + center[0], y1 + center[1]],
+				[x2 + center[0], y2 + center[1]]
+			];
+		}
+		if(x1NaN && x2NaN){ return undefined; }
+		if(!x1NaN){
+			return [ [x1 + center[0], y1 + center[1]] ];
+		}
+		if(!x2NaN){
+			return [ [x2 + center[0], y2 + center[1]] ];
+		}
+	}
+
 	var Intersection = /*#__PURE__*/Object.freeze({
 		line_line: line_line,
 		line_ray: line_ray,
@@ -529,7 +561,8 @@
 		clip_line_in_poly: clip_line_in_poly,
 		clipEdge: clipEdge,
 		clipLine: clipLine,
-		clipRay: clipRay
+		clipRay: clipRay,
+		intersection_circle_line: intersection_circle_line
 	});
 
 	/**
@@ -696,7 +729,7 @@
 			isParallel,
 			get vector() { return vector; },
 			get point() { return point; },
-		} );	
+		} );
 	}
 
 	Line$1.makeBetweenPoints = function(){
@@ -723,12 +756,47 @@
 		});
 	};
 
+	function Circle(){
+		let _origin, _radius;
+
+		let params = Array.from(arguments);
+		let numbers = params.filter((param) => !isNaN(param));
+		if(numbers.length == 3){
+			_origin = numbers.slice(0,2);
+			_radius = numbers[2];
+		}
+
+		const intersectionLine = function(){
+			let line = get_line(...arguments);
+			let point2 = [
+				line.point[0] + line.vector[0],
+				line.point[1] + line.vector[1]
+			];
+			let intersection = intersection_circle_line(_origin, _radius, line.point, point2);
+			return Vector(intersection);
+		};
+
+		const intersectionEdge = function(){
+			let points = get_two_vec2(...arguments);
+			let intersection = intersection_circle_line(_origin, _radius, points[0], points[1]);
+			return Vector(intersection);
+		};
+
+		return Object.freeze( {
+			intersectionLine,
+			intersectionEdge,
+			get origin() { return _origin; },
+			get radius() { return _radius; },
+		} );
+	}
+
 	exports.intersection = intersection;
 	exports.Core = core;
 	exports.Input = input;
 	exports.Matrix = Matrix;
 	exports.Vector = Vector;
 	exports.Line = Line$1;
+	exports.Circle = Circle;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 

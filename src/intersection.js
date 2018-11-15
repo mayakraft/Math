@@ -59,6 +59,11 @@ const edge_edge_comp = function(t0, t1, epsilon = EPSILON) {
 	       t1 >= -epsilon && t1 <= 1+epsilon;
 }
 
+// todo this has not been tested yet
+const line_edge_comp_exclusive = function(t0, t1, epsilon = EPSILON) {
+	return t1 > epsilon && t1 < 1-epsilon;
+}
+
 
 /** 
  * the generalized vector intersection function
@@ -227,5 +232,37 @@ export function clipRay(ray){
 					return new Edge(intersections[0], intersections[i]);
 				}
 			}
+	}
+}
+
+export function intersection_circle_line(center, radius, p0, p1){
+	var r_squared =  Math.pow(radius, 2);
+	var x1 = p0[0] - center[0];
+	var y1 = p0[1] - center[1];
+	var x2 = p1[0] - center[0];
+	var y2 = p1[1] - center[1];
+	var dx = x2 - x1;
+	var dy = y2 - y1;
+	var dr_squared = dx*dx + dy*dy;
+	var D = x1*y2 - x2*y1;
+	function sgn(x){ if(x < 0){return -1;} return 1; }
+	var x1 = (D*dy + sgn(dy)*dx*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
+	var x2 = (D*dy - sgn(dy)*dx*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
+	var y1 = (-D*dx + Math.abs(dy)*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
+	var y2 = (-D*dx - Math.abs(dy)*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
+	let x1NaN = isNaN(x1);
+	let x2NaN = isNaN(x2);
+	if(!x1NaN && !x2NaN){
+		return [
+			[x1 + center[0], y1 + center[1]],
+			[x2 + center[0], y2 + center[1]]
+		];
+	}
+	if(x1NaN && x2NaN){ return undefined; }
+	if(!x1NaN){
+		return [ [x1 + center[0], y1 + center[1]] ];
+	}
+	if(!x2NaN){
+		return [ [x2 + center[0], y2 + center[1]] ];
 	}
 }

@@ -6,7 +6,7 @@ this is built to be the math engine for an origami library, but a lot of this is
 
 include `geometry.js`
 
-```
+``` html
 <!DOCTYPE html>
 <title></title>
 <script src="geometry.js"></script>
@@ -18,10 +18,10 @@ Build a module yourself: `rollup -c`
 
 ### src
 
-* public.js: entry point with basic types and objects which are built to type-check user input in the constructors to try to be as generous and infer as best as possible what the user intended.
-* input.js: the function argument type-checking operations used in public.js
+* **public.js**: entry point with basic types and objects which are built to type-check user input in the constructors to try to be as generous and infer as best as possible what the user intended.
+* **input.js**: the function argument type-checking operations used in public.js
 
 everything else is a little more more low-level
 
-* core.js: algebra and geometry functions built to operate as fast as reasonably possible where things like vector lengths are hard coded, like cross2() for 2D vectors
-* intersections.js: anything having to do with vectors crossing other vectors or polygon clipping, etc.
+* **core.js**: algebra and geometry functions built to operate as fast as reasonably possible where things like vector lengths are hard coded, like cross2() for 2D vectors
+* **intersections.js**: anything having to do with vectors crossing other vectors or polygon clipping, etc.

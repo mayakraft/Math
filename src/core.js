@@ -144,13 +144,10 @@ function bisect_lines(a, b){
 	}
 }
 
-// function gimme1Edge(a, b, c, d){
-// 	// input is 1 edge, 2 XY, or 4 numbers
-// 	if(a instanceof M.Edge){ return a; }
-// 	if(a.nodes !== undefined){ return new M.Edge(a.nodes[0], a.nodes[1]); }
-// 	if(isValidPoint(b) ){ return new M.Edge(a,b); }
-// 	if(isValidNumber(d)){ return new M.Edge(a,b,c,d); }
-// }
+
+
+
+
 
 function axiom1(){
 	return Line.betweenPoints(...arguments);
@@ -184,5 +181,3 @@ function axiom7(point, ontoLine, perp){
 
 // need to test:
 // do two polygons overlap if they share a point in common? share an edge?
-
-
