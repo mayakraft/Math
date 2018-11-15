@@ -5,6 +5,9 @@
  *  Use the core library functions for fastest-possible calculations.
  */
 
+// all static constructors start with "make". eg: Matrix.makeRotation(...)
+// all boolean tests start with "is" or "are" eg: Line.isParallel(...)
+
 // For now, this library is implicitly 2D.
 // however a lot of types and operations are built to function in n-dimensions.
 
@@ -46,13 +49,13 @@ export function Matrix() {
 	} );
 }
 // static methods
-Matrix.identity = function() {
+Matrix.makeIdentity = function() {
 	return Matrix(1,0,0,1,0,0);
 }
-Matrix.rotation = function(angle, origin) {
+Matrix.makeRotation = function(angle, origin) {
 	return Matrix( Core.make_matrix2_rotation(angle, origin) );
 }
-Matrix.reflection = function(vector, origin) {
+Matrix.makeReflection = function(vector, origin) {
 	return Matrix( Core.make_matrix2_reflection(vector, origin) );
 }
 
@@ -165,25 +168,31 @@ export function Line(){
 	// let point, vector;
 	let {vector, point} = Input.get_line(...arguments);
 
-	const betweenPoints = function(){
-		let points = gimme2Points(...arguments);
-		return {
-			point: [points[0][0], points[0][1], points[0][2]],
-			vector: Core.normalize([
-				points[1][0] - points[0][0],
-				points[1][1] - points[0][1],
-				points[1][2] - points[0][2]
-			])
-		}
+	const isParallel = function(){
+		let line2 = Input.get_line(...arguments);
+		let crossMag = Core.cross2(vector, line2.vector).reduce((a,b)=>a+b,0);
+		return Math.abs(crossMag) < Core.EPSILON_HIGH;
 	}
 
 	return Object.freeze( {
+		isParallel,
 		get vector() { return vector; },
 		get point() { return point; },
-	} );	
+	} );
 }
 
-Line.perpendicularBisector = function() {
+Line.makeBetweenPoints = function(){
+	let points = Input.get_two_vec2(...arguments);
+	return Line({
+		point: points[0],
+		vector: Core.normalize([
+			points[1][0] - points[0][0],
+			points[1][1] - points[0][1]
+		])
+	});
+}
+
+Line.makePerpendicularBisector = function() {
 	let points = Input.get_two_vec2(...arguments);
 	let vec = Core.normalize([
 		points[1][0] - points[0][0],

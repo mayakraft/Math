@@ -567,13 +567,13 @@
 		} );
 	}
 	// static methods
-	Matrix.identity = function() {
+	Matrix.makeIdentity = function() {
 		return Matrix(1,0,0,1,0,0);
 	};
-	Matrix.rotation = function(angle, origin) {
+	Matrix.makeRotation = function(angle, origin) {
 		return Matrix( make_matrix2_rotation(angle, origin) );
 	};
-	Matrix.reflection = function(vector, origin) {
+	Matrix.makeReflection = function(vector, origin) {
 		return Matrix( make_matrix2_reflection(vector, origin) );
 	};
 
@@ -686,13 +686,31 @@
 		// let point, vector;
 		let {vector, point} = get_line(...arguments);
 
+		const isParallel = function(){
+			let line2 = get_line(...arguments);
+			let crossMag = cross2(vector, line2.vector).reduce((a,b)=>a+b,0);
+			return Math.abs(crossMag) < EPSILON_HIGH$1;
+		};
+
 		return Object.freeze( {
+			isParallel,
 			get vector() { return vector; },
 			get point() { return point; },
 		} );	
 	}
 
-	Line$1.perpendicularBisector = function() {
+	Line$1.makeBetweenPoints = function(){
+		let points = get_two_vec2(...arguments);
+		return Line$1({
+			point: points[0],
+			vector: normalize([
+				points[1][0] - points[0][0],
+				points[1][1] - points[0][1]
+			])
+		});
+	};
+
+	Line$1.makePerpendicularBisector = function() {
 		let points = get_two_vec2(...arguments);
 		let vec = normalize([
 			points[1][0] - points[0][0],
