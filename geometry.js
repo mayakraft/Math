@@ -127,15 +127,13 @@ var input = /*#__PURE__*/Object.freeze({
 
 // Geometry for .fold file origami
 
-// all points are array syntax [x,y]
-// all edges are array syntax [[x,y], [x,y]]
-// all infinite lines are defined as point and vector, both [x,y]
-// all polygons are an ordered set of points ([x,y]), either winding direction
-
 const EPSILON_LOW  = 3e-6;
 const EPSILON      = 1e-10;
 const EPSILON_HIGH$1 = 1e-14;
 
+///////////////////////////////////////////////////////////////////////////////
+// the following operations which are nicely generalized for n-dimensions
+//
 function normalize(v) {
 	let m = magnitude(v);
 	return v.map(c => c / m);
@@ -147,9 +145,20 @@ function magnitude(v) {
 	return Math.sqrt(sum);
 }
 
-// these require that the two arguments are the same size.
-// also valid is the second argument larger than the first
-// the extra will get ignored as the iterator maps to the first length
+/** is a vector degenerate, each component is within epsilon of 0 */
+function is_degenerate(v){
+	return Math.abs(v.reduce((a, b) => a + b, 0)) < EPSILON_HIGH$1;
+}
+
+function are_parallel2(a, b){
+	let crossMag = cross2(a, b).reduce((a,b) => a+b, 0);
+	return Math.abs(crossMag) < EPSILON_HIGH$1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// the following functions require that the two arguments are the same size.
+// if the second argument larger than the first it will ignore leftover parts
+//
 function dot(a, b) {
 	return a
 		.map((ai,i) => ai * b[i])
@@ -161,7 +170,96 @@ function midpoint(a, b){
 }
 
 
-////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// the following functions are hard coded to 2 dimensions
+//
+
+/** There are 2 interior angles between 2 absolute angle measurements, from A to B return the clockwise one
+ * @param {number} angle in radians, angle PI/2 is along the +Y axis
+ * @returns {number} clockwise interior angle (from a to b) in radians
+ */
+function clockwise_angle2_radians(a, b){
+	// this is on average 50 to 100 times faster than clockwise_angle2
+	while(a < 0){ a += Math.PI*2; }
+	while(b < 0){ b += Math.PI*2; }
+	var a_b = a - b;
+	return (a_b >= 0)
+		? a_b
+		: Math.PI*2 - (b - a);
+}
+function counter_clockwise_angle2_radians(a, b){
+	// this is on average 50 to 100 times faster than counter_clockwise_angle2
+	while(a < 0){ a += Math.PI*2; }
+	while(b < 0){ b += Math.PI*2; }
+	var b_a = b - a;
+	return (b_a >= 0)
+		? b_a
+		: Math.PI*2 - (a - b);
+}
+
+/** There are 2 angles between 2 vectors, from A to B return the clockwise one.
+ * @param {[number, number]} vector
+ * @returns {number} clockwise angle (from a to b) in radians
+ */
+function clockwise_angle2(a, b){
+	var dotProduct = b[0]*a[0] + b[1]*a[1];
+	var determinant = b[0]*a[1] - b[1]*a[0];
+	var angle = Math.atan2(determinant, dotProduct);
+	if(angle < 0){ angle += Math.PI*2; }
+	return angle;
+}
+function counter_clockwise_angle2(a, b){
+	var dotProduct = a[0]*b[0] + a[1]*b[1];
+	var determinant = a[0]*b[1] - a[1]*b[0];
+	var angle = Math.atan2(determinant, dotProduct);
+	if(angle < 0){ angle += Math.PI*2; }
+	return angle;
+}
+/** There are 2 interior angles between 2 vectors, return both, the smaller first
+ * @param {[number, number]} vector
+ * @returns {[number, number]} 2 angle measurements between vectors
+ */
+function interior_angles2(a, b){
+	var interior1 = clockwise_angle2(a, b);
+	var interior2 = Math.PI*2 - interior1;
+	return (interior1 < interior2)
+		? [interior1, interior2]
+		: [interior2, interior1];
+}
+/** This bisects 2 vectors, returning both smaller and larger outside angle bisections [small, large]
+ * @param {[number, number]} vector
+ * @returns {[[number, number],[number, number]]} 2 vectors, the smaller angle first
+ */
+function bisect_vectors(a, b){
+	let aV = normalize(a);
+	let bV = normalize(b);
+	let sum = aV.map((_,i) => aV[i] + bV[i]);
+	let vecA = normalize( sum );
+	let vecB = aV.map((_,i) => -aV[i] + -bV[i]);
+	return [vecA, normalize(vecB)];
+}
+
+/** This bisects 2 lines
+ * @param {[number, number]} all vectors, lines defined by points and vectors
+ * @returns [ [number,number], [number,number] ] // line, defined as point, vector, in that order
+ */
+function bisect_lines2(pointA, vectorA, pointB, vectorB){
+	if(are_parallel2(vectorA, vectorB)){
+		return [midpoint(pointA, pointB), vectorA.slice()];
+	} else{
+		var inter = Intersection.line_line(pointA, vectorA, pointB, vectorB);
+		var bisect = bisect_vectors(vectorA, vectorB);
+		bisects[1] = [ bisects[1][1], -bisects[1][0] ];
+		// swap to make smaller interior angle first
+		if(Math.abs(cross2(vectorA, bisects[1])) <
+		   Math.abs(cross2(vectorA, bisects[0]))) {
+			var swap = bisects[0];
+			bisects[0] = bisects[1];
+			bisects[1] = swap;
+		}
+		return bisects.map((el) => [inter, el]);
+	}
+}
 
 /** apply a matrix transform on a point */
 function multiply_vector2_matrix2(vector, matrix){
@@ -227,7 +325,6 @@ function equivalent2(a, b, epsilon = EPSILON){
 	return Math.abs(a[0]-b[0]) < epsilon && Math.abs(a[1]-b[1]) < epsilon;
 }
 
-
 function cross2(a, b){
 	return [ a[0]*b[1], a[1]*b[0] ];
 }
@@ -264,8 +361,17 @@ var core = /*#__PURE__*/Object.freeze({
 	EPSILON_HIGH: EPSILON_HIGH$1,
 	normalize: normalize,
 	magnitude: magnitude,
+	is_degenerate: is_degenerate,
+	are_parallel2: are_parallel2,
 	dot: dot,
 	midpoint: midpoint,
+	clockwise_angle2_radians: clockwise_angle2_radians,
+	counter_clockwise_angle2_radians: counter_clockwise_angle2_radians,
+	clockwise_angle2: clockwise_angle2,
+	counter_clockwise_angle2: counter_clockwise_angle2,
+	interior_angles2: interior_angles2,
+	bisect_vectors: bisect_vectors,
+	bisect_lines2: bisect_lines2,
 	multiply_vector2_matrix2: multiply_vector2_matrix2,
 	make_matrix2_reflection: make_matrix2_reflection,
 	make_matrix2_rotation: make_matrix2_rotation,
@@ -540,7 +646,7 @@ function intersection_circle_line(center, radius, p0, p1){
 	}
 }
 
-var Intersection = /*#__PURE__*/Object.freeze({
+var Intersection$1 = /*#__PURE__*/Object.freeze({
 	line_line: line_line,
 	line_ray: line_ray,
 	line_edge: line_edge,
@@ -567,7 +673,7 @@ var Intersection = /*#__PURE__*/Object.freeze({
  */
 
 // export * from './intersection';
-let intersection = Intersection;
+let intersection = Intersection$1;
 
 /** 
  * 2D Matrix (2x3) with translation component in x,y
