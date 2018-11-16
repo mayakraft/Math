@@ -225,7 +225,7 @@ export function distance2(a, b){
 	);
 }
 
-export function distance3(a, b){
+export function distance3(a, b) {
 	return Math.sqrt(
 		Math.pow(a[0] - b[0], 2) +
 		Math.pow(a[1] - b[1], 2) +
@@ -233,35 +233,36 @@ export function distance3(a, b){
 	);
 }
 
-
-function axiom1(){
-	return Line.betweenPoints(...arguments);
+function axiom1(a, b) {
+	// n-dimension
+	return [a, a.map((_,i) => b[i] - a[i])];
 }
-function axiom2(){
-	return Line.perpendicularBisector(...arguments);
+function axiom2(a, b) {
+	// 2-dimension
+	let mid = midpoint(a, b);
+	let vec = a.map((_,i) => b[i] - a[i]);
+	return [mid, [vec[1], -vec[0]] ];
 }
-function axiom3(one, two){
-	return new M.Edge(one)
-		.infiniteLine()
-		.bisect(new M.Edge(two).infiniteLine())
-		.map(function (line) { return new CPLine(this, line); }, this);
+function axiom3(pointA, vectorA, pointB, vectorB){
+	return bisect_lines2(pointA, vectorA, pointB, vectorB);
 }
 function axiom4(line, point){
-	return new CPLine(this, new M.Line(point, new M.Edge(line).vector().rotate90()));
+	// return new CPLine(this, new M.Line(point, new M.Edge(line).vector().rotate90()));
 }
 function axiom5(origin, point, line){
-	var radius = Math.sqrt(Math.pow(origin.x - point.x, 2) + Math.pow(origin.y - point.y, 2));
-	var intersections = new M.Circle(origin, radius).intersection(new M.Edge(line).infiniteLine());
-	var lines = [];
-	for(var i = 0; i < intersections.length; i++){ lines.push(this.axiom2(point, intersections[i])); }
-	return lines;
+	// var radius = Math.sqrt(Math.pow(origin.x - point.x, 2) + Math.pow(origin.y - point.y, 2));
+	// var intersections = new M.Circle(origin, radius).intersection(new M.Edge(line).infiniteLine());
+	// var lines = [];
+	// for(var i = 0; i < intersections.length; i++){ lines.push(this.axiom2(point, intersections[i])); }
+	// return lines;
 }
-
+function axiom6(){
+}
 function axiom7(point, ontoLine, perp){
-	var newLine = new M.Line(point, new M.Edge(perp).vector());
-	var intersection = newLine.intersection(new M.Edge(ontoLine).infiniteLine());
-	if(intersection === undefined){ return undefined; }
-	return this.axiom2(point, intersection);
+	// var newLine = new M.Line(point, new M.Edge(perp).vector());
+	// var intersection = newLine.intersection(new M.Edge(ontoLine).infiniteLine());
+	// if(intersection === undefined){ return undefined; }
+	// return this.axiom2(point, intersection);
 };
 
 // need to test:

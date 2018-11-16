@@ -4,7 +4,11 @@
  *  endpoints, use "exclusive" functions
  */
 
-import { EPSILON, equivalent2 } from './core'
+// these two from core.js
+const EPSILON = 1e-10;
+function equivalent2(a, b, epsilon = EPSILON){
+	return Math.abs(a[0]-b[0]) < epsilon && Math.abs(a[1]-b[1]) < epsilon;
+}
 
 
 export function line_line(aPt, aVec, bPt, bVec, epsilon){
@@ -104,9 +108,12 @@ export function point_on_line(linePoint, lineVector, point, epsilon = EPSILON){
 /** is a point collinear to an edge, between endpoints, within an epsilon */
 export function point_on_edge(edge0, edge1, point, epsilon = EPSILON){
 	// distance between endpoints A,B should be equal to point->A + point->B
-	let dEdge = Math.sqrt(Math.pow(edge0[0]-edge1[0],2) + Math.pow(edge0[1]-edge1[1],2));
-	let dP0 = Math.sqrt(Math.pow(point[0]-edge0[0],2) + Math.pow(point[1]-edge0[1],2));
-	let dP1 = Math.sqrt(Math.pow(point[0]-edge1[0],2) + Math.pow(point[1]-edge1[1],2));
+	let dEdge = Math.sqrt(Math.pow(edge0[0]-edge1[0],2) +
+	                      Math.pow(edge0[1]-edge1[1],2));
+	let dP0 = Math.sqrt(Math.pow(point[0]-edge0[0],2) +
+	                    Math.pow(point[1]-edge0[1],2));
+	let dP1 = Math.sqrt(Math.pow(point[0]-edge1[0],2) +
+	                    Math.pow(point[1]-edge1[1],2));
 	return Math.abs(dEdge - dP0 - dP1) < epsilon;
 }
 
