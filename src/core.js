@@ -31,9 +31,8 @@ export function is_degenerate(v){
 	return Math.abs(v.reduce((a, b) => a + b, 0)) < EPSILON_HIGH;
 }
 
-export function are_parallel2(a, b){
-	let crossMag = cross2(a, b).reduce((a,b) => a+b, 0);
-	return Math.abs(crossMag) < EPSILON_HIGH;
+export function are_parallel(a, b){
+	return 1 - Math.abs(dot(normalize(a), normalize(b))) < EPSILON_HIGH;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -125,7 +124,7 @@ export function bisect_vectors(a, b){
  * @returns [ [number,number], [number,number] ] // line, defined as point, vector, in that order
  */
 export function bisect_lines2(pointA, vectorA, pointB, vectorB){
-	if(are_parallel2(vectorA, vectorB)){
+	if(are_parallel(vectorA, vectorB)){
 		return [midpoint(pointA, pointB), vectorA.slice()];
 	} else{
 		var inter = Intersection.line_line(pointA, vectorA, pointB, vectorB);
@@ -233,32 +232,32 @@ export function distance3(a, b) {
 	);
 }
 
-function axiom1(a, b) {
+export function axiom1(a, b) {
 	// n-dimension
 	return [a, a.map((_,i) => b[i] - a[i])];
 }
-function axiom2(a, b) {
+export function axiom2(a, b) {
 	// 2-dimension
 	let mid = midpoint(a, b);
 	let vec = a.map((_,i) => b[i] - a[i]);
 	return [mid, [vec[1], -vec[0]] ];
 }
-function axiom3(pointA, vectorA, pointB, vectorB){
+export function axiom3(pointA, vectorA, pointB, vectorB){
 	return bisect_lines2(pointA, vectorA, pointB, vectorB);
 }
-function axiom4(line, point){
+export function axiom4(line, point){
 	// return new CPLine(this, new M.Line(point, new M.Edge(line).vector().rotate90()));
 }
-function axiom5(origin, point, line){
+export function axiom5(origin, point, line){
 	// var radius = Math.sqrt(Math.pow(origin.x - point.x, 2) + Math.pow(origin.y - point.y, 2));
 	// var intersections = new M.Circle(origin, radius).intersection(new M.Edge(line).infiniteLine());
 	// var lines = [];
 	// for(var i = 0; i < intersections.length; i++){ lines.push(this.axiom2(point, intersections[i])); }
 	// return lines;
 }
-function axiom6(){
+export function axiom6(){
 }
-function axiom7(point, ontoLine, perp){
+export function axiom7(point, ontoLine, perp){
 	// var newLine = new M.Line(point, new M.Edge(perp).vector());
 	// var intersection = newLine.intersection(new M.Edge(ontoLine).infiniteLine());
 	// if(intersection === undefined){ return undefined; }

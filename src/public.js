@@ -17,9 +17,10 @@ import * as Core from './core';
 
 // export * from './intersection';
 let intersection = Intersection;
+let core = Core;
 
 export { intersection }
-export { Core };
+export { core };
 export { Input };
 
 /** 
@@ -136,6 +137,10 @@ export function Vector() {
 		return lg.map((_,i) => Math.abs(sm[i] - lg[i]) < epsilon)
 			.reduce((prev,curr) => prev && curr, true);
 	}
+	const isParallel = function(vector) {
+		let vec = Input.get_vec(vector);
+		return Core.are_parallel(_v, vec);
+	}
 	const scale = function(mag) {
 		return Vector( _v.map(v => v * mag) );
 	}
@@ -163,6 +168,7 @@ export function Vector() {
 		reflect,
 		lerp,
 		equivalent,
+		isParallel,
 		scale,
 		midpoint,
 		get vector() { return _v; },
@@ -176,9 +182,8 @@ export function Line(){
 	let {point, vector} = Input.get_line(...arguments);
 
 	const isParallel = function(){
-		let line2 = Input.get_line(...arguments);
-		let crossMag = Core.cross2(vector, line2.vector).reduce((a,b)=>a+b,0);
-		return Math.abs(crossMag) < Core.EPSILON_HIGH;
+		let line = Input.get_line(...arguments);
+		return Core.are_parallel(vector, line.vector);
 	}
 
 	return Object.freeze( {
