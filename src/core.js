@@ -12,13 +12,19 @@ export const EPSILON      = 1e-10;
 export const EPSILON_HIGH = 1e-14;
 
 ///////////////////////////////////////////////////////////////////////////////
-// the following operations which are nicely generalized for n-dimensions
+// the following operations neatly generalize for n-dimensions
 //
+/** @param [number]
+ *  @returns [number]
+ */
 export function normalize(v) {
 	let m = magnitude(v);
 	return v.map(c => c / m);
 }
 
+/** @param [number]
+ *  @returns number
+ */
 export function magnitude(v) {
 	let sum = v
 		.map(component => component * component)
@@ -26,18 +32,16 @@ export function magnitude(v) {
 	return Math.sqrt(sum);
 }
 
-/** is a vector degenerate, each component is within epsilon of 0 */
-export function is_degenerate(v){
-	return Math.abs(v.reduce((a, b) => a + b, 0)) < EPSILON_HIGH;
-}
-
-export function are_parallel(a, b){
-	return 1 - Math.abs(dot(normalize(a), normalize(b))) < EPSILON_HIGH;
+/** @param [number]
+ *  @returns boolean
+ */
+export function degenerate(v){
+	return Math.abs(v.reduce((a, b) => a + b, 0)) < EPSILON;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// the following functions require that the two arguments are the same size.
-// if the second argument larger than the first it will ignore leftover parts
+// these *can* generalize to n-dimensions, but lengths of arguments must match
+// if the second argument larger than the first it will ignore leftover components
 //
 export function dot(a, b) {
 	return a
@@ -49,9 +53,20 @@ export function midpoint(a, b){
 	return a.map((ai,i) => (ai+b[i])*0.5);
 }
 
+export function equivalent(a, b, epsilon = EPSILON){
+	// rectangular bounds test for fast calculation
+	return a
+		.map((ai,i) => Math.abs(ai - b[i]) < epsilon)
+		reduce((a,b) => a && b, true);
+}
+
+export function parallel(a, b, epsilon = EPSILON){
+	return 1 - Math.abs(dot(normalize(a), normalize(b))) < epsilon;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
-// the following functions are hard coded to 2 dimensions
+// everything else that follows is hard-coded to certain dimensions
 //
 
 /** There are 2 interior angles between 2 absolute angle measurements, from A to B return the clockwise one
@@ -124,7 +139,7 @@ export function bisect_vectors(a, b){
  * @returns [ [number,number], [number,number] ] // line, defined as point, vector, in that order
  */
 export function bisect_lines2(pointA, vectorA, pointB, vectorB){
-	if(are_parallel(vectorA, vectorB)){
+	if(parallel(vectorA, vectorB)){
 		return [midpoint(pointA, pointB), vectorA.slice()];
 	} else{
 		var inter = Intersection.line_line(pointA, vectorA, pointB, vectorB);
@@ -198,12 +213,6 @@ export function multiply_matrices2(m1, m2){
 
 // these are all hard-coded to certain vector lengths
 // the length is specified by the number at the end of the function name
-
-/** are two points equivalent within an epsilon */
-export function equivalent2(a, b, epsilon = EPSILON){
-	// rectangular bounds test for faster calculation
-	return Math.abs(a[0]-b[0]) < epsilon && Math.abs(a[1]-b[1]) < epsilon;
-}
 
 export function cross2(a, b){
 	return [ a[0]*b[1], a[1]*b[0] ];

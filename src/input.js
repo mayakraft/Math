@@ -115,3 +115,11 @@ export function get_two_vec2(){
 		return arrays;
 	}
 }
+
+
+export function get_array_of_vec2(){
+	// todo
+	let arrays = params.filter((param) => param.constructor === Array);
+	return arrays;
+}
+
