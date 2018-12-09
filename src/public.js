@@ -280,7 +280,7 @@ export function Circle(){
 	} );
 }
 
-export function ConvexPolygon(){
+export function Polygon(){
 
 	let _points = Input.get_array_of_vec2(...arguments);
 
@@ -307,7 +307,7 @@ export function ConvexPolygon(){
 			var mag = el.x * next.y - next.x * el.y;
 			return Vector( (el.x+next.x)*mag, (el.y+next.y)*mag );
 		})
-		.reduce((prev, curr) => prev.add(curr), Vector(0,0));
+		.reduce((prev, curr) => prev.add(curr), Vector(0,0))
 		.scale(1/(6 * this.signedArea(_points)));
 	}
 	/** Calculates the center of the bounding box made by the edges of the polygon.
@@ -421,7 +421,7 @@ export function ConvexPolygon(){
 	}
 	/** deep copy this object and all its contents */
 	// const copy = function(){
-	// 	var p = new ConvexPolygon();
+	// 	var p = new Polygon();
 	// 	p.edges = this.edges.map(function(e){
 	// 		return Edge(e.nodes[0].x, e.nodes[0].y, e.nodes[1].x, e.nodes[1].y);
 	// 	});
@@ -445,15 +445,15 @@ export function ConvexPolygon(){
 	} );
 }
 
-// ConvexPolygon.withPoints = function(points){
-// 	var poly = new ConvexPolygon();
+// Polygon.withPoints = function(points){
+// 	var poly = new Polygon();
 // 	poly.edges = points.map(function(el,i){
 // 		var nextEl = points[ (i+1)%points.length ];
 // 		return new Edge(el, nextEl);
 // 	},this);
 // 	return poly;
 // }
-// ConvexPolygon.regularPolygon = function(sides){
+// Polygon.regularPolygon = function(sides){
 // 	var halfwedge = 2*Math.PI/sides * 0.5;
 // 	var radius = Math.cos(halfwedge);
 // 	var points = [];
@@ -466,10 +466,9 @@ export function ConvexPolygon(){
 // 	this.setEdgesFromPoints(points);
 // 	return this;
 // }
-ConvexPolygon.convexHull = function(points, includeCollinear){
-	if(includeCollinear == undefined){ includeCollinear = false; }
+Polygon.convexHull = function(points, includeCollinear = false){
 	// validate input
-	if(points === undefined || points.length === 0){ return undefined; }
+	if(points == null || points.length === 0){ return undefined; }
 	// # points in the convex hull before escaping function
 	var INFINITE_LOOP = 10000;
 	// sort points by x and y
@@ -519,7 +518,7 @@ ConvexPolygon.convexHull = function(points, includeCollinear){
 
 
 		if(hull.filter(function(el){return el === angles[0].node; }).length > 0){
-			return ConvexPolygon.withPoints(hull);
+			return Polygon.withPoints(hull);
 		}
 		// add point to hull, prepare to loop again
 		hull.push(angles[0].node);

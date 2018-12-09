@@ -241,6 +241,68 @@ export function distance3(a, b) {
 	);
 }
 
+export function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH){
+	// # points in the convex hull before escaping function
+	var INFINITE_LOOP = 10000;
+	// sort points by y. if ys are equivalent, sort by x
+	var sorted = points.slice().sort((a,b) =>
+		(Math.abs(a[1]-b[1]) < epsilon
+			? a[0] - b[0]
+			: a[1] - b[1]))
+	var hull = [];
+	hull.push(sorted[0]);
+	// the current direction the perimeter walker is facing
+	var ang = 0;  
+	var infiniteLoop = 0;
+	do{
+		infiniteLoop++;
+		var h = hull.length-1;
+		var angles = sorted
+			// remove all points in the same location from this search
+			.filter(el => 
+				!( Math.abs(el[0] - hull[h][0]) < epsilon
+				&& Math.abs(el[1] - hull[h][1]) < epsilon))
+			// sort by angle, setting lowest values next to "ang"
+			.map(el => {
+				var angle = Math.atan2(hull[h][1] - el[1], hull[h][0] - el[0]);
+				while(angle < ang){ angle += Math.PI*2; }
+				return {node:el, angle:angle, distance:undefined};
+			})  // distance to be set later
+			.sort((a,b) => (a.angle < b.angle)?-1:(a.angle > b.angle)?1:0);
+		if(angles.length === 0){ return undefined; }
+		// narrowest-most right turn
+		var rightTurn = angles[0];
+		// collect all other points that are collinear along the same ray
+		angles = angles.filter(el => Math.abs(rightTurn.angle - el.angle) < epsilon)
+		// sort collinear points by their distances from the connecting point
+		.map(el => { 
+			var distance = Math.sqrt(Math.pow(hull[h][0]-el.node[0], 2) + Math.pow(hull[h][1]-el.node[1], 2));
+			el.distance = distance;
+			return el;
+		})
+		// (OPTION 1) exclude all collinear points along the hull 
+		.sort((a,b) => (a.distance < b.distance)?1:(a.distance > b.distance)?-1:0);
+		// (OPTION 2) include all collinear points along the hull
+		// .sort(function(a,b){return (a.distance < b.distance)?-1:(a.distance > b.distance)?1:0});
+		// if the point is already in the convex hull, we've made a loop. we're done
+		// if(contains(hull, angles[0].node)){
+		// if(includeCollinear){
+		// 	points.sort(function(a,b){return (a.distance - b.distance)});
+		// } else{
+		// 	points.sort(function(a,b){return b.distance - a.distance});
+		// }
+
+		if(hull.filter(el => el === angles[0].node).length > 0){
+			return hull;
+		}
+		// add point to hull, prepare to loop again
+		hull.push(angles[0].node);
+		// update walking direction with the angle to the new point
+		ang = Math.atan2( hull[h][1] - angles[0].node[1], hull[h][0] - angles[0].node[0]);
+	}while(infiniteLoop < INFINITE_LOOP);
+	return undefined;
+}
+
 export function axiom1(a, b) {
 	// n-dimension
 	return [a, a.map((_,i) => b[i] - a[i])];
