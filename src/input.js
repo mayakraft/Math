@@ -119,7 +119,17 @@ export function get_two_vec2(){
 
 export function get_array_of_vec2(){
 	// todo
+	let params = Array.from(arguments);
 	let arrays = params.filter((param) => param.constructor === Array);
-	return arrays;
+	if(arrays.length >= 2 && !isNaN(arrays[0][0])){
+		return arrays;
+	}
+	if(arrays.length == 1 && arrays[0].length >= 1){
+		return arrays[0];
+	}
+	// if(arrays[0] != null && arrays[0].length >= 2 && arrays[0][0] != null && !isNaN(arrays[0][0][0])){
+	// 	return arrays[0];
+	// }
+	return params;
 }
 

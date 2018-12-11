@@ -5,7 +5,7 @@
 // all infinite lines are defined as point and vector, both [x,y]
 // all polygons are an ordered set of points ([x,y]), either winding direction
 
-import { line_line } from './intersection'
+import { line_line, point_on_line, line_edge_exclusive } from './intersection'
 
 export const EPSILON_LOW  = 3e-6;
 export const EPSILON      = 1e-10;
@@ -19,6 +19,7 @@ export const EPSILON_HIGH = 1e-14;
  */
 export function normalize(v) {
 	let m = magnitude(v);
+	// todo: do we need to intervene for a divide by 0?
 	return v.map(c => c / m);
 }
 
@@ -275,11 +276,11 @@ export function convex_hull(points, include_collinear = false, epsilon = EPSILON
 		// collect all other points that are collinear along the same ray
 		angles = angles.filter(el => Math.abs(rightTurn.angle - el.angle) < epsilon)
 		// sort collinear points by their distances from the connecting point
-		.map(el => { 
-			var distance = Math.sqrt(Math.pow(hull[h][0]-el.node[0], 2) + Math.pow(hull[h][1]-el.node[1], 2));
-			el.distance = distance;
-			return el;
-		})
+			.map(el => { 
+				var distance = Math.sqrt(Math.pow(hull[h][0]-el.node[0], 2) + Math.pow(hull[h][1]-el.node[1], 2));
+				el.distance = distance;
+				return el;
+			})
 		// (OPTION 1) exclude all collinear points along the hull 
 		.sort((a,b) => (a.distance < b.distance)?1:(a.distance > b.distance)?-1:0);
 		// (OPTION 2) include all collinear points along the hull
@@ -299,8 +300,66 @@ export function convex_hull(points, include_collinear = false, epsilon = EPSILON
 		hull.push(angles[0].node);
 		// update walking direction with the angle to the new point
 		ang = Math.atan2( hull[h][1] - angles[0].node[1], hull[h][0] - angles[0].node[0]);
-	}while(infiniteLoop < INFINITE_LOOP);
+	} while(infiniteLoop < INFINITE_LOOP);
 	return undefined;
+}
+
+export function split_convex_polygon(poly, linePoint, lineVector){
+	let vertices_length = poly.length;
+
+	//    point: intersection [x,y] point or null if no intersection
+	// at_index: where in the polygon this occurs
+	let vertices_intersections = poly.map((v,i) => {
+		let intersection = point_on_line(linePoint, lineVector, v);
+		return { point: intersection ? v : null, at_index: i };
+	}).filter(el => el.point != null);
+	let edges_intersections = poly.map((v,i,arr) => {
+		let intersection = line_edge_exclusive(linePoint, lineVector, v, arr[(i+1)%arr.length])
+		return { point: intersection, at_index: i };
+	}).filter(el => el.point != null);
+
+	// three cases: intersection at 2 edges, 2 points, 1 edge and 1 point
+	if(edges_intersections.length == 2){
+		let sorted_edges = edges_intersections.slice()
+			.sort((a,b) => a.at_index - b.at_index);
+
+		let face_a = poly
+			.slice(sorted_edges[1].at_index+1)
+			.concat(poly.slice(0, sorted_edges[0].at_index+1))
+		face_a.push(sorted_edges[0].point);
+		face_a.push(sorted_edges[1].point);
+
+		let face_b = poly
+			.slice(sorted_edges[0].at_index+1, sorted_edges[1].at_index+1);
+		face_b.push(sorted_edges[1].point);
+		face_b.push(sorted_edges[0].point);
+		return [face_a, face_b];
+	} else if(edges_intersections.length == 1 && vertices_intersections.length == 1){
+		vertices_intersections[0]["type"] = "v";
+		edges_intersections[0]["type"] = "e";
+		let sorted_geom = vertices_intersections.concat(edges_intersections)
+			.sort((a,b) => a.at_index - b.at_index);
+
+		let face_a = poly.slice(sorted_geom[1].at_index+1)
+			.concat(poly.slice(0, sorted_geom[0].at_index+1))
+		if(sorted_geom[0].type === "e"){ face_a.push(sorted_geom[0].point); }
+		face_a.push(sorted_geom[1].point);
+
+		let face_b = poly
+			.slice(sorted_geom[0].at_index+1, sorted_geom[1].at_index+1);
+		if(sorted_geom[1].type === "e"){ face_b.push(sorted_geom[1].point); }
+		face_b.push(sorted_geom[0].point);
+		return [face_a, face_b];
+	} else if(vertices_intersections.length == 2){
+		let sorted_vertices = vertices_intersections.slice()
+			.sort((a,b) => a.at_index - b.at_index);
+		let face_a = poly
+			.slice(sorted_vertices[1].at_index)
+			.concat(poly.slice(0, sorted_vertices[0].at_index+1))
+		let face_b = poly
+			.slice(sorted_vertices[0].at_index, sorted_vertices[1].at_index+1);
+		return [face_a, face_b];
+	}
 }
 
 export function axiom1(a, b) {

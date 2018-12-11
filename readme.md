@@ -12,7 +12,7 @@ include `geometry.js`
 <script src="geometry.js"></script>
 ```
 
-I sometimes have this built in either **umd** or **es** modules. **umd** is more reliable for the above case. this is specified in `rollup.config.js`.
+I sometimes have this built in either **umd** or **es** modules. you probably want **umd**, **es** is for including in modules. this setting is defined in `rollup.config.js`.
 
 Build a module yourself: `rollup -c`
 

@@ -163,8 +163,8 @@ export function polygons_overlap(ps1, ps2){
 export function clip_line_in_poly(poly, linePoint, lineVector){
 	let intersections = poly
 		.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // poly points into edge pairs
-		.map(function(el){ return line_edge_intersection(linePoint, lineVector, el[0], el[1]); })
-		.filter(function(el){return el != undefined; });
+		.map(el => line_edge(linePoint, lineVector, el[0], el[1]))
+		.filter(el => el != null);
 	switch(intersections.length){
 	case 0: return undefined;
 	case 1: return [intersections[0], intersections[0]]; // degenerate edge

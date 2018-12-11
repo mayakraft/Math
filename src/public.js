@@ -152,6 +152,10 @@ export function Vector() {
 		for(var i = sm.length; i < lg.length; i++){ sm[i] = 0; }
 		return Vector(lg.map((_,i) => (sm[i] + lg[i]) * 0.5));
 	}
+	const bisect = function(vector){
+		let vec = Input.get_vec(vector);
+		return Core.bisect_vectors(_v, vec);
+	}
 
 	return Object.freeze( {
 		normalize,
@@ -172,6 +176,7 @@ export function Vector() {
 		isParallel,
 		scale,
 		midpoint,
+		bisect,
 		get vector() { return _v; },
 		get x() { return _v[0]; },
 		get y() { return _v[1]; },
@@ -292,7 +297,7 @@ export function Polygon(){
 	const signedArea = function(){
 		return 0.5 * _points.map((el,i,arr) => {
 			var next = arr[(i+1)%arr.length];
-			return el.x * next.y - next.x * el.y;
+			return el[0] * next[1] - next[0] * el[1];
 		})
 		.reduce((a, b) => a + b, 0);
 	}
@@ -304,8 +309,8 @@ export function Polygon(){
 	const centroid = function(){
 		return _points.map((el,i,arr) => {
 			var next = arr[(i+1)%arr.length];
-			var mag = el.x * next.y - next.x * el.y;
-			return Vector( (el.x+next.x)*mag, (el.y+next.y)*mag );
+			var mag = el[0] * next[1] - next[0] * el[1];
+			return Vector( (el[0]+next[0])*mag, (el[1]+next[1])*mag );
 		})
 		.reduce((prev, curr) => prev.add(curr), Vector(0,0))
 		.scale(1/(6 * this.signedArea(_points)));
@@ -318,12 +323,12 @@ export function Polygon(){
 	const center = function(){
 		// this is not an average / means
 		var xMin = Infinity, xMax = 0, yMin = Infinity, yMax = 0;
-		for(var i = 0; i < _points.length; i++){ 
-			if(_points[i].x > xMax){ xMax = _points[i].x; }
-			if(_points[i].x < xMin){ xMin = _points[i].x; }
-			if(_points[i].y > yMax){ yMax = _points[i].y; }
-			if(_points[i].y < yMin){ yMin = _points[i].y; }
-		}
+		_points.forEach(p => {
+			if(p[0] > xMax){ xMax = p[0]; }
+			if(p[0] < xMin){ xMin = p[0]; }
+			if(p[1] > yMax){ yMax = p[1]; }
+			if(p[1] < yMin){ yMin = p[1]; }
+		});
 		return Vector( xMin+(xMax-xMin)*0.5, yMin+(yMax-yMin)*0.5 );
 	}
 	/** Tests whether or not a point is contained inside a polygon. This is counting on the polygon to be convex.
@@ -335,8 +340,8 @@ export function Polygon(){
 		var isInside = false;
 		// http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 		for(var i = 0, j = _points.length - 1; i < _points.length; j = i++) {
-			if( (_points[i].y > point.y) != (_points[j].y > point.y) &&
-			point.x < (_points[j].x - _points[i].x) * (point.y - _points[i].y) / (_points[j].y - _points[i].y) + _points[i].x ) {
+			if( (_points[i][1] > point[1]) != (_points[j][1] > point[1]) &&
+			point[0] < (_points[j][0] - _points[i][0]) * (point[1] - _points[i][1]) / (_points[j][1] - _points[i][1]) + _points[i][0] ) {
 				isInside = !isInside;
 			}
 		}
@@ -375,22 +380,9 @@ export function Polygon(){
 				}
 		}
 	}
-	const clipLine = function(line){
-		var intersections = this.edges
-			.map(function(el){ return intersectionLineEdge(line, el); })
-			.filter(function(el){return el !== undefined; });
-		switch(intersections.length){
-			case 0: return undefined;
-			case 1: return new Edge(intersections[0], intersections[0]); // degenerate edge
-			case 2: return new Edge(intersections[0], intersections[1]);
-			// default: throw "clipping line in a convex polygon resulting in 3 or more points";
-			default:
-				for(var i = 1; i < intersections.length; i++){
-					if( !intersections[0].equivalent(intersections[i]) ){
-						return new Edge(intersections[0], intersections[i]);
-					}
-				}
-		}
+	const clipLine = function(){
+		let line = Input.get_line(...arguments);
+		return Intersection.clip_line_in_poly(_points, line.point, line.vector);
 	}
 	const clipRay = function(ray){
 		var intersections = this.edges
@@ -412,10 +404,10 @@ export function Polygon(){
 	const enclosingRectangle = function(){
 		var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
 		_points.forEach(p => {
-			if(p.x > maxX){ maxX = p.x; }
-			if(p.x < minX){ minX = p.x; }
-			if(p.y > maxY){ maxY = p.y; }
-			if(p.y < minY){ minY = p.y; }
+			if(p[0] > maxX){ maxX = p[0]; }
+			if(p[0] < minX){ minX = p[0]; }
+			if(p[1] > maxY){ maxY = p[1]; }
+			if(p[1] < minY){ minY = p[1]; }
 		});
 		return Rect(minX, minY, maxX-minX, maxY-minY);
 	}
@@ -439,9 +431,15 @@ export function Polygon(){
 	// 	return false;
 	// }
 	return Object.freeze( {
-
-
-
+		signedArea,
+		centroid,
+		center,
+		contains,
+		clipEdge,
+		clipLine,
+		clipRay,
+		enclosingRectangle,
+		get points() { return _points; },
 	} );
 }
 
@@ -469,61 +467,8 @@ export function Polygon(){
 Polygon.convexHull = function(points, includeCollinear = false){
 	// validate input
 	if(points == null || points.length === 0){ return undefined; }
-	// # points in the convex hull before escaping function
-	var INFINITE_LOOP = 10000;
-	// sort points by x and y
-	var sorted = points.slice().sort(function(a,b){
-		if(epsilonEqual(a.y, b.y, EPSILON_HIGH)){ return a.x - b.x; }
-		return a.y - b.y;
-	});
-	var hull = [];
-	hull.push(sorted[0]);
-	// the current direction the perimeter walker is facing
-	var ang = 0;  
-	var infiniteLoop = 0;
-	do{
-		infiniteLoop++;
-		var h = hull.length-1;
-		var angles = sorted
-			// remove all points in the same location from this search
-			.filter(function(el){ 
-				return !(epsilonEqual(el.x, hull[h].x, EPSILON_HIGH) && epsilonEqual(el.y, hull[h].y, EPSILON_HIGH)) })
-			// sort by angle, setting lowest values next to "ang"
-			.map(function(el){
-				var angle = Math.atan2(hull[h].y - el.y, hull[h].x - el.x);
-				while(angle < ang){ angle += Math.PI*2; }
-				return {node:el, angle:angle, distance:undefined}; })  // distance to be set later
-			.sort(function(a,b){return (a.angle < b.angle)?-1:(a.angle > b.angle)?1:0});
-		if(angles.length === 0){ return undefined; }
-		// narrowest-most right turn
-		var rightTurn = angles[0];
-		// collect all other points that are collinear along the same ray
-		angles = angles.filter(function(el){ return epsilonEqual(rightTurn.angle, el.angle, EPSILON_LOW); })
-		// sort collinear points by their distances from the connecting point
-		.map(function(el){ 
-			var distance = Math.sqrt(Math.pow(hull[h].x-el.node.x, 2) + Math.pow(hull[h].y-el.node.y, 2));
-			el.distance = distance;
-			return el;})
-		// (OPTION 1) exclude all collinear points along the hull 
-		.sort(function(a,b){return (a.distance < b.distance)?1:(a.distance > b.distance)?-1:0});
-		// (OPTION 2) include all collinear points along the hull
-		// .sort(function(a,b){return (a.distance < b.distance)?-1:(a.distance > b.distance)?1:0});
-		// if the point is already in the convex hull, we've made a loop. we're done
-		// if(contains(hull, angles[0].node)){
-		// if(includeCollinear){
-		// 	points.sort(function(a,b){return (a.distance - b.distance)});
-		// } else{
-		// 	points.sort(function(a,b){return b.distance - a.distance});
-		// }
-
-
-		if(hull.filter(function(el){return el === angles[0].node; }).length > 0){
-			return Polygon.withPoints(hull);
-		}
-		// add point to hull, prepare to loop again
-		hull.push(angles[0].node);
-		// update walking direction with the angle to the new point
-		ang = Math.atan2( hull[h].y - angles[0].node.y, hull[h].x - angles[0].node.x);
-	}while(infiniteLoop < INFINITE_LOOP);
-	return undefined;
+	let hull = Core.convex_hull(points);
+	return Polygon(hull);
 }
+
+
