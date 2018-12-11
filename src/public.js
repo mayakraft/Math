@@ -411,25 +411,27 @@ export function Polygon(){
 		});
 		return Rect(minX, minY, maxX-minX, maxY-minY);
 	}
-	/** deep copy this object and all its contents */
-	// const copy = function(){
-	// 	var p = new Polygon();
-	// 	p.edges = this.edges.map(function(e){
-	// 		return Edge(e.nodes[0].x, e.nodes[0].y, e.nodes[1].x, e.nodes[1].y);
-	// 	});
-	// 	return p;
-	// }
 
-	// const overlaps = function(poly){
-	// 	for(var i = 0; i < this.edges.length; i++){
-	// 		for(var j = 0; j < poly.edges.length; j++){
-	// 			if(intersectionEdgeEdge(this.edges[i], poly.edges[j]) != undefined){ return true; }
-	// 		}
-	// 	}
-	// 	if(this.contains(poly.edges[0].node[0])){ return true; }
-	// 	if(poly.contains(this.edges[0].node[0])){ return true; }
-	// 	return false;
-	// }
+	const scale = function(magnitude, centerPoint){
+		if(centerPoint == null){ centerPoint = centroid(); }
+		let newPoints = _points.map(p => {
+			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
+			return [centerPoint[0] + vec[0]*magnitude, centerPoint[0] + vec[0]*magnitude];
+
+		});
+	}
+
+	const split = function(){
+		let line = Input.get_line(...arguments);
+		return Core.split_convex_polygon(_points, line.point, line.vector)
+			.map(poly => Polygon(poly));
+	}
+
+	const overlaps = function(poly) {
+		let points = Input.get_array_of_vec(...arguments);
+		return Intersection.polygons_overlap(_points, points);
+	}
+
 	return Object.freeze( {
 		signedArea,
 		centroid,
@@ -439,6 +441,8 @@ export function Polygon(){
 		clipLine,
 		clipRay,
 		enclosingRectangle,
+		split,
+		overlaps,
 		get points() { return _points; },
 	} );
 }

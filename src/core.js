@@ -305,7 +305,8 @@ export function convex_hull(points, include_collinear = false, epsilon = EPSILON
 }
 
 export function split_convex_polygon(poly, linePoint, lineVector){
-	let vertices_length = poly.length;
+	// todo: should this return undefined if no intersection? 
+	//       or the original poly?
 
 	//    point: intersection [x,y] point or null if no intersection
 	// at_index: where in the polygon this occurs
@@ -360,6 +361,7 @@ export function split_convex_polygon(poly, linePoint, lineVector){
 			.slice(sorted_vertices[0].at_index, sorted_vertices[1].at_index+1);
 		return [face_a, face_b];
 	}
+	return [poly.slice()];
 }
 
 export function axiom1(a, b) {

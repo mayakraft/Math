@@ -140,7 +140,7 @@ export function polygons_overlap(ps1, ps2){
 	let e2 = ps2.map((p,i,arr) => [p, arr[(i+1)%arr.length]] )
 	for(let i = 0; i < e1.length; i++){
 		for(let j = 0; j < e2.length; j++){
-			if(edge_edge_intersection(e1[i][0], e1[i][1], e2[j][0], e2[j][1]) != undefined){
+			if(edge_edge(e1[i][0], e1[i][1], e2[j][0], e2[j][1]) != undefined){
 				return true;
 			}
 		}
