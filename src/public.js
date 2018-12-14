@@ -287,7 +287,7 @@ export function Circle(){
 
 export function Polygon(){
 
-	let _points = Input.get_array_of_vec2(...arguments);
+	let _points = Input.get_array_of_vec(...arguments);
 
 	/** Calculates the signed area of a polygon. This requires the polygon be non-intersecting.
 	 * @returns {number} the area of the polygon
@@ -417,8 +417,22 @@ export function Polygon(){
 		let newPoints = _points.map(p => {
 			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
 			return [centerPoint[0] + vec[0]*magnitude, centerPoint[0] + vec[0]*magnitude];
-
 		});
+		return Polygon(newPoints);
+	}
+
+	const rotate = function(angle, centerPoint){
+		if(centerPoint == null){ centerPoint = centroid(); }
+		let newPoints = _points.map(p => {
+			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
+			let mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
+			let a = Math.atan2(vec[1], vec[0]);
+			return [
+				centerPoint[0] + Math.cos(a+angle) * mag, 
+				centerPoint[1] + Math.sin(a+angle) * mag
+			];
+		});
+		return Polygon(newPoints);
 	}
 
 	const split = function(){
@@ -443,6 +457,8 @@ export function Polygon(){
 		enclosingRectangle,
 		split,
 		overlaps,
+		scale,
+		rotate,
 		get points() { return _points; },
 	} );
 }
@@ -455,19 +471,17 @@ export function Polygon(){
 // 	},this);
 // 	return poly;
 // }
-// Polygon.regularPolygon = function(sides){
-// 	var halfwedge = 2*Math.PI/sides * 0.5;
-// 	var radius = Math.cos(halfwedge);
-// 	var points = [];
-// 	for(var i = 0; i < sides; i++){
-// 		var a = -2 * Math.PI * i / sides + halfwedge;
-// 		var x = cleanNumber(radius * Math.sin(a), 14);
-// 		var y = cleanNumber(radius * Math.cos(a), 14);
-// 		points.push( new XY(x, y) ); // align point along Y
-// 	}
-// 	this.setEdgesFromPoints(points);
-// 	return this;
-// }
+Polygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1){
+	var halfwedge = 2*Math.PI/sides * 0.5;
+	var r = radius / Math.cos(halfwedge);
+	var points = Array.from(Array(Math.floor(sides))).map((_,i) => {
+		var a = -2 * Math.PI * i / sides + halfwedge;
+		var px = Input.clean_number(x + r * Math.sin(a), 14);
+		var py = Input.clean_number(y + r * Math.cos(a), 14);
+		return [px, py]; // align point along Y
+	})
+	return Polygon(points);
+}
 Polygon.convexHull = function(points, includeCollinear = false){
 	// validate input
 	if(points == null || points.length === 0){ return undefined; }

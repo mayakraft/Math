@@ -119,8 +119,8 @@ export function get_two_vec2(){
 export function get_array_of_vec(){
 	let params = Array.from(arguments);
 	let arrays = params.filter((param) => param.constructor === Array);
-	if(arrays.length > 0 && arrays[0].length > 0 && !isNaN(arrays[0][0])){
-		return arrays;
+	if(arrays.length == 1 && arrays[0].length > 0 && arrays[0][0].length > 0 && !isNaN(arrays[0][0][0])){
+		return arrays[0];
 	}
 	if(params[0].constructor === Object){
 		if (params[0].points != null){
