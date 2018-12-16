@@ -10,6 +10,7 @@ export function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, l
 	let face_edges = graph.faces_edges[faceIndex];
 
 	let diff = {
+		edges: {}
 	// 	changedVertices,
 	// 	changedEdges,
 	// 	did the face change?
@@ -33,7 +34,7 @@ export function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, l
 		.map(ei => edges_vertices[ei])
 		.map(edge => edge.map(e => vertices_coords[e]))
 		.map(edge => line_edge_exclusive(linePoint, lineVector, edge[0], edge[1]))
-		.map((point, i) => ({point: point, at_index: i }))
+		.map((point, i) => ({point: point, at_index: i, at_real_index: face_edges[i] }))
 		.filter(el => el.point != null);
 
 	// in the case of edges_intersections, we have new vertices, edges, and faces
@@ -43,7 +44,6 @@ export function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, l
 		diff.vertices.new = edges_intersections.map(el => el.point)
 	}
 	if(edges_intersections.length > 0){
-		diff.edges = {};
 		diff.edges.replace = edges_intersections
 			.map((el, i) => {
 				let newEdges = [
@@ -51,13 +51,14 @@ export function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, l
 					[vertices_coords.length + i, edges_vertices[face_edges[el.at_index]][1]]
 				];
 				return {
-					old_index: el.at_index,
+					// old_index: el.at_index,
+					old_index: el.at_real_index,
 					new: newEdges
 				};
 			});
 	}
 
-	let face_a, face_b;
+	let face_a, face_b, new_edge;
 	// three cases: intersection at 2 edges, 2 points, 1 edge and 1 point
 	if(edges_intersections.length == 2){
 		let in_order = (edges_intersections[0].at_index < edges_intersections[1].at_index);
@@ -80,6 +81,7 @@ export function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, l
 		face_b = face_vertices
 			.slice(sorted_edges[0].at_index+1, sorted_edges[1].at_index+1)
 			.concat(face_b_vertices_end);
+		new_edge = [vertices_coords.length, vertices_coords.length+1];
 
 	} else if(edges_intersections.length == 1 && vertices_intersections.length == 1){
 		vertices_intersections[0]["type"] = "v";
@@ -94,16 +96,13 @@ export function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, l
 			? [vertices_coords.length, sorted_geom[0].at_index]
 			: [vertices_coords.length];
 
-		console.log("face_a_vertices_end", face_a_vertices_end);
-		console.log("face_b_vertices_end", face_b_vertices_end);
-		
 		face_a = face_vertices.slice(sorted_geom[1].at_index+1)
 			.concat(face_vertices.slice(0, sorted_geom[0].at_index+1))
 			.concat(face_a_vertices_end);
-
 		face_b = face_vertices
 			.slice(sorted_geom[0].at_index+1, sorted_geom[1].at_index+1)
 			.concat(face_b_vertices_end);
+		new_edge = [vertices_intersections[0].at_index, vertices_coords.length];
 
 	} else if(vertices_intersections.length == 2){
 		let sorted_vertices = vertices_intersections.slice()
@@ -113,20 +112,23 @@ export function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, l
 			.concat(face_vertices.slice(0, sorted_vertices[0].at_index+1))
 		face_b = face_vertices
 			.slice(sorted_vertices[0].at_index, sorted_vertices[1].at_index+1);
+		new_edge = sorted_vertices.map(el => el.at_index);
+
 	}
+	diff.edges.new = [new_edge];
 	diff.faces = {};
-	diff.faces.replace = {
+	diff.faces.replace = [{
 		old_index: faceIndex,
 		new: [face_a, face_b]
-	}
+	}];
 	return diff;
 }
 
 
-export function applyDiff(graph, diff){
+// export function applyDiff(graph, diff){
 
-}
+// }
 
-export function replaceEdge(graph, replace){
+// export function replaceEdge(graph, replace){
 
-}
+// }

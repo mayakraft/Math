@@ -14,7 +14,7 @@
 import * as Core from './core';
 import * as Input from './input';
 import * as Intersection from './intersection';
-import * as fold from './graph';
+import * as graph from './graph';
 
 // export * from './intersection';
 let intersection = Intersection;
@@ -24,7 +24,7 @@ let input = Input;
 export { intersection }
 export { core };
 export { input };
-export { fold }
+export { graph }
 
 /** 
  * 2D Matrix (2x3) with translation component in x,y

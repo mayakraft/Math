@@ -114,6 +114,9 @@ export function get_two_vec2(){
 	if(arrays.length >= 2 && !isNaN(arrays[0][0])){
 		return arrays;
 	}
+	if(arrays.length == 1 && !isNaN(arrays[0][0][0])){
+		return arrays[0];
+	}
 }
 
 export function get_array_of_vec(){

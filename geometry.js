@@ -835,6 +835,9 @@ function get_two_vec2(){
 	if(arrays.length >= 2 && !isNaN(arrays[0][0])){
 		return arrays;
 	}
+	if(arrays.length == 1 && !isNaN(arrays[0][0][0])){
+		return arrays[0];
+	}
 }
 
 function get_array_of_vec(){
@@ -886,6 +889,7 @@ function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, lineVect
 	let face_edges = graph.faces_edges[faceIndex];
 
 	let diff = {
+		edges: {}
 	// 	changedVertices,
 	// 	changedEdges,
 	// 	did the face change?
@@ -909,7 +913,7 @@ function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, lineVect
 		.map(ei => edges_vertices[ei])
 		.map(edge => edge.map(e => vertices_coords[e]))
 		.map(edge => line_edge_exclusive(linePoint, lineVector, edge[0], edge[1]))
-		.map((point, i) => ({point: point, at_index: i }))
+		.map((point, i) => ({point: point, at_index: i, at_real_index: face_edges[i] }))
 		.filter(el => el.point != null);
 
 	// in the case of edges_intersections, we have new vertices, edges, and faces
@@ -919,7 +923,6 @@ function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, lineVect
 		diff.vertices.new = edges_intersections.map(el => el.point);
 	}
 	if(edges_intersections.length > 0){
-		diff.edges = {};
 		diff.edges.replace = edges_intersections
 			.map((el, i) => {
 				let newEdges = [
@@ -927,13 +930,14 @@ function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, lineVect
 					[vertices_coords.length + i, edges_vertices[face_edges[el.at_index]][1]]
 				];
 				return {
-					old_index: el.at_index,
+					// old_index: el.at_index,
+					old_index: el.at_real_index,
 					new: newEdges
 				};
 			});
 	}
 
-	let face_a, face_b;
+	let face_a, face_b, new_edge;
 	// three cases: intersection at 2 edges, 2 points, 1 edge and 1 point
 	if(edges_intersections.length == 2){
 		let in_order = (edges_intersections[0].at_index < edges_intersections[1].at_index);
@@ -956,6 +960,7 @@ function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, lineVect
 		face_b = face_vertices
 			.slice(sorted_edges[0].at_index+1, sorted_edges[1].at_index+1)
 			.concat(face_b_vertices_end);
+		new_edge = [vertices_coords.length, vertices_coords.length+1];
 
 	} else if(edges_intersections.length == 1 && vertices_intersections.length == 1){
 		vertices_intersections[0]["type"] = "v";
@@ -970,16 +975,13 @@ function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, lineVect
 			? [vertices_coords.length, sorted_geom[0].at_index]
 			: [vertices_coords.length];
 
-		console.log("face_a_vertices_end", face_a_vertices_end);
-		console.log("face_b_vertices_end", face_b_vertices_end);
-		
 		face_a = face_vertices.slice(sorted_geom[1].at_index+1)
 			.concat(face_vertices.slice(0, sorted_geom[0].at_index+1))
 			.concat(face_a_vertices_end);
-
 		face_b = face_vertices
 			.slice(sorted_geom[0].at_index+1, sorted_geom[1].at_index+1)
 			.concat(face_b_vertices_end);
+		new_edge = [vertices_intersections[0].at_index, vertices_coords.length];
 
 	} else if(vertices_intersections.length == 2){
 		let sorted_vertices = vertices_intersections.slice()
@@ -989,28 +991,29 @@ function split_convex_polygon_combinatoric(graph, faceIndex, linePoint, lineVect
 			.concat(face_vertices.slice(0, sorted_vertices[0].at_index+1));
 		face_b = face_vertices
 			.slice(sorted_vertices[0].at_index, sorted_vertices[1].at_index+1);
+		new_edge = sorted_vertices.map(el => el.at_index);
+
 	}
+	diff.edges.new = [new_edge];
 	diff.faces = {};
-	diff.faces.replace = {
+	diff.faces.replace = [{
 		old_index: faceIndex,
 		new: [face_a, face_b]
-	};
+	}];
 	return diff;
 }
 
 
-function applyDiff(graph, diff){
+// export function applyDiff(graph, diff){
 
-}
+// }
 
-function replaceEdge(graph, replace){
+// export function replaceEdge(graph, replace){
 
-}
+// }
 
 var graph = /*#__PURE__*/Object.freeze({
-	split_convex_polygon_combinatoric: split_convex_polygon_combinatoric,
-	applyDiff: applyDiff,
-	replaceEdge: replaceEdge
+	split_convex_polygon_combinatoric: split_convex_polygon_combinatoric
 });
 
 /**
@@ -1490,4 +1493,4 @@ Polygon.convexHull = function(points, includeCollinear = false){
 	return Polygon(hull);
 };
 
-export { intersection, core, input, graph as fold, Matrix, Vector, Line, Ray, Edge$1 as Edge, Circle, Polygon };
+export { intersection, core, input, graph, Matrix, Vector, Line, Ray, Edge$1 as Edge, Circle, Polygon };
