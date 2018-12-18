@@ -344,12 +344,12 @@ export function split_convex_polygon(poly, linePoint, lineVector){
 		let face_a = poly.slice(sorted_geom[1].at_index+1)
 			.concat(poly.slice(0, sorted_geom[0].at_index+1))
 		if(sorted_geom[0].type === "e"){ face_a.push(sorted_geom[0].point); }
-		face_a.push(sorted_geom[1].point);
+		face_a.push(sorted_geom[1].point); // todo: if there's a bug, it's here. switch this
 
 		let face_b = poly
 			.slice(sorted_geom[0].at_index+1, sorted_geom[1].at_index+1);
 		if(sorted_geom[1].type === "e"){ face_b.push(sorted_geom[1].point); }
-		face_b.push(sorted_geom[0].point);
+		face_b.push(sorted_geom[0].point); // todo: if there's a bug, it's here. switch this
 		return [face_a, face_b];
 	} else if(vertices_intersections.length == 2){
 		let sorted_vertices = vertices_intersections.slice()

@@ -201,7 +201,7 @@ export function Line(){
 	} );
 }
 // static methods
-Line.makeBetweenPoints = function(){
+Line.withPoints = function(){
 	let points = Input.get_two_vec2(...arguments);
 	return Line({
 		point: points[0],
@@ -211,7 +211,7 @@ Line.makeBetweenPoints = function(){
 		])
 	});
 }
-Line.makePerpendicularBisector = function() {
+Line.perpendicularBisector = function() {
 	let points = Input.get_two_vec2(...arguments);
 	let vec = Core.normalize([
 		points[1][0] - points[0][0],
@@ -233,6 +233,17 @@ export function Ray(){
 		get point() { return point; },
 		get origin() { return point; },
 	} );
+}
+// static methods
+Ray.withPoints = function(){
+	let points = Input.get_two_vec2(...arguments);
+	return Ray({
+		point: points[0],
+		vector: Core.normalize([
+			points[1][0] - points[0][0],
+			points[1][1] - points[0][1]
+		])
+	});
 }
 
 
@@ -387,21 +398,8 @@ export function Polygon(){
 		return Intersection.clip_line_in_poly(_points, line.point, line.vector);
 	}
 	const clipRay = function(ray){
-		var intersections = this.edges
-			.map(function(el){ return intersectionRayEdge(ray, el); })
-			.filter(function(el){return el !== undefined; });
-		switch(intersections.length){
-			case 0: return undefined;
-			case 1: return new Edge(ray.origin, intersections[0]);
-			case 2: return new Edge(intersections[0], intersections[1]);
-			// default: throw "clipping ray in a convex polygon resulting in 3 or more points";
-			default:
-				for(var i = 1; i < intersections.length; i++){
-					if( !intersections[0].equivalent(intersections[i]) ){
-						return new Edge(intersections[0], intersections[i]);
-					}
-				}
-		}
+		let line = Input.get_line(...arguments);
+		return Intersection.clip_ray_in_poly(_points, line.point, line.vector);
 	}
 	const enclosingRectangle = function(){
 		var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;

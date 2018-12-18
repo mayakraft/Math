@@ -180,6 +180,24 @@ export function clip_line_in_poly(poly, linePoint, lineVector){
 	}
 }
 
+export function clip_ray_in_poly(poly, linePoint, lineVector) {
+	var intersections = poly
+		.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // poly points into edge pairs
+		.map(el => ray_edge(linePoint, lineVector, el[0], el[1]))
+		.filter(el => el != null);
+	switch(intersections.length){
+	case 0: return undefined;
+	case 1: return [linePoint, intersections[0]];
+	case 2: return intersections;
+	// default: throw "clipping ray in a convex polygon resulting in 3 or more points";
+	default:
+		for(let i = 1; i < intersections.length; i++){
+			if( !equivalent2(intersections[0], intersections[i])){
+				return [intersections[0], intersections[i]];
+			}
+		}
+	}
+}
 export function clipEdge(edge){
 	var intersections = this.edges
 		.map(function(el){ return intersectionEdgeEdge(edge, el); })
