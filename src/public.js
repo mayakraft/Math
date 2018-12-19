@@ -14,7 +14,6 @@
 import * as Core from './core';
 import * as Input from './input';
 import * as Intersection from './intersection';
-import * as graph from './graph';
 
 // export * from './intersection';
 let intersection = Intersection;
@@ -24,7 +23,6 @@ let input = Input;
 export { intersection }
 export { core };
 export { input };
-export { graph }
 
 /** 
  * 2D Matrix (2x3) with translation component in x,y
@@ -193,9 +191,20 @@ export function Line(){
 		let line = Input.get_line(...arguments);
 		return Core.parallel(vector, line.vector);
 	}
+	const transform = function(){
+		let mat = Input.get_matrix(...arguments);
+		// todo: a little more elegant of a solution, please
+		let norm = Core.normalize(vector);
+		let temp = point.map((p,i) => p + norm[i])
+		if(temp == null){ return; }
+		var p0 = Core.multiply_vector2_matrix2(point, mat);
+		var p1 = Core.multiply_vector2_matrix2(temp, mat);
+		return Line.withPoints([p0, p1]);
+	}
 
 	return Object.freeze( {
 		isParallel,
+		transform,
 		get vector() { return vector; },
 		get point() { return point; },
 	} );
