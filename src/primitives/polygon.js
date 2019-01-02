@@ -1,3 +1,6 @@
+import * as Input from '../input';
+import * as Geometry from '../core/geometry';
+import { Vector } from './vector';
 
 export function Polygon(){
 
@@ -27,7 +30,7 @@ export function Polygon(){
 			return Vector( (el[0]+next[0])*mag, (el[1]+next[1])*mag );
 		})
 		.reduce((prev, curr) => prev.add(curr), Vector(0,0))
-		.scale(1/(6 * this.signedArea(_points)));
+		.scale(1/(6 * signedArea(_points)));
 	}
 	/** Calculates the center of the bounding box made by the edges of the polygon.
 	 * @returns {XY} the location of the center of the bounding box
@@ -97,7 +100,7 @@ Polygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1){
 Polygon.convexHull = function(points, includeCollinear = false){
 	// validate input
 	if(points == null || points.length === 0){ return undefined; }
-	let hull = Core.convex_hull(points);
+	let hull = Geometry.convex_hull(points);
 	return Polygon(hull);
 }
 
@@ -193,7 +196,7 @@ export function ConvexPolygon(){
 
 	const split = function(){
 		let line = Input.get_line(...arguments);
-		return Core.split_convex_polygon(_points, line.point, line.vector)
+		return Geometry.split_convex_polygon(_points, line.point, line.vector)
 			.map(poly => Polygon(poly));
 	}
 

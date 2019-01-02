@@ -11,16 +11,18 @@
 // For now, this library is 2D.
 // however a lot of types and operations are built to function in n-dimensions.
 
-import * as Core from './core';
-import * as Input from './input';
-import * as Intersection from './intersection';
 
-// export * from './intersection';
-let intersection = Intersection;
-let core = Core;
-let input = Input;
+import * as algebra from './core/algebra';
+//import * as constants from './core/constants';
+import * as geometry from './core/geometry';
+import * as intersection from './core/intersection';
+import * as origami from './core/origami';
 
-export { intersection }
+let core = { algebra, geometry, intersection, origami };
+
 export { core };
-export { input };
 export { Vector } from './primitives/vector';
+export { Circle } from './primitives/circle';
+export { Polygon, ConvexPolygon } from './primitives/polygon';
+export { Matrix } from './primitives/matrix';
+export { Line, Ray, Edge } from './primitives/lines';

@@ -5,14 +5,301 @@
 	(factory((global.Geometry = {})));
 }(this, (function (exports) { 'use strict';
 
+	const EPSILON      = 1e-10;
+
+	// all points are array syntax [x,y]
+
+	///////////////////////////////////////////////////////////////////////////////
+	// the following operations neatly generalize for n-dimensions
+	//
+	/** @param [number]
+	 *  @returns [number]
+	 */
+	function normalize(v) {
+		let m = magnitude(v);
+		// todo: do we need to intervene for a divide by 0?
+		return v.map(c => c / m);
+	}
+
+	/** @param [number]
+	 *  @returns number
+	 */
+	function magnitude(v) {
+		let sum = v
+			.map(component => component * component)
+			.reduce((prev,curr) => prev + curr);
+		return Math.sqrt(sum);
+	}
+
+	/** @param [number]
+	 *  @returns boolean
+	 */
+	function degenerate(v){
+		return Math.abs(v.reduce((a, b) => a + b, 0)) < EPSILON;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+	// these *can* generalize to n-dimensions, but lengths of arguments must match
+	// if the second argument larger than the first it will ignore leftover components
+	//
+	function dot(a, b) {
+		return a
+			.map((ai,i) => ai * b[i])
+			.reduce((prev,curr) => prev + curr, 0);
+	}
+
+	function midpoint$1(a, b){
+		return a.map((ai,i) => (ai+b[i])*0.5);
+	}
+
+	function equivalent(a, b, epsilon = EPSILON){
+		// rectangular bounds test for fast calculation
+		return a
+			.map((ai,i) => Math.abs(ai - b[i]) < epsilon)
+			reduce((a,b) => a && b, true);
+	}
+
+	function parallel(a, b, epsilon = EPSILON){
+		return 1 - Math.abs(dot(normalize(a), normalize(b))) < epsilon;
+	}
+
+
+	///////////////////////////////////////////////////////////////////////////////
+	// everything else that follows is hard-coded to certain dimensions
+	//
+
+	/** There are 2 interior angles between 2 absolute angle measurements, from A to B return the clockwise one
+	 * @param {number} angle in radians, angle PI/2 is along the +Y axis
+	 * @returns {number} clockwise interior angle (from a to b) in radians
+	 */
+	function clockwise_angle2_radians(a, b){
+		// this is on average 50 to 100 times faster than clockwise_angle2
+		while(a < 0){ a += Math.PI*2; }
+		while(b < 0){ b += Math.PI*2; }
+		var a_b = a - b;
+		return (a_b >= 0)
+			? a_b
+			: Math.PI*2 - (b - a);
+	}
+	function counter_clockwise_angle2_radians(a, b){
+		// this is on average 50 to 100 times faster than counter_clockwise_angle2
+		while(a < 0){ a += Math.PI*2; }
+		while(b < 0){ b += Math.PI*2; }
+		var b_a = b - a;
+		return (b_a >= 0)
+			? b_a
+			: Math.PI*2 - (a - b);
+	}
+
+	/** There are 2 angles between 2 vectors, from A to B return the clockwise one.
+	 * @param {[number, number]} vector
+	 * @returns {number} clockwise angle (from a to b) in radians
+	 */
+	function clockwise_angle2(a, b){
+		var dotProduct = b[0]*a[0] + b[1]*a[1];
+		var determinant = b[0]*a[1] - b[1]*a[0];
+		var angle = Math.atan2(determinant, dotProduct);
+		if(angle < 0){ angle += Math.PI*2; }
+		return angle;
+	}
+	function counter_clockwise_angle2(a, b){
+		var dotProduct = a[0]*b[0] + a[1]*b[1];
+		var determinant = a[0]*b[1] - a[1]*b[0];
+		var angle = Math.atan2(determinant, dotProduct);
+		if(angle < 0){ angle += Math.PI*2; }
+		return angle;
+	}
+	/** There are 2 interior angles between 2 vectors, return both, the smaller first
+	 * @param {[number, number]} vector
+	 * @returns {[number, number]} 2 angle measurements between vectors
+	 */
+	function interior_angles2(a, b){
+		var interior1 = clockwise_angle2(a, b);
+		var interior2 = Math.PI*2 - interior1;
+		return (interior1 < interior2)
+			? [interior1, interior2]
+			: [interior2, interior1];
+	}
+	/** This bisects 2 vectors, returning both smaller and larger outside angle bisections [small, large]
+	 * @param {[number, number]} vector
+	 * @returns {[[number, number],[number, number]]} 2 vectors, the smaller angle first
+	 */
+	function bisect_vectors(a, b){
+		let aV = normalize(a);
+		let bV = normalize(b);
+		let sum = aV.map((_,i) => aV[i] + bV[i]);
+		let vecA = normalize( sum );
+		let vecB = aV.map((_,i) => -aV[i] + -bV[i]);
+		return [vecA, normalize(vecB)];
+	}
+
+	/** This bisects 2 lines
+	 * @param {[number, number]} all vectors, lines defined by points and vectors
+	 * @returns [ [number,number], [number,number] ] // line, defined as point, vector, in that order
+	 */
+	function bisect_lines2$1(pointA, vectorA, pointB, vectorB){
+		let denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
+		if(Math.abs(denominator) < EPSILON){ /* parallel */
+			return [midpoint$1(pointA, pointB), vectorA.slice()];
+		}
+		let vectorC = [pointB[0]-pointA[0], pointB[1]-pointA[1]];
+		// var numerator = vectorC[0] * vectorB[1] - vectorB[0] * vectorC[1];
+		let numerator = (pointB[0]-pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1]-pointA[1]);
+		var t = numerator / denominator;
+		let x = pointA[0] + vectorA[0]*t;
+		let y = pointA[1] + vectorA[1]*t;
+		var bisect = bisect_vectors(vectorA, vectorB);
+		bisects[1] = [ bisects[1][1], -bisects[1][0] ];
+		// swap to make smaller interior angle first
+		if(Math.abs(cross2(vectorA, bisects[1])) <
+		   Math.abs(cross2(vectorA, bisects[0]))) {
+			var swap = bisects[0];
+			bisects[0] = bisects[1];
+			bisects[1] = swap;
+		}
+		return bisects.map((el) => [[x,y], el]);
+	}
+
+	// todo: check the implementation above, if it works, delete this:
+
+	// export function bisect_lines2(pointA, vectorA, pointB, vectorB){
+	// 	if(parallel(vectorA, vectorB)){
+	// 		return [midpoint(pointA, pointB), vectorA.slice()];
+	// 	} else{
+	// 		var inter = Intersection.line_line(pointA, vectorA, pointB, vectorB);
+	// 		var bisect = bisect_vectors(vectorA, vectorB);
+	// 		bisects[1] = [ bisects[1][1], -bisects[1][0] ];
+	// 		// swap to make smaller interior angle first
+	// 		if(Math.abs(cross2(vectorA, bisects[1])) <
+	// 		   Math.abs(cross2(vectorA, bisects[0]))) {
+	// 			var swap = bisects[0];
+	// 			bisects[0] = bisects[1];
+	// 			bisects[1] = swap;
+	// 		}
+	// 		return bisects.map((el) => [inter, el]);
+	// 	}
+	// }
+
+	/** apply a matrix transform on a point */
+	function multiply_vector2_matrix2(vector, matrix){
+		return [ vector[0] * matrix[0] + vector[1] * matrix[2] + matrix[4],
+		         vector[0] * matrix[1] + vector[1] * matrix[3] + matrix[5] ];
+	}
+
+	/** 
+	 * These all standardize a row-column order
+	 */
+	function make_matrix2_reflection(vector, origin){
+		// the line of reflection passes through origin, runs along vector
+		let angle = Math.atan2(vector[1], vector[0]);
+		let cosAngle = Math.cos(angle);
+		let sinAngle = Math.sin(angle);
+		let _cosAngle = Math.cos(-angle);
+		let _sinAngle = Math.sin(-angle);
+		let a = cosAngle *  _cosAngle +  sinAngle * _sinAngle;
+		let b = cosAngle * -_sinAngle +  sinAngle * _cosAngle;
+		let c = sinAngle *  _cosAngle + -cosAngle * _sinAngle;
+		let d = sinAngle * -_sinAngle + -cosAngle * _cosAngle;
+		let tx = origin[0] + a * -origin[0] + -origin[1] * c;
+		let ty = origin[1] + b * -origin[0] + -origin[1] * d;
+		return [a, b, c, d, tx, ty];
+	}
+	function make_matrix2_rotation(angle, origin){
+		var a = Math.cos(angle);
+		var b = Math.sin(angle);
+		var c = -Math.sin(angle);
+		var d = Math.cos(angle);
+		var tx = (origin != null) ? origin[0] : 0;
+		var ty = (origin != null) ? origin[1] : 0;
+		return [a, b, c, d, tx, ty];
+	}
+	function make_matrix2_inverse(m){
+		var det = m[0] * m[3] - m[1] * m[2];
+		if (!det || isNaN(det) || !isFinite(m[4]) || !isFinite(m[5])){ return undefined; }
+		return [
+			m[3]/det,
+			-m[1]/det,
+			-m[2]/det,
+			m[0]/det, 
+			(m[2]*m[5] - m[3]*m[4])/det,
+			(m[1]*m[4] - m[0]*m[5])/det
+		];
+	}
+	function multiply_matrices2(m1, m2){
+		let a = m1[0] * m2[0] + m1[2] * m2[1];
+		let c = m1[0] * m2[2] + m1[2] * m2[3];
+		let tx = m1[0] * m2[4] + m1[2] * m2[5] + m1[4];
+		let b = m1[1] * m2[0] + m1[3] * m2[1];
+		let d = m1[1] * m2[2] + m1[3] * m2[3];
+		let ty = m1[1] * m2[4] + m1[3] * m2[5] + m1[5];
+		return [a, b, c, d, tx, ty];
+	}
+
+	// these are all hard-coded to certain vector lengths
+	// the length is specified by the number at the end of the function name
+
+	function cross2(a, b){
+		return [ a[0]*b[1], a[1]*b[0] ];
+	}
+
+	function cross3(a, b) {
+		return [
+			a[1]*b[2] - a[2]*b[1],
+			a[0]*b[2] - a[2]*b[0],
+			a[0]*b[1] - a[1]*b[0]
+		];
+	}
+
+	function distance2(a, b){
+		return Math.sqrt(
+			Math.pow(a[0] - b[0], 2) +
+			Math.pow(a[1] - b[1], 2)
+		);
+	}
+
+	function distance3(a, b) {
+		return Math.sqrt(
+			Math.pow(a[0] - b[0], 2) +
+			Math.pow(a[1] - b[1], 2) +
+			Math.pow(a[2] - b[2], 2)
+		);
+	}
+
+	// need to test:
+	// do two polygons overlap if they share a point in common? share an edge?
+
+	var algebra = /*#__PURE__*/Object.freeze({
+		normalize: normalize,
+		magnitude: magnitude,
+		degenerate: degenerate,
+		dot: dot,
+		midpoint: midpoint$1,
+		equivalent: equivalent,
+		parallel: parallel,
+		clockwise_angle2_radians: clockwise_angle2_radians,
+		counter_clockwise_angle2_radians: counter_clockwise_angle2_radians,
+		clockwise_angle2: clockwise_angle2,
+		counter_clockwise_angle2: counter_clockwise_angle2,
+		interior_angles2: interior_angles2,
+		bisect_vectors: bisect_vectors,
+		bisect_lines2: bisect_lines2$1,
+		multiply_vector2_matrix2: multiply_vector2_matrix2,
+		make_matrix2_reflection: make_matrix2_reflection,
+		make_matrix2_rotation: make_matrix2_rotation,
+		make_matrix2_inverse: make_matrix2_inverse,
+		multiply_matrices2: multiply_matrices2,
+		cross2: cross2,
+		cross3: cross3,
+		distance2: distance2,
+		distance3: distance3
+	});
+
 	/** 
 	 *  all intersection functions are inclusive and return true if 
 	 *  intersection lies directly on an edge's endpoint. to exclude
 	 *  endpoints, use "exclusive" functions
 	 */
 
-	// these two from core.js
-	const EPSILON = 1e-10;
 	function equivalent2(a, b, epsilon = EPSILON){
 		return Math.abs(a[0]-b[0]) < epsilon && Math.abs(a[1]-b[1]) < epsilon;
 	}
@@ -294,7 +581,7 @@
 		}
 	}
 
-	var Intersection$1 = /*#__PURE__*/Object.freeze({
+	var intersection = /*#__PURE__*/Object.freeze({
 		line_line: line_line,
 		line_ray: line_ray,
 		line_edge: line_edge,
@@ -313,243 +600,6 @@
 		clipRay: clipRay,
 		intersection_circle_line: intersection_circle_line
 	});
-
-	// Geometry for .fold file origami
-
-	const EPSILON_LOW  = 3e-6;
-	const EPSILON$1      = 1e-10;
-	const EPSILON_HIGH = 1e-14;
-
-	///////////////////////////////////////////////////////////////////////////////
-	// the following operations neatly generalize for n-dimensions
-	//
-	/** @param [number]
-	 *  @returns [number]
-	 */
-	function normalize(v) {
-		let m = magnitude(v);
-		// todo: do we need to intervene for a divide by 0?
-		return v.map(c => c / m);
-	}
-
-	/** @param [number]
-	 *  @returns number
-	 */
-	function magnitude(v) {
-		let sum = v
-			.map(component => component * component)
-			.reduce((prev,curr) => prev + curr);
-		return Math.sqrt(sum);
-	}
-
-	/** @param [number]
-	 *  @returns boolean
-	 */
-	function degenerate(v){
-		return Math.abs(v.reduce((a, b) => a + b, 0)) < EPSILON$1;
-	}
-
-	///////////////////////////////////////////////////////////////////////////////
-	// these *can* generalize to n-dimensions, but lengths of arguments must match
-	// if the second argument larger than the first it will ignore leftover components
-	//
-	function dot(a, b) {
-		return a
-			.map((ai,i) => ai * b[i])
-			.reduce((prev,curr) => prev + curr, 0);
-	}
-
-	function midpoint(a, b){
-		return a.map((ai,i) => (ai+b[i])*0.5);
-	}
-
-	function equivalent(a, b, epsilon = EPSILON$1){
-		// rectangular bounds test for fast calculation
-		return a
-			.map((ai,i) => Math.abs(ai - b[i]) < epsilon)
-			reduce((a,b) => a && b, true);
-	}
-
-	function parallel(a, b, epsilon = EPSILON$1){
-		return 1 - Math.abs(dot(normalize(a), normalize(b))) < epsilon;
-	}
-
-
-	///////////////////////////////////////////////////////////////////////////////
-	// everything else that follows is hard-coded to certain dimensions
-	//
-
-	/** There are 2 interior angles between 2 absolute angle measurements, from A to B return the clockwise one
-	 * @param {number} angle in radians, angle PI/2 is along the +Y axis
-	 * @returns {number} clockwise interior angle (from a to b) in radians
-	 */
-	function clockwise_angle2_radians(a, b){
-		// this is on average 50 to 100 times faster than clockwise_angle2
-		while(a < 0){ a += Math.PI*2; }
-		while(b < 0){ b += Math.PI*2; }
-		var a_b = a - b;
-		return (a_b >= 0)
-			? a_b
-			: Math.PI*2 - (b - a);
-	}
-	function counter_clockwise_angle2_radians(a, b){
-		// this is on average 50 to 100 times faster than counter_clockwise_angle2
-		while(a < 0){ a += Math.PI*2; }
-		while(b < 0){ b += Math.PI*2; }
-		var b_a = b - a;
-		return (b_a >= 0)
-			? b_a
-			: Math.PI*2 - (a - b);
-	}
-
-	/** There are 2 angles between 2 vectors, from A to B return the clockwise one.
-	 * @param {[number, number]} vector
-	 * @returns {number} clockwise angle (from a to b) in radians
-	 */
-	function clockwise_angle2(a, b){
-		var dotProduct = b[0]*a[0] + b[1]*a[1];
-		var determinant = b[0]*a[1] - b[1]*a[0];
-		var angle = Math.atan2(determinant, dotProduct);
-		if(angle < 0){ angle += Math.PI*2; }
-		return angle;
-	}
-	function counter_clockwise_angle2(a, b){
-		var dotProduct = a[0]*b[0] + a[1]*b[1];
-		var determinant = a[0]*b[1] - a[1]*b[0];
-		var angle = Math.atan2(determinant, dotProduct);
-		if(angle < 0){ angle += Math.PI*2; }
-		return angle;
-	}
-	/** There are 2 interior angles between 2 vectors, return both, the smaller first
-	 * @param {[number, number]} vector
-	 * @returns {[number, number]} 2 angle measurements between vectors
-	 */
-	function interior_angles2(a, b){
-		var interior1 = clockwise_angle2(a, b);
-		var interior2 = Math.PI*2 - interior1;
-		return (interior1 < interior2)
-			? [interior1, interior2]
-			: [interior2, interior1];
-	}
-	/** This bisects 2 vectors, returning both smaller and larger outside angle bisections [small, large]
-	 * @param {[number, number]} vector
-	 * @returns {[[number, number],[number, number]]} 2 vectors, the smaller angle first
-	 */
-	function bisect_vectors(a, b){
-		let aV = normalize(a);
-		let bV = normalize(b);
-		let sum = aV.map((_,i) => aV[i] + bV[i]);
-		let vecA = normalize( sum );
-		let vecB = aV.map((_,i) => -aV[i] + -bV[i]);
-		return [vecA, normalize(vecB)];
-	}
-
-	/** This bisects 2 lines
-	 * @param {[number, number]} all vectors, lines defined by points and vectors
-	 * @returns [ [number,number], [number,number] ] // line, defined as point, vector, in that order
-	 */
-	function bisect_lines2(pointA, vectorA, pointB, vectorB){
-		if(parallel(vectorA, vectorB)){
-			return [midpoint(pointA, pointB), vectorA.slice()];
-		} else{
-			var inter = Intersection.line_line(pointA, vectorA, pointB, vectorB);
-			var bisect = bisect_vectors(vectorA, vectorB);
-			bisects[1] = [ bisects[1][1], -bisects[1][0] ];
-			// swap to make smaller interior angle first
-			if(Math.abs(cross2(vectorA, bisects[1])) <
-			   Math.abs(cross2(vectorA, bisects[0]))) {
-				var swap = bisects[0];
-				bisects[0] = bisects[1];
-				bisects[1] = swap;
-			}
-			return bisects.map((el) => [inter, el]);
-		}
-	}
-
-	/** apply a matrix transform on a point */
-	function multiply_vector2_matrix2(vector, matrix){
-		return [ vector[0] * matrix[0] + vector[1] * matrix[2] + matrix[4],
-		         vector[0] * matrix[1] + vector[1] * matrix[3] + matrix[5] ];
-	}
-
-	/** 
-	 * These all standardize a row-column order
-	 */
-	function make_matrix2_reflection(vector, origin){
-		// the line of reflection passes through origin, runs along vector
-		let angle = Math.atan2(vector[1], vector[0]);
-		let cosAngle = Math.cos(angle);
-		let sinAngle = Math.sin(angle);
-		let _cosAngle = Math.cos(-angle);
-		let _sinAngle = Math.sin(-angle);
-		let a = cosAngle *  _cosAngle +  sinAngle * _sinAngle;
-		let b = cosAngle * -_sinAngle +  sinAngle * _cosAngle;
-		let c = sinAngle *  _cosAngle + -cosAngle * _sinAngle;
-		let d = sinAngle * -_sinAngle + -cosAngle * _cosAngle;
-		let tx = origin[0] + a * -origin[0] + -origin[1] * c;
-		let ty = origin[1] + b * -origin[0] + -origin[1] * d;
-		return [a, b, c, d, tx, ty];
-	}
-	function make_matrix2_rotation(angle, origin){
-		var a = Math.cos(angle);
-		var b = Math.sin(angle);
-		var c = -Math.sin(angle);
-		var d = Math.cos(angle);
-		var tx = (origin != null) ? origin[0] : 0;
-		var ty = (origin != null) ? origin[1] : 0;
-		return [a, b, c, d, tx, ty];
-	}
-	function make_matrix2_inverse(m){
-		var det = m[0] * m[3] - m[1] * m[2];
-		if (!det || isNaN(det) || !isFinite(m[4]) || !isFinite(m[5])){ return undefined; }
-		return [
-			m[3]/det,
-			-m[1]/det,
-			-m[2]/det,
-			m[0]/det, 
-			(m[2]*m[5] - m[3]*m[4])/det,
-			(m[1]*m[4] - m[0]*m[5])/det
-		];
-	}
-	function multiply_matrices2(m1, m2){
-		let a = m1[0] * m2[0] + m1[2] * m2[1];
-		let c = m1[0] * m2[2] + m1[2] * m2[3];
-		let tx = m1[0] * m2[4] + m1[2] * m2[5] + m1[4];
-		let b = m1[1] * m2[0] + m1[3] * m2[1];
-		let d = m1[1] * m2[2] + m1[3] * m2[3];
-		let ty = m1[1] * m2[4] + m1[3] * m2[5] + m1[5];
-		return [a, b, c, d, tx, ty];
-	}
-
-	// these are all hard-coded to certain vector lengths
-	// the length is specified by the number at the end of the function name
-
-	function cross2(a, b){
-		return [ a[0]*b[1], a[1]*b[0] ];
-	}
-
-	function cross3(a, b) {
-		return [
-			a[1]*b[2] - a[2]*b[1],
-			a[0]*b[2] - a[2]*b[0],
-			a[0]*b[1] - a[1]*b[0]
-		];
-	}
-
-	function distance2(a, b){
-		return Math.sqrt(
-			Math.pow(a[0] - b[0], 2) +
-			Math.pow(a[1] - b[1], 2)
-		);
-	}
-
-	function distance3(a, b) {
-		return Math.sqrt(
-			Math.pow(a[0] - b[0], 2) +
-			Math.pow(a[1] - b[1], 2) +
-			Math.pow(a[2] - b[2], 2)
-		);
-	}
 
 	function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH){
 		// # points in the convex hull before escaping function
@@ -673,6 +723,11 @@
 		return [poly.slice()];
 	}
 
+	var geometry = /*#__PURE__*/Object.freeze({
+		convex_hull: convex_hull,
+		split_convex_polygon: split_convex_polygon
+	});
+
 	function axiom1(a, b) {
 		// n-dimension
 		return [a, a.map((_,i) => b[i] - a[i])];
@@ -704,38 +759,8 @@
 		// if(intersection === undefined){ return undefined; }
 		// return this.axiom2(point, intersection);
 	}
-	// need to test:
-	// do two polygons overlap if they share a point in common? share an edge?
 
-	var Core = /*#__PURE__*/Object.freeze({
-		EPSILON_LOW: EPSILON_LOW,
-		EPSILON: EPSILON$1,
-		EPSILON_HIGH: EPSILON_HIGH,
-		normalize: normalize,
-		magnitude: magnitude,
-		degenerate: degenerate,
-		dot: dot,
-		midpoint: midpoint,
-		equivalent: equivalent,
-		parallel: parallel,
-		clockwise_angle2_radians: clockwise_angle2_radians,
-		counter_clockwise_angle2_radians: counter_clockwise_angle2_radians,
-		clockwise_angle2: clockwise_angle2,
-		counter_clockwise_angle2: counter_clockwise_angle2,
-		interior_angles2: interior_angles2,
-		bisect_vectors: bisect_vectors,
-		bisect_lines2: bisect_lines2,
-		multiply_vector2_matrix2: multiply_vector2_matrix2,
-		make_matrix2_reflection: make_matrix2_reflection,
-		make_matrix2_rotation: make_matrix2_rotation,
-		make_matrix2_inverse: make_matrix2_inverse,
-		multiply_matrices2: multiply_matrices2,
-		cross2: cross2,
-		cross3: cross3,
-		distance2: distance2,
-		distance3: distance3,
-		convex_hull: convex_hull,
-		split_convex_polygon: split_convex_polygon,
+	var origami = /*#__PURE__*/Object.freeze({
 		axiom1: axiom1,
 		axiom2: axiom2,
 		axiom3: axiom3,
@@ -744,10 +769,6 @@
 		axiom6: axiom6,
 		axiom7: axiom7
 	});
-
-	function is_number(n) {
-		return n != null && !isNaN(n);
-	}
 
 	/** clean floating point numbers
 	 *  example: 15.0000000000000002 into 15
@@ -878,40 +899,12 @@
 		}
 	}
 
-
-	function get_array_of_vec2(){
-		// todo
-		let params = Array.from(arguments);
-		let arrays = params.filter((param) => param.constructor === Array);
-		if(arrays.length >= 2 && !isNaN(arrays[0][0])){
-			return arrays;
-		}
-		if(arrays.length == 1 && arrays[0].length >= 1){
-			return arrays[0];
-		}
-		// if(arrays[0] != null && arrays[0].length >= 2 && arrays[0][0] != null && !isNaN(arrays[0][0][0])){
-		// 	return arrays[0];
-		// }
-		return params;
-	}
-
-	var Input = /*#__PURE__*/Object.freeze({
-		is_number: is_number,
-		clean_number: clean_number,
-		get_vec: get_vec,
-		get_matrix: get_matrix,
-		get_line: get_line,
-		get_two_vec2: get_two_vec2,
-		get_array_of_vec: get_array_of_vec,
-		get_array_of_vec2: get_array_of_vec2
-	});
-
 	/** n-dimensional vector */
-	function Vector() {
+	function Vector$1() {
 		let _v = get_vec(...arguments);
 
 		const normalize$$1 = function() {
-			return Vector( normalize(_v) );
+			return Vector$1( normalize(_v) );
 		};
 		const magnitude$$1 = function() {
 			return magnitude(_v);
@@ -927,7 +920,7 @@
 			let a = _v.slice();
 			if(a[2] == null){ a[2] = 0; }
 			if(b[2] == null){ b[2] = 0; }
-			return Vector( cross3(a, b) );
+			return Vector$1( cross3(a, b) );
 		};
 		const distanceTo = function() {
 			let vec = get_vec(...arguments);
@@ -939,34 +932,34 @@
 		};
 		const transform = function() {
 			let m = get_matrix(...arguments);
-			return Vector( multiply_vector2_matrix2(_v, m) );
+			return Vector$1( multiply_vector2_matrix2(_v, m) );
 		};
 		const add = function(){
 			let vec = get_vec(...arguments);
-			return Vector( _v.map((v,i) => v + vec[i]) );
+			return Vector$1( _v.map((v,i) => v + vec[i]) );
 		};
 		const subtract = function(){
 			let vec = get_vec(...arguments);
-			return Vector( _v.map((v,i) => v - vec[i]) );
+			return Vector$1( _v.map((v,i) => v - vec[i]) );
 		};
 		// these are implicitly 2D functions, and will convert the vector into 2D
 		const rotateZ = function(angle, origin) {
 			var m = make_matrix2_rotation(angle, origin);
-			return Vector( multiply_vector2_matrix2(_v, m) );
+			return Vector$1( multiply_vector2_matrix2(_v, m) );
 		};
 		const rotateZ90 = function() {
-			return Vector(-_v[1], _v[0]);
+			return Vector$1(-_v[1], _v[0]);
 		};
 		const rotateZ180 = function() {
-			return Vector(-_v[0], -_v[1]);
+			return Vector$1(-_v[0], -_v[1]);
 		};
 		const rotateZ270 = function() {
-			return Vector(_v[1], -_v[0]);
+			return Vector$1(_v[1], -_v[0]);
 		};
 		const reflect = function() {
 			let reflect = get_line(...arguments);
 			let m = make_matrix2_reflection(reflect.vector, reflect.point);
-			return Vector( multiply_vector2_matrix2(_v, m) );
+			return Vector$1( multiply_vector2_matrix2(_v, m) );
 		};
 		const lerp = function(vector, pct) {
 			let vec = get_vec(vector);
@@ -974,7 +967,7 @@
 			let length = (_v.length < vec.length) ? _v.length : vec.length;
 			let components = Array.from(Array(length))
 				.map((_,i) => _v[i] * pct + vec[i] * inv);
-			return Vector(components);
+			return Vector$1(components);
 		};
 		const isEquivalent = function(vector) {
 			// rect bounding box for now, much cheaper than radius calculation
@@ -990,14 +983,14 @@
 			return parallel(sm, lg);
 		};
 		const scale = function(mag) {
-			return Vector( _v.map(v => v * mag) );
+			return Vector$1( _v.map(v => v * mag) );
 		};
-		const midpoint$$1 = function() {
+		const midpoint = function() {
 			let vec = get_vec(...arguments);
 			let sm = (_v.length < vec.length) ? _v.slice() : vec;
 			let lg = (_v.length < vec.length) ? vec : _v.slice();
 			for(var i = sm.length; i < lg.length; i++){ sm[i] = 0; }
-			return Vector(lg.map((_,i) => (sm[i] + lg[i]) * 0.5));
+			return Vector$1(lg.map((_,i) => (sm[i] + lg[i]) * 0.5));
 		};
 		const bisect = function(vector){
 			let vec = get_vec(vector);
@@ -1023,14 +1016,423 @@
 				isEquivalent,
 				isParallel,
 				scale,
-				midpoint: midpoint$$1,
+				midpoint,
 				bisect,
-				get vector() { return _v; },
 				get x() { return _v[0]; },
 				get y() { return _v[1]; },
 				get z() { return _v[2]; },
 			}, _v)
 		);
+	}
+
+	function Circle(){
+		let _origin, _radius;
+
+		let params = Array.from(arguments);
+		let numbers = params.filter((param) => !isNaN(param));
+		if(numbers.length == 3){
+			_origin = numbers.slice(0,2);
+			_radius = numbers[2];
+		}
+
+		const intersectionLine = function(){
+			let line = get_line(...arguments);
+			let point2 = [
+				line.point[0] + line.vector[0],
+				line.point[1] + line.vector[1]
+			];
+			let intersection = intersection_circle_line(_origin, _radius, line.point, point2);
+			return Vector(intersection);
+		};
+
+		const intersectionEdge = function(){
+			let points = get_two_vec2(...arguments);
+			let intersection = intersection_circle_line(_origin, _radius, points[0], points[1]);
+			return Vector(intersection);
+		};
+
+		return Object.freeze( {
+			intersectionLine,
+			intersectionEdge,
+			get origin() { return _origin; },
+			get radius() { return _radius; },
+		} );
+	}
+
+	function Polygon(){
+
+		let _points = get_array_of_vec(...arguments);
+
+		/** Calculates the signed area of a polygon. This requires the polygon be non-intersecting.
+		 * @returns {number} the area of the polygon
+		 * @example
+		 * var area = polygon.signedArea()
+		 */
+		const signedArea = function(){
+			return 0.5 * _points.map((el,i,arr) => {
+				var next = arr[(i+1)%arr.length];
+				return el[0] * next[1] - next[0] * el[1];
+			})
+			.reduce((a, b) => a + b, 0);
+		};
+		/** Calculates the centroid or the center of mass of the polygon.
+		 * @returns {XY} the location of the centroid
+		 * @example
+		 * var centroid = polygon.centroid()
+		 */
+		const centroid = function(){
+			return _points.map((el,i,arr) => {
+				var next = arr[(i+1)%arr.length];
+				var mag = el[0] * next[1] - next[0] * el[1];
+				return Vector$1( (el[0]+next[0])*mag, (el[1]+next[1])*mag );
+			})
+			.reduce((prev, curr) => prev.add(curr), Vector$1(0,0))
+			.scale(1/(6 * signedArea(_points)));
+		};
+		/** Calculates the center of the bounding box made by the edges of the polygon.
+		 * @returns {XY} the location of the center of the bounding box
+		 * @example
+		 * var boundsCenter = polygon.center()
+		 */
+		const center = function(){
+			// this is not an average / means
+			var xMin = Infinity, xMax = 0, yMin = Infinity, yMax = 0;
+			_points.forEach(p => {
+				if(p[0] > xMax){ xMax = p[0]; }
+				if(p[0] < xMin){ xMin = p[0]; }
+				if(p[1] > yMax){ yMax = p[1]; }
+				if(p[1] < yMin){ yMin = p[1]; }
+			});
+			return Vector$1( xMin+(xMax-xMin)*0.5, yMin+(yMax-yMin)*0.5 );
+		};
+
+		/** Tests whether or not a point is contained inside a polygon.
+		 * @returns {boolean} whether the point is inside the polygon or not
+		 * @example
+		 * var isInside = polygon.contains( {x:0.5, y:0.5} )
+		 */
+		const contains = function(point){
+			var isInside = false;
+			// http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+			for(var i = 0, j = _points.length - 1; i < _points.length; j = i++) {
+				if( (_points[i][1] > point[1]) != (_points[j][1] > point[1]) &&
+				point[0] < (_points[j][0] - _points[i][0]) * (point[1] - _points[i][1]) / (_points[j][1] - _points[i][1]) + _points[i][0] ) {
+					isInside = !isInside;
+				}
+			}
+			return isInside;
+		};
+
+
+		return Object.freeze( {
+			signedArea,
+			centroid,
+			center,
+			contains,
+			get points() { return _points; },
+		} );
+
+	}
+
+
+	// Polygon.withPoints = function(points){
+	// 	var poly = new Polygon();
+	// 	poly.edges = points.map(function(el,i){
+	// 		var nextEl = points[ (i+1)%points.length ];
+	// 		return new Edge(el, nextEl);
+	// 	},this);
+	// 	return poly;
+	// }
+	Polygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1){
+		var halfwedge = 2*Math.PI/sides * 0.5;
+		var r = radius / Math.cos(halfwedge);
+		var points = Array.from(Array(Math.floor(sides))).map((_,i) => {
+			var a = -2 * Math.PI * i / sides + halfwedge;
+			var px = clean_number(x + r * Math.sin(a), 14);
+			var py = clean_number(y + r * Math.cos(a), 14);
+			return [px, py]; // align point along Y
+		});
+		return Polygon(points);
+	};
+	Polygon.convexHull = function(points, includeCollinear = false){
+		// validate input
+		if(points == null || points.length === 0){ return undefined; }
+		let hull = convex_hull(points);
+		return Polygon(hull);
+	};
+
+
+
+	function ConvexPolygon(){
+
+		let {
+			signedArea,
+			centroid,
+			center,
+			contains,
+			points
+		} = Polygon(...arguments);
+
+		let _points = points;
+
+
+		// const liesOnEdge = function(p){
+		// 	for(var i = 0; i < this.edges.length; i++){
+		// 		if(this.edges[i].collinear(p)){ return true; }
+		// 	}
+		// 	return false;
+		// }
+		const clipEdge = function(edge){
+			var intersections = this.edges
+				.map(function(el){ return intersectionEdgeEdge(edge, el); })
+				.filter(function(el){return el !== undefined; })
+				// filter out intersections equivalent to the edge points themselves
+				.filter(function(el){ 
+					return !el.equivalent(edge.nodes[0]) &&
+					       !el.equivalent(edge.nodes[1]); });
+			switch(intersections.length){
+				case 0:
+					if(this.contains(edge.nodes[0])){ return edge; } // completely inside
+					return undefined;  // completely outside
+				case 1:
+					if(this.contains(edge.nodes[0])){
+						return new Edge(edge.nodes[0], intersections[0]);
+					}
+					return new Edge(edge.nodes[1], intersections[0]);
+				case 2: return new Edge(intersections[0], intersections[1]);
+				// default: throw "clipping edge in a convex polygon resulting in 3 or more points";
+				default:
+					for(var i = 1; i < intersections.length; i++){
+						if( !intersections[0].equivalent(intersections[i]) ){
+							return new Edge(intersections[0], intersections[i]);
+						}
+					}
+			}
+		};
+		const clipLine = function(){
+			let line = get_line(...arguments);
+			return Intersection.clip_line_in_poly(_points, line.point, line.vector);
+		};
+		const clipRay = function(ray){
+			let line = get_line(...arguments);
+			return Intersection.clip_ray_in_poly(_points, line.point, line.vector);
+		};
+		const enclosingRectangle = function(){
+			var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+			_points.forEach(p => {
+				if(p[0] > maxX){ maxX = p[0]; }
+				if(p[0] < minX){ minX = p[0]; }
+				if(p[1] > maxY){ maxY = p[1]; }
+				if(p[1] < minY){ minY = p[1]; }
+			});
+			return Rect(minX, minY, maxX-minX, maxY-minY);
+		};
+
+		const scale = function(magnitude, centerPoint){
+			if(centerPoint == null){ centerPoint = centroid(); }
+			let newPoints = _points.map(p => {
+				let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
+				return [centerPoint[0] + vec[0]*magnitude, centerPoint[0] + vec[0]*magnitude];
+			});
+			return Polygon(newPoints);
+		};
+
+		const rotate = function(angle, centerPoint){
+			if(centerPoint == null){ centerPoint = centroid(); }
+			let newPoints = _points.map(p => {
+				let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
+				let mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
+				let a = Math.atan2(vec[1], vec[0]);
+				return [
+					centerPoint[0] + Math.cos(a+angle) * mag, 
+					centerPoint[1] + Math.sin(a+angle) * mag
+				];
+			});
+			return Polygon(newPoints);
+		};
+
+		const split = function(){
+			let line = get_line(...arguments);
+			return split_convex_polygon(_points, line.point, line.vector)
+				.map(poly => Polygon(poly));
+		};
+
+		const overlaps = function(poly) {
+			let points = get_array_of_vec(...arguments);
+			return Intersection.polygons_overlap(_points, points);
+		};
+
+		return Object.freeze( {
+			signedArea,
+			centroid,
+			center,
+			contains,
+			clipEdge,
+			clipLine,
+			clipRay,
+			enclosingRectangle,
+			split,
+			overlaps,
+			scale,
+			rotate,
+			get points() { return _points; },
+		} );
+	}
+
+	/** 
+	 * 2D Matrix (2x3) with translation component in x,y
+	 */
+	function Matrix() {
+		let _m = get_matrix(...arguments);
+
+		const inverse = function() {
+			return Matrix( make_matrix2_inverse(_m) );
+		};
+		const multiply = function() {
+			let m2 = get_matrix(...arguments);
+			return Matrix( multiply_matrices2(_m, m2) );
+		};
+		const transform = function(){
+			let v = get_vec(...arguments);
+			return Vector( multiply_vector2_matrix2(v, _m) );
+		};
+		return Object.freeze( {
+			inverse,
+			multiply,
+			transform,
+			get m() { return _m; },
+		} );
+	}
+	// static methods
+	Matrix.makeIdentity = function() {
+		return Matrix(1,0,0,1,0,0);
+	};
+	Matrix.makeRotation = function(angle, origin) {
+		return Matrix( make_matrix2_rotation(angle, origin) );
+	};
+	Matrix.makeReflection = function(vector, origin) {
+		return Matrix( make_matrix2_reflection(vector, origin) );
+	};
+
+	function Line(){
+		let {point, vector} = get_line(...arguments);
+
+		const isParallel = function(){
+			let line = get_line(...arguments);
+			return parallel(vector, line.vector);
+		};
+		const transform = function(){
+			let mat = get_matrix(...arguments);
+			// todo: a little more elegant of a solution, please
+			let norm = normalize(vector);
+			let temp = point.map((p,i) => p + norm[i]);
+			if(temp == null){ return; }
+			var p0 = multiply_vector2_matrix2(point, mat);
+			var p1 = multiply_vector2_matrix2(temp, mat);
+			return Line.withPoints([p0, p1]);
+		};
+
+		return Object.freeze( {
+			isParallel,
+			transform,
+			get vector() { return vector; },
+			get point() { return point; },
+		} );
+	}
+	// static methods
+	Line.withPoints = function(){
+		let points = get_two_vec2(...arguments);
+		return Line({
+			point: points[0],
+			vector: normalize([
+				points[1][0] - points[0][0],
+				points[1][1] - points[0][1]
+			])
+		});
+	};
+	Line.perpendicularBisector = function() {
+		let points = get_two_vec2(...arguments);
+		let vec = normalize([
+			points[1][0] - points[0][0],
+			points[1][1] - points[0][1]
+		]);
+		return Line({
+			point: midpoint$1(points[0], points[1]),
+			vector: [vec[1], -vec[0]]
+			// vector: Algebra.cross3(vec, [0,0,1])
+		});
+	};
+
+
+	function Ray(){
+		let {point, vector} = get_line(...arguments);
+
+		return Object.freeze( {
+			get vector() { return vector; },
+			get point() { return point; },
+			get origin() { return point; },
+		} );
+	}
+	// static methods
+	Ray.withPoints = function(){
+		let points = get_two_vec2(...arguments);
+		return Ray({
+			point: points[0],
+			vector: normalize([
+				points[1][0] - points[0][0],
+				points[1][1] - points[0][1]
+			])
+		});
+	};
+
+
+	function Edge$1(){
+		let _endpoints = get_two_vec2(...arguments);
+
+		const vector = function(){
+			return Vector(
+				_endpoints[1][0] - _endpoints[0][0],
+				_endpoints[1][1] - _endpoints[0][1]
+			);
+		};
+
+		const length = function() {
+			return Math.sqrt(Math.pow(_endpoints[1][0] - _endpoints[0][0],2)
+			               + Math.pow(_endpoints[1][1] - _endpoints[0][1],2));
+		};
+
+		const nearestPoint = function() {
+			let point = get_vec(...arguments);
+			var answer = nearestPointNormalTo(...arguments);
+			return (answer == null)
+				? Vector(_endpoints.map(p => ({
+						point: p,
+						d: Math.sqrt(Math.pow(p[0] - point[0],2) + Math.pow(p[1] - point[1],2))
+					}))
+					.sort((a,b) => a.d - b.d)
+					.shift()
+					.point)
+				: answer;
+		};
+		const nearestPointNormalTo = function() {
+			let point = get_vec(...arguments);
+			let p = length();
+			var u = ((point[0]-_endpoints[0][0]) * (_endpoints[1][0]-_endpoints[0][0])
+			       + (point[1]-_endpoints[0][1]) * (_endpoints[1][1]-_endpoints[0][1]))
+			       / (Math.pow(p, 2) );
+			return (u < 0 || u > 1.0)
+				? undefined
+				: Vector(_endpoints[0][0] + u*(_endpoints[1][0]-_endpoints[0][0]),
+			             _endpoints[0][1] + u*(_endpoints[1][1]-_endpoints[0][1]) );
+		};
+
+		return Object.freeze( {
+			vector,
+			length,
+			nearestPoint,
+			nearestPointNormalTo,
+			get endpoints() { return _endpoints; },
+		} );
 	}
 
 	/**
@@ -1040,15 +1442,17 @@
 	 *  Use the core library functions for fastest-possible calculations.
 	 */
 
-	// export * from './intersection';
-	let intersection = Intersection$1;
-	let core = Core;
-	let input = Input;
+	let core = { algebra, geometry, intersection, origami };
 
-	exports.intersection = intersection;
 	exports.core = core;
-	exports.input = input;
-	exports.Vector = Vector;
+	exports.Vector = Vector$1;
+	exports.Circle = Circle;
+	exports.Polygon = Polygon;
+	exports.ConvexPolygon = ConvexPolygon;
+	exports.Matrix = Matrix;
+	exports.Line = Line;
+	exports.Ray = Ray;
+	exports.Edge = Edge$1;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 

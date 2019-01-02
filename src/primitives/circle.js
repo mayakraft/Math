@@ -1,3 +1,5 @@
+import * as Input from '../input';
+import * as Intersection from '../core/intersection';
 
 export function Circle(){
 	let _origin, _radius;

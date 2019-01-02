@@ -4,8 +4,8 @@
  *  endpoints, use "exclusive" functions
  */
 
-// these two from core.js
-const EPSILON = 1e-10;
+import { EPSILON } from './constants';
+
 function equivalent2(a, b, epsilon = EPSILON){
 	return Math.abs(a[0]-b[0]) < epsilon && Math.abs(a[1]-b[1]) < epsilon;
 }

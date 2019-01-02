@@ -1,28 +1,28 @@
-import * as Core from '../core';
 import * as Input from '../input';
+import * as Algebra from '../core/algebra';
 
 /** n-dimensional vector */
 export function Vector() {
 	let _v = Input.get_vec(...arguments);
 
 	const normalize = function() {
-		return Vector( Core.normalize(_v) );
+		return Vector( Algebra.normalize(_v) );
 	}
 	const magnitude = function() {
-		return Core.magnitude(_v);
+		return Algebra.magnitude(_v);
 	}
 	const dot = function() {
 		let vec = Input.get_vec(...arguments);
 		return _v.length > vec.length
-			? Core.dot(vec, _v)
-			: Core.dot(_v, vec);
+			? Algebra.dot(vec, _v)
+			: Algebra.dot(_v, vec);
 	}
 	const cross = function() {
 		let b = Input.get_vec(...arguments);
 		let a = _v.slice();
 		if(a[2] == null){ a[2] = 0; }
 		if(b[2] == null){ b[2] = 0; }
-		return Vector( Core.cross3(a, b) );
+		return Vector( Algebra.cross3(a, b) );
 	}
 	const distanceTo = function() {
 		let vec = Input.get_vec(...arguments);
@@ -34,7 +34,7 @@ export function Vector() {
 	}
 	const transform = function() {
 		let m = Input.get_matrix(...arguments);
-		return Vector( Core.multiply_vector2_matrix2(_v, m) );
+		return Vector( Algebra.multiply_vector2_matrix2(_v, m) );
 	}
 	const add = function(){
 		let vec = Input.get_vec(...arguments);
@@ -46,8 +46,8 @@ export function Vector() {
 	}
 	// these are implicitly 2D functions, and will convert the vector into 2D
 	const rotateZ = function(angle, origin) {
-		var m = Core.make_matrix2_rotation(angle, origin);
-		return Vector( Core.multiply_vector2_matrix2(_v, m) );
+		var m = Algebra.make_matrix2_rotation(angle, origin);
+		return Vector( Algebra.multiply_vector2_matrix2(_v, m) );
 	}
 	const rotateZ90 = function() {
 		return Vector(-_v[1], _v[0]);
@@ -60,8 +60,8 @@ export function Vector() {
 	}
 	const reflect = function() {
 		let reflect = Input.get_line(...arguments);
-		let m = Core.make_matrix2_reflection(reflect.vector, reflect.point);
-		return Vector( Core.multiply_vector2_matrix2(_v, m) );
+		let m = Algebra.make_matrix2_reflection(reflect.vector, reflect.point);
+		return Vector( Algebra.multiply_vector2_matrix2(_v, m) );
 	}
 	const lerp = function(vector, pct) {
 		let vec = Input.get_vec(vector);
@@ -76,13 +76,13 @@ export function Vector() {
 		let vec = Input.get_vec(vector);
 		let sm = (_v.length < vec.length) ? _v : vec;
 		let lg = (_v.length < vec.length) ? vec : _v;
-		return Core.equivalent(sm, lg);
+		return Algebra.equivalent(sm, lg);
 	}
 	const isParallel = function(vector) {
 		let vec = Input.get_vec(vector);
 		let sm = (_v.length < vec.length) ? _v : vec;
 		let lg = (_v.length < vec.length) ? vec : _v;
-		return Core.parallel(sm, lg);
+		return Algebra.parallel(sm, lg);
 	}
 	const scale = function(mag) {
 		return Vector( _v.map(v => v * mag) );
@@ -96,7 +96,7 @@ export function Vector() {
 	}
 	const bisect = function(vector){
 		let vec = Input.get_vec(vector);
-		return Core.bisect_vectors(_v, vec);
+		return Algebra.bisect_vectors(_v, vec);
 	}
 
 	return Object.freeze(
@@ -120,7 +120,6 @@ export function Vector() {
 			scale,
 			midpoint,
 			bisect,
-			get vector() { return _v; },
 			get x() { return _v[0]; },
 			get y() { return _v[1]; },
 			get z() { return _v[2]; },

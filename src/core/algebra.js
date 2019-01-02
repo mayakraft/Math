@@ -1,15 +1,9 @@
-// Geometry for .fold file origami
-
 // all points are array syntax [x,y]
 // all edges are array syntax [[x,y], [x,y]]
 // all infinite lines are defined as point and vector, both [x,y]
 // all polygons are an ordered set of points ([x,y]), either winding direction
 
-import { line_line, point_on_line, line_edge_exclusive } from './intersection'
-
-export const EPSILON_LOW  = 3e-6;
-export const EPSILON      = 1e-10;
-export const EPSILON_HIGH = 1e-14;
+import { EPSILON } from './constants';
 
 ///////////////////////////////////////////////////////////////////////////////
 // the following operations neatly generalize for n-dimensions
@@ -140,22 +134,47 @@ export function bisect_vectors(a, b){
  * @returns [ [number,number], [number,number] ] // line, defined as point, vector, in that order
  */
 export function bisect_lines2(pointA, vectorA, pointB, vectorB){
-	if(parallel(vectorA, vectorB)){
+	let denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
+	if(Math.abs(denominator) < EPSILON){ /* parallel */
 		return [midpoint(pointA, pointB), vectorA.slice()];
-	} else{
-		var inter = Intersection.line_line(pointA, vectorA, pointB, vectorB);
-		var bisect = bisect_vectors(vectorA, vectorB);
-		bisects[1] = [ bisects[1][1], -bisects[1][0] ];
-		// swap to make smaller interior angle first
-		if(Math.abs(cross2(vectorA, bisects[1])) <
-		   Math.abs(cross2(vectorA, bisects[0]))) {
-			var swap = bisects[0];
-			bisects[0] = bisects[1];
-			bisects[1] = swap;
-		}
-		return bisects.map((el) => [inter, el]);
 	}
+	let vectorC = [pointB[0]-pointA[0], pointB[1]-pointA[1]];
+	// var numerator = vectorC[0] * vectorB[1] - vectorB[0] * vectorC[1];
+	let numerator = (pointB[0]-pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1]-pointA[1]);
+	var t = numerator / denominator;
+	let x = pointA[0] + vectorA[0]*t;
+	let y = pointA[1] + vectorA[1]*t;
+	var bisect = bisect_vectors(vectorA, vectorB);
+	bisects[1] = [ bisects[1][1], -bisects[1][0] ];
+	// swap to make smaller interior angle first
+	if(Math.abs(cross2(vectorA, bisects[1])) <
+	   Math.abs(cross2(vectorA, bisects[0]))) {
+		var swap = bisects[0];
+		bisects[0] = bisects[1];
+		bisects[1] = swap;
+	}
+	return bisects.map((el) => [[x,y], el]);
 }
+
+// todo: check the implementation above, if it works, delete this:
+
+// export function bisect_lines2(pointA, vectorA, pointB, vectorB){
+// 	if(parallel(vectorA, vectorB)){
+// 		return [midpoint(pointA, pointB), vectorA.slice()];
+// 	} else{
+// 		var inter = Intersection.line_line(pointA, vectorA, pointB, vectorB);
+// 		var bisect = bisect_vectors(vectorA, vectorB);
+// 		bisects[1] = [ bisects[1][1], -bisects[1][0] ];
+// 		// swap to make smaller interior angle first
+// 		if(Math.abs(cross2(vectorA, bisects[1])) <
+// 		   Math.abs(cross2(vectorA, bisects[0]))) {
+// 			var swap = bisects[0];
+// 			bisects[0] = bisects[1];
+// 			bisects[1] = swap;
+// 		}
+// 		return bisects.map((el) => [inter, el]);
+// 	}
+// }
 
 /** apply a matrix transform on a point */
 export function multiply_vector2_matrix2(vector, matrix){
@@ -241,160 +260,6 @@ export function distance3(a, b) {
 		Math.pow(a[2] - b[2], 2)
 	);
 }
-
-export function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH){
-	// # points in the convex hull before escaping function
-	var INFINITE_LOOP = 10000;
-	// sort points by y. if ys are equivalent, sort by x
-	var sorted = points.slice().sort((a,b) =>
-		(Math.abs(a[1]-b[1]) < epsilon
-			? a[0] - b[0]
-			: a[1] - b[1]))
-	var hull = [];
-	hull.push(sorted[0]);
-	// the current direction the perimeter walker is facing
-	var ang = 0;  
-	var infiniteLoop = 0;
-	do{
-		infiniteLoop++;
-		var h = hull.length-1;
-		var angles = sorted
-			// remove all points in the same location from this search
-			.filter(el => 
-				!( Math.abs(el[0] - hull[h][0]) < epsilon
-				&& Math.abs(el[1] - hull[h][1]) < epsilon))
-			// sort by angle, setting lowest values next to "ang"
-			.map(el => {
-				var angle = Math.atan2(hull[h][1] - el[1], hull[h][0] - el[0]);
-				while(angle < ang){ angle += Math.PI*2; }
-				return {node:el, angle:angle, distance:undefined};
-			})  // distance to be set later
-			.sort((a,b) => (a.angle < b.angle)?-1:(a.angle > b.angle)?1:0);
-		if(angles.length === 0){ return undefined; }
-		// narrowest-most right turn
-		var rightTurn = angles[0];
-		// collect all other points that are collinear along the same ray
-		angles = angles.filter(el => Math.abs(rightTurn.angle - el.angle) < epsilon)
-		// sort collinear points by their distances from the connecting point
-			.map(el => { 
-				var distance = Math.sqrt(Math.pow(hull[h][0]-el.node[0], 2) + Math.pow(hull[h][1]-el.node[1], 2));
-				el.distance = distance;
-				return el;
-			})
-		// (OPTION 1) exclude all collinear points along the hull 
-		.sort((a,b) => (a.distance < b.distance)?1:(a.distance > b.distance)?-1:0);
-		// (OPTION 2) include all collinear points along the hull
-		// .sort(function(a,b){return (a.distance < b.distance)?-1:(a.distance > b.distance)?1:0});
-		// if the point is already in the convex hull, we've made a loop. we're done
-		// if(contains(hull, angles[0].node)){
-		// if(includeCollinear){
-		// 	points.sort(function(a,b){return (a.distance - b.distance)});
-		// } else{
-		// 	points.sort(function(a,b){return b.distance - a.distance});
-		// }
-
-		if(hull.filter(el => el === angles[0].node).length > 0){
-			return hull;
-		}
-		// add point to hull, prepare to loop again
-		hull.push(angles[0].node);
-		// update walking direction with the angle to the new point
-		ang = Math.atan2( hull[h][1] - angles[0].node[1], hull[h][0] - angles[0].node[0]);
-	} while(infiniteLoop < INFINITE_LOOP);
-	return undefined;
-}
-
-export function split_convex_polygon(poly, linePoint, lineVector){
-	// todo: should this return undefined if no intersection? 
-	//       or the original poly?
-
-	//    point: intersection [x,y] point or null if no intersection
-	// at_index: where in the polygon this occurs
-	let vertices_intersections = poly.map((v,i) => {
-		let intersection = point_on_line(linePoint, lineVector, v);
-		return { point: intersection ? v : null, at_index: i };
-	}).filter(el => el.point != null);
-	let edges_intersections = poly.map((v,i,arr) => {
-		let intersection = line_edge_exclusive(linePoint, lineVector, v, arr[(i+1)%arr.length])
-		return { point: intersection, at_index: i };
-	}).filter(el => el.point != null);
-
-	// three cases: intersection at 2 edges, 2 points, 1 edge and 1 point
-	if(edges_intersections.length == 2){
-		let sorted_edges = edges_intersections.slice()
-			.sort((a,b) => a.at_index - b.at_index);
-
-		let face_a = poly
-			.slice(sorted_edges[1].at_index+1)
-			.concat(poly.slice(0, sorted_edges[0].at_index+1))
-		face_a.push(sorted_edges[0].point);
-		face_a.push(sorted_edges[1].point);
-
-		let face_b = poly
-			.slice(sorted_edges[0].at_index+1, sorted_edges[1].at_index+1);
-		face_b.push(sorted_edges[1].point);
-		face_b.push(sorted_edges[0].point);
-		return [face_a, face_b];
-	} else if(edges_intersections.length == 1 && vertices_intersections.length == 1){
-		vertices_intersections[0]["type"] = "v";
-		edges_intersections[0]["type"] = "e";
-		let sorted_geom = vertices_intersections.concat(edges_intersections)
-			.sort((a,b) => a.at_index - b.at_index);
-
-		let face_a = poly.slice(sorted_geom[1].at_index+1)
-			.concat(poly.slice(0, sorted_geom[0].at_index+1))
-		if(sorted_geom[0].type === "e"){ face_a.push(sorted_geom[0].point); }
-		face_a.push(sorted_geom[1].point); // todo: if there's a bug, it's here. switch this
-
-		let face_b = poly
-			.slice(sorted_geom[0].at_index+1, sorted_geom[1].at_index+1);
-		if(sorted_geom[1].type === "e"){ face_b.push(sorted_geom[1].point); }
-		face_b.push(sorted_geom[0].point); // todo: if there's a bug, it's here. switch this
-		return [face_a, face_b];
-	} else if(vertices_intersections.length == 2){
-		let sorted_vertices = vertices_intersections.slice()
-			.sort((a,b) => a.at_index - b.at_index);
-		let face_a = poly
-			.slice(sorted_vertices[1].at_index)
-			.concat(poly.slice(0, sorted_vertices[0].at_index+1))
-		let face_b = poly
-			.slice(sorted_vertices[0].at_index, sorted_vertices[1].at_index+1);
-		return [face_a, face_b];
-	}
-	return [poly.slice()];
-}
-
-export function axiom1(a, b) {
-	// n-dimension
-	return [a, a.map((_,i) => b[i] - a[i])];
-}
-export function axiom2(a, b) {
-	// 2-dimension
-	let mid = midpoint(a, b);
-	let vec = a.map((_,i) => b[i] - a[i]);
-	return [mid, [vec[1], -vec[0]] ];
-}
-export function axiom3(pointA, vectorA, pointB, vectorB){
-	return bisect_lines2(pointA, vectorA, pointB, vectorB);
-}
-export function axiom4(line, point){
-	// return new CPLine(this, new M.Line(point, new M.Edge(line).vector().rotate90()));
-}
-export function axiom5(origin, point, line){
-	// var radius = Math.sqrt(Math.pow(origin.x - point.x, 2) + Math.pow(origin.y - point.y, 2));
-	// var intersections = new M.Circle(origin, radius).intersection(new M.Edge(line).infiniteLine());
-	// var lines = [];
-	// for(var i = 0; i < intersections.length; i++){ lines.push(this.axiom2(point, intersections[i])); }
-	// return lines;
-}
-export function axiom6(){
-}
-export function axiom7(point, ontoLine, perp){
-	// var newLine = new M.Line(point, new M.Edge(perp).vector());
-	// var intersection = newLine.intersection(new M.Edge(ontoLine).infiniteLine());
-	// if(intersection === undefined){ return undefined; }
-	// return this.axiom2(point, intersection);
-};
 
 // need to test:
 // do two polygons overlap if they share a point in common? share an edge?
