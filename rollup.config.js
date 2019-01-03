@@ -1,7 +1,7 @@
 // import minify from 'rollup-plugin-babel-minify';
 
 module.exports = {
-	input: 'src/public.js',
+	input: 'src/index.js',
 	output: {
 		name: 'Geometry',
 		file: 'geometry.js',

@@ -3,6 +3,8 @@ function equivalent(a, b){ return Math.abs(a-b) < 1e-13; }
 let Vector = Geometry.Vector;
 let Matrix = Geometry.Matrix;
 let Line = Geometry.Line;
+let Polygon = Geometry.Polygon;
+let ConvexPolygon = Geometry.ConvexPolygon;
 
 // all tests as objects: {
 //    test: __boolean__,
@@ -34,6 +36,23 @@ test(l3a.isParallel(l3b), "line parallel");
 let v4a = Vector(3,4).normalize();
 let v4b = Vector(6,8).normalize();
 test(v4a.isEquivalent(v4b), "vectors equivalent");
+
+// 5. intersection
+let line1 = Line(0,0,1,1);
+let line2 = Line(10,0,-1,1);
+
+console.log(line1);
+// line1.intersection(line2)
+
+// 5. polygon
+let poly1 = Polygon.regularPolygon(4);
+// poly1.clipLine(line1);
+
+let poly2 = ConvexPolygon.regularPolygon(4);
+// console.log(poly1);
+console.log(poly2);
+let clip1 = poly2.clipLine(line1);
+console.log(clip1);
 
 
 

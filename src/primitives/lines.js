@@ -1,19 +1,19 @@
-import * as Input from '../input';
+import * as Input from '../parse/input';
 import * as Algebra from '../core/algebra';
 
-export function Line(){
+export function Line() {
 	let {point, vector} = Input.get_line(...arguments);
 
-	const isParallel = function(){
+	const isParallel = function() {
 		let line = Input.get_line(...arguments);
 		return Algebra.parallel(vector, line.vector);
 	}
-	const transform = function(){
+	const transform = function() {
 		let mat = Input.get_matrix(...arguments);
 		// todo: a little more elegant of a solution, please
 		let norm = Algebra.normalize(vector);
 		let temp = point.map((p,i) => p + norm[i])
-		if(temp == null){ return; }
+		if(temp == null) { return; }
 		var p0 = Algebra.multiply_vector2_matrix2(point, mat);
 		var p1 = Algebra.multiply_vector2_matrix2(temp, mat);
 		return Line.withPoints([p0, p1]);
@@ -27,7 +27,7 @@ export function Line(){
 	} );
 }
 // static methods
-Line.withPoints = function(){
+Line.withPoints = function() {
 	let points = Input.get_two_vec2(...arguments);
 	return Line({
 		point: points[0],
@@ -51,7 +51,7 @@ Line.perpendicularBisector = function() {
 }
 
 
-export function Ray(){
+export function Ray() {
 	let {point, vector} = Input.get_line(...arguments);
 
 	return Object.freeze( {
@@ -61,7 +61,7 @@ export function Ray(){
 	} );
 }
 // static methods
-Ray.withPoints = function(){
+Ray.withPoints = function() {
 	let points = Input.get_two_vec2(...arguments);
 	return Ray({
 		point: points[0],
@@ -73,10 +73,10 @@ Ray.withPoints = function(){
 }
 
 
-export function Edge(){
+export function Edge() {
 	let _endpoints = Input.get_two_vec2(...arguments);
 
-	const vector = function(){
+	const vector = function() {
 		return Vector(
 			_endpoints[1][0] - _endpoints[0][0],
 			_endpoints[1][1] - _endpoints[0][1]

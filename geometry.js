@@ -7,6 +7,17 @@
 
 	const EPSILON      = 1e-10;
 
+	/** clean floating point numbers
+	 *  example: 15.0000000000000002 into 15
+	 * the adjustable epsilon is default 15, Javascripts 16 digit float
+	 */
+	function clean_number(num, decimalPlaces = 15) {
+		// todo, this fails when num is a string, consider checking
+		return (num == null
+			? undefined
+			: parseFloat(num.toFixed(decimalPlaces)));
+	}
+
 	// all points are array syntax [x,y]
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -34,7 +45,7 @@
 	/** @param [number]
 	 *  @returns boolean
 	 */
-	function degenerate(v){
+	function degenerate(v) {
 		return Math.abs(v.reduce((a, b) => a + b, 0)) < EPSILON;
 	}
 
@@ -48,18 +59,18 @@
 			.reduce((prev,curr) => prev + curr, 0);
 	}
 
-	function midpoint$1(a, b){
+	function midpoint(a, b) {
 		return a.map((ai,i) => (ai+b[i])*0.5);
 	}
 
-	function equivalent(a, b, epsilon = EPSILON){
+	function equivalent(a, b, epsilon = EPSILON) {
 		// rectangular bounds test for fast calculation
 		return a
 			.map((ai,i) => Math.abs(ai - b[i]) < epsilon)
 			reduce((a,b) => a && b, true);
 	}
 
-	function parallel(a, b, epsilon = EPSILON){
+	function parallel(a, b, epsilon = EPSILON) {
 		return 1 - Math.abs(dot(normalize(a), normalize(b))) < epsilon;
 	}
 
@@ -72,19 +83,19 @@
 	 * @param {number} angle in radians, angle PI/2 is along the +Y axis
 	 * @returns {number} clockwise interior angle (from a to b) in radians
 	 */
-	function clockwise_angle2_radians(a, b){
+	function clockwise_angle2_radians(a, b) {
 		// this is on average 50 to 100 times faster than clockwise_angle2
-		while(a < 0){ a += Math.PI*2; }
-		while(b < 0){ b += Math.PI*2; }
+		while (a < 0) { a += Math.PI*2; }
+		while (b < 0) { b += Math.PI*2; }
 		var a_b = a - b;
 		return (a_b >= 0)
 			? a_b
 			: Math.PI*2 - (b - a);
 	}
-	function counter_clockwise_angle2_radians(a, b){
+	function counter_clockwise_angle2_radians(a, b) {
 		// this is on average 50 to 100 times faster than counter_clockwise_angle2
-		while(a < 0){ a += Math.PI*2; }
-		while(b < 0){ b += Math.PI*2; }
+		while (a < 0) { a += Math.PI*2; }
+		while (b < 0) { b += Math.PI*2; }
 		var b_a = b - a;
 		return (b_a >= 0)
 			? b_a
@@ -95,25 +106,25 @@
 	 * @param {[number, number]} vector
 	 * @returns {number} clockwise angle (from a to b) in radians
 	 */
-	function clockwise_angle2(a, b){
+	function clockwise_angle2(a, b) {
 		var dotProduct = b[0]*a[0] + b[1]*a[1];
 		var determinant = b[0]*a[1] - b[1]*a[0];
 		var angle = Math.atan2(determinant, dotProduct);
-		if(angle < 0){ angle += Math.PI*2; }
+		if (angle < 0) { angle += Math.PI*2; }
 		return angle;
 	}
-	function counter_clockwise_angle2(a, b){
+	function counter_clockwise_angle2(a, b) {
 		var dotProduct = a[0]*b[0] + a[1]*b[1];
 		var determinant = a[0]*b[1] - a[1]*b[0];
 		var angle = Math.atan2(determinant, dotProduct);
-		if(angle < 0){ angle += Math.PI*2; }
+		if (angle < 0) { angle += Math.PI*2; }
 		return angle;
 	}
 	/** There are 2 interior angles between 2 vectors, return both, the smaller first
 	 * @param {[number, number]} vector
 	 * @returns {[number, number]} 2 angle measurements between vectors
 	 */
-	function interior_angles2(a, b){
+	function interior_angles2(a, b) {
 		var interior1 = clockwise_angle2(a, b);
 		var interior2 = Math.PI*2 - interior1;
 		return (interior1 < interior2)
@@ -124,7 +135,7 @@
 	 * @param {[number, number]} vector
 	 * @returns {[[number, number],[number, number]]} 2 vectors, the smaller angle first
 	 */
-	function bisect_vectors(a, b){
+	function bisect_vectors(a, b) {
 		let aV = normalize(a);
 		let bV = normalize(b);
 		let sum = aV.map((_,i) => aV[i] + bV[i]);
@@ -137,10 +148,10 @@
 	 * @param {[number, number]} all vectors, lines defined by points and vectors
 	 * @returns [ [number,number], [number,number] ] // line, defined as point, vector, in that order
 	 */
-	function bisect_lines2$1(pointA, vectorA, pointB, vectorB){
+	function bisect_lines2(pointA, vectorA, pointB, vectorB) {
 		let denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
-		if(Math.abs(denominator) < EPSILON){ /* parallel */
-			return [midpoint$1(pointA, pointB), vectorA.slice()];
+		if (Math.abs(denominator) < EPSILON) { /* parallel */
+			return [midpoint(pointA, pointB), vectorA.slice()];
 		}
 		let vectorC = [pointB[0]-pointA[0], pointB[1]-pointA[1]];
 		// var numerator = vectorC[0] * vectorB[1] - vectorB[0] * vectorC[1];
@@ -151,7 +162,7 @@
 		var bisect = bisect_vectors(vectorA, vectorB);
 		bisects[1] = [ bisects[1][1], -bisects[1][0] ];
 		// swap to make smaller interior angle first
-		if(Math.abs(cross2(vectorA, bisects[1])) <
+		if (Math.abs(cross2(vectorA, bisects[1])) <
 		   Math.abs(cross2(vectorA, bisects[0]))) {
 			var swap = bisects[0];
 			bisects[0] = bisects[1];
@@ -162,15 +173,15 @@
 
 	// todo: check the implementation above, if it works, delete this:
 
-	// export function bisect_lines2(pointA, vectorA, pointB, vectorB){
-	// 	if(parallel(vectorA, vectorB)){
+	// export function bisect_lines2(pointA, vectorA, pointB, vectorB) {
+	// 	if (parallel(vectorA, vectorB)) {
 	// 		return [midpoint(pointA, pointB), vectorA.slice()];
 	// 	} else{
 	// 		var inter = Intersection.line_line(pointA, vectorA, pointB, vectorB);
 	// 		var bisect = bisect_vectors(vectorA, vectorB);
 	// 		bisects[1] = [ bisects[1][1], -bisects[1][0] ];
 	// 		// swap to make smaller interior angle first
-	// 		if(Math.abs(cross2(vectorA, bisects[1])) <
+	// 		if (Math.abs(cross2(vectorA, bisects[1])) <
 	// 		   Math.abs(cross2(vectorA, bisects[0]))) {
 	// 			var swap = bisects[0];
 	// 			bisects[0] = bisects[1];
@@ -181,7 +192,7 @@
 	// }
 
 	/** apply a matrix transform on a point */
-	function multiply_vector2_matrix2(vector, matrix){
+	function multiply_vector2_matrix2(vector, matrix) {
 		return [ vector[0] * matrix[0] + vector[1] * matrix[2] + matrix[4],
 		         vector[0] * matrix[1] + vector[1] * matrix[3] + matrix[5] ];
 	}
@@ -189,7 +200,7 @@
 	/** 
 	 * These all standardize a row-column order
 	 */
-	function make_matrix2_reflection(vector, origin){
+	function make_matrix2_reflection(vector, origin) {
 		// the line of reflection passes through origin, runs along vector
 		let angle = Math.atan2(vector[1], vector[0]);
 		let cosAngle = Math.cos(angle);
@@ -204,7 +215,7 @@
 		let ty = origin[1] + b * -origin[0] + -origin[1] * d;
 		return [a, b, c, d, tx, ty];
 	}
-	function make_matrix2_rotation(angle, origin){
+	function make_matrix2_rotation(angle, origin) {
 		var a = Math.cos(angle);
 		var b = Math.sin(angle);
 		var c = -Math.sin(angle);
@@ -213,9 +224,9 @@
 		var ty = (origin != null) ? origin[1] : 0;
 		return [a, b, c, d, tx, ty];
 	}
-	function make_matrix2_inverse(m){
+	function make_matrix2_inverse(m) {
 		var det = m[0] * m[3] - m[1] * m[2];
-		if (!det || isNaN(det) || !isFinite(m[4]) || !isFinite(m[5])){ return undefined; }
+		if (!det || isNaN(det) || !isFinite(m[4]) || !isFinite(m[5])) { return undefined; }
 		return [
 			m[3]/det,
 			-m[1]/det,
@@ -225,7 +236,7 @@
 			(m[1]*m[4] - m[0]*m[5])/det
 		];
 	}
-	function multiply_matrices2(m1, m2){
+	function multiply_matrices2(m1, m2) {
 		let a = m1[0] * m2[0] + m1[2] * m2[1];
 		let c = m1[0] * m2[2] + m1[2] * m2[3];
 		let tx = m1[0] * m2[4] + m1[2] * m2[5] + m1[4];
@@ -238,7 +249,7 @@
 	// these are all hard-coded to certain vector lengths
 	// the length is specified by the number at the end of the function name
 
-	function cross2(a, b){
+	function cross2(a, b) {
 		return [ a[0]*b[1], a[1]*b[0] ];
 	}
 
@@ -250,7 +261,7 @@
 		];
 	}
 
-	function distance2(a, b){
+	function distance2(a, b) {
 		return Math.sqrt(
 			Math.pow(a[0] - b[0], 2) +
 			Math.pow(a[1] - b[1], 2)
@@ -273,7 +284,7 @@
 		magnitude: magnitude,
 		degenerate: degenerate,
 		dot: dot,
-		midpoint: midpoint$1,
+		midpoint: midpoint,
 		equivalent: equivalent,
 		parallel: parallel,
 		clockwise_angle2_radians: clockwise_angle2_radians,
@@ -282,7 +293,7 @@
 		counter_clockwise_angle2: counter_clockwise_angle2,
 		interior_angles2: interior_angles2,
 		bisect_vectors: bisect_vectors,
-		bisect_lines2: bisect_lines2$1,
+		bisect_lines2: bisect_lines2,
 		multiply_vector2_matrix2: multiply_vector2_matrix2,
 		make_matrix2_reflection: make_matrix2_reflection,
 		make_matrix2_rotation: make_matrix2_rotation,
@@ -300,39 +311,39 @@
 	 *  endpoints, use "exclusive" functions
 	 */
 
-	function equivalent2(a, b, epsilon = EPSILON){
+	function equivalent2(a, b, epsilon = EPSILON) {
 		return Math.abs(a[0]-b[0]) < epsilon && Math.abs(a[1]-b[1]) < epsilon;
 	}
 
 
-	function line_line(aPt, aVec, bPt, bVec, epsilon){
+	function line_line(aPt, aVec, bPt, bVec, epsilon) {
 		return vector_intersection(aPt, aVec, bPt, bVec, line_line_comp, epsilon);
 	}
-	function line_ray(linePt, lineVec, rayPt, rayVec, epsilon){
+	function line_ray(linePt, lineVec, rayPt, rayVec, epsilon) {
 		return vector_intersection(linePt, lineVec, rayPt, rayVec, line_ray_comp, epsilon);
 	}
-	function line_edge(point, vec, edge0, edge1, epsilon){
+	function line_edge(point, vec, edge0, edge1, epsilon) {
 		let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
 		return vector_intersection(point, vec, edge0, edgeVec, line_edge_comp, epsilon);
 	}
-	function ray_ray(aPt, aVec, bPt, bVec, epsilon){
+	function ray_ray(aPt, aVec, bPt, bVec, epsilon) {
 		return vector_intersection(aPt, aVec, bPt, bVec, ray_ray_comp, epsilon);
 	}
-	function ray_edge(rayPt, rayVec, edge0, edge1, epsilon){
+	function ray_edge(rayPt, rayVec, edge0, edge1, epsilon) {
 		let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
 		return vector_intersection(rayPt, rayVec, edge0, edgeVec, ray_edge_comp, epsilon);
 	}
-	function edge_edge(a0, a1, b0, b1, epsilon){
+	function edge_edge(a0, a1, b0, b1, epsilon) {
 		let aVec = [a1[0]-a0[0], a1[1]-a0[1]];
 		let bVec = [b1[0]-b0[0], b1[1]-b0[1]];
 		return vector_intersection(a0, aVec, b0, bVec, edge_edge_comp, epsilon);
 	}
 
-	function line_edge_exclusive(point, vec, edge0, edge1){
+	function line_edge_exclusive(point, vec, edge0, edge1) {
 		let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
 		let x = vector_intersection(point, vec, edge0, edgeVec, line_edge_comp);
-		if (x == null){ return undefined; }
-		if(equivalent2(x, edge0) || equivalent2(x, edge1)){
+		if (x == null) { return undefined; }
+		if (equivalent2(x, edge0) || equivalent2(x, edge1)) {
 			return undefined;
 		}
 		return x;
@@ -346,10 +357,10 @@
 	const line_edge_comp = function(t0, t1, epsilon = EPSILON) {
 		return t1 >= -epsilon && t1 <= 1+epsilon;
 	};
-	const ray_ray_comp = function(t0, t1, epsilon = EPSILON){
+	const ray_ray_comp = function(t0, t1, epsilon = EPSILON) {
 		return t0 >= -epsilon && t1 >= -epsilon;
 	};
-	const ray_edge_comp = function(t0, t1, epsilon = EPSILON){
+	const ray_edge_comp = function(t0, t1, epsilon = EPSILON) {
 		return t0 >= -epsilon && t1 >= -epsilon && t1 <= 1+epsilon;
 	};
 	const edge_edge_comp = function(t0, t1, epsilon = EPSILON) {
@@ -363,16 +374,16 @@
 	 * requires a compFunction to describe valid bounds checking 
 	 * line always returns true, ray is true for t > 0, edge must be between 0 < t < 1
 	*/
-	var vector_intersection = function(aPt, aVec, bPt, bVec, compFunction, epsilon = EPSILON){
-		function det(a,b){ return a[0] * b[1] - b[0] * a[1]; }
+	var vector_intersection = function(aPt, aVec, bPt, bVec, compFunction, epsilon = EPSILON) {
+		function det(a,b) { return a[0] * b[1] - b[0] * a[1]; }
 		var denominator0 = det(aVec, bVec);
 		var denominator1 = -denominator0;
-		if(Math.abs(denominator0) < epsilon){ return undefined; } /* parallel */
+		if (Math.abs(denominator0) < epsilon) { return undefined; } /* parallel */
 		var numerator0 = det([bPt[0]-aPt[0], bPt[1]-aPt[1]], bVec);
 		var numerator1 = det([aPt[0]-bPt[0], aPt[1]-bPt[1]], aVec);
 		var t0 = numerator0 / denominator0;
 		var t1 = numerator1 / denominator1;
-		if(compFunction(t0, t1, epsilon)) {
+		if (compFunction(t0, t1, epsilon)) {
 			return [aPt[0] + aVec[0]*t0, aPt[1] + aVec[1]*t0];
 		}
 	};
@@ -387,7 +398,7 @@
 
 	// line_collinear - prev name
 	/** is a point collinear to a line, within an epsilon */
-	function point_on_line(linePoint, lineVector, point, epsilon = EPSILON){
+	function point_on_line(linePoint, lineVector, point, epsilon = EPSILON) {
 		let pointPoint = [point[0] - linePoint[0], point[1] - linePoint[1]];
 		let cross = pointPoint[0]*lineVector[1] - pointPoint[1]*lineVector[0];
 		return Math.abs(cross) < epsilon;
@@ -395,7 +406,7 @@
 
 	// edge_collinear - prev name
 	/** is a point collinear to an edge, between endpoints, within an epsilon */
-	function point_on_edge(edge0, edge1, point, epsilon = EPSILON){
+	function point_on_edge(edge0, edge1, point, epsilon = EPSILON) {
 		// distance between endpoints A,B should be equal to point->A + point->B
 		let dEdge = Math.sqrt(Math.pow(edge0[0]-edge1[0],2) +
 		                      Math.pow(edge0[1]-edge1[1],2));
@@ -412,8 +423,8 @@
 	 * @param poly is an array of points [ [x,y], [x,y]...]
 	 * @returns {boolean} true if point is inside polygon
 	 */
-	function point_in_polygon(poly, point, epsilon = EPSILON){
-		if(poly == undefined || !(poly.length > 0)){ return false; }
+	function point_in_polygon(poly, point, epsilon = EPSILON) {
+		if (poly == undefined || !(poly.length > 0)) { return false; }
 		return poly.map( (p,i,arr) => {
 			let nextP = arr[(i+1)%arr.length];
 			let a = [ nextP[0]-p[0], nextP[1]-p[1] ];
@@ -423,19 +434,19 @@
 	}
 
 	/** do two convex polygons overlap one another */
-	function polygons_overlap(ps1, ps2){
+	function polygons_overlap(ps1, ps2) {
 		// convert array of points into edges [point, nextPoint]
 		let e1 = ps1.map((p,i,arr) => [p, arr[(i+1)%arr.length]] );
 		let e2 = ps2.map((p,i,arr) => [p, arr[(i+1)%arr.length]] );
-		for(let i = 0; i < e1.length; i++){
-			for(let j = 0; j < e2.length; j++){
-				if(edge_edge(e1[i][0], e1[i][1], e2[j][0], e2[j][1]) != undefined){
+		for (let i = 0; i < e1.length; i++) {
+			for (let j = 0; j < e2.length; j++) {
+				if (edge_edge(e1[i][0], e1[i][1], e2[j][0], e2[j][1]) != undefined) {
 					return true;
 				}
 			}
 		}
-		if(point_in_polygon(ps1, ps2[0])){ return true; }
-		if(point_in_polygon(ps2, ps1[0])){ return true; }
+		if (point_in_polygon(ps1, ps2[0])) { return true; }
+		if (point_in_polygon(ps2, ps1[0])) { return true; }
 		return false;
 	}
 
@@ -449,20 +460,20 @@
 
 
 	/** clip an infinite line in a polygon, returns an edge or undefined if no intersection */
-	function clip_line_in_poly(poly, linePoint, lineVector){
+	function clip_line_in_poly(poly, linePoint, lineVector) {
 		let intersections = poly
 			.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // poly points into edge pairs
 			.map(el => line_edge(linePoint, lineVector, el[0], el[1]))
 			.filter(el => el != null);
-		switch(intersections.length){
+		switch (intersections.length) {
 		case 0: return undefined;
 		case 1: return [intersections[0], intersections[0]]; // degenerate edge
 		case 2: return intersections;
 		default:
 		// special case: line intersects directly on a poly point (2 edges, same point)
 		//  filter to unique points by [x,y] comparison.
-			for(let i = 1; i < intersections.length; i++){
-				if( !equivalent2(intersections[0], intersections[i])){
+			for (let i = 1; i < intersections.length; i++) {
+				if ( !equivalent2(intersections[0], intersections[i])) {
 					return [intersections[0], intersections[i]];
 				}
 			}
@@ -474,82 +485,82 @@
 			.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // poly points into edge pairs
 			.map(el => ray_edge(linePoint, lineVector, el[0], el[1]))
 			.filter(el => el != null);
-		switch(intersections.length){
+		switch (intersections.length) {
 		case 0: return undefined;
 		case 1: return [linePoint, intersections[0]];
 		case 2: return intersections;
 		// default: throw "clipping ray in a convex polygon resulting in 3 or more points";
 		default:
-			for(let i = 1; i < intersections.length; i++){
-				if( !equivalent2(intersections[0], intersections[i])){
+			for (let i = 1; i < intersections.length; i++) {
+				if ( !equivalent2(intersections[0], intersections[i])) {
 					return [intersections[0], intersections[i]];
 				}
 			}
 		}
 	}
-	function clipEdge(edge){
+	function clipEdge(edge) {
 		var intersections = this.edges
-			.map(function(el){ return intersectionEdgeEdge(edge, el); })
-			.filter(function(el){return el !== undefined; })
+			.map(function(el) { return intersectionEdgeEdge(edge, el); })
+			.filter(function(el) {return el !== undefined; })
 			// filter out intersections equivalent to the edge points themselves
-			.filter(function(el){ 
+			.filter(function(el) { 
 				return !el.equivalent(edge.nodes[0]) &&
 				       !el.equivalent(edge.nodes[1]); });
-		switch(intersections.length){
+		switch (intersections.length) {
 			case 0:
-				if(this.contains(edge.nodes[0])){ return edge; } // completely inside
+				if (this.contains(edge.nodes[0])) { return edge; } // completely inside
 				return undefined;  // completely outside
 			case 1:
-				if(this.contains(edge.nodes[0])){
+				if (this.contains(edge.nodes[0])) {
 					return new Edge(edge.nodes[0], intersections[0]);
 				}
 				return new Edge(edge.nodes[1], intersections[0]);
 			case 2: return new Edge(intersections[0], intersections[1]);
 			// default: throw "clipping edge in a convex polygon resulting in 3 or more points";
 			default:
-				for(var i = 1; i < intersections.length; i++){
-					if( !intersections[0].equivalent(intersections[i]) ){
+				for (var i = 1; i < intersections.length; i++) {
+					if ( !intersections[0].equivalent(intersections[i]) ) {
 						return new Edge(intersections[0], intersections[i]);
 					}
 				}
 		}
 	}
-	function clipLine(line){
+	function clipLine(line) {
 		var intersections = this.edges
-			.map(function(el){ return intersectionLineEdge(line, el); })
-			.filter(function(el){return el !== undefined; });
-		switch(intersections.length){
+			.map(function(el) { return intersectionLineEdge(line, el); })
+			.filter(function(el) {return el !== undefined; });
+		switch (intersections.length) {
 			case 0: return undefined;
 			case 1: return new Edge(intersections[0], intersections[0]); // degenerate edge
 			case 2: return new Edge(intersections[0], intersections[1]);
 			// default: throw "clipping line in a convex polygon resulting in 3 or more points";
 			default:
-				for(var i = 1; i < intersections.length; i++){
-					if( !intersections[0].equivalent(intersections[i]) ){
+				for (var i = 1; i < intersections.length; i++) {
+					if ( !intersections[0].equivalent(intersections[i]) ) {
 						return new Edge(intersections[0], intersections[i]);
 					}
 				}
 		}
 	}
-	function clipRay(ray){
+	function clipRay(ray) {
 		var intersections = this.edges
-			.map(function(el){ return intersectionRayEdge(ray, el); })
-			.filter(function(el){return el !== undefined; });
-		switch(intersections.length){
+			.map(function(el) { return intersectionRayEdge(ray, el); })
+			.filter(function(el) {return el !== undefined; });
+		switch (intersections.length) {
 			case 0: return undefined;
 			case 1: return new Edge(ray.origin, intersections[0]);
 			case 2: return new Edge(intersections[0], intersections[1]);
 			// default: throw "clipping ray in a convex polygon resulting in 3 or more points";
 			default:
-				for(var i = 1; i < intersections.length; i++){
-					if( !intersections[0].equivalent(intersections[i]) ){
+				for (var i = 1; i < intersections.length; i++) {
+					if ( !intersections[0].equivalent(intersections[i]) ) {
 						return new Edge(intersections[0], intersections[i]);
 					}
 				}
 		}
 	}
 
-	function intersection_circle_line(center, radius, p0, p1){
+	function intersection_circle_line(center, radius, p0, p1) {
 		var r_squared =  Math.pow(radius, 2);
 		var x1 = p0[0] - center[0];
 		var y1 = p0[1] - center[1];
@@ -559,24 +570,24 @@
 		var dy = y2 - y1;
 		var dr_squared = dx*dx + dy*dy;
 		var D = x1*y2 - x2*y1;
-		function sgn(x){ if(x < 0){return -1;} return 1; }
+		function sgn(x) { if (x < 0) {return -1;} return 1; }
 		var x1 = (D*dy + sgn(dy)*dx*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
 		var x2 = (D*dy - sgn(dy)*dx*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
 		var y1 = (-D*dx + Math.abs(dy)*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
 		var y2 = (-D*dx - Math.abs(dy)*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
 		let x1NaN = isNaN(x1);
 		let x2NaN = isNaN(x2);
-		if(!x1NaN && !x2NaN){
+		if (!x1NaN && !x2NaN) {
 			return [
 				[x1 + center[0], y1 + center[1]],
 				[x2 + center[0], y2 + center[1]]
 			];
 		}
-		if(x1NaN && x2NaN){ return undefined; }
-		if(!x1NaN){
+		if (x1NaN && x2NaN) { return undefined; }
+		if (!x1NaN) {
 			return [ [x1 + center[0], y1 + center[1]] ];
 		}
-		if(!x2NaN){
+		if (!x2NaN) {
 			return [ [x2 + center[0], y2 + center[1]] ];
 		}
 	}
@@ -601,7 +612,7 @@
 		intersection_circle_line: intersection_circle_line
 	});
 
-	function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH){
+	function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH) {
 		// # points in the convex hull before escaping function
 		var INFINITE_LOOP = 10000;
 		// sort points by y. if ys are equivalent, sort by x
@@ -625,11 +636,11 @@
 				// sort by angle, setting lowest values next to "ang"
 				.map(el => {
 					var angle = Math.atan2(hull[h][1] - el[1], hull[h][0] - el[0]);
-					while(angle < ang){ angle += Math.PI*2; }
+					while(angle < ang) { angle += Math.PI*2; }
 					return {node:el, angle:angle, distance:undefined};
 				})  // distance to be set later
 				.sort((a,b) => (a.angle < b.angle)?-1:(a.angle > b.angle)?1:0);
-			if(angles.length === 0){ return undefined; }
+			if (angles.length === 0) { return undefined; }
 			// narrowest-most right turn
 			var rightTurn = angles[0];
 			// collect all other points that are collinear along the same ray
@@ -643,16 +654,16 @@
 			// (OPTION 1) exclude all collinear points along the hull 
 			.sort((a,b) => (a.distance < b.distance)?1:(a.distance > b.distance)?-1:0);
 			// (OPTION 2) include all collinear points along the hull
-			// .sort(function(a,b){return (a.distance < b.distance)?-1:(a.distance > b.distance)?1:0});
+			// .sort(function(a,b) {return (a.distance < b.distance)?-1:(a.distance > b.distance)?1:0});
 			// if the point is already in the convex hull, we've made a loop. we're done
-			// if(contains(hull, angles[0].node)){
-			// if(includeCollinear){
-			// 	points.sort(function(a,b){return (a.distance - b.distance)});
+			// if (contains(hull, angles[0].node)) {
+			// if (includeCollinear) {
+			// 	points.sort(function(a,b) {return (a.distance - b.distance)});
 			// } else{
-			// 	points.sort(function(a,b){return b.distance - a.distance});
+			// 	points.sort(function(a,b) {return b.distance - a.distance});
 			// }
 
-			if(hull.filter(el => el === angles[0].node).length > 0){
+			if (hull.filter(el => el === angles[0].node).length > 0) {
 				return hull;
 			}
 			// add point to hull, prepare to loop again
@@ -663,7 +674,7 @@
 		return undefined;
 	}
 
-	function split_convex_polygon(poly, linePoint, lineVector){
+	function split_convex_polygon(poly, linePoint, lineVector) {
 		// todo: should this return undefined if no intersection? 
 		//       or the original poly?
 
@@ -679,7 +690,7 @@
 		}).filter(el => el.point != null);
 
 		// three cases: intersection at 2 edges, 2 points, 1 edge and 1 point
-		if(edges_intersections.length == 2){
+		if (edges_intersections.length == 2) {
 			let sorted_edges = edges_intersections.slice()
 				.sort((a,b) => a.at_index - b.at_index);
 
@@ -694,7 +705,7 @@
 			face_b.push(sorted_edges[1].point);
 			face_b.push(sorted_edges[0].point);
 			return [face_a, face_b];
-		} else if(edges_intersections.length == 1 && vertices_intersections.length == 1){
+		} else if (edges_intersections.length == 1 && vertices_intersections.length == 1) {
 			vertices_intersections[0]["type"] = "v";
 			edges_intersections[0]["type"] = "e";
 			let sorted_geom = vertices_intersections.concat(edges_intersections)
@@ -702,15 +713,15 @@
 
 			let face_a = poly.slice(sorted_geom[1].at_index+1)
 				.concat(poly.slice(0, sorted_geom[0].at_index+1));
-			if(sorted_geom[0].type === "e"){ face_a.push(sorted_geom[0].point); }
+			if (sorted_geom[0].type === "e") { face_a.push(sorted_geom[0].point); }
 			face_a.push(sorted_geom[1].point); // todo: if there's a bug, it's here. switch this
 
 			let face_b = poly
 				.slice(sorted_geom[0].at_index+1, sorted_geom[1].at_index+1);
-			if(sorted_geom[1].type === "e"){ face_b.push(sorted_geom[1].point); }
+			if (sorted_geom[1].type === "e") { face_b.push(sorted_geom[1].point); }
 			face_b.push(sorted_geom[0].point); // todo: if there's a bug, it's here. switch this
 			return [face_a, face_b];
-		} else if(vertices_intersections.length == 2){
+		} else if (vertices_intersections.length == 2) {
 			let sorted_vertices = vertices_intersections.slice()
 				.sort((a,b) => a.at_index - b.at_index);
 			let face_a = poly
@@ -769,17 +780,6 @@
 		axiom6: axiom6,
 		axiom7: axiom7
 	});
-
-	/** clean floating point numbers
-	 *  example: 15.0000000000000002 into 15
-	 * the adjustable epsilon is default 15, Javascripts 16 digit float
-	 */
-	function clean_number(num, decimalPlaces = 15) {
-		// todo, this fails when num is a string, consider checking
-		return (num == null
-			? undefined
-			: parseFloat(num.toFixed(decimalPlaces)));
-	}
 
 	/** 
 	 * this searches user-provided inputs for a valid n-dimensional vector 
@@ -985,7 +985,7 @@
 		const scale = function(mag) {
 			return Vector$1( _v.map(v => v * mag) );
 		};
-		const midpoint = function() {
+		const midpoint$$1 = function() {
 			let vec = get_vec(...arguments);
 			let sm = (_v.length < vec.length) ? _v.slice() : vec;
 			let lg = (_v.length < vec.length) ? vec : _v.slice();
@@ -1016,7 +1016,7 @@
 				isEquivalent,
 				isParallel,
 				scale,
-				midpoint,
+				midpoint: midpoint$$1,
 				bisect,
 				get x() { return _v[0]; },
 				get y() { return _v[1]; },
@@ -1059,16 +1059,19 @@
 		} );
 	}
 
-	function Polygon(){
+	function Polygon() {
 
 		let _points = get_array_of_vec(...arguments);
+
+		console.log("polygon arguments", arguments);
+		console.log("_points", _points);
 
 		/** Calculates the signed area of a polygon. This requires the polygon be non-intersecting.
 		 * @returns {number} the area of the polygon
 		 * @example
 		 * var area = polygon.signedArea()
 		 */
-		const signedArea = function(){
+		const signedArea = function() {
 			return 0.5 * _points.map((el,i,arr) => {
 				var next = arr[(i+1)%arr.length];
 				return el[0] * next[1] - next[0] * el[1];
@@ -1080,7 +1083,7 @@
 		 * @example
 		 * var centroid = polygon.centroid()
 		 */
-		const centroid = function(){
+		const centroid = function() {
 			return _points.map((el,i,arr) => {
 				var next = arr[(i+1)%arr.length];
 				var mag = el[0] * next[1] - next[0] * el[1];
@@ -1094,14 +1097,14 @@
 		 * @example
 		 * var boundsCenter = polygon.center()
 		 */
-		const center = function(){
+		const center = function() {
 			// this is not an average / means
 			var xMin = Infinity, xMax = 0, yMin = Infinity, yMax = 0;
 			_points.forEach(p => {
-				if(p[0] > xMax){ xMax = p[0]; }
-				if(p[0] < xMin){ xMin = p[0]; }
-				if(p[1] > yMax){ yMax = p[1]; }
-				if(p[1] < yMin){ yMin = p[1]; }
+				if (p[0] > xMax) { xMax = p[0]; }
+				if (p[0] < xMin) { xMin = p[0]; }
+				if (p[1] > yMax) { yMax = p[1]; }
+				if (p[1] < yMin) { yMin = p[1]; }
 			});
 			return Vector$1( xMin+(xMax-xMin)*0.5, yMin+(yMax-yMin)*0.5 );
 		};
@@ -1111,11 +1114,11 @@
 		 * @example
 		 * var isInside = polygon.contains( {x:0.5, y:0.5} )
 		 */
-		const contains = function(point){
+		const contains = function(point) {
 			var isInside = false;
 			// http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 			for(var i = 0, j = _points.length - 1; i < _points.length; j = i++) {
-				if( (_points[i][1] > point[1]) != (_points[j][1] > point[1]) &&
+				if ( (_points[i][1] > point[1]) != (_points[j][1] > point[1]) &&
 				point[0] < (_points[j][0] - _points[i][0]) * (point[1] - _points[i][1]) / (_points[j][1] - _points[i][1]) + _points[i][0] ) {
 					isInside = !isInside;
 				}
@@ -1135,15 +1138,15 @@
 	}
 
 
-	// Polygon.withPoints = function(points){
+	// Polygon.withPoints = function(points) {
 	// 	var poly = new Polygon();
-	// 	poly.edges = points.map(function(el,i){
+	// 	poly.edges = points.map(function(el,i) {
 	// 		var nextEl = points[ (i+1)%points.length ];
 	// 		return new Edge(el, nextEl);
 	// 	},this);
 	// 	return poly;
 	// }
-	Polygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1){
+	Polygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1) {
 		var halfwedge = 2*Math.PI/sides * 0.5;
 		var r = radius / Math.cos(halfwedge);
 		var points = Array.from(Array(Math.floor(sides))).map((_,i) => {
@@ -1154,16 +1157,16 @@
 		});
 		return Polygon(points);
 	};
-	Polygon.convexHull = function(points, includeCollinear = false){
+	Polygon.convexHull = function(points, includeCollinear = false) {
 		// validate input
-		if(points == null || points.length === 0){ return undefined; }
+		if (points == null || points.length === 0) { return undefined; }
 		let hull = convex_hull(points);
 		return Polygon(hull);
 	};
 
 
 
-	function ConvexPolygon(){
+	function ConvexPolygon() {
 
 		let {
 			signedArea,
@@ -1173,63 +1176,66 @@
 			points
 		} = Polygon(...arguments);
 
+		console.log("arguments", arguments);
+		console.log("points", points);
+
 		let _points = points;
 
 
-		// const liesOnEdge = function(p){
-		// 	for(var i = 0; i < this.edges.length; i++){
-		// 		if(this.edges[i].collinear(p)){ return true; }
+		// const liesOnEdge = function(p) {
+		// 	for(var i = 0; i < this.edges.length; i++) {
+		// 		if (this.edges[i].collinear(p)) { return true; }
 		// 	}
 		// 	return false;
 		// }
-		const clipEdge = function(edge){
+		const clipEdge$$1 = function(edge) {
 			var intersections = this.edges
-				.map(function(el){ return intersectionEdgeEdge(edge, el); })
-				.filter(function(el){return el !== undefined; })
+				.map(function(el) { return intersectionEdgeEdge(edge, el); })
+				.filter(function(el) {return el !== undefined; })
 				// filter out intersections equivalent to the edge points themselves
-				.filter(function(el){ 
+				.filter(function(el) { 
 					return !el.equivalent(edge.nodes[0]) &&
 					       !el.equivalent(edge.nodes[1]); });
-			switch(intersections.length){
+			switch(intersections.length) {
 				case 0:
-					if(this.contains(edge.nodes[0])){ return edge; } // completely inside
+					if (this.contains(edge.nodes[0])) { return edge; } // completely inside
 					return undefined;  // completely outside
 				case 1:
-					if(this.contains(edge.nodes[0])){
+					if (this.contains(edge.nodes[0])) {
 						return new Edge(edge.nodes[0], intersections[0]);
 					}
 					return new Edge(edge.nodes[1], intersections[0]);
 				case 2: return new Edge(intersections[0], intersections[1]);
 				// default: throw "clipping edge in a convex polygon resulting in 3 or more points";
 				default:
-					for(var i = 1; i < intersections.length; i++){
-						if( !intersections[0].equivalent(intersections[i]) ){
+					for(var i = 1; i < intersections.length; i++) {
+						if ( !intersections[0].equivalent(intersections[i]) ) {
 							return new Edge(intersections[0], intersections[i]);
 						}
 					}
 			}
 		};
-		const clipLine = function(){
+		const clipLine$$1 = function() {
 			let line = get_line(...arguments);
-			return Intersection.clip_line_in_poly(_points, line.point, line.vector);
+			return clip_line_in_poly(_points, line.point, line.vector);
 		};
-		const clipRay = function(ray){
+		const clipRay$$1 = function(ray) {
 			let line = get_line(...arguments);
-			return Intersection.clip_ray_in_poly(_points, line.point, line.vector);
+			return clip_ray_in_poly(_points, line.point, line.vector);
 		};
-		const enclosingRectangle = function(){
+		const enclosingRectangle = function() {
 			var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
 			_points.forEach(p => {
-				if(p[0] > maxX){ maxX = p[0]; }
-				if(p[0] < minX){ minX = p[0]; }
-				if(p[1] > maxY){ maxY = p[1]; }
-				if(p[1] < minY){ minY = p[1]; }
+				if (p[0] > maxX) { maxX = p[0]; }
+				if (p[0] < minX) { minX = p[0]; }
+				if (p[1] > maxY) { maxY = p[1]; }
+				if (p[1] < minY) { minY = p[1]; }
 			});
 			return Rect(minX, minY, maxX-minX, maxY-minY);
 		};
 
-		const scale = function(magnitude, centerPoint){
-			if(centerPoint == null){ centerPoint = centroid(); }
+		const scale = function(magnitude, centerPoint) {
+			if (centerPoint == null) { centerPoint = centroid(); }
 			let newPoints = _points.map(p => {
 				let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
 				return [centerPoint[0] + vec[0]*magnitude, centerPoint[0] + vec[0]*magnitude];
@@ -1237,8 +1243,8 @@
 			return Polygon(newPoints);
 		};
 
-		const rotate = function(angle, centerPoint){
-			if(centerPoint == null){ centerPoint = centroid(); }
+		const rotate = function(angle, centerPoint) {
+			if (centerPoint == null) { centerPoint = centroid(); }
 			let newPoints = _points.map(p => {
 				let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
 				let mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
@@ -1251,7 +1257,7 @@
 			return Polygon(newPoints);
 		};
 
-		const split = function(){
+		const split = function() {
 			let line = get_line(...arguments);
 			return split_convex_polygon(_points, line.point, line.vector)
 				.map(poly => Polygon(poly));
@@ -1259,7 +1265,7 @@
 
 		const overlaps = function(poly) {
 			let points = get_array_of_vec(...arguments);
-			return Intersection.polygons_overlap(_points, points);
+			return polygons_overlap(_points, points);
 		};
 
 		return Object.freeze( {
@@ -1267,9 +1273,9 @@
 			centroid,
 			center,
 			contains,
-			clipEdge,
-			clipLine,
-			clipRay,
+			clipEdge: clipEdge$$1,
+			clipLine: clipLine$$1,
+			clipRay: clipRay$$1,
 			enclosingRectangle,
 			split,
 			overlaps,
@@ -1278,6 +1284,24 @@
 			get points() { return _points; },
 		} );
 	}
+
+	ConvexPolygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1) {
+		var halfwedge = 2*Math.PI/sides * 0.5;
+		var r = radius / Math.cos(halfwedge);
+		var points = Array.from(Array(Math.floor(sides))).map((_,i) => {
+			var a = -2 * Math.PI * i / sides + halfwedge;
+			var px = clean_number(x + r * Math.sin(a), 14);
+			var py = clean_number(y + r * Math.cos(a), 14);
+			return [px, py]; // align point along Y
+		});
+		return ConvexPolygon(points);
+	};
+	ConvexPolygon.convexHull = function(points, includeCollinear = false) {
+		// validate input
+		if (points == null || points.length === 0) { return undefined; }
+		let hull = convex_hull(points);
+		return ConvexPolygon(hull);
+	};
 
 	/** 
 	 * 2D Matrix (2x3) with translation component in x,y
@@ -1314,19 +1338,19 @@
 		return Matrix( make_matrix2_reflection(vector, origin) );
 	};
 
-	function Line(){
+	function Line() {
 		let {point, vector} = get_line(...arguments);
 
-		const isParallel = function(){
+		const isParallel = function() {
 			let line = get_line(...arguments);
 			return parallel(vector, line.vector);
 		};
-		const transform = function(){
+		const transform = function() {
 			let mat = get_matrix(...arguments);
 			// todo: a little more elegant of a solution, please
 			let norm = normalize(vector);
 			let temp = point.map((p,i) => p + norm[i]);
-			if(temp == null){ return; }
+			if(temp == null) { return; }
 			var p0 = multiply_vector2_matrix2(point, mat);
 			var p1 = multiply_vector2_matrix2(temp, mat);
 			return Line.withPoints([p0, p1]);
@@ -1340,7 +1364,7 @@
 		} );
 	}
 	// static methods
-	Line.withPoints = function(){
+	Line.withPoints = function() {
 		let points = get_two_vec2(...arguments);
 		return Line({
 			point: points[0],
@@ -1357,14 +1381,14 @@
 			points[1][1] - points[0][1]
 		]);
 		return Line({
-			point: midpoint$1(points[0], points[1]),
+			point: midpoint(points[0], points[1]),
 			vector: [vec[1], -vec[0]]
 			// vector: Algebra.cross3(vec, [0,0,1])
 		});
 	};
 
 
-	function Ray(){
+	function Ray() {
 		let {point, vector} = get_line(...arguments);
 
 		return Object.freeze( {
@@ -1374,7 +1398,7 @@
 		} );
 	}
 	// static methods
-	Ray.withPoints = function(){
+	Ray.withPoints = function() {
 		let points = get_two_vec2(...arguments);
 		return Ray({
 			point: points[0],
@@ -1386,10 +1410,10 @@
 	};
 
 
-	function Edge$1(){
+	function Edge$1() {
 		let _endpoints = get_two_vec2(...arguments);
 
-		const vector = function(){
+		const vector = function() {
 			return Vector(
 				_endpoints[1][0] - _endpoints[0][0],
 				_endpoints[1][1] - _endpoints[0][1]

@@ -2,7 +2,7 @@
 import { point_on_line, line_edge_exclusive } from './intersection';
 
 
-export function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH){
+export function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH) {
 	// # points in the convex hull before escaping function
 	var INFINITE_LOOP = 10000;
 	// sort points by y. if ys are equivalent, sort by x
@@ -26,11 +26,11 @@ export function convex_hull(points, include_collinear = false, epsilon = EPSILON
 			// sort by angle, setting lowest values next to "ang"
 			.map(el => {
 				var angle = Math.atan2(hull[h][1] - el[1], hull[h][0] - el[0]);
-				while(angle < ang){ angle += Math.PI*2; }
+				while(angle < ang) { angle += Math.PI*2; }
 				return {node:el, angle:angle, distance:undefined};
 			})  // distance to be set later
 			.sort((a,b) => (a.angle < b.angle)?-1:(a.angle > b.angle)?1:0);
-		if(angles.length === 0){ return undefined; }
+		if (angles.length === 0) { return undefined; }
 		// narrowest-most right turn
 		var rightTurn = angles[0];
 		// collect all other points that are collinear along the same ray
@@ -44,16 +44,16 @@ export function convex_hull(points, include_collinear = false, epsilon = EPSILON
 		// (OPTION 1) exclude all collinear points along the hull 
 		.sort((a,b) => (a.distance < b.distance)?1:(a.distance > b.distance)?-1:0);
 		// (OPTION 2) include all collinear points along the hull
-		// .sort(function(a,b){return (a.distance < b.distance)?-1:(a.distance > b.distance)?1:0});
+		// .sort(function(a,b) {return (a.distance < b.distance)?-1:(a.distance > b.distance)?1:0});
 		// if the point is already in the convex hull, we've made a loop. we're done
-		// if(contains(hull, angles[0].node)){
-		// if(includeCollinear){
-		// 	points.sort(function(a,b){return (a.distance - b.distance)});
+		// if (contains(hull, angles[0].node)) {
+		// if (includeCollinear) {
+		// 	points.sort(function(a,b) {return (a.distance - b.distance)});
 		// } else{
-		// 	points.sort(function(a,b){return b.distance - a.distance});
+		// 	points.sort(function(a,b) {return b.distance - a.distance});
 		// }
 
-		if(hull.filter(el => el === angles[0].node).length > 0){
+		if (hull.filter(el => el === angles[0].node).length > 0) {
 			return hull;
 		}
 		// add point to hull, prepare to loop again
@@ -64,7 +64,7 @@ export function convex_hull(points, include_collinear = false, epsilon = EPSILON
 	return undefined;
 }
 
-export function split_convex_polygon(poly, linePoint, lineVector){
+export function split_convex_polygon(poly, linePoint, lineVector) {
 	// todo: should this return undefined if no intersection? 
 	//       or the original poly?
 
@@ -80,7 +80,7 @@ export function split_convex_polygon(poly, linePoint, lineVector){
 	}).filter(el => el.point != null);
 
 	// three cases: intersection at 2 edges, 2 points, 1 edge and 1 point
-	if(edges_intersections.length == 2){
+	if (edges_intersections.length == 2) {
 		let sorted_edges = edges_intersections.slice()
 			.sort((a,b) => a.at_index - b.at_index);
 
@@ -95,7 +95,7 @@ export function split_convex_polygon(poly, linePoint, lineVector){
 		face_b.push(sorted_edges[1].point);
 		face_b.push(sorted_edges[0].point);
 		return [face_a, face_b];
-	} else if(edges_intersections.length == 1 && vertices_intersections.length == 1){
+	} else if (edges_intersections.length == 1 && vertices_intersections.length == 1) {
 		vertices_intersections[0]["type"] = "v";
 		edges_intersections[0]["type"] = "e";
 		let sorted_geom = vertices_intersections.concat(edges_intersections)
@@ -103,15 +103,15 @@ export function split_convex_polygon(poly, linePoint, lineVector){
 
 		let face_a = poly.slice(sorted_geom[1].at_index+1)
 			.concat(poly.slice(0, sorted_geom[0].at_index+1))
-		if(sorted_geom[0].type === "e"){ face_a.push(sorted_geom[0].point); }
+		if (sorted_geom[0].type === "e") { face_a.push(sorted_geom[0].point); }
 		face_a.push(sorted_geom[1].point); // todo: if there's a bug, it's here. switch this
 
 		let face_b = poly
 			.slice(sorted_geom[0].at_index+1, sorted_geom[1].at_index+1);
-		if(sorted_geom[1].type === "e"){ face_b.push(sorted_geom[1].point); }
+		if (sorted_geom[1].type === "e") { face_b.push(sorted_geom[1].point); }
 		face_b.push(sorted_geom[0].point); // todo: if there's a bug, it's here. switch this
 		return [face_a, face_b];
-	} else if(vertices_intersections.length == 2){
+	} else if (vertices_intersections.length == 2) {
 		let sorted_vertices = vertices_intersections.slice()
 			.sort((a,b) => a.at_index - b.at_index);
 		let face_a = poly

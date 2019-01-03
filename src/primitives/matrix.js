@@ -1,4 +1,4 @@
-import * as Input from '../input';
+import * as Input from '../parse/input';
 import * as Algebra from '../core/algebra';
 
 /** 

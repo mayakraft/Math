@@ -13,7 +13,6 @@
 
 
 import * as algebra from './core/algebra';
-//import * as constants from './core/constants';
 import * as geometry from './core/geometry';
 import * as intersection from './core/intersection';
 import * as origami from './core/origami';

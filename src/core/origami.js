@@ -1,3 +1,4 @@
+import { midpoint, bisect_lines2 } from './algebra';
 
 export function axiom1(a, b) {
 	// n-dimension

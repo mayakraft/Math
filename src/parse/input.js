@@ -1,19 +1,4 @@
 
-export function is_number(n) {
-	return n != null && !isNaN(n);
-}
-
-/** clean floating point numbers
- *  example: 15.0000000000000002 into 15
- * the adjustable epsilon is default 15, Javascripts 16 digit float
- */
-export function clean_number(num, decimalPlaces = 15) {
-	// todo, this fails when num is a string, consider checking
-	return (num == null
-		? undefined
-		: parseFloat(num.toFixed(decimalPlaces)));
-}
-
 /** 
  * this searches user-provided inputs for a valid n-dimensional vector 
  * which includes objects {x:, y:}, arrays [x,y], or sequences of numbers
@@ -149,3 +134,7 @@ export function get_array_of_vec2(){
 	return params;
 }
 
+// unused
+export function is_number(n) {
+	return n != null && !isNaN(n);
+}
