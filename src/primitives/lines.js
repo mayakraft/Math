@@ -1,5 +1,6 @@
 import * as Input from '../parse/input';
 import * as Algebra from '../core/algebra';
+import { Vector } from './vector';
 
 export function Line() {
 	let {point, vector} = Input.get_line(...arguments);
@@ -17,6 +18,9 @@ export function Line() {
 		var p0 = Algebra.multiply_vector2_matrix2(point, mat);
 		var p1 = Algebra.multiply_vector2_matrix2(temp, mat);
 		return Line.withPoints([p0, p1]);
+	}
+	const intersection = function(){
+
 	}
 
 	return Object.freeze( {

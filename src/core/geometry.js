@@ -1,5 +1,6 @@
 
 import { point_on_line, line_edge_exclusive } from './intersection';
+import { EPSILON_LOW, EPSILON, EPSILON_HIGH } from '../parse/clean';
 
 
 export function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH) {

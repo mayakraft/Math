@@ -17,7 +17,10 @@ import * as geometry from './core/geometry';
 import * as intersection from './core/intersection';
 import * as origami from './core/origami';
 
-let core = { algebra, geometry, intersection, origami };
+import { EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number } from './parse/clean';
+
+// let core = { algebra, geometry, intersection, origami };
+let core = { algebra, geometry, intersection, origami, EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number };
 
 export { core };
 export { Vector } from './primitives/vector';

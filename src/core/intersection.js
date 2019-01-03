@@ -96,7 +96,6 @@ var vector_intersection = function(aPt, aVec, bPt, bVec, compFunction, epsilon =
  */
 
 
-// line_collinear - prev name
 /** is a point collinear to a line, within an epsilon */
 export function point_on_line(linePoint, lineVector, point, epsilon = EPSILON) {
 	let pointPoint = [point[0] - linePoint[0], point[1] - linePoint[1]];
@@ -104,7 +103,6 @@ export function point_on_line(linePoint, lineVector, point, epsilon = EPSILON) {
 	return Math.abs(cross) < epsilon;
 }
 
-// edge_collinear - prev name
 /** is a point collinear to an edge, between endpoints, within an epsilon */
 export function point_on_edge(edge0, edge1, point, epsilon = EPSILON) {
 	// distance between endpoints A,B should be equal to point->A + point->B
@@ -117,13 +115,32 @@ export function point_on_edge(edge0, edge1, point, epsilon = EPSILON) {
 	return Math.abs(dEdge - dP0 - dP1) < epsilon;
 }
 
+
+/**
+ * Tests whether or not a point is contained inside a polygon.
+ * @returns {boolean} whether the point is inside the polygon or not
+ * @example
+ * var isInside = point_in_poly(polygonPoints, [0.5, 0.5])
+ */
+export function point_in_poly(poly, point, epsilon = EPSILON) {
+	// W. Randolph Franklin https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
+	let isInside = false;
+	for(let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+		if ( (poly[i][1] > point[1]) != (poly[j][1] > point[1]) &&
+		point[0] < (poly[j][0] - poly[i][0]) * (point[1] - poly[i][1]) / (poly[j][1] - poly[i][1]) + poly[i][0] ) {
+			isInside = !isInside;
+		}
+	}
+	return isInside;
+}
+
 /** is a point inside of a convex polygon? 
  * including along the boundary within epsilon 
  *
  * @param poly is an array of points [ [x,y], [x,y]...]
  * @returns {boolean} true if point is inside polygon
  */
-export function point_in_polygon(poly, point, epsilon = EPSILON) {
+export function point_in_convex_poly(poly, point, epsilon = EPSILON) {
 	if (poly == undefined || !(poly.length > 0)) { return false; }
 	return poly.map( (p,i,arr) => {
 		let nextP = arr[(i+1)%arr.length];
@@ -134,7 +151,7 @@ export function point_in_polygon(poly, point, epsilon = EPSILON) {
 }
 
 /** do two convex polygons overlap one another */
-export function polygons_overlap(ps1, ps2) {
+export function convex_polygons_overlap(ps1, ps2) {
 	// convert array of points into edges [point, nextPoint]
 	let e1 = ps1.map((p,i,arr) => [p, arr[(i+1)%arr.length]] )
 	let e2 = ps2.map((p,i,arr) => [p, arr[(i+1)%arr.length]] )
@@ -145,22 +162,18 @@ export function polygons_overlap(ps1, ps2) {
 			}
 		}
 	}
-	if (point_in_polygon(ps1, ps2[0])) { return true; }
-	if (point_in_polygon(ps2, ps1[0])) { return true; }
+	if (point_in_convex_poly(ps1, ps2[0])) { return true; }
+	if (point_in_convex_poly(ps2, ps1[0])) { return true; }
 	return false;
 }
-
-
 
 /** 
  *  Clipping operations
  *  
  */
 
-
-
 /** clip an infinite line in a polygon, returns an edge or undefined if no intersection */
-export function clip_line_in_poly(poly, linePoint, lineVector) {
+export function clip_line_in_convex_poly(poly, linePoint, lineVector) {
 	let intersections = poly
 		.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // poly points into edge pairs
 		.map(el => line_edge(linePoint, lineVector, el[0], el[1]))
@@ -180,7 +193,7 @@ export function clip_line_in_poly(poly, linePoint, lineVector) {
 	}
 }
 
-export function clip_ray_in_poly(poly, linePoint, lineVector) {
+export function clip_ray_in_convex_poly(poly, linePoint, lineVector) {
 	var intersections = poly
 		.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // poly points into edge pairs
 		.map(el => ray_edge(linePoint, lineVector, el[0], el[1]))
@@ -198,67 +211,33 @@ export function clip_ray_in_poly(poly, linePoint, lineVector) {
 		}
 	}
 }
-export function clipEdge(edge) {
-	var intersections = this.edges
-		.map(function(el) { return intersectionEdgeEdge(edge, el); })
-		.filter(function(el) {return el !== undefined; })
-		// filter out intersections equivalent to the edge points themselves
-		.filter(function(el) { 
-			return !el.equivalent(edge.nodes[0]) &&
-			       !el.equivalent(edge.nodes[1]); });
+
+export function clip_edge_in_convex_poly(poly, edgeA, edgeB) {
+	let intersections = poly
+		.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // poly points into edge pairs
+		.map(el => edge_edge(edgeA, edgeB, el[0], el[1]))
+		.filter(el => el != null);
+	// more efficient if we make sure these are unique
+	for (var i = 0; i < intersections.length; i++) {
+		for (var j = intersections.length-1; j > i; j--) {
+			if (equivalent2(intersections[i], intersections[j])) {
+				intersections.splice(j, 1);
+			}
+		}
+	}
+	let aInside = point_in_convex_poly(edgeA, poly);
 	switch (intersections.length) {
-		case 0:
-			if (this.contains(edge.nodes[0])) { return edge; } // completely inside
-			return undefined;  // completely outside
-		case 1:
-			if (this.contains(edge.nodes[0])) {
-				return new Edge(edge.nodes[0], intersections[0]);
-			}
-			return new Edge(edge.nodes[1], intersections[0]);
-		case 2: return new Edge(intersections[0], intersections[1]);
-		// default: throw "clipping edge in a convex polygon resulting in 3 or more points";
-		default:
-			for (var i = 1; i < intersections.length; i++) {
-				if ( !intersections[0].equivalent(intersections[i]) ) {
-					return new Edge(intersections[0], intersections[i]);
-				}
-			}
+		case 0: return ( aInside 
+			? [[...edgeA], [...edgeB]] 
+			: undefined );
+		case 1: return ( aInside 
+			? [[...edgeA], intersections[0]] 
+			: [[...edgeB], intersections[0]] );
+		case 2: return intersections;
+		default: throw "clipping ray in a convex polygon resulting in 3 or more points";
 	}
 }
-export function clipLine(line) {
-	var intersections = this.edges
-		.map(function(el) { return intersectionLineEdge(line, el); })
-		.filter(function(el) {return el !== undefined; });
-	switch (intersections.length) {
-		case 0: return undefined;
-		case 1: return new Edge(intersections[0], intersections[0]); // degenerate edge
-		case 2: return new Edge(intersections[0], intersections[1]);
-		// default: throw "clipping line in a convex polygon resulting in 3 or more points";
-		default:
-			for (var i = 1; i < intersections.length; i++) {
-				if ( !intersections[0].equivalent(intersections[i]) ) {
-					return new Edge(intersections[0], intersections[i]);
-				}
-			}
-	}
-}
-export function clipRay(ray) {
-	var intersections = this.edges
-		.map(function(el) { return intersectionRayEdge(ray, el); })
-		.filter(function(el) {return el !== undefined; });
-	switch (intersections.length) {
-		case 0: return undefined;
-		case 1: return new Edge(ray.origin, intersections[0]);
-		case 2: return new Edge(intersections[0], intersections[1]);
-		// default: throw "clipping ray in a convex polygon resulting in 3 or more points";
-		default:
-			for (var i = 1; i < intersections.length; i++) {
-				if ( !intersections[0].equivalent(intersections[i]) ) {
-					return new Edge(intersections[0], intersections[i]);
-				}
-			}
-	}
-}
+
 
 export function intersection_circle_line(center, radius, p0, p1) {
 	var r_squared =  Math.pow(radius, 2);
