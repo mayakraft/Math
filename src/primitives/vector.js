@@ -1,5 +1,6 @@
 import * as Input from '../parse/input';
 import * as Algebra from '../core/algebra';
+import { bisect_vectors } from '../core/geometry';
 
 /** n-dimensional vector */
 export function Vector() {
@@ -96,7 +97,7 @@ export function Vector() {
 	}
 	const bisect = function(vector){
 		let vec = Input.get_vec(vector);
-		return Algebra.bisect_vectors(_v, vec);
+		return Vector( bisect_vectors(_v, vec) );
 	}
 
 	return Object.freeze(
