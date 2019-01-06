@@ -421,7 +421,7 @@ function point_on_edge(edge0, edge1, point, epsilon = EPSILON) {
 function point_in_poly(poly, point, epsilon = EPSILON) {
 	// W. Randolph Franklin https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
 	let isInside = false;
-	for(let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+	for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
 		if ( (poly[i][1] > point[1]) != (poly[j][1] > point[1]) &&
 		point[0] < (poly[j][0] - poly[i][0]) * (point[1] - poly[i][1]) / (poly[j][1] - poly[i][1]) + poly[i][0] ) {
 			isInside = !isInside;
@@ -523,11 +523,11 @@ function clip_edge_in_convex_poly(poly, edgeA, edgeB) {
 	}
 	let aInside = point_in_convex_poly(edgeA, poly);
 	switch (intersections.length) {
-		case 0: return ( aInside 
-			? [[...edgeA], [...edgeB]] 
+		case 0: return ( aInside
+			? [[...edgeA], [...edgeB]]
 			: undefined );
 		case 1: return ( aInside 
-			? [[...edgeA], intersections[0]] 
+			? [[...edgeA], intersections[0]]
 			: [[...edgeB], intersections[0]] );
 		case 2: return intersections;
 		default: throw "clipping ray in a convex polygon resulting in 3 or more points";
@@ -585,6 +585,18 @@ var intersection = /*#__PURE__*/Object.freeze({
 	clip_edge_in_convex_poly: clip_edge_in_convex_poly,
 	intersection_circle_line: intersection_circle_line
 });
+
+function make_regular_polygon(sides, x = 0, y = 0, radius = 1) {
+	var halfwedge = 2*Math.PI/sides * 0.5;
+	var r = radius / Math.cos(halfwedge);
+	return Array.from(Array(Math.floor(sides))).map((_,i) => {
+		var a = -2 * Math.PI * i / sides + halfwedge;
+		var px = clean_number(x + r * Math.sin(a), 14);
+		var py = clean_number(y + r * Math.cos(a), 14);
+		return [px, py]; // align point along Y
+	});
+}
+
 
 function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH) {
 	// # points in the convex hull before escaping function
@@ -648,6 +660,28 @@ function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH) 
 	return undefined;
 }
 
+
+function split_polygon(poly, linePoint, lineVector) {
+	//    point: intersection [x,y] point or null if no intersection
+	// at_index: where in the polygon this occurs
+	let vertices_intersections = poly.map((v,i) => {
+		let intersection = point_on_line(linePoint, lineVector, v);
+		return { type: "v", point: intersection ? v : null, at_index: i };
+	}).filter(el => el.point != null);
+	let edges_intersections = poly.map((v,i,arr) => {
+		let intersection = line_edge_exclusive(linePoint, lineVector, v, arr[(i+1)%arr.length]);
+		return { type: "e", point: intersection, at_index: i };
+	}).filter(el => el.point != null);
+
+	let sorted = vertices_intersections.concat(edges_intersections).sort((a,b) =>
+		( Math.abs(a.point[0]-b.point[0]) < EPSILON
+			? a.point[1] - b.point[1]
+			: a.point[0] - b.point[0] )
+	);
+	console.log(sorted);
+	return poly;
+}
+
 function split_convex_polygon(poly, linePoint, lineVector) {
 	// todo: should this return undefined if no intersection? 
 	//       or the original poly?
@@ -709,7 +743,9 @@ function split_convex_polygon(poly, linePoint, lineVector) {
 }
 
 var geometry = /*#__PURE__*/Object.freeze({
+	make_regular_polygon: make_regular_polygon,
 	convex_hull: convex_hull,
+	split_polygon: split_polygon,
 	split_convex_polygon: split_convex_polygon
 });
 
@@ -766,10 +802,10 @@ function get_vec() {
 	let params = Array.from(arguments);
 	if (params.length == 0) { return []; }
 	if (params[0].vector != null && params[0].vector.constructor == Array) {
-		return params[0].vector; // Vector type
+		return params[0].vector; // already a Vector type
 	}
 	let arrays = params.filter((param) => param.constructor === Array);
-	if (arrays.length >= 1) { return arrays[0]; }
+	if (arrays.length >= 1) { return [...arrays[0]]; }
 	let numbers = params.filter((param) => !isNaN(param));
 	if (numbers.length >= 1) { return numbers; }
 	if (!isNaN(params[0].x)) {
@@ -1122,17 +1158,15 @@ function Polygon() {
 		return Vector$1( xMin+(xMax-xMin)*0.5, yMin+(yMax-yMin)*0.5 );
 	};
 
-	const scale = function(magnitude, centerPoint) {
-		if (centerPoint == null) { centerPoint = centroid(); }
+	const scale = function(magnitude, centerPoint = centroid()) {
 		let newPoints = _points.map(p => {
 			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
-			return [centerPoint[0] + vec[0]*magnitude, centerPoint[0] + vec[0]*magnitude];
+			return [centerPoint[0] + vec[0]*magnitude, centerPoint[1] + vec[1]*magnitude];
 		});
 		return Polygon(newPoints);
 	};
 
-	const rotate = function(angle, centerPoint) {
-		if (centerPoint == null) { centerPoint = centroid(); }
+	const rotate = function(angle, centerPoint = centroid()) {
 		let newPoints = _points.map(p => {
 			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
 			let mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
@@ -1144,6 +1178,13 @@ function Polygon() {
 		});
 		return Polygon(newPoints);
 	};
+
+	const split = function() {
+		let line = get_line(...arguments);
+		return split_polygon(_points, line.point, line.vector)
+			.map(poly => Polygon(poly));
+	};
+
 
 	// todo: replace with non-convex
 	const clipEdge = function() {
@@ -1166,6 +1207,7 @@ function Polygon() {
 		center,
 		scale,
 		rotate,
+		split,
 		clipEdge,
 		clipLine,
 		clipRay,
@@ -1174,33 +1216,14 @@ function Polygon() {
 
 }
 
-
-// Polygon.withPoints = function(points) {
-// 	var poly = new Polygon();
-// 	poly.edges = points.map(function(el,i) {
-// 		var nextEl = points[ (i+1)%points.length ];
-// 		return new Edge(el, nextEl);
-// 	},this);
-// 	return poly;
-// }
 Polygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1) {
-	var halfwedge = 2*Math.PI/sides * 0.5;
-	var r = radius / Math.cos(halfwedge);
-	var points = Array.from(Array(Math.floor(sides))).map((_,i) => {
-		var a = -2 * Math.PI * i / sides + halfwedge;
-		var px = clean_number(x + r * Math.sin(a), 14);
-		var py = clean_number(y + r * Math.cos(a), 14);
-		return [px, py]; // align point along Y
-	});
+	let points = make_regular_polygon(sides, x, y, radius);
 	return Polygon(points);
 };
 Polygon.convexHull = function(points, includeCollinear = false) {
-	// validate input
-	if (points == null || points.length === 0) { return undefined; }
-	let hull = convex_hull(points);
+	let hull = convex_hull(points, includeCollinear);
 	return Polygon(hull);
 };
-
 
 
 function ConvexPolygon() {
@@ -1212,9 +1235,7 @@ function ConvexPolygon() {
 		center,
 		points
 	} = Polygon(...arguments);
-
 	let _points = points;
-
 
 	// const liesOnEdge = function(p) {
 	// 	for(var i = 0; i < this.edges.length; i++) {
@@ -1242,7 +1263,7 @@ function ConvexPolygon() {
 			if (p[1] > maxY) { maxY = p[1]; }
 			if (p[1] < minY) { minY = p[1]; }
 		});
-		return Rect(minX, minY, maxX-minX, maxY-minY);
+		return Rectangle(minX, minY, maxX-minX, maxY-minY);
 	};
 
 	const split = function() {
@@ -1256,17 +1277,15 @@ function ConvexPolygon() {
 		return convex_polygons_overlap(_points, points);
 	};
 
-	const scale = function(magnitude, centerPoint) {
-		if (centerPoint == null) { centerPoint = centroid(); }
+	const scale = function(magnitude, centerPoint = centroid()) {
 		let newPoints = _points.map(p => {
 			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
-			return [centerPoint[0] + vec[0]*magnitude, centerPoint[0] + vec[0]*magnitude];
+			return [centerPoint[0] + vec[0]*magnitude, centerPoint[1] + vec[1]*magnitude];
 		});
 		return ConvexPolygon(newPoints);
 	};
 
-	const rotate = function(angle, centerPoint) {
-		if (centerPoint == null) { centerPoint = centroid(); }
+	const rotate = function(angle, centerPoint = centroid()) {
 		let newPoints = _points.map(p => {
 			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
 			let mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
@@ -1297,22 +1316,33 @@ function ConvexPolygon() {
 }
 
 ConvexPolygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1) {
-	var halfwedge = 2*Math.PI/sides * 0.5;
-	var r = radius / Math.cos(halfwedge);
-	var points = Array.from(Array(Math.floor(sides))).map((_,i) => {
-		var a = -2 * Math.PI * i / sides + halfwedge;
-		var px = clean_number(x + r * Math.sin(a), 14);
-		var py = clean_number(y + r * Math.cos(a), 14);
-		return [px, py]; // align point along Y
-	});
+	let points = make_regular_polygon(sides, x, y, radius);
 	return ConvexPolygon(points);
 };
 ConvexPolygon.convexHull = function(points, includeCollinear = false) {
-	// validate input
-	if (points == null || points.length === 0) { return undefined; }
-	let hull = convex_hull(points);
+	let hull = convex_hull(points, includeCollinear);
 	return ConvexPolygon(hull);
 };
+
+
+
+function Rectangle(){
+	let _origin, _width, _height;
+
+	let params = Array.from(arguments);
+	let numbers = params.filter((param) => !isNaN(param));
+	if(numbers.length == 4){
+		_origin = numbers.slice(0,2);
+		_width = numbers[2];
+		_height = numbers[3];
+	}
+
+	return Object.freeze( {
+		get origin() { return _origin; },
+		get width() { return _width; },
+		get height() { return _height; },
+	} );
+}
 
 /** 
  * 2D Matrix (2x3) with translation component in x,y
@@ -1480,4 +1510,4 @@ function Edge() {
 // let core = { algebra, geometry, intersection, origami };
 let core = { algebra, geometry, intersection, origami, EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number };
 
-export { core, Vector$1 as Vector, Circle, Polygon, ConvexPolygon, Matrix, Line, Ray, Edge };
+export { core, Vector$1 as Vector, Circle, Polygon, ConvexPolygon, Rectangle, Matrix, Line, Ray, Edge };

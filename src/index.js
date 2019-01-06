@@ -25,6 +25,6 @@ let core = { algebra, geometry, intersection, origami, EPSILON_LOW, EPSILON, EPS
 export { core };
 export { Vector } from './primitives/vector';
 export { Circle } from './primitives/circle';
-export { Polygon, ConvexPolygon } from './primitives/polygon';
+export { Polygon, ConvexPolygon, Rectangle } from './primitives/polygon';
 export { Matrix } from './primitives/matrix';
 export { Line, Ray, Edge } from './primitives/lines';

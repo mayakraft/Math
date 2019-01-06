@@ -61,17 +61,15 @@ export function Polygon() {
 		return Vector( xMin+(xMax-xMin)*0.5, yMin+(yMax-yMin)*0.5 );
 	}
 
-	const scale = function(magnitude, centerPoint) {
-		if (centerPoint == null) { centerPoint = centroid(); }
+	const scale = function(magnitude, centerPoint = centroid()) {
 		let newPoints = _points.map(p => {
 			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
-			return [centerPoint[0] + vec[0]*magnitude, centerPoint[0] + vec[0]*magnitude];
+			return [centerPoint[0] + vec[0]*magnitude, centerPoint[1] + vec[1]*magnitude];
 		});
 		return Polygon(newPoints);
 	}
 
-	const rotate = function(angle, centerPoint) {
-		if (centerPoint == null) { centerPoint = centroid(); }
+	const rotate = function(angle, centerPoint = centroid()) {
 		let newPoints = _points.map(p => {
 			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
 			let mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
@@ -83,6 +81,13 @@ export function Polygon() {
 		});
 		return Polygon(newPoints);
 	}
+
+	const split = function() {
+		let line = Input.get_line(...arguments);
+		return Geometry.split_polygon(_points, line.point, line.vector)
+			.map(poly => Polygon(poly));
+	}
+
 
 	// todo: replace with non-convex
 	const clipEdge = function() {
@@ -105,6 +110,7 @@ export function Polygon() {
 		center,
 		scale,
 		rotate,
+		split,
 		clipEdge,
 		clipLine,
 		clipRay,
@@ -113,33 +119,14 @@ export function Polygon() {
 
 }
 
-
-// Polygon.withPoints = function(points) {
-// 	var poly = new Polygon();
-// 	poly.edges = points.map(function(el,i) {
-// 		var nextEl = points[ (i+1)%points.length ];
-// 		return new Edge(el, nextEl);
-// 	},this);
-// 	return poly;
-// }
 Polygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1) {
-	var halfwedge = 2*Math.PI/sides * 0.5;
-	var r = radius / Math.cos(halfwedge);
-	var points = Array.from(Array(Math.floor(sides))).map((_,i) => {
-		var a = -2 * Math.PI * i / sides + halfwedge;
-		var px = clean_number(x + r * Math.sin(a), 14);
-		var py = clean_number(y + r * Math.cos(a), 14);
-		return [px, py]; // align point along Y
-	})
+	let points = Geometry.make_regular_polygon(sides, x, y, radius);
 	return Polygon(points);
 }
 Polygon.convexHull = function(points, includeCollinear = false) {
-	// validate input
-	if (points == null || points.length === 0) { return undefined; }
-	let hull = Geometry.convex_hull(points);
+	let hull = Geometry.convex_hull(points, includeCollinear);
 	return Polygon(hull);
 }
-
 
 
 export function ConvexPolygon() {
@@ -151,9 +138,7 @@ export function ConvexPolygon() {
 		center,
 		points
 	} = Polygon(...arguments);
-
 	let _points = points;
-
 
 	// const liesOnEdge = function(p) {
 	// 	for(var i = 0; i < this.edges.length; i++) {
@@ -181,7 +166,7 @@ export function ConvexPolygon() {
 			if (p[1] > maxY) { maxY = p[1]; }
 			if (p[1] < minY) { minY = p[1]; }
 		});
-		return Rect(minX, minY, maxX-minX, maxY-minY);
+		return Rectangle(minX, minY, maxX-minX, maxY-minY);
 	}
 
 	const split = function() {
@@ -195,17 +180,15 @@ export function ConvexPolygon() {
 		return Intersection.convex_polygons_overlap(_points, points);
 	}
 
-	const scale = function(magnitude, centerPoint) {
-		if (centerPoint == null) { centerPoint = centroid(); }
+	const scale = function(magnitude, centerPoint = centroid()) {
 		let newPoints = _points.map(p => {
 			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
-			return [centerPoint[0] + vec[0]*magnitude, centerPoint[0] + vec[0]*magnitude];
+			return [centerPoint[0] + vec[0]*magnitude, centerPoint[1] + vec[1]*magnitude];
 		});
 		return ConvexPolygon(newPoints);
 	}
 
-	const rotate = function(angle, centerPoint) {
-		if (centerPoint == null) { centerPoint = centroid(); }
+	const rotate = function(angle, centerPoint = centroid()) {
 		let newPoints = _points.map(p => {
 			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
 			let mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
@@ -236,19 +219,31 @@ export function ConvexPolygon() {
 }
 
 ConvexPolygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1) {
-	var halfwedge = 2*Math.PI/sides * 0.5;
-	var r = radius / Math.cos(halfwedge);
-	var points = Array.from(Array(Math.floor(sides))).map((_,i) => {
-		var a = -2 * Math.PI * i / sides + halfwedge;
-		var px = clean_number(x + r * Math.sin(a), 14);
-		var py = clean_number(y + r * Math.cos(a), 14);
-		return [px, py]; // align point along Y
-	})
+	let points = Geometry.make_regular_polygon(sides, x, y, radius);
 	return ConvexPolygon(points);
 }
 ConvexPolygon.convexHull = function(points, includeCollinear = false) {
-	// validate input
-	if (points == null || points.length === 0) { return undefined; }
-	let hull = Geometry.convex_hull(points);
+	let hull = Geometry.convex_hull(points, includeCollinear);
 	return ConvexPolygon(hull);
 }
+
+
+
+export function Rectangle(){
+	let _origin, _width, _height;
+
+	let params = Array.from(arguments);
+	let numbers = params.filter((param) => !isNaN(param));
+	if(numbers.length == 4){
+		_origin = numbers.slice(0,2);
+		_width = numbers[2];
+		_height = numbers[3];
+	}
+
+	return Object.freeze( {
+		get origin() { return _origin; },
+		get width() { return _width; },
+		get height() { return _height; },
+	} );
+}
+

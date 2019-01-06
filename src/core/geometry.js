@@ -1,6 +1,18 @@
 
 import { point_on_line, line_edge_exclusive } from './intersection';
-import { EPSILON_LOW, EPSILON, EPSILON_HIGH } from '../parse/clean';
+import { EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number } from '../parse/clean';
+
+
+export function make_regular_polygon(sides, x = 0, y = 0, radius = 1) {
+	var halfwedge = 2*Math.PI/sides * 0.5;
+	var r = radius / Math.cos(halfwedge);
+	return Array.from(Array(Math.floor(sides))).map((_,i) => {
+		var a = -2 * Math.PI * i / sides + halfwedge;
+		var px = clean_number(x + r * Math.sin(a), 14);
+		var py = clean_number(y + r * Math.cos(a), 14);
+		return [px, py]; // align point along Y
+	});
+}
 
 
 export function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH) {
@@ -63,6 +75,28 @@ export function convex_hull(points, include_collinear = false, epsilon = EPSILON
 		ang = Math.atan2( hull[h][1] - angles[0].node[1], hull[h][0] - angles[0].node[0]);
 	} while(infiniteLoop < INFINITE_LOOP);
 	return undefined;
+}
+
+
+export function split_polygon(poly, linePoint, lineVector) {
+	//    point: intersection [x,y] point or null if no intersection
+	// at_index: where in the polygon this occurs
+	let vertices_intersections = poly.map((v,i) => {
+		let intersection = point_on_line(linePoint, lineVector, v);
+		return { type: "v", point: intersection ? v : null, at_index: i };
+	}).filter(el => el.point != null);
+	let edges_intersections = poly.map((v,i,arr) => {
+		let intersection = line_edge_exclusive(linePoint, lineVector, v, arr[(i+1)%arr.length])
+		return { type: "e", point: intersection, at_index: i };
+	}).filter(el => el.point != null);
+
+	let sorted = vertices_intersections.concat(edges_intersections).sort((a,b) =>
+		( Math.abs(a.point[0]-b.point[0]) < EPSILON
+			? a.point[1] - b.point[1]
+			: a.point[0] - b.point[0] )
+	)
+	console.log(sorted);
+	return poly;
 }
 
 export function split_convex_polygon(poly, linePoint, lineVector) {

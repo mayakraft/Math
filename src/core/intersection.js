@@ -125,7 +125,7 @@ export function point_on_edge(edge0, edge1, point, epsilon = EPSILON) {
 export function point_in_poly(poly, point, epsilon = EPSILON) {
 	// W. Randolph Franklin https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
 	let isInside = false;
-	for(let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+	for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
 		if ( (poly[i][1] > point[1]) != (poly[j][1] > point[1]) &&
 		point[0] < (poly[j][0] - poly[i][0]) * (point[1] - poly[i][1]) / (poly[j][1] - poly[i][1]) + poly[i][0] ) {
 			isInside = !isInside;
@@ -227,11 +227,11 @@ export function clip_edge_in_convex_poly(poly, edgeA, edgeB) {
 	}
 	let aInside = point_in_convex_poly(edgeA, poly);
 	switch (intersections.length) {
-		case 0: return ( aInside 
-			? [[...edgeA], [...edgeB]] 
+		case 0: return ( aInside
+			? [[...edgeA], [...edgeB]]
 			: undefined );
 		case 1: return ( aInside 
-			? [[...edgeA], intersections[0]] 
+			? [[...edgeA], intersections[0]]
 			: [[...edgeB], intersections[0]] );
 		case 2: return intersections;
 		default: throw "clipping ray in a convex polygon resulting in 3 or more points";

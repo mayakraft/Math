@@ -10,10 +10,10 @@ export function get_vec() {
 	let params = Array.from(arguments);
 	if (params.length == 0) { return []; }
 	if (params[0].vector != null && params[0].vector.constructor == Array) {
-		return params[0].vector; // Vector type
+		return params[0].vector; // already a Vector type
 	}
 	let arrays = params.filter((param) => param.constructor === Array);
-	if (arrays.length >= 1) { return arrays[0]; }
+	if (arrays.length >= 1) { return [...arrays[0]]; }
 	let numbers = params.filter((param) => !isNaN(param));
 	if (numbers.length >= 1) { return numbers; }
 	if (!isNaN(params[0].x)) {
