@@ -1,7 +1,7 @@
 
 import { point_on_line, line_edge_exclusive } from './intersection';
 import { EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number } from '../parse/clean';
-
+import { normalize, cross2 } from "./algebra";
 
 export function make_regular_polygon(sides, x = 0, y = 0, radius = 1) {
 	var halfwedge = 2*Math.PI/sides * 0.5;
@@ -14,6 +14,164 @@ export function make_regular_polygon(sides, x = 0, y = 0, radius = 1) {
 	});
 }
 
+/** There are 2 interior angles between 2 absolute angle measurements, from A to B return the clockwise one
+ * @param {number} angle in radians, angle PI/2 is along the +Y axis
+ * @returns {number} clockwise interior angle (from a to b) in radians
+ */
+export function clockwise_angle2_radians(a, b) {
+	// this is on average 50 to 100 times faster than clockwise_angle2
+	while (a < 0) { a += Math.PI*2; }
+	while (b < 0) { b += Math.PI*2; }
+	var a_b = a - b;
+	return (a_b >= 0)
+		? a_b
+		: Math.PI*2 - (b - a);
+}
+export function counter_clockwise_angle2_radians(a, b) {
+	// this is on average 50 to 100 times faster than counter_clockwise_angle2
+	while (a < 0) { a += Math.PI*2; }
+	while (b < 0) { b += Math.PI*2; }
+	var b_a = b - a;
+	return (b_a >= 0)
+		? b_a
+		: Math.PI*2 - (a - b);
+}
+
+/** There are 2 angles between 2 vectors, from A to B return the clockwise one.
+ * @param {[number, number]} vector
+ * @returns {number} clockwise angle (from a to b) in radians
+ */
+export function clockwise_angle2(a, b) {
+	var dotProduct = b[0]*a[0] + b[1]*a[1];
+	var determinant = b[0]*a[1] - b[1]*a[0];
+	var angle = Math.atan2(determinant, dotProduct);
+	if (angle < 0) { angle += Math.PI*2; }
+	return angle;
+}
+export function counter_clockwise_angle2(a, b) {
+	var dotProduct = a[0]*b[0] + a[1]*b[1];
+	var determinant = a[0]*b[1] - a[1]*b[0];
+	var angle = Math.atan2(determinant, dotProduct);
+	if (angle < 0) { angle += Math.PI*2; }
+	return angle;
+}
+/** There are 2 interior angles between 2 vectors, return both, the smaller first
+ * @param {[number, number]} vector
+ * @returns {[number, number]} 2 angle measurements between vectors
+ */
+export function interior_angles2(a, b) {
+	var interior1 = clockwise_angle2(a, b);
+	var interior2 = Math.PI*2 - interior1;
+	return (interior1 < interior2)
+		? [interior1, interior2]
+		: [interior2, interior1];
+}
+/** This bisects 2 vectors, returning both smaller and larger outside angle bisections [small, large]
+ * @param {[number, number]} vector
+ * @returns {[[number, number],[number, number]]} 2 vectors, the smaller angle first
+ */
+export function bisect_vectors(a, b) {
+	let aV = normalize(a);
+	let bV = normalize(b);
+	let sum = aV.map((_,i) => aV[i] + bV[i]);
+	let vecA = normalize( sum );
+	let vecB = aV.map((_,i) => -aV[i] + -bV[i])
+	return [vecA, normalize(vecB)];
+}
+
+/** This bisects 2 lines
+ * @param {[number, number]} all vectors, lines defined by points and vectors
+ * @returns [ [number,number], [number,number] ] // line, defined as point, vector, in that order
+ */
+export function bisect_lines2(pointA, vectorA, pointB, vectorB) {
+	let denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
+	if (Math.abs(denominator) < EPSILON) { /* parallel */
+		return [midpoint(pointA, pointB), vectorA.slice()];
+	}
+	let vectorC = [pointB[0]-pointA[0], pointB[1]-pointA[1]];
+	// var numerator = vectorC[0] * vectorB[1] - vectorB[0] * vectorC[1];
+	let numerator = (pointB[0]-pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1]-pointA[1]);
+	var t = numerator / denominator;
+	let x = pointA[0] + vectorA[0]*t;
+	let y = pointA[1] + vectorA[1]*t;
+	var bisects = bisect_vectors(vectorA, vectorB);
+	bisects[1] = [ bisects[1][1], -bisects[1][0] ];
+	// swap to make smaller interior angle first
+	if (Math.abs(cross2(vectorA, bisects[1])) <
+	   Math.abs(cross2(vectorA, bisects[0]))) {
+		var swap = bisects[0];
+		bisects[0] = bisects[1];
+		bisects[1] = swap;
+	}
+	return bisects.map((el) => [[x,y], el]);
+}
+
+// todo: check the implementation above, if it works, delete this:
+
+// export function bisect_lines2(pointA, vectorA, pointB, vectorB) {
+// 	if (parallel(vectorA, vectorB)) {
+// 		return [midpoint(pointA, pointB), vectorA.slice()];
+// 	} else{
+// 		var inter = Intersection.line_line(pointA, vectorA, pointB, vectorB);
+// 		var bisect = bisect_vectors(vectorA, vectorB);
+// 		bisects[1] = [ bisects[1][1], -bisects[1][0] ];
+// 		// swap to make smaller interior angle first
+// 		if (Math.abs(cross2(vectorA, bisects[1])) <
+// 		   Math.abs(cross2(vectorA, bisects[0]))) {
+// 			var swap = bisects[0];
+// 			bisects[0] = bisects[1];
+// 			bisects[1] = swap;
+// 		}
+// 		return bisects.map((el) => [inter, el]);
+// 	}
+// }
+
+/** Calculates the signed area of a polygon. This requires the polygon be non-intersecting.
+ * @returns {number} the area of the polygon
+ * @example
+ * var area = polygon.signedArea()
+ */
+export function signed_area(points) {
+	return 0.5 * points.map((el,i,arr) => {
+		var next = arr[(i+1)%arr.length];
+		return el[0] * next[1] - next[0] * el[1];
+	})
+	.reduce((a, b) => a + b, 0);
+}
+
+/** Calculates the centroid or the center of mass of the polygon.
+ * @returns {XY} the location of the centroid
+ * @example
+ * var centroid = polygon.centroid()
+ */
+export function centroid(points) {
+	let sixthArea = 1/(6 * signed_area(points));
+	return points.map((el,i,arr) => {
+		var next = arr[(i+1)%arr.length];
+		var mag = el[0] * next[1] - next[0] * el[1];
+		return [(el[0]+next[0])*mag, (el[1]+next[1])*mag];
+	})
+	.reduce((a, b) => [a[0]+b[0], a[1]+b[1]], [0,0])
+	.map(c => c * sixthArea);
+}
+
+/**
+ * works in any n-dimension (enclosing cube, hypercube..)
+ * @returns array of arrays: [[x, y], [width, height]]
+ */
+export function enclosing_rectangle(points) {
+	let l = points[0].length;
+	let mins = Array.from(Array(l)).map(_ => Infinity);
+	let maxs = Array.from(Array(l)).map(_ => -Infinity);
+	points.forEach(point => 
+		point.forEach((c,i) => {
+			if(c < mins[i]) { mins[i] = c; }
+			if(c > maxs[i]) { maxs[i] = c; }
+		})
+	);
+	let lengths = maxs.map((max,i) => max - mins[i]);
+	return [mins, lengths];
+}
 
 export function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH) {
 	// # points in the convex hull before escaping function

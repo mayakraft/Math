@@ -8,21 +8,22 @@
 */
 export function get_vec() {
 	let params = Array.from(arguments);
-	if (params.length == 0) { return []; }
-	if (params[0].vector != null && params[0].vector.constructor == Array) {
-		return params[0].vector; // already a Vector type
-	}
-	let arrays = params.filter((param) => param.constructor === Array);
-	if (arrays.length >= 1) { return [...arrays[0]]; }
+	if (params.length === 0) { return; }
+	// list of numbers 1, 2, 3, 4, 5
 	let numbers = params.filter((param) => !isNaN(param));
 	if (numbers.length >= 1) { return numbers; }
+	// already a vector type: {vector:[1,2,3]}
+	if (params[0].vector != null && params[0].vector.constructor === Array) {
+		return params[0].vector;
+	}
 	if (!isNaN(params[0].x)) {
-		// todo, we are relying on convention here. should 'w' be included?
-		// todo: if y is not defined but z is, it will move z to index 1
 		return ['x','y','z'].map(c => params[0][c]).filter(a => a != null);
 	}
-	return [];
+	// at this point, a valid vector is somewhere inside arrays
+	let arrays = params.filter((param) => param.constructor === Array);
+	if (arrays.length >= 1) { return get_vec(...arrays[0]); }
 }
+
 
 /** 
  * @returns (number[]) array of number components

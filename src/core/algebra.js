@@ -135,18 +135,16 @@ export function cross3(a, b) {
 }
 
 export function distance2(a, b) {
-	return Math.sqrt(
-		Math.pow(a[0] - b[0], 2) +
-		Math.pow(a[1] - b[1], 2)
-	);
+	let c = a[0] - b[0];
+	let d = a[1] - b[1];
+	return Math.sqrt((c * c) + (d * d));
 }
 
 export function distance3(a, b) {
-	return Math.sqrt(
-		Math.pow(a[0] - b[0], 2) +
-		Math.pow(a[1] - b[1], 2) +
-		Math.pow(a[2] - b[2], 2)
-	);
+	let c = a[0] - b[0];
+	let d = a[1] - b[1];
+	let e = a[2] - b[2];
+	return Math.sqrt((c * c) + (d * d) + (e * e));
 }
 
 // need to test:
