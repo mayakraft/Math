@@ -57,14 +57,14 @@
 	//
 	function dot(a, b) {
 		return a
-			.map((ai,i) => ai * b[i])
+			.map((_,i) => a[i] * b[i])
 			.reduce((prev,curr) => prev + curr, 0);
 	}
 
 	function equivalent(a, b, epsilon = EPSILON) {
 		// rectangular bounds test for fast calculation
 		return a
-			.map((ai,i) => Math.abs(ai - b[i]) < epsilon)
+			.map((_,i) => Math.abs(a[i] - b[i]) < epsilon)
 			reduce((a,b) => a && b, true);
 	}
 
@@ -427,6 +427,21 @@
 		}
 	}
 
+	function nearest_point(linePoint, lineVector, point, limiterFunc, epsilon = EPSILON) {
+		let magSquared = Math.pow(lineVector[0],2) + Math.pow(lineVector[1],2);
+		let vectorToPoint = [0,1].map((_,i) => point[i] - linePoint[i]);
+		let pTo0 = [0,1].map((_,i) => point[i] - linePoint[i]);
+		let dot = [0,1]
+			.map((_,i) => lineVector[i] * vectorToPoint[i])
+			.reduce((a,b) => a + b, 0);
+		let distance = dot / magSquared;
+		// limit depending on line, ray, edge
+		let d = limiterFunc(distance, epsilon);
+		return [0,1].map((_,i) => linePoint[i] + lineVector[i] * d);
+	}
+
+
+
 	function intersection_circle_line(center, radius, p0, p1) {
 		throw "intersection_circle_line has not been written yet";
 	}
@@ -484,6 +499,7 @@
 		clip_line_in_convex_poly: clip_line_in_convex_poly,
 		clip_ray_in_convex_poly: clip_ray_in_convex_poly,
 		clip_edge_in_convex_poly: clip_edge_in_convex_poly,
+		nearest_point: nearest_point,
 		intersection_circle_line: intersection_circle_line,
 		intersection_circle_ray: intersection_circle_ray,
 		intersection_circle_edge: intersection_circle_edge
@@ -1430,17 +1446,26 @@
 	};
 
 	function LinePrototype() {
+		// these will be overwritten for each line type
+		// is it valid for t0 to be below 0, above 1, to the unit vector
+		const vec_comp_func = function(t0) { return true; };
+		// cap d below 0 or above 1, to the unit vector, for rays/edges
+		const vec_cap_func = function(d) { return d; };
+
 		// const parallel = function(line, epsilon){}
 		// const collinear = function(point){}
 		// const equivalent = function(line, epsilon){}
 		// const degenrate = function(epsilon){}
-		// const nearestPoint = function(point){}
-		// const nearestPointNormalTo = function(point){}
 
 		const reflection = function() {
 			return Matrix2.makeReflection(this.vector, this.point);
 		};
 
+		const nearestPoint = function() {
+			let point = get_vec(...arguments);
+			return nearest_point(this.point, this.vector, point, this.vec_cap_func);
+		};
+		
 		const intersectLine = function() {
 			let line = get_line(...arguments);
 			return intersection_function(
@@ -1464,8 +1489,6 @@
 				this_edge_comp);
 		};
 
-		// this will be overwritten for each line type
-		let vec_comp_func = function(t0) { return true; };
 		const this_line_comp = function(t0, t1, epsilon = EPSILON) {
 			return vec_comp_func(t0, epsilon) && true;
 		};
@@ -1478,10 +1501,12 @@
 
 		return Object.freeze( {
 			reflection,
+			nearestPoint,
 			intersectLine,
 			intersectRay,
 			intersectEdge,
 			vec_comp_func,
+			vec_cap_func,
 		} );
 	}
 
@@ -1504,8 +1529,10 @@
 		};
 
 		let line = Object.create(LinePrototype());
-		let vec_comp_func = function() { return true; };
+		const vec_comp_func = function() { return true; };
+		const vec_cap_func = function(d) { return d; };
 		Object.defineProperty(line, "vec_comp_func", {value: vec_comp_func});
+		Object.defineProperty(line, "vec_cap_func", {value: vec_cap_func});
 
 		Object.defineProperty(line, "point", {get: function(){ return point; }});
 		Object.defineProperty(line, "vector", {get: function(){ return vector; }});
@@ -1555,8 +1582,10 @@
 		};
 
 		let ray = Object.create(LinePrototype());
-		let vec_comp_func = function(t0, epsilon) { return t0 >= -epsilon; };
+		const vec_comp_func = function(t0, ep) { return t0 >= -ep; };
+		const vec_cap_func = function(d, ep) { return (d < -ep ? 0 : d); };
 		Object.defineProperty(ray, "vec_comp_func", {value: vec_comp_func});
+		Object.defineProperty(ray, "vec_cap_func", {value: vec_cap_func});
 
 		Object.defineProperty(ray, "point", {get: function(){ return point; }});
 		Object.defineProperty(ray, "vector", {get: function(){ return vector; }});
@@ -1600,47 +1629,23 @@
 			               + Math.pow(_endpoints[1][1] - _endpoints[0][1],2));
 		};
 
-		const nearestPoint = function() {
-			let point = get_vec(...arguments);
-			var answer = nearestPointNormalTo(...arguments);
-			return (answer == null)
-				? Vector$1(_endpoints.map(p => ({
-						point: p,
-						d: Math.sqrt(Math.pow(p[0] - point[0],2) + Math.pow(p[1] - point[1],2))
-					}))
-					.sort((a,b) => a.d - b.d)
-					.shift()
-					.point)
-				: answer;
-		};
-		const nearestPointNormalTo = function() {
-			let point = get_vec(...arguments);
-			let p = length();
-			var u = ((point[0]-_endpoints[0][0]) * (_endpoints[1][0]-_endpoints[0][0])
-			       + (point[1]-_endpoints[0][1]) * (_endpoints[1][1]-_endpoints[0][1]))
-			       / (Math.pow(p, 2) );
-			return (u < 0 || u > 1.0)
-				? undefined
-				: Vector$1(_endpoints[0][0] + u*(_endpoints[1][0]-_endpoints[0][0]),
-			             _endpoints[0][1] + u*(_endpoints[1][1]-_endpoints[0][1]) );
-		};
-
 		let edge = Object.create(LinePrototype());
-		let vec_comp_func = function(t0, epsilon) {
-			return t0 >= -epsilon && t0 <= 1+epsilon;
+		let vec_comp_func = function(t0, ep) { return t0 >= -ep && t0 <= 1+ep; };
+		const vec_cap_func = function(d, ep) {
+			if (d < -ep) { return 0; }
+			if (d > 1+ep) { return 1; }
+			return d;
 		};
 		Object.defineProperty(edge, "vec_comp_func", {value: vec_comp_func});
+		Object.defineProperty(edge, "vec_cap_func", {value: vec_cap_func});
 
 		Object.defineProperty(edge, "points", {get: function(){ return _endpoints; }});
 		Object.defineProperty(edge, "point", {get: function(){ return _endpoints[0]; }});
 		Object.defineProperty(edge, "vector", {get: function(){ return vector(); }});
 		Object.defineProperty(edge, "length", {get: function(){ return length(); }});
 		Object.defineProperty(edge, "transform", {value: transform});
-		Object.defineProperty(edge, "nearestPoint", {value: nearestPoint});
-		Object.defineProperty(edge, "nearestPointNormalTo", {value: nearestPointNormalTo});
 
 		return Object.freeze(edge);
-
 	}
 
 	/**

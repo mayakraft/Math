@@ -238,6 +238,33 @@ export function clip_edge_in_convex_poly(poly, edgeA, edgeB) {
 	}
 }
 
+export function nearest_point(linePoint, lineVector, point, limiterFunc, epsilon = EPSILON) {
+	let magSquared = Math.pow(lineVector[0],2) + Math.pow(lineVector[1],2);
+	let vectorToPoint = [0,1].map((_,i) => point[i] - linePoint[i]);
+	let pTo0 = [0,1].map((_,i) => point[i] - linePoint[i]);
+	let dot = [0,1]
+		.map((_,i) => lineVector[i] * vectorToPoint[i])
+		.reduce((a,b) => a + b, 0);
+	let distance = dot / magSquared;
+	// limit depending on line, ray, edge
+	let d = limiterFunc(distance, epsilon);
+	return [0,1].map((_,i) => linePoint[i] + lineVector[i] * d);
+}
+
+const nearest_limiter_line = function(distance, epsilon) {
+	return distance;
+}
+const nearest_limiter_ray = function(distance, epsilon) {
+	return (distance < -epsilon ? 0 : distance);
+}
+const nearest_limiter_edge = function(distance, epsilon) {
+	if (distance < -epsilon) { return 0; }
+	if (distance > 1+epsilon) { return 1; }
+	return distance;
+}
+
+
+
 export function intersection_circle_line(center, radius, p0, p1) {
 	throw "intersection_circle_line has not been written yet";
 }

@@ -40,14 +40,14 @@ export function degenerate(v) {
 //
 export function dot(a, b) {
 	return a
-		.map((ai,i) => ai * b[i])
+		.map((_,i) => a[i] * b[i])
 		.reduce((prev,curr) => prev + curr, 0);
 }
 
 export function equivalent(a, b, epsilon = EPSILON) {
 	// rectangular bounds test for fast calculation
 	return a
-		.map((ai,i) => Math.abs(ai - b[i]) < epsilon)
+		.map((_,i) => Math.abs(a[i] - b[i]) < epsilon)
 		reduce((a,b) => a && b, true);
 }
 
