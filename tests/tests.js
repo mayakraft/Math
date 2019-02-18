@@ -1,7 +1,7 @@
 // convenience
 function equivalent(a, b){ return Math.abs(a-b) < 1e-13; }
 let Vector = Geometry.Vector;
-let Matrix = Geometry.Matrix;
+let Matrix2 = Geometry.Matrix2;
 let Line = Geometry.Line;
 let Polygon = Geometry.Polygon;
 let ConvexPolygon = Geometry.ConvexPolygon;

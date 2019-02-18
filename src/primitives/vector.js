@@ -34,7 +34,7 @@ export function Vector() {
 		return Math.sqrt(sum);
 	}
 	const transform = function() {
-		let m = Input.get_matrix(...arguments);
+		let m = Input.get_matrix2(...arguments);
 		return Vector( Algebra.multiply_vector2_matrix2(_v, m) );
 	}
 	const add = function(){
@@ -72,15 +72,15 @@ export function Vector() {
 			.map((_,i) => _v[i] * pct + vec[i] * inv)
 		return Vector(components);
 	}
-	const isEquivalent = function(vector) {
+	const isEquivalent = function() {
 		// rect bounding box for now, much cheaper than radius calculation
-		let vec = Input.get_vec(vector);
+		let vec = Input.get_vec(...arguments);
 		let sm = (_v.length < vec.length) ? _v : vec;
 		let lg = (_v.length < vec.length) ? vec : _v;
 		return Algebra.equivalent(sm, lg);
 	}
-	const isParallel = function(vector) {
-		let vec = Input.get_vec(vector);
+	const isParallel = function() {
+		let vec = Input.get_vec(...arguments);
 		let sm = (_v.length < vec.length) ? _v : vec;
 		let lg = (_v.length < vec.length) ? vec : _v;
 		return Algebra.parallel(sm, lg);
@@ -95,8 +95,8 @@ export function Vector() {
 		for(var i = sm.length; i < lg.length; i++){ sm[i] = 0; }
 		return Vector(lg.map((_,i) => (sm[i] + lg[i]) * 0.5));
 	}
-	const bisect = function(vector){
-		let vec = Input.get_vec(vector);
+	const bisect = function(){
+		let vec = Input.get_vec(...arguments);
 		return Vector( bisect_vectors(_v, vec) );
 	}
 

@@ -6,12 +6,12 @@ export function Circle(){
 
 	let params = Array.from(arguments);
 	let numbers = params.filter((param) => !isNaN(param));
-	if(numbers.length == 3){
+	if (numbers.length == 3) {
 		_origin = numbers.slice(0,2);
 		_radius = numbers[2];
 	}
 
-	const intersectionLine = function(){
+	const intersectionLine = function() {
 		let line = Input.get_line(...arguments);
 		let point2 = [
 			line.point[0] + line.vector[0],
@@ -21,7 +21,7 @@ export function Circle(){
 		return Vector(intersection);
 	}
 
-	const intersectionEdge = function(){
+	const intersectionEdge = function() {
 		let points = Input.get_two_vec2(...arguments);
 		let intersection = Intersection.intersection_circle_line(_origin, _radius, points[0], points[1]);
 		return Vector(intersection);
@@ -34,4 +34,3 @@ export function Circle(){
 		get radius() { return _radius; },
 	} );
 }
-

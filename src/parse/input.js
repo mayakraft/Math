@@ -29,7 +29,7 @@ export function get_vec() {
  * @returns (number[]) array of number components
  *  invalid/no input returns the identity matrix
 */
-export function get_matrix() {
+export function get_matrix2() {
 	let params = Array.from(arguments);
 	let numbers = params.filter((param) => !isNaN(param));
 	let arrays = params.filter((param) => param.constructor === Array);

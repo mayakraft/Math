@@ -44,10 +44,6 @@ export function dot(a, b) {
 		.reduce((prev,curr) => prev + curr, 0);
 }
 
-export function midpoint(a, b) {
-	return a.map((ai,i) => (ai+b[i])*0.5);
-}
-
 export function equivalent(a, b, epsilon = EPSILON) {
 	// rectangular bounds test for fast calculation
 	return a
@@ -57,6 +53,17 @@ export function equivalent(a, b, epsilon = EPSILON) {
 
 export function parallel(a, b, epsilon = EPSILON) {
 	return 1 - Math.abs(dot(normalize(a), normalize(b))) < epsilon;
+}
+
+export function midpoint(a, b) {
+	return a.map((ai,i) => (ai+b[i])*0.5);
+}
+
+// average is a midpoint function for n-number of arguments
+export function average(vecs) {
+	let initial = Array.from(Array(vecs.length)).map(_ => 0);
+	return vecs.reduce((a,b) => a.map((_,i) => a[i]+b[i]), initial)
+		.map(c => c / vecs.length);
 }
 
 

@@ -10,7 +10,7 @@ export function Line() {
 		return Algebra.parallel(vector, line.vector);
 	}
 	const transform = function() {
-		let mat = Input.get_matrix(...arguments);
+		let mat = Input.get_matrix2(...arguments);
 		// todo: a little more elegant of a solution, please
 		let norm = Algebra.normalize(vector);
 		let temp = point.map((p,i) => p + norm[i])

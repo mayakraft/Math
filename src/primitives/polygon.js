@@ -8,7 +8,7 @@ export function Polygon() {
 
 	let _points = Input.get_array_of_vec(...arguments);
 	if (_points === undefined) {
-		// todo, best practices here.
+		// todo, best practices here
 		return undefined;
 	}
 
@@ -17,24 +17,14 @@ export function Polygon() {
 		return Intersection.point_in_poly(_points, point);
 	}
 
-	/**
-	 * The center of a polygon as the average of all points,
-	 * only valid for regular polygons
-	 */
-	const center = function() {
-		return _points.reduce((a,b) => [a[0]+b[0], a[1]+b[1]], [0,0])
-			.map(c => c / _points.length);
-	}
-
-	const scale = function(magnitude, centerPoint = centroid()) {
-		let newPoints = _points.map(p => {
-			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
-			return [centerPoint[0] + vec[0]*magnitude, centerPoint[1] + vec[1]*magnitude];
-		});
+	const scale = function(magnitude, center = Geometry.centroid(_points)) {
+		let newPoints = _points
+			.map(p => [0,1].map((_,i) => p[i] - center[i]))
+			.map(vec => vec.map((_,i) => center[i] + vec[i] * magnitude))
 		return Polygon(newPoints);
 	}
 
-	const rotate = function(angle, centerPoint = centroid()) {
+	const rotate = function(angle, centerPoint = Geometry.centroid(_points)) {
 		let newPoints = _points.map(p => {
 			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
 			let mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
@@ -53,7 +43,7 @@ export function Polygon() {
 			.map(poly => Polygon(poly));
 	}
 
-	// todo: replace with non-convex
+	// todo: need non-convex clipping functions returns an array of edges
 	const clipEdge = function() {
 		let edge = Input.get_edge(...arguments);
 		return Intersection.clip_edge_in_convex_poly(_points, edge[0], edge[1]);
@@ -68,12 +58,7 @@ export function Polygon() {
 	}
 
 	return Object.freeze( {
-		// return {
 		contains,
-		get area() { return Geometry.signed_area(_points); },
-		get signedArea() { return Geometry.signed_area(_points); },
-		get centroid() { return Geometry.centroid(_points); },
-		center,
 		scale,
 		rotate,
 		split,
@@ -81,9 +66,14 @@ export function Polygon() {
 		clipLine,
 		clipRay,
 		get points() { return _points; },
+		get area() { return Geometry.signed_area(_points); },
+		get signedArea() { return Geometry.signed_area(_points); },
+		get centroid() { return Geometry.centroid(_points); },
+		get midpoint() { return Algebra.average(_points); },
+		get enclosingRectangle() {
+			return Rectangle(Geometry.enclosing_rectangle(_points));
+		},
 	} );
-// 	}
-
 }
 
 Polygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1) {
@@ -119,16 +109,6 @@ export function ConvexPolygon() {
 		let line = Input.get_line(...arguments);
 		return Intersection.clip_ray_in_convex_poly(polygon.points, line.point, line.vector);
 	}
-	const enclosingRectangle = function() {
-		var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-		polygon.points.forEach(p => {
-			if (p[0] > maxX) { maxX = p[0]; }
-			if (p[0] < minX) { minX = p[0]; }
-			if (p[1] > maxY) { maxY = p[1]; }
-			if (p[1] < minY) { minY = p[1]; }
-		});
-		return Rectangle(minX, minY, maxX-minX, maxY-minY);
-	}
 
 	const split = function() {
 		let line = Input.get_line(...arguments);
@@ -141,15 +121,14 @@ export function ConvexPolygon() {
 		return Intersection.convex_polygons_overlap(polygon.points, points);
 	}
 
-	const scale = function(magnitude, centerPoint = centroid()) {
-		let newPoints = polygon.points.map(p => {
-			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
-			return [centerPoint[0] + vec[0]*magnitude, centerPoint[1] + vec[1]*magnitude];
-		});
+	const scale = function(magnitude, center = Geometry.centroid(polygon.points)) {
+		let newPoints = polygon.points
+			.map(p => [0,1].map((_,i) => p[i] - center[i]))
+			.map(vec => vec.map((_,i) => center[i] + vec[i] * magnitude));
 		return ConvexPolygon(newPoints);
 	}
 
-	const rotate = function(angle, centerPoint = centroid()) {
+	const rotate = function(angle, centerPoint = Geometry.centroid(polygon.points)) {
 		let newPoints = polygon.points.map(p => {
 			let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
 			let mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
@@ -165,7 +144,6 @@ export function ConvexPolygon() {
 	Object.defineProperty(polygon, "clipEdge", {value: clipEdge});
 	Object.defineProperty(polygon, "clipLine", {value: clipLine});
 	Object.defineProperty(polygon, "clipRay", {value: clipRay});
-	Object.defineProperty(polygon, "enclosingRectangle", {value: enclosingRectangle});
 	Object.defineProperty(polygon, "split", {value: split});
 	Object.defineProperty(polygon, "overlaps", {value: overlaps});
 	Object.defineProperty(polygon, "scale", {value: scale});
@@ -183,23 +161,53 @@ ConvexPolygon.convexHull = function(points, includeCollinear = false) {
 	return ConvexPolygon(hull);
 }
 
-
-
 export function Rectangle(){
 	let _origin, _width, _height;
 
+	// get parameters
 	let params = Array.from(arguments);
 	let numbers = params.filter((param) => !isNaN(param));
-	if(numbers.length == 4){
+	let arrays = params.filter((param) => param.constructor === Array);
+	if (numbers.length === 4) {
 		_origin = numbers.slice(0,2);
 		_width = numbers[2];
 		_height = numbers[3];
 	}
+	if (arrays.length === 1) { arrays = arrays[0]; }
+	if (arrays.length === 2) {
+		if (typeof arrays[0][0] === "number") {
+			_origin = arrays[0].slice();
+			_width = arrays[1][0];
+			_height = arrays[1][1];
+		}
+	}
+	// end get parameters
+	let points = [
+		[_origin[0], _origin[1]],
+		[_origin[0] + _width, _origin[1]],
+		[_origin[0] + _width, _origin[1] + _height],
+		[_origin[0], _origin[1] + _height],
+	];
+	let rect = Object.create(ConvexPolygon(points));
 
-	return Object.freeze( {
-		get origin() { return _origin; },
-		get width() { return _width; },
-		get height() { return _height; },
-	} );
+	// redefinition of methods
+	const scale = function(magnitude, center) {
+		if (center == null) {
+			center = [_origin[0] + _width, _origin[1] + _height];
+		}
+		let x = _origin[0] + (center[0] - _origin[0]) * (1-magnitude);
+		let y = _origin[1] + (center[1] - _origin[1]) * (1-magnitude);
+		return Rectangle(x, y, _width*magnitude, _height*magnitude);
+	}
+
+	Object.defineProperty(rect, "origin", {get: function(){ return _origin; }});
+	Object.defineProperty(rect, "width", {get: function(){ return _width; }});
+	Object.defineProperty(rect, "height", {get: function(){ return _height; }});
+	Object.defineProperty(rect, "area", {
+		get: function(){ return _width * _height; }
+	});
+	Object.defineProperty(rect, "scale", {value: scale});
+
+	return Object.freeze(rect);
 }
 

@@ -26,5 +26,5 @@ export { core };
 export { Vector } from './primitives/vector';
 export { Circle } from './primitives/circle';
 export { Polygon, ConvexPolygon, Rectangle } from './primitives/polygon';
-export { Matrix } from './primitives/matrix';
+export { Matrix2 } from './primitives/matrix';
 export { Line, Ray, Edge } from './primitives/lines';

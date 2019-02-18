@@ -61,10 +61,6 @@
 			.reduce((prev,curr) => prev + curr, 0);
 	}
 
-	function midpoint$1(a, b) {
-		return a.map((ai,i) => (ai+b[i])*0.5);
-	}
-
 	function equivalent(a, b, epsilon = EPSILON) {
 		// rectangular bounds test for fast calculation
 		return a
@@ -74,6 +70,17 @@
 
 	function parallel(a, b, epsilon = EPSILON) {
 		return 1 - Math.abs(dot(normalize(a), normalize(b))) < epsilon;
+	}
+
+	function midpoint$1(a, b) {
+		return a.map((ai,i) => (ai+b[i])*0.5);
+	}
+
+	// average is a midpoint function for n-number of arguments
+	function average(vecs) {
+		let initial = Array.from(Array(vecs.length)).map(_ => 0);
+		return vecs.reduce((a,b) => a.map((_,i) => a[i]+b[i]), initial)
+			.map(c => c / vecs.length);
 	}
 
 
@@ -172,9 +179,10 @@
 		magnitude: magnitude,
 		degenerate: degenerate,
 		dot: dot,
-		midpoint: midpoint$1,
 		equivalent: equivalent,
 		parallel: parallel,
+		midpoint: midpoint$1,
+		average: average,
 		multiply_vector2_matrix2: multiply_vector2_matrix2,
 		make_matrix2_reflection: make_matrix2_reflection,
 		make_matrix2_rotation: make_matrix2_rotation,
@@ -612,7 +620,7 @@
 	 * @example
 	 * var centroid = polygon.centroid()
 	 */
-	function centroid$1(points) {
+	function centroid(points) {
 		let sixthArea = 1/(6 * signed_area(points));
 		return points.map((el,i,arr) => {
 			var next = arr[(i+1)%arr.length];
@@ -795,7 +803,7 @@
 		bisect_vectors: bisect_vectors,
 		bisect_lines2: bisect_lines2,
 		signed_area: signed_area,
-		centroid: centroid$1,
+		centroid: centroid,
 		enclosing_rectangle: enclosing_rectangle,
 		convex_hull: convex_hull,
 		split_polygon: split_polygon,
@@ -876,7 +884,7 @@
 	 * @returns (number[]) array of number components
 	 *  invalid/no input returns the identity matrix
 	*/
-	function get_matrix() {
+	function get_matrix2() {
 		let params = Array.from(arguments);
 		let numbers = params.filter((param) => !isNaN(param));
 		let arrays = params.filter((param) => param.constructor === Array);
@@ -1029,7 +1037,7 @@
 			return Math.sqrt(sum);
 		};
 		const transform = function() {
-			let m = get_matrix(...arguments);
+			let m = get_matrix2(...arguments);
 			return Vector$1( multiply_vector2_matrix2(_v, m) );
 		};
 		const add = function(){
@@ -1067,15 +1075,15 @@
 				.map((_,i) => _v[i] * pct + vec[i] * inv);
 			return Vector$1(components);
 		};
-		const isEquivalent = function(vector) {
+		const isEquivalent = function() {
 			// rect bounding box for now, much cheaper than radius calculation
-			let vec = get_vec(vector);
+			let vec = get_vec(...arguments);
 			let sm = (_v.length < vec.length) ? _v : vec;
 			let lg = (_v.length < vec.length) ? vec : _v;
 			return equivalent(sm, lg);
 		};
-		const isParallel = function(vector) {
-			let vec = get_vec(vector);
+		const isParallel = function() {
+			let vec = get_vec(...arguments);
 			let sm = (_v.length < vec.length) ? _v : vec;
 			let lg = (_v.length < vec.length) ? vec : _v;
 			return parallel(sm, lg);
@@ -1090,8 +1098,8 @@
 			for(var i = sm.length; i < lg.length; i++){ sm[i] = 0; }
 			return Vector$1(lg.map((_,i) => (sm[i] + lg[i]) * 0.5));
 		};
-		const bisect = function(vector){
-			let vec = get_vec(vector);
+		const bisect = function(){
+			let vec = get_vec(...arguments);
 			return Vector$1( bisect_vectors(_v, vec) );
 		};
 
@@ -1128,12 +1136,12 @@
 
 		let params = Array.from(arguments);
 		let numbers = params.filter((param) => !isNaN(param));
-		if(numbers.length == 3){
+		if (numbers.length == 3) {
 			_origin = numbers.slice(0,2);
 			_radius = numbers[2];
 		}
 
-		const intersectionLine = function(){
+		const intersectionLine = function() {
 			let line = get_line(...arguments);
 			let point2 = [
 				line.point[0] + line.vector[0],
@@ -1143,7 +1151,7 @@
 			return Vector(intersection);
 		};
 
-		const intersectionEdge = function(){
+		const intersectionEdge = function() {
 			let points = get_two_vec2(...arguments);
 			let intersection = intersection_circle_line(_origin, _radius, points[0], points[1]);
 			return Vector(intersection);
@@ -1161,7 +1169,7 @@
 
 		let _points = get_array_of_vec(...arguments);
 		if (_points === undefined) {
-			// todo, best practices here.
+			// todo, best practices here
 			return undefined;
 		}
 
@@ -1170,24 +1178,14 @@
 			return point_in_poly(_points, point);
 		};
 
-		/**
-		 * The center of a polygon as the average of all points,
-		 * only valid for regular polygons
-		 */
-		const center = function() {
-			return _points.reduce((a,b) => [a[0]+b[0], a[1]+b[1]], [0,0])
-				.map(c => c / _points.length);
-		};
-
-		const scale = function(magnitude, centerPoint = centroid()) {
-			let newPoints = _points.map(p => {
-				let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
-				return [centerPoint[0] + vec[0]*magnitude, centerPoint[1] + vec[1]*magnitude];
-			});
+		const scale = function(magnitude, center = centroid(_points)) {
+			let newPoints = _points
+				.map(p => [0,1].map((_,i) => p[i] - center[i]))
+				.map(vec => vec.map((_,i) => center[i] + vec[i] * magnitude));
 			return Polygon(newPoints);
 		};
 
-		const rotate = function(angle, centerPoint = centroid()) {
+		const rotate = function(angle, centerPoint = centroid(_points)) {
 			let newPoints = _points.map(p => {
 				let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
 				let mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
@@ -1206,7 +1204,7 @@
 				.map(poly => Polygon(poly));
 		};
 
-		// todo: replace with non-convex
+		// todo: need non-convex clipping functions returns an array of edges
 		const clipEdge = function() {
 			let edge = get_edge(...arguments);
 			return clip_edge_in_convex_poly(_points, edge[0], edge[1]);
@@ -1221,12 +1219,7 @@
 		};
 
 		return Object.freeze( {
-			// return {
 			contains,
-			get area() { return signed_area(_points); },
-			get signedArea() { return signed_area(_points); },
-			get centroid() { return centroid$1(_points); },
-			center,
 			scale,
 			rotate,
 			split,
@@ -1234,9 +1227,14 @@
 			clipLine,
 			clipRay,
 			get points() { return _points; },
+			get area() { return signed_area(_points); },
+			get signedArea() { return signed_area(_points); },
+			get centroid() { return centroid(_points); },
+			get midpoint() { return Algebra.average(_points); },
+			get enclosingRectangle() {
+				return Rectangle(enclosing_rectangle(_points));
+			},
 		} );
-	// 	}
-
 	}
 
 	Polygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1) {
@@ -1272,16 +1270,6 @@
 			let line = get_line(...arguments);
 			return clip_ray_in_convex_poly(polygon.points, line.point, line.vector);
 		};
-		const enclosingRectangle = function() {
-			var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-			polygon.points.forEach(p => {
-				if (p[0] > maxX) { maxX = p[0]; }
-				if (p[0] < minX) { minX = p[0]; }
-				if (p[1] > maxY) { maxY = p[1]; }
-				if (p[1] < minY) { minY = p[1]; }
-			});
-			return Rectangle(minX, minY, maxX-minX, maxY-minY);
-		};
 
 		const split = function() {
 			let line = get_line(...arguments);
@@ -1294,15 +1282,14 @@
 			return convex_polygons_overlap(polygon.points, points);
 		};
 
-		const scale = function(magnitude, centerPoint = centroid()) {
-			let newPoints = polygon.points.map(p => {
-				let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
-				return [centerPoint[0] + vec[0]*magnitude, centerPoint[1] + vec[1]*magnitude];
-			});
+		const scale = function(magnitude, center = centroid(polygon.points)) {
+			let newPoints = polygon.points
+				.map(p => [0,1].map((_,i) => p[i] - center[i]))
+				.map(vec => vec.map((_,i) => center[i] + vec[i] * magnitude));
 			return ConvexPolygon(newPoints);
 		};
 
-		const rotate = function(angle, centerPoint = centroid()) {
+		const rotate = function(angle, centerPoint = centroid(polygon.points)) {
 			let newPoints = polygon.points.map(p => {
 				let vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
 				let mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
@@ -1318,7 +1305,6 @@
 		Object.defineProperty(polygon, "clipEdge", {value: clipEdge});
 		Object.defineProperty(polygon, "clipLine", {value: clipLine});
 		Object.defineProperty(polygon, "clipRay", {value: clipRay});
-		Object.defineProperty(polygon, "enclosingRectangle", {value: enclosingRectangle});
 		Object.defineProperty(polygon, "split", {value: split});
 		Object.defineProperty(polygon, "overlaps", {value: overlaps});
 		Object.defineProperty(polygon, "scale", {value: scale});
@@ -1336,40 +1322,70 @@
 		return ConvexPolygon(hull);
 	};
 
-
-
 	function Rectangle(){
 		let _origin, _width, _height;
 
+		// get parameters
 		let params = Array.from(arguments);
 		let numbers = params.filter((param) => !isNaN(param));
-		if(numbers.length == 4){
+		let arrays = params.filter((param) => param.constructor === Array);
+		if (numbers.length === 4) {
 			_origin = numbers.slice(0,2);
 			_width = numbers[2];
 			_height = numbers[3];
 		}
+		if (arrays.length === 1) { arrays = arrays[0]; }
+		if (arrays.length === 2) {
+			if (typeof arrays[0][0] === "number") {
+				_origin = arrays[0].slice();
+				_width = arrays[1][0];
+				_height = arrays[1][1];
+			}
+		}
+		// end get parameters
+		let points = [
+			[_origin[0], _origin[1]],
+			[_origin[0] + _width, _origin[1]],
+			[_origin[0] + _width, _origin[1] + _height],
+			[_origin[0], _origin[1] + _height],
+		];
+		let rect = Object.create(ConvexPolygon(points));
 
-		return Object.freeze( {
-			get origin() { return _origin; },
-			get width() { return _width; },
-			get height() { return _height; },
-		} );
+		// redefinition of methods
+		const scale = function(magnitude, center) {
+			if (center == null) {
+				center = [_origin[0] + _width, _origin[1] + _height];
+			}
+			let x = _origin[0] + (center[0] - _origin[0]) * (1-magnitude);
+			let y = _origin[1] + (center[1] - _origin[1]) * (1-magnitude);
+			return Rectangle(x, y, _width*magnitude, _height*magnitude);
+		};
+
+		Object.defineProperty(rect, "origin", {get: function(){ return _origin; }});
+		Object.defineProperty(rect, "width", {get: function(){ return _width; }});
+		Object.defineProperty(rect, "height", {get: function(){ return _height; }});
+		Object.defineProperty(rect, "area", {
+			get: function(){ return _width * _height; }
+		});
+		Object.defineProperty(rect, "scale", {value: scale});
+
+		return Object.freeze(rect);
 	}
 
 	/** 
 	 * 2D Matrix (2x3) with translation component in x,y
 	 */
-	function Matrix() {
-		let _m = get_matrix(...arguments);
+	function Matrix2() {
+		let _m = get_matrix2(...arguments);
 
 		const inverse = function() {
-			return Matrix( make_matrix2_inverse(_m) );
+			return Matrix2( make_matrix2_inverse(_m) );
 		};
 		const multiply = function() {
-			let m2 = get_matrix(...arguments);
-			return Matrix( multiply_matrices2(_m, m2) );
+			let m2 = get_matrix2(...arguments);
+			return Matrix2( multiply_matrices2(_m, m2) );
 		};
-		const transform = function(){
+		const transform = function() {
 			let v = get_vec(...arguments);
 			return Vector$1( multiply_vector2_matrix2(v, _m) );
 		};
@@ -1381,14 +1397,14 @@
 		} );
 	}
 	// static methods
-	Matrix.makeIdentity = function() {
-		return Matrix(1,0,0,1,0,0);
+	Matrix2.makeIdentity = function() {
+		return Matrix2(1,0,0,1,0,0);
 	};
-	Matrix.makeRotation = function(angle, origin) {
-		return Matrix( make_matrix2_rotation(angle, origin) );
+	Matrix2.makeRotation = function(angle, origin) {
+		return Matrix2( make_matrix2_rotation(angle, origin) );
 	};
-	Matrix.makeReflection = function(vector, origin) {
-		return Matrix( make_matrix2_reflection(vector, origin) );
+	Matrix2.makeReflection = function(vector, origin) {
+		return Matrix2( make_matrix2_reflection(vector, origin) );
 	};
 
 	function Line() {
@@ -1399,7 +1415,7 @@
 			return parallel(vector, line.vector);
 		};
 		const transform = function() {
-			let mat = get_matrix(...arguments);
+			let mat = get_matrix2(...arguments);
 			// todo: a little more elegant of a solution, please
 			let norm = normalize(vector);
 			let temp = point.map((p,i) => p + norm[i]);
@@ -1528,7 +1544,7 @@
 	exports.Polygon = Polygon;
 	exports.ConvexPolygon = ConvexPolygon;
 	exports.Rectangle = Rectangle;
-	exports.Matrix = Matrix;
+	exports.Matrix2 = Matrix2;
 	exports.Line = Line;
 	exports.Ray = Ray;
 	exports.Edge = Edge;
