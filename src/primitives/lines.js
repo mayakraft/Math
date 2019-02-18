@@ -1,7 +1,64 @@
-import * as Input from '../parse/input';
-import * as Algebra from '../core/algebra';
-import { Vector } from './vector';
+import * as Input from "../parse/input";
+import * as Algebra from "../core/algebra";
+import * as Intersection from "../core/intersection";
+import { Vector } from "./vector";
+import { EPSILON } from '../parse/clean';
 
+function LinePrototype() {
+	// const parallel = function(line, epsilon){}
+	// const collinear = function(point){}
+	// const equivalent = function(line, epsilon){}
+	// const degenrate = function(epsilon){}
+	// const nearestPoint = function(point){}
+	// const nearestPointNormalTo = function(point){}
+
+	const reflection = function() {
+		return Matrix2.makeReflection(this.vector, this.point);
+	}
+
+	const intersectLine = function() {
+		let line = Input.get_line(...arguments);
+		return Intersection.intersection_function(
+			this.point, this.vector,
+			line.point, line.vector,
+			this_line_comp);
+	}
+	const intersectRay = function() {
+		let ray = Input.get_ray(...arguments);
+		return Intersection.intersection_function(
+			this.point, this.vector,
+			ray.point, ray.vector,
+			this_ray_comp);
+	}
+	const intersectEdge = function() {
+		let edge = Input.get_edge(...arguments);
+		let edgeVec = [edge[1][0] - edge[0][0], edge[1][1] - edge[0][1]];
+		return Intersection.intersection_function(
+			this.point, this.vector,
+			edge[0], edgeVec,
+			this_edge_comp);
+	}
+
+	// this will be overwritten for each line type
+	let vec_comp_func = function(t0) { return true; }
+	const this_line_comp = function(t0, t1, epsilon = EPSILON) {
+		return vec_comp_func(t0, epsilon) && true;
+	}
+	const this_ray_comp = function(t0, t1, epsilon = EPSILON) {
+		return vec_comp_func(t0, epsilon) && t1 >= -epsilon;
+	}
+	const this_edge_comp = function(t0, t1, epsilon = EPSILON) {
+		return vec_comp_func(t0, epsilon) && t1 >= -epsilon && t1 <= 1+epsilon;
+	}
+
+	return Object.freeze( {
+		reflection,
+		intersectLine,
+		intersectRay,
+		intersectEdge,
+		vec_comp_func,
+	} );
+}
 
 export function Line() {
 	let { point, vector } = Input.get_line(...arguments);
@@ -20,28 +77,18 @@ export function Line() {
 		var p1 = Algebra.multiply_vector2_matrix2(temp, mat);
 		return Line.withPoints([p0, p1]);
 	}
-	const intersectLine = function() {
-		let line = Input.get_line(...arguments);
-		return Intersection.line_line(point, vector, line.point, line.vector);
-	}
-	const intersectRay = function() {
-		let ray = Input.get_ray(...arguments);
-		return Intersection.line_ray(point, vector, ray.point, ray.vector);
-	}
-	const intersectEdge = function() {
-		let p = Input.get_two_vec2(...arguments);
-		return Intersection.line_edge(point, vector, p[0], p[1]);
-	}
 
-	return Object.freeze( {
-		isParallel,
-		transform,
-		intersectLine,
-		intersectRay,
-		intersectEdge,
-		get vector() { return vector; },
-		get point() { return point; },
-	} );
+	let line = Object.create(LinePrototype());
+	let vec_comp_func = function() { return true; }
+	Object.defineProperty(line, "vec_comp_func", {value: vec_comp_func});
+
+	Object.defineProperty(line, "point", {get: function(){ return point; }});
+	Object.defineProperty(line, "vector", {get: function(){ return vector; }});
+	Object.defineProperty(line, "length", {get: function(){ return Infinity; }});
+	Object.defineProperty(line, "transform", {value: transform});
+	Object.defineProperty(line, "isParallel", {value: isParallel});
+
+	return Object.freeze(line);
 }
 // static methods
 Line.withPoints = function() {
@@ -82,27 +129,16 @@ export function Ray() {
 		return Ray.withPoints([p0, p1]);
 	}
 
-	const intersectLine = function() {
-		let line = Input.get_line(...arguments);
-		return Intersection.line_ray(line.point, line.vector, point, vector);
-	}
-	const intersectRay = function() {
-		let ray = Input.get_ray(...arguments);
-		return Intersection.ray_ray(point, vector, ray.point, ray.vector);
-	}
-	const intersectEdge = function() {
-		let p = Input.get_two_vec2(...arguments);
-		return Intersection.ray_edge(point, vector, p[0], p[1]);
-	}
+	let ray = Object.create(LinePrototype());
+	let vec_comp_func = function(t0, epsilon) { return t0 >= -epsilon; }
+	Object.defineProperty(ray, "vec_comp_func", {value: vec_comp_func});
 
-	return Object.freeze( {
-		intersectLine,
-		intersectRay,
-		intersectEdge,
-		get vector() { return vector; },
-		get point() { return point; },
-		get origin() { return point; },
-	} );
+	Object.defineProperty(ray, "point", {get: function(){ return point; }});
+	Object.defineProperty(ray, "vector", {get: function(){ return vector; }});
+	Object.defineProperty(ray, "length", {get: function(){ return Infinity; }});
+	Object.defineProperty(ray, "transform", {value: transform});
+
+	return Object.freeze(ray);
 }
 // static methods
 Ray.withPoints = function() {
@@ -119,10 +155,6 @@ Ray.withPoints = function() {
 
 export function Edge() {
 	let _endpoints = Input.get_two_vec2(...arguments);
-
-	const point = function() {
-		return _endpoints[0];
-	}
 
 	const transform = function() {
 		let mat = Input.get_matrix2(...arguments);
@@ -168,13 +200,21 @@ export function Edge() {
 		             _endpoints[0][1] + u*(_endpoints[1][1]-_endpoints[0][1]) );
 	}
 
-	return Object.freeze( {
-		vector,
-		length,
-		point,
-		nearestPoint,
-		nearestPointNormalTo,
-		get endpoints() { return _endpoints; },
-	} );
+	let edge = Object.create(LinePrototype());
+	let vec_comp_func = function(t0, epsilon) {
+		return t0 >= -epsilon && t0 <= 1+epsilon;
+	}
+	Object.defineProperty(edge, "vec_comp_func", {value: vec_comp_func});
+
+	Object.defineProperty(edge, "points", {get: function(){ return _endpoints; }});
+	Object.defineProperty(edge, "point", {get: function(){ return _endpoints[0]; }});
+	Object.defineProperty(edge, "vector", {get: function(){ return vector(); }});
+	Object.defineProperty(edge, "length", {get: function(){ return length(); }});
+	Object.defineProperty(edge, "transform", {value: transform});
+	Object.defineProperty(edge, "nearestPoint", {value: nearestPoint});
+	Object.defineProperty(edge, "nearestPointNormalTo", {value: nearestPointNormalTo});
+
+	return Object.freeze(edge);
+
 }
 

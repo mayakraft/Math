@@ -1,8 +1,13 @@
 // convenience
 function equivalent(a, b){ return Math.abs(a-b) < 1e-13; }
+function equivalentArrays(a, b){
+	return a.map((_,i) => Math.abs(a[i]-b[i]) < 1e-13).reduce((a,b) => a && b, true);
+}
 let Vector = Geometry.Vector;
 let Matrix2 = Geometry.Matrix2;
 let Line = Geometry.Line;
+let Ray = Geometry.Ray;
+let Edge = Geometry.Edge;
 let Polygon = Geometry.Polygon;
 let ConvexPolygon = Geometry.ConvexPolygon;
 
@@ -38,11 +43,28 @@ let v4b = Vector(6,8).normalize();
 test(v4a.isEquivalent(v4b), "vectors equivalent");
 
 // 5. intersection
-let line1 = Line(0,0,1,1);
-let line2 = Line(10,0,-1,1);
+let line1 = Line(10,0,-1,1);
+let line2 = Line(0,0,1,1);
+let ray1 = Ray(10,0,-1,1);
+let ray2 = Ray(10,0,1,1);
+let edge1 = Edge(10,0,0,10);
+let edge2 = Edge(10,0,-1,1);
 
-console.log(line1);
-// line1.intersection(line2)
+let intersect1 = line2.intersectLine(line1);
+test(intersect1[0] === 5 && intersect1[1] === 5, "lines intersection");
+let intersect2 = line2.intersectRay(ray1);
+test(intersect2[0] === 5 && intersect2[1] === 5, "line-ray intersection");
+let intersect3 = line2.intersectEdge(edge1);
+test(intersect3[0] === 5 && intersect3[1] === 5, "line-edge intersection");
+
+// 5. reflection matrices
+let reflection1 = line1.reflection();
+let reflection2 = ray1.reflection();
+let reflection3 = edge1.reflection();
+let matrixTest = equivalentArrays(reflection1.m, reflection2.m)
+	&& equivalentArrays(reflection2.m, reflection3.m);
+test(matrixTest, "reflection matrices");
+
 
 // 5. polygon
 let poly1 = Polygon.regularPolygon(4);
@@ -50,9 +72,7 @@ let poly1 = Polygon.regularPolygon(4);
 
 let poly2 = ConvexPolygon.regularPolygon(4);
 // console.log(poly1);
-console.log(poly2);
 let clip1 = poly2.clipLine(line1);
-console.log(clip1);
 
 
 

@@ -77,6 +77,11 @@ export function get_edge() {
 			];
 		}
 	}
+	if (params[0].constructor === Object) {
+		if(params[0].points.length > 0) {
+			return params[0].points;
+		}
+	}
 }
 
 
