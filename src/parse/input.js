@@ -119,6 +119,10 @@ export function get_line() {
 	return {point: [], vector: []};
 }
 
+export function get_ray() {
+	return get_line(...arguments);
+}
+
 export function get_two_vec2() {
 	let params = Array.from(arguments);
 	let numbers = params.filter((param) => !isNaN(param));

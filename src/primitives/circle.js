@@ -12,23 +12,26 @@ export function Circle(){
 	}
 
 	const intersectionLine = function() {
-		let line = Input.get_line(...arguments);
-		let point2 = [
-			line.point[0] + line.vector[0],
-			line.point[1] + line.vector[1]
-		];
-		let intersection = Intersection.intersection_circle_line(_origin, _radius, line.point, point2);
+		let points = Input.get_line(...arguments);
+		let intersection = Intersection.intersection_circle_line(_origin, _radius, points[0], points[1]);
+		return Vector(intersection);
+	}
+
+	const intersectionRay = function() {
+		let points = Input.get_ray(...arguments);
+		let intersection = Intersection.intersection_circle_ray(_origin, _radius, points[0], points[1]);
 		return Vector(intersection);
 	}
 
 	const intersectionEdge = function() {
 		let points = Input.get_two_vec2(...arguments);
-		let intersection = Intersection.intersection_circle_line(_origin, _radius, points[0], points[1]);
+		let intersection = Intersection.intersection_circle_edge(_origin, _radius, points[0], points[1]);
 		return Vector(intersection);
 	}
 
 	return Object.freeze( {
 		intersectionLine,
+		intersectionRay,
 		intersectionEdge,
 		get origin() { return _origin; },
 		get radius() { return _radius; },

@@ -206,31 +206,31 @@
 
 
 	function line_line(aPt, aVec, bPt, bVec, epsilon) {
-		return vector_intersection(aPt, aVec, bPt, bVec, line_line_comp, epsilon);
+		return intersection_function(aPt, aVec, bPt, bVec, line_line_comp, epsilon);
 	}
 	function line_ray(linePt, lineVec, rayPt, rayVec, epsilon) {
-		return vector_intersection(linePt, lineVec, rayPt, rayVec, line_ray_comp, epsilon);
+		return intersection_function(linePt, lineVec, rayPt, rayVec, line_ray_comp, epsilon);
 	}
 	function line_edge(point, vec, edge0, edge1, epsilon) {
 		let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
-		return vector_intersection(point, vec, edge0, edgeVec, line_edge_comp, epsilon);
+		return intersection_function(point, vec, edge0, edgeVec, line_edge_comp, epsilon);
 	}
 	function ray_ray(aPt, aVec, bPt, bVec, epsilon) {
-		return vector_intersection(aPt, aVec, bPt, bVec, ray_ray_comp, epsilon);
+		return intersection_function(aPt, aVec, bPt, bVec, ray_ray_comp, epsilon);
 	}
 	function ray_edge(rayPt, rayVec, edge0, edge1, epsilon) {
 		let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
-		return vector_intersection(rayPt, rayVec, edge0, edgeVec, ray_edge_comp, epsilon);
+		return intersection_function(rayPt, rayVec, edge0, edgeVec, ray_edge_comp, epsilon);
 	}
 	function edge_edge(a0, a1, b0, b1, epsilon) {
 		let aVec = [a1[0]-a0[0], a1[1]-a0[1]];
 		let bVec = [b1[0]-b0[0], b1[1]-b0[1]];
-		return vector_intersection(a0, aVec, b0, bVec, edge_edge_comp, epsilon);
+		return intersection_function(a0, aVec, b0, bVec, edge_edge_comp, epsilon);
 	}
 
 	function line_edge_exclusive(point, vec, edge0, edge1) {
 		let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
-		let x = vector_intersection(point, vec, edge0, edgeVec, line_edge_comp);
+		let x = intersection_function(point, vec, edge0, edgeVec, line_edge_comp);
 		if (x == null) { return undefined; }
 		if (equivalent2(x, edge0) || equivalent2(x, edge1)) {
 			return undefined;
@@ -263,15 +263,15 @@
 	 * requires a compFunction to describe valid bounds checking 
 	 * line always returns true, ray is true for t > 0, edge must be between 0 < t < 1
 	*/
-	var vector_intersection = function(aPt, aVec, bPt, bVec, compFunction, epsilon = EPSILON) {
+	const intersection_function = function(aPt, aVec, bPt, bVec, compFunction, epsilon = EPSILON) {
 		function det(a,b) { return a[0] * b[1] - b[0] * a[1]; }
-		var denominator0 = det(aVec, bVec);
-		var denominator1 = -denominator0;
+		let denominator0 = det(aVec, bVec);
+		let denominator1 = -denominator0;
 		if (Math.abs(denominator0) < epsilon) { return undefined; } /* parallel */
-		var numerator0 = det([bPt[0]-aPt[0], bPt[1]-aPt[1]], bVec);
-		var numerator1 = det([aPt[0]-bPt[0], aPt[1]-bPt[1]], aVec);
-		var t0 = numerator0 / denominator0;
-		var t1 = numerator1 / denominator1;
+		let numerator0 = det([bPt[0]-aPt[0], bPt[1]-aPt[1]], bVec);
+		let numerator1 = det([aPt[0]-bPt[0], aPt[1]-bPt[1]], aVec);
+		let t0 = numerator0 / denominator0;
+		let t1 = numerator1 / denominator1;
 		if (compFunction(t0, t1, epsilon)) {
 			return [aPt[0] + aVec[0]*t0, aPt[1] + aVec[1]*t0];
 		}
@@ -427,8 +427,15 @@
 		}
 	}
 
-
 	function intersection_circle_line(center, radius, p0, p1) {
+		throw "intersection_circle_line has not been written yet";
+	}
+	function intersection_circle_ray(center, radius, p0, p1) {
+		throw "intersection_circle_ray has not been written yet";
+	}
+
+
+	function intersection_circle_edge(center, radius, p0, p1) {
 		var r_squared =  Math.pow(radius, 2);
 		var x1 = p0[0] - center[0];
 		var y1 = p0[1] - center[1];
@@ -468,6 +475,7 @@
 		ray_edge: ray_edge,
 		edge_edge: edge_edge,
 		line_edge_exclusive: line_edge_exclusive,
+		intersection_function: intersection_function,
 		point_on_line: point_on_line,
 		point_on_edge: point_on_edge,
 		point_in_poly: point_in_poly,
@@ -476,7 +484,9 @@
 		clip_line_in_convex_poly: clip_line_in_convex_poly,
 		clip_ray_in_convex_poly: clip_ray_in_convex_poly,
 		clip_edge_in_convex_poly: clip_edge_in_convex_poly,
-		intersection_circle_line: intersection_circle_line
+		intersection_circle_line: intersection_circle_line,
+		intersection_circle_ray: intersection_circle_ray,
+		intersection_circle_edge: intersection_circle_edge
 	});
 
 	function make_regular_polygon(sides, x = 0, y = 0, radius = 1) {
@@ -974,6 +984,10 @@
 		return {point: [], vector: []};
 	}
 
+	function get_ray() {
+		return get_line(...arguments);
+	}
+
 	function get_two_vec2() {
 		let params = Array.from(arguments);
 		let numbers = params.filter((param) => !isNaN(param));
@@ -1142,23 +1156,26 @@
 		}
 
 		const intersectionLine = function() {
-			let line = get_line(...arguments);
-			let point2 = [
-				line.point[0] + line.vector[0],
-				line.point[1] + line.vector[1]
-			];
-			let intersection = intersection_circle_line(_origin, _radius, line.point, point2);
+			let points = get_line(...arguments);
+			let intersection = intersection_circle_line(_origin, _radius, points[0], points[1]);
+			return Vector(intersection);
+		};
+
+		const intersectionRay = function() {
+			let points = get_ray(...arguments);
+			let intersection = intersection_circle_ray(_origin, _radius, points[0], points[1]);
 			return Vector(intersection);
 		};
 
 		const intersectionEdge = function() {
 			let points = get_two_vec2(...arguments);
-			let intersection = intersection_circle_line(_origin, _radius, points[0], points[1]);
+			let intersection = intersection_circle_edge(_origin, _radius, points[0], points[1]);
 			return Vector(intersection);
 		};
 
 		return Object.freeze( {
 			intersectionLine,
+			intersectionRay,
 			intersectionEdge,
 			get origin() { return _origin; },
 			get radius() { return _radius; },
@@ -1408,7 +1425,7 @@
 	};
 
 	function Line() {
-		let {point, vector} = get_line(...arguments);
+		let { point, vector } = get_line(...arguments);
 
 		const isParallel = function() {
 			let line = get_line(...arguments);
@@ -1419,15 +1436,30 @@
 			// todo: a little more elegant of a solution, please
 			let norm = normalize(vector);
 			let temp = point.map((p,i) => p + norm[i]);
-			if(temp == null) { return; }
+			if (temp == null) { return; }
 			var p0 = multiply_vector2_matrix2(point, mat);
 			var p1 = multiply_vector2_matrix2(temp, mat);
 			return Line.withPoints([p0, p1]);
+		};
+		const intersectLine = function() {
+			let line = get_line(...arguments);
+			return Intersection.line_line(point, vector, line.point, line.vector);
+		};
+		const intersectRay = function() {
+			let ray = get_ray(...arguments);
+			return Intersection.line_ray(point, vector, ray.point, ray.vector);
+		};
+		const intersectEdge = function() {
+			let p = get_two_vec2(...arguments);
+			return Intersection.line_edge(point, vector, p[0], p[1]);
 		};
 
 		return Object.freeze( {
 			isParallel,
 			transform,
+			intersectLine,
+			intersectRay,
+			intersectEdge,
 			get vector() { return vector; },
 			get point() { return point; },
 		} );
@@ -1458,9 +1490,25 @@
 
 
 	function Ray() {
-		let {point, vector} = get_line(...arguments);
+		let { point, vector } = get_line(...arguments);
+
+		const intersectLine = function() {
+			let line = get_line(...arguments);
+			return Intersection.line_ray(line.point, line.vector, point, vector);
+		};
+		const intersectRay = function() {
+			let ray = get_ray(...arguments);
+			return Intersection.ray_ray(point, vector, ray.point, ray.vector);
+		};
+		const intersectEdge = function() {
+			let p = get_two_vec2(...arguments);
+			return Intersection.ray_edge(point, vector, p[0], p[1]);
+		};
 
 		return Object.freeze( {
+			intersectLine,
+			intersectRay,
+			intersectEdge,
 			get vector() { return vector; },
 			get point() { return point; },
 			get origin() { return point; },
