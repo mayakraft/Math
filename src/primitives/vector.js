@@ -1,6 +1,6 @@
-import * as Input from '../parse/input';
-import * as Algebra from '../core/algebra';
-import { bisect_vectors } from '../core/geometry';
+import * as Input from "../parse/input";
+import * as Algebra from "../core/algebra";
+import { bisect_vectors } from "../core/geometry";
 
 /** n-dimensional vector */
 export function Vector() {
@@ -100,30 +100,28 @@ export function Vector() {
 		return Vector( bisect_vectors(_v, vec) );
 	}
 
-	return Object.freeze(
-		Object.assign({
-			normalize,
-			magnitude,
-			dot,
-			cross,
-			distanceTo,
-			transform,
-			add,
-			subtract,
-			rotateZ,
-			rotateZ90,
-			rotateZ180,
-			rotateZ270,
-			reflect,
-			lerp,
-			isEquivalent,
-			isParallel,
-			scale,
-			midpoint,
-			bisect,
-			get x() { return _v[0]; },
-			get y() { return _v[1]; },
-			get z() { return _v[2]; },
-		}, _v)
-	);
+	Object.defineProperty(_v, "normalize", {value: normalize});
+	Object.defineProperty(_v, "magnitude", {value: magnitude});
+	Object.defineProperty(_v, "dot", {value: dot});
+	Object.defineProperty(_v, "cross", {value: cross});
+	Object.defineProperty(_v, "distanceTo", {value: distanceTo});
+	Object.defineProperty(_v, "transform", {value: transform});
+	Object.defineProperty(_v, "add", {value: add});
+	Object.defineProperty(_v, "subtract", {value: subtract});
+	Object.defineProperty(_v, "rotateZ", {value: rotateZ});
+	Object.defineProperty(_v, "rotateZ90", {value: rotateZ90});
+	Object.defineProperty(_v, "rotateZ180", {value: rotateZ180});
+	Object.defineProperty(_v, "rotateZ270", {value: rotateZ270});
+	Object.defineProperty(_v, "reflect", {value: reflect});
+	Object.defineProperty(_v, "lerp", {value: lerp});
+	Object.defineProperty(_v, "isEquivalent", {value: isEquivalent});
+	Object.defineProperty(_v, "isParallel", {value: isParallel});
+	Object.defineProperty(_v, "scale", {value: scale});
+	Object.defineProperty(_v, "midpoint", {value: midpoint});
+	Object.defineProperty(_v, "bisect", {value: bisect});
+	Object.defineProperty(_v, "x", {get: function(){ return _v[0]; }});
+	Object.defineProperty(_v, "y", {get: function(){ return _v[1]; }});
+	Object.defineProperty(_v, "z", {get: function(){ return _v[2]; }});
+
+	return Object.freeze(_v);
 }

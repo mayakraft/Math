@@ -24,9 +24,10 @@
 
 	///////////////////////////////////////////////////////////////////////////////
 	// the following operations neatly generalize for n-dimensions
-	//
-	/** @param [number]
-	 *  @returns [number]
+
+	/**
+	 * @param [number]
+	 * @returns [number]
 	 */
 	function normalize(v) {
 		let m = magnitude(v);
@@ -34,8 +35,9 @@
 		return v.map(c => c / m);
 	}
 
-	/** @param [number]
-	 *  @returns number
+	/**
+	 * @param [number]
+	 * @returns number
 	 */
 	function magnitude(v) {
 		let sum = v
@@ -44,8 +46,9 @@
 		return Math.sqrt(sum);
 	}
 
-	/** @param [number]
-	 *  @returns boolean
+	/**
+	 * @param [number]
+	 * @returns boolean
 	 */
 	function degenerate(v) {
 		return Math.abs(v.reduce((a, b) => a + b, 0)) < EPSILON;
@@ -1138,32 +1141,58 @@
 			return Vector$1( bisect_vectors(_v, vec) );
 		};
 
-		return Object.freeze(
-			Object.assign({
-				normalize: normalize$$1,
-				magnitude: magnitude$$1,
-				dot: dot$$1,
-				cross,
-				distanceTo,
-				transform,
-				add,
-				subtract,
-				rotateZ,
-				rotateZ90,
-				rotateZ180,
-				rotateZ270,
-				reflect,
-				lerp,
-				isEquivalent,
-				isParallel,
-				scale,
-				midpoint,
-				bisect,
-				get x() { return _v[0]; },
-				get y() { return _v[1]; },
-				get z() { return _v[2]; },
-			}, _v)
-		);
+		// let vector = Object.create(Array());
+		Object.defineProperty(_v, "normalize", {value: normalize$$1});
+		Object.defineProperty(_v, "magnitude", {value: magnitude$$1});
+		Object.defineProperty(_v, "dot", {value: dot$$1});
+		Object.defineProperty(_v, "cross", {value: cross});
+		Object.defineProperty(_v, "distanceTo", {value: distanceTo});
+		Object.defineProperty(_v, "transform", {value: transform});
+		Object.defineProperty(_v, "add", {value: add});
+		Object.defineProperty(_v, "subtract", {value: subtract});
+		Object.defineProperty(_v, "rotateZ", {value: rotateZ});
+		Object.defineProperty(_v, "rotateZ90", {value: rotateZ90});
+		Object.defineProperty(_v, "rotateZ180", {value: rotateZ180});
+		Object.defineProperty(_v, "rotateZ270", {value: rotateZ270});
+		Object.defineProperty(_v, "reflect", {value: reflect});
+		Object.defineProperty(_v, "lerp", {value: lerp});
+		Object.defineProperty(_v, "isEquivalent", {value: isEquivalent});
+		Object.defineProperty(_v, "isParallel", {value: isParallel});
+		Object.defineProperty(_v, "scale", {value: scale});
+		Object.defineProperty(_v, "midpoint", {value: midpoint});
+		Object.defineProperty(_v, "bisect", {value: bisect});
+		Object.defineProperty(_v, "x", {get: function(){ return _v[0]; }});
+		Object.defineProperty(_v, "y", {get: function(){ return _v[1]; }});
+		Object.defineProperty(_v, "z", {get: function(){ return _v[2]; }});
+
+		return Object.freeze(_v);
+
+		// return Object.freeze(
+		// 	Object.assign({
+		// 		normalize,
+		// 		magnitude,
+		// 		dot,
+		// 		cross,
+		// 		distanceTo,
+		// 		transform,
+		// 		add,
+		// 		subtract,
+		// 		rotateZ,
+		// 		rotateZ90,
+		// 		rotateZ180,
+		// 		rotateZ270,
+		// 		reflect,
+		// 		lerp,
+		// 		isEquivalent,
+		// 		isParallel,
+		// 		scale,
+		// 		midpoint,
+		// 		bisect,
+		// 		get x() { return _v[0]; },
+		// 		get y() { return _v[1]; },
+		// 		get z() { return _v[2]; },
+		// 	}, _v)
+		// );
 	}
 
 	function Circle(){
@@ -1171,7 +1200,7 @@
 
 		let params = Array.from(arguments);
 		let numbers = params.filter((param) => !isNaN(param));
-		if (numbers.length == 3) {
+		if (numbers.length === 3) {
 			_origin = numbers.slice(0,2);
 			_radius = numbers[2];
 		}
@@ -1446,7 +1475,7 @@
 	};
 
 	function LinePrototype() {
-		// these will be overwritten for each line type
+		// these will be overwritten for each line type. defaults for Line()
 		// is it valid for t0 to be below 0, above 1, to the unit vector
 		const vec_comp_func = function(t0) { return true; };
 		// cap d below 0 or above 1, to the unit vector, for rays/edges
@@ -1463,7 +1492,7 @@
 
 		const nearestPoint = function() {
 			let point = get_vec(...arguments);
-			return nearest_point(this.point, this.vector, point, this.vec_cap_func);
+			return Vector$1(nearest_point(this.point, this.vector, point, this.vec_cap_func));
 		};
 		
 		const intersectLine = function() {

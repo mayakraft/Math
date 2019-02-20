@@ -1,8 +1,8 @@
-import * as Input from '../parse/input';
-import * as Geometry from '../core/geometry';
-import * as Intersection from '../core/intersection';
-import { Vector } from './vector';
-import { clean_number } from '../parse/clean';
+import * as Input from "../parse/input";
+import * as Geometry from "../core/geometry";
+import * as Intersection from "../core/intersection";
+import { Vector } from "./vector";
+import { clean_number } from "../parse/clean";
 
 export function Polygon() {
 

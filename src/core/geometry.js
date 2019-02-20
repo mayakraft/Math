@@ -1,6 +1,5 @@
-
-import { point_on_line, line_edge_exclusive } from './intersection';
-import { EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number } from '../parse/clean';
+import { point_on_line, line_edge_exclusive } from "./intersection";
+import { EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number } from "../parse/clean";
 import { normalize, cross2 } from "./algebra";
 
 export function make_regular_polygon(sides, x = 0, y = 0, radius = 1) {

@@ -1,6 +1,6 @@
-import * as Input from '../parse/input';
-import * as Algebra from '../core/algebra';
-import { Vector } from './vector';
+import * as Input from "../parse/input";
+import * as Algebra from "../core/algebra";
+import { Vector } from "./vector";
 /** 
  * 2D Matrix (2x3) with translation component in x,y
  */

@@ -1,12 +1,12 @@
-// import minify from 'rollup-plugin-babel-minify';
+// import minify from "rollup-plugin-babel-minify";
 
 module.exports = {
-	input: 'src/index.js',
+	input: "src/index.js",
 	output: {
-		name: 'Geometry',
-		file: 'geometry.js',
-		format: 'umd',
-		// format: 'es',
+		name: "Geometry",
+		file: "geometry.js",
+		format: "umd",
+		// format: "es",
 		banner: "/* Geometry (c) Robby Kraft, MIT License */"
 	},
 	// plugins: [

@@ -12,19 +12,19 @@
 // however a lot of types and operations are built to function in n-dimensions.
 
 
-import * as algebra from './core/algebra';
-import * as geometry from './core/geometry';
-import * as intersection from './core/intersection';
-import * as origami from './core/origami';
+import * as algebra from "./core/algebra";
+import * as geometry from "./core/geometry";
+import * as intersection from "./core/intersection";
+import * as origami from "./core/origami";
 
-import { EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number } from './parse/clean';
+import { EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number } from "./parse/clean";
 
 // let core = { algebra, geometry, intersection, origami };
 let core = { algebra, geometry, intersection, origami, EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number };
 
 export { core };
-export { Vector } from './primitives/vector';
-export { Circle } from './primitives/circle';
-export { Polygon, ConvexPolygon, Rectangle } from './primitives/polygon';
-export { Matrix2 } from './primitives/matrix';
-export { Line, Ray, Edge } from './primitives/lines';
+export { Vector } from "./primitives/vector";
+export { Circle } from "./primitives/circle";
+export { Polygon, ConvexPolygon, Rectangle } from "./primitives/polygon";
+export { Matrix2 } from "./primitives/matrix";
+export { Line, Ray, Edge } from "./primitives/lines";

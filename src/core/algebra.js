@@ -3,13 +3,14 @@
 // all infinite lines are defined as point and vector, both [x,y]
 // all polygons are an ordered set of points ([x,y]), either winding direction
 
-import { EPSILON } from '../parse/clean';
+import { EPSILON } from "../parse/clean";
 
 ///////////////////////////////////////////////////////////////////////////////
 // the following operations neatly generalize for n-dimensions
-//
-/** @param [number]
- *  @returns [number]
+
+/**
+ * @param [number]
+ * @returns [number]
  */
 export function normalize(v) {
 	let m = magnitude(v);
@@ -17,8 +18,9 @@ export function normalize(v) {
 	return v.map(c => c / m);
 }
 
-/** @param [number]
- *  @returns number
+/**
+ * @param [number]
+ * @returns number
  */
 export function magnitude(v) {
 	let sum = v
@@ -27,8 +29,9 @@ export function magnitude(v) {
 	return Math.sqrt(sum);
 }
 
-/** @param [number]
- *  @returns boolean
+/**
+ * @param [number]
+ * @returns boolean
  */
 export function degenerate(v) {
 	return Math.abs(v.reduce((a, b) => a + b, 0)) < EPSILON;

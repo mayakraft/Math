@@ -1,12 +1,12 @@
-import * as Input from '../parse/input';
-import * as Intersection from '../core/intersection';
+import * as Input from "../parse/input";
+import * as Intersection from "../core/intersection";
 
 export function Circle(){
 	let _origin, _radius;
 
 	let params = Array.from(arguments);
 	let numbers = params.filter((param) => !isNaN(param));
-	if (numbers.length == 3) {
+	if (numbers.length === 3) {
 		_origin = numbers.slice(0,2);
 		_radius = numbers[2];
 	}

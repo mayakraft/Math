@@ -2,10 +2,10 @@ import * as Input from "../parse/input";
 import * as Algebra from "../core/algebra";
 import * as Intersection from "../core/intersection";
 import { Vector } from "./vector";
-import { EPSILON } from '../parse/clean';
+import { EPSILON } from "../parse/clean";
 
 function LinePrototype() {
-	// these will be overwritten for each line type
+	// these will be overwritten for each line type. defaults for Line()
 	// is it valid for t0 to be below 0, above 1, to the unit vector
 	const vec_comp_func = function(t0) { return true; }
 	// cap d below 0 or above 1, to the unit vector, for rays/edges
@@ -22,7 +22,7 @@ function LinePrototype() {
 
 	const nearestPoint = function() {
 		let point = Input.get_vec(...arguments);
-		return Intersection.nearest_point(this.point, this.vector, point, this.vec_cap_func);
+		return Vector(Intersection.nearest_point(this.point, this.vector, point, this.vec_cap_func));
 	}
 	
 	const intersectLine = function() {

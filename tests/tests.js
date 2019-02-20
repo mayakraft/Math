@@ -66,6 +66,27 @@ let matrixTest = equivalentArrays(reflection1.m, reflection2.m)
 test(matrixTest, "reflection matrices");
 
 
+// 5. nearest points on lines
+let nearest1 = line1.nearestPoint([0, 0]);
+let nearest2 = line1.nearestPoint([20,-10]);
+let nearest3 = line1.nearestPoint([-10,100]);
+let nearest4 = ray1.nearestPoint([0, 0]);
+let nearest5 = ray1.nearestPoint([20,-10]);
+let nearest6 = ray1.nearestPoint([-10,100]);
+let nearest7 = edge1.nearestPoint([0, 0]);
+let nearest8 = edge1.nearestPoint([20,-10]);
+let nearest9 = edge1.nearestPoint([-10,100]);
+
+test(equivalentArrays(nearest1, nearest4), "nearest collinear inside lines");
+test(equivalentArrays(nearest4, nearest7), "nearest collinear inside lines");
+test(equivalentArrays(nearest2, [20, -10]), "nearest collinear outside line");
+test(equivalentArrays(nearest3, [-50, 60]), "nearest collinear outside line");
+test(equivalentArrays(nearest5, [10, 0]), "nearest collinear outside ray");
+test(equivalentArrays(nearest6, [-50, 60]), "nearest collinear outside ray");
+test(equivalentArrays(nearest8, [10, 0]), "nearest collinear outside edge");
+test(equivalentArrays(nearest9, [0, 10]), "nearest collinear outside edge");
+
+
 // 5. polygon
 let poly1 = Polygon.regularPolygon(4);
 // poly1.clipLine(line1);

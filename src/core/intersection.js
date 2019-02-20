@@ -4,7 +4,7 @@
  *  endpoints, use "exclusive" functions
  */
 
-import { EPSILON } from '../parse/clean';
+import { EPSILON } from "../parse/clean";
 
 function equivalent2(a, b, epsilon = EPSILON) {
 	return Math.abs(a[0]-b[0]) < epsilon && Math.abs(a[1]-b[1]) < epsilon;
