@@ -28,3 +28,5 @@ export { Circle } from "./primitives/circle";
 export { Polygon, ConvexPolygon, Rectangle } from "./primitives/polygon";
 export { Matrix2 } from "./primitives/matrix";
 export { Line, Ray, Edge } from "./primitives/lines";
+export { Junction } from "./primitives/junction";
+export { Sector } from "./primitives/sector";

@@ -1,5 +1,6 @@
 import * as Input from "../parse/input";
 import * as Intersection from "../core/intersection";
+import { Vector } from "./vector";
 
 export function Circle(){
 	let _origin, _radius;

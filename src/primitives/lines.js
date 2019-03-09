@@ -102,7 +102,7 @@ export function Line() {
 	return Object.freeze(line);
 }
 // static methods
-Line.withPoints = function() {
+Line.fromPoints = function() {
 	let points = Input.get_two_vec2(...arguments);
 	return Line({
 		point: points[0],

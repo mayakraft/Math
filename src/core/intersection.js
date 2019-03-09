@@ -340,10 +340,10 @@ export function intersection_circle_line(center, radius, p0, p1, epsilon = EPSIL
 	// else, delta == 0, line is tangent, one solution
 	return [solutionA];
 }
+
 export function intersection_circle_ray(center, radius, p0, p1) {
 	throw "intersection_circle_ray has not been written yet";
 }
-
 
 export function intersection_circle_edge(center, radius, p0, p1) {
 	var r_squared =  Math.pow(radius, 2);
