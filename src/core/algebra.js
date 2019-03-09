@@ -63,10 +63,10 @@ export function midpoint(a, b) {
 }
 
 // average is a midpoint function for n-number of arguments
-export function average(vecs) {
-	let initial = Array.from(Array(vecs.length)).map(_ => 0);
-	return vecs.reduce((a,b) => a.map((_,i) => a[i]+b[i]), initial)
-		.map(c => c / vecs.length);
+export function average(vectors) {
+	let initial = Array.from(Array(vectors.length)).map(_ => 0);
+	return vectors.reduce((a,b) => a.map((_,i) => a[i]+b[i]), initial)
+		.map(c => c / vectors.length);
 }
 
 

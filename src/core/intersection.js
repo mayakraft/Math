@@ -6,10 +6,19 @@
 
 import { EPSILON } from "../parse/clean";
 
+// equivalency test for numbers
+function equivalent(a, b, epsilon = EPSILON) {
+	return Math.abs(a-b) < epsilon;
+}
+// equivalency test for 2d-vectors
 function equivalent2(a, b, epsilon = EPSILON) {
 	return Math.abs(a[0]-b[0]) < epsilon && Math.abs(a[1]-b[1]) < epsilon;
 }
-
+// equivalency test for n-dimensional vectors
+function equivalentVectors(a, b, epsilon = EPSILON) {
+	return a.map((_,i) => Math.abs(a[i]-b[i]) < epsilon)
+		.reduce((a,b) => a && b, true);
+}
 
 export function line_line(aPt, aVec, bPt, bVec, epsilon) {
 	return intersection_function(aPt, aVec, bPt, bVec, line_line_comp, epsilon);
@@ -34,15 +43,31 @@ export function edge_edge(a0, a1, b0, b1, epsilon) {
 	return intersection_function(a0, aVec, b0, bVec, edge_edge_comp, epsilon);
 }
 
-export function line_edge_exclusive(point, vec, edge0, edge1) {
-	let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
-	let x = intersection_function(point, vec, edge0, edgeVec, line_edge_comp);
-	if (x == null) { return undefined; }
-	if (equivalent2(x, edge0) || equivalent2(x, edge1)) {
-		return undefined;
-	}
-	return x;
+
+// no such thing, except to be comprehensive
+// export function line_line_exclusive(aPt, aVec, bPt, bVec, epsilon) {
+// 	return intersection_function(aPt, aVec, bPt, bVec, line_line_comp_exclusive, epsilon);
+// }
+export function line_ray_exclusive(linePt, lineVec, rayPt, rayVec, epsilon) {
+	return intersection_function(linePt, lineVec, rayPt, rayVec, line_ray_comp_exclusive, epsilon);
 }
+export function line_edge_exclusive(point, vec, edge0, edge1, epsilon) {
+	let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
+	return intersection_function(point, vec, edge0, edgeVec, line_edge_comp_exclusive, epsilon);
+}
+export function ray_ray_exclusive(aPt, aVec, bPt, bVec, epsilon) {
+	return intersection_function(aPt, aVec, bPt, bVec, ray_ray_comp_exclusive, epsilon);
+}
+export function ray_edge_exclusive(rayPt, rayVec, edge0, edge1, epsilon) {
+	let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
+	return intersection_function(rayPt, rayVec, edge0, edgeVec, ray_edge_comp_exclusive, epsilon);
+}
+export function edge_edge_exclusive(a0, a1, b0, b1, epsilon) {
+	let aVec = [a1[0]-a0[0], a1[1]-a0[1]];
+	let bVec = [b1[0]-b0[0], b1[1]-b0[1]];
+	return intersection_function(a0, aVec, b0, bVec, edge_edge_comp_exclusive, epsilon);
+}
+
 
 /** comparison functions for a generalized vector intersection function */
 const line_line_comp = function() { return true; }
@@ -64,10 +89,25 @@ const edge_edge_comp = function(t0, t1, epsilon = EPSILON) {
 }
 
 // todo this has not been tested yet
+
+// no such thing, except to be comprehensive
+// const line_line_comp_exclusive = function() { return true; }
+const line_ray_comp_exclusive = function(t0, t1, epsilon = EPSILON) {
+	return t1 > epsilon;
+}
 const line_edge_comp_exclusive = function(t0, t1, epsilon = EPSILON) {
 	return t1 > epsilon && t1 < 1-epsilon;
 }
-
+const ray_ray_comp_exclusive = function(t0, t1, epsilon = EPSILON) {
+	return t0 > epsilon && t1 > epsilon;
+}
+const ray_edge_comp_exclusive = function(t0, t1, epsilon = EPSILON) {
+	return t0 > epsilon && t1 > epsilon && t1 < 1-epsilon;
+}
+const edge_edge_comp_exclusive = function(t0, t1, epsilon = EPSILON) {
+	return t0 > epsilon && t0 < 1-epsilon &&
+	       t1 > epsilon && t1 < 1-epsilon;
+}
 
 /** 
  * the generalized vector intersection function
@@ -264,9 +304,41 @@ const nearest_limiter_edge = function(distance, epsilon) {
 }
 
 
-
-export function intersection_circle_line(center, radius, p0, p1) {
-	throw "intersection_circle_line has not been written yet";
+/*
+ * returns an array of array of numbers
+ */
+export function intersection_circle_line(center, radius, p0, p1, epsilon = EPSILON) {
+	// move the origin to the center of the circle
+	let x1 = p0[0] - center[0];
+	let y1 = p0[1] - center[1];
+	let x2 = p1[0] - center[0];
+	let y2 = p1[1] - center[1];
+	let dx = x2 - x1;
+	let dy = y2 - y1;
+	let det = x1*y2 - x2*y1;
+	let det_sq = det * det;
+	let r_sq = radius * radius;
+	let dr_sq = Math.abs(dx*dx + dy*dy);
+	let delta = r_sq * dr_sq - det_sq;
+	// no solution
+	if (delta < -epsilon) { return undefined; }
+	// shorthand things
+	let suffix = Math.sqrt(r_sq*dr_sq - det_sq);
+	function sgn(x) { return (x < -epsilon) ? -1 : 1; }
+	let solutionA = [
+		center[0] + (det * dy + sgn(dy)*dx * suffix) / dr_sq,
+		center[1] + (-det * dx + Math.abs(dy) * suffix) / dr_sq
+	];
+	if (delta > epsilon) {
+		// two solutions
+		let solutionB = [
+			center[0] + (det * dy - sgn(dy)*dx * suffix) / dr_sq,
+			center[1] + (-det * dx - Math.abs(dy) * suffix) / dr_sq
+		];
+		return [solutionA, solutionB];
+	}
+	// else, delta == 0, line is tangent, one solution
+	return [solutionA];
 }
 export function intersection_circle_ray(center, radius, p0, p1) {
 	throw "intersection_circle_ray has not been written yet";

@@ -30,14 +30,14 @@ function LinePrototype() {
 		return Intersection.intersection_function(
 			this.point, this.vector,
 			line.point, line.vector,
-			this_line_comp);
+			compare_to_line);
 	}
 	const intersectRay = function() {
 		let ray = Input.get_ray(...arguments);
 		return Intersection.intersection_function(
 			this.point, this.vector,
 			ray.point, ray.vector,
-			this_ray_comp);
+			compare_to_ray);
 	}
 	const intersectEdge = function() {
 		let edge = Input.get_edge(...arguments);
@@ -45,16 +45,16 @@ function LinePrototype() {
 		return Intersection.intersection_function(
 			this.point, this.vector,
 			edge[0], edgeVec,
-			this_edge_comp);
+			compare_to_edge);
 	}
 
-	const this_line_comp = function(t0, t1, epsilon = EPSILON) {
+	const compare_to_line = function(t0, t1, epsilon = EPSILON) {
 		return vec_comp_func(t0, epsilon) && true;
 	}
-	const this_ray_comp = function(t0, t1, epsilon = EPSILON) {
+	const compare_to_ray = function(t0, t1, epsilon = EPSILON) {
 		return vec_comp_func(t0, epsilon) && t1 >= -epsilon;
 	}
-	const this_edge_comp = function(t0, t1, epsilon = EPSILON) {
+	const compare_to_edge = function(t0, t1, epsilon = EPSILON) {
 		return vec_comp_func(t0, epsilon) && t1 >= -epsilon && t1 <= 1+epsilon;
 	}
 
@@ -167,7 +167,9 @@ Ray.withPoints = function() {
 
 
 export function Edge() {
-	let _endpoints = Input.get_two_vec2(...arguments);
+	let inputs = Input.get_two_vec2(...arguments);
+	let _endpoints = (inputs.length > 0 ? inputs.map(p => Vector(p)) : undefined);
+	if (_endpoints === undefined) { return; }
 
 	const transform = function() {
 		let mat = Input.get_matrix2(...arguments);

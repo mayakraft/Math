@@ -1,4 +1,5 @@
 // import minify from "rollup-plugin-babel-minify";
+import cleanup from "rollup-plugin-cleanup";
 
 module.exports = {
 	input: "src/index.js",
@@ -9,10 +10,14 @@ module.exports = {
 		// format: "es",
 		banner: "/* Geometry (c) Robby Kraft, MIT License */"
 	},
-	// plugins: [
+	plugins: [
+	cleanup({
+		comments: "none",
+		maxEmptyLines: 0
+	}),
 	// 	minify( {
 	// 		bannerNewLine: true,
 	// 		comments: false
 	// 	} )
-	// ]
+	]
 };

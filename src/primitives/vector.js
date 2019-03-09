@@ -2,15 +2,14 @@ import * as Input from "../parse/input";
 import * as Algebra from "../core/algebra";
 import { bisect_vectors } from "../core/geometry";
 
-/** n-dimensional vector */
+/** n-dimensional vector, with some operations meant only for 2D */
 export function Vector() {
+
 	let _v = Input.get_vec(...arguments);
+	if (_v === undefined) { return; } // what is the best practice here
 
 	const normalize = function() {
 		return Vector( Algebra.normalize(_v) );
-	}
-	const magnitude = function() {
-		return Algebra.magnitude(_v);
 	}
 	const dot = function() {
 		let vec = Input.get_vec(...arguments);
@@ -101,7 +100,6 @@ export function Vector() {
 	}
 
 	Object.defineProperty(_v, "normalize", {value: normalize});
-	Object.defineProperty(_v, "magnitude", {value: magnitude});
 	Object.defineProperty(_v, "dot", {value: dot});
 	Object.defineProperty(_v, "cross", {value: cross});
 	Object.defineProperty(_v, "distanceTo", {value: distanceTo});
@@ -122,6 +120,9 @@ export function Vector() {
 	Object.defineProperty(_v, "x", {get: function(){ return _v[0]; }});
 	Object.defineProperty(_v, "y", {get: function(){ return _v[1]; }});
 	Object.defineProperty(_v, "z", {get: function(){ return _v[2]; }});
+	Object.defineProperty(_v, "magnitude", {get: function() {
+		return Algebra.magnitude(_v);
+	}});
 
 	return Object.freeze(_v);
 }
