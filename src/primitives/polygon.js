@@ -2,6 +2,7 @@ import * as Input from "../parse/input";
 import * as Geometry from "../core/geometry";
 import * as Intersection from "../core/intersection";
 import { Vector } from "./vector";
+import { Line, Ray, Edge } from "./lines";
 import { clean_number } from "../parse/clean";
 
 export function Polygon() {
@@ -99,15 +100,18 @@ export function ConvexPolygon() {
 
 	const clipEdge = function() {
 		let edge = Input.get_edge(...arguments);
-		return Intersection.clip_edge_in_convex_poly(polygon.points, edge[0], edge[1]);
+		let e = Intersection.clip_edge_in_convex_poly(polygon.points, edge[0], edge[1]);
+		return e === undefined ? undefined : Edge(e);
 	}
 	const clipLine = function() {
 		let line = Input.get_line(...arguments);
-		return Intersection.clip_line_in_convex_poly(polygon.points, line.point, line.vector);
+		let e = Intersection.clip_line_in_convex_poly(polygon.points, line.point, line.vector);
+		return e === undefined ? undefined : Edge(e);
 	}
 	const clipRay = function() {
 		let line = Input.get_line(...arguments);
-		return Intersection.clip_ray_in_convex_poly(polygon.points, line.point, line.vector);
+		let e = Intersection.clip_ray_in_convex_poly(polygon.points, line.point, line.vector);
+		return e === undefined ? undefined : Edge(e);
 	}
 
 	const split = function() {

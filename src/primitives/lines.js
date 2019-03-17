@@ -4,7 +4,10 @@ import * as Intersection from "../core/intersection";
 import { Vector } from "./vector";
 import { EPSILON } from "../parse/clean";
 
-function LinePrototype() {
+function LinePrototype(proto) {
+	if(proto == null) {
+		proto = {};
+	}
 	// these will be overwritten for each line type. defaults for Line()
 	// is it valid for t0 to be below 0, above 1, to the unit vector
 	const vec_comp_func = function(t0) { return true; }
@@ -58,15 +61,15 @@ function LinePrototype() {
 		return vec_comp_func(t0, epsilon) && t1 >= -epsilon && t1 <= 1+epsilon;
 	}
 
-	return Object.freeze( {
-		reflection,
-		nearestPoint,
-		intersectLine,
-		intersectRay,
-		intersectEdge,
-		vec_comp_func,
-		vec_cap_func,
-	} );
+	Object.defineProperty(proto, "reflection", {value: reflection});
+	Object.defineProperty(proto, "nearestPoint", {value: nearestPoint});
+	Object.defineProperty(proto, "intersectLine", {value: intersectLine});
+	Object.defineProperty(proto, "intersectRay", {value: intersectRay});
+	Object.defineProperty(proto, "intersectEdge", {value: intersectEdge});
+	Object.defineProperty(proto, "vec_comp_func", {value: vec_comp_func});
+	Object.defineProperty(proto, "vec_cap_func", {value: vec_cap_func});
+
+	return Object.freeze(proto);
 }
 
 export function Line() {
@@ -84,7 +87,7 @@ export function Line() {
 		if (temp == null) { return; }
 		var p0 = Algebra.multiply_vector2_matrix2(point, mat);
 		var p1 = Algebra.multiply_vector2_matrix2(temp, mat);
-		return Line.withPoints([p0, p1]);
+		return Line.fromPoints([p0, p1]);
 	}
 
 	let line = Object.create(LinePrototype());
@@ -137,7 +140,11 @@ export function Ray() {
 		if (temp == null) { return; }
 		var p0 = Algebra.multiply_vector2_matrix2(point, mat);
 		var p1 = Algebra.multiply_vector2_matrix2(temp, mat);
-		return Ray.withPoints([p0, p1]);
+		return Ray.fromPoints([p0, p1]);
+	}
+
+	const rotate180 = function() {
+		return Ray(point[0], point[1], -vector[0], -vector[1]);
 	}
 
 	let ray = Object.create(LinePrototype());
@@ -150,11 +157,12 @@ export function Ray() {
 	Object.defineProperty(ray, "vector", {get: function(){ return vector; }});
 	Object.defineProperty(ray, "length", {get: function(){ return Infinity; }});
 	Object.defineProperty(ray, "transform", {value: transform});
+	Object.defineProperty(ray, "rotate180", {value: rotate180});
 
 	return Object.freeze(ray);
 }
 // static methods
-Ray.withPoints = function() {
+Ray.fromPoints = function() {
 	let points = Input.get_two_vec2(...arguments);
 	return Ray({
 		point: points[0],
@@ -168,29 +176,31 @@ Ray.withPoints = function() {
 
 export function Edge() {
 	let inputs = Input.get_two_vec2(...arguments);
+	let edge = Object.create(LinePrototype(Array()));
+
 	let _endpoints = (inputs.length > 0 ? inputs.map(p => Vector(p)) : undefined);
 	if (_endpoints === undefined) { return; }
+	_endpoints.forEach((p,i) => edge[i] = p);
 
 	const transform = function() {
 		let mat = Input.get_matrix2(...arguments);
-		let transformed_points = _endpoints
+		let transformed_points = edge
 			.map(point => Algebra.multiply_vector2_matrix2(point, mat));
 		return Edge(transformed_points);
 	}
 
 	const vector = function() {
 		return Vector(
-			_endpoints[1][0] - _endpoints[0][0],
-			_endpoints[1][1] - _endpoints[0][1]
+			edge[1][0] - edge[0][0],
+			edge[1][1] - edge[0][1]
 		);
 	}
 
 	const length = function() {
-		return Math.sqrt(Math.pow(_endpoints[1][0] - _endpoints[0][0],2)
-		               + Math.pow(_endpoints[1][1] - _endpoints[0][1],2));
+		return Math.sqrt(Math.pow(edge[1][0] - edge[0][0],2)
+		               + Math.pow(edge[1][1] - edge[0][1],2));
 	}
 
-	let edge = Object.create(LinePrototype());
 	let vec_comp_func = function(t0, ep) { return t0 >= -ep && t0 <= 1+ep; }
 	const vec_cap_func = function(d, ep) {
 		if (d < -ep) { return 0; }
@@ -200,8 +210,8 @@ export function Edge() {
 	Object.defineProperty(edge, "vec_comp_func", {value: vec_comp_func});
 	Object.defineProperty(edge, "vec_cap_func", {value: vec_cap_func});
 
-	Object.defineProperty(edge, "points", {get: function(){ return _endpoints; }});
-	Object.defineProperty(edge, "point", {get: function(){ return _endpoints[0]; }});
+	// Object.defineProperty(edge, "points", {get: function(){ return edge; }});
+	Object.defineProperty(edge, "point", {get: function(){ return edge[0]; }});
 	Object.defineProperty(edge, "vector", {get: function(){ return vector(); }});
 	Object.defineProperty(edge, "length", {get: function(){ return length(); }});
 	Object.defineProperty(edge, "transform", {value: transform});

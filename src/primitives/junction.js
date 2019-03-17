@@ -19,6 +19,9 @@ export function Junction(center, points) {
 	let clockwise_order = Array.from(Array(_angles.length))
 		.map((_,i) => i)
 		.sort((a,b) => _angles[a] - _angles[b]);
+	clockwise_order = clockwise_order
+		.slice(clockwise_order.indexOf(0), clockwise_order.length)
+		.concat(clockwise_order.slice(0, clockwise_order.indexOf(0)));
 
 	const kawasaki = function() {
 		let angles = points
@@ -55,24 +58,28 @@ export function Junction(center, points) {
 		];
 	}
 
-	const kawasaki_solutions = function(graph, vertex) {
-		let vectors = vertex_adjacent_vectors(graph, vertex);
-		let vectors_as_angles = vectors.map(v => Math.atan2(v[1], v[0]));
+
+	const kawasaki_from_even = function(array) {
+		let even_sum = array.filter((_,i) => i%2 === 0).reduce((a,b) => a+b, 0);
+		let odd_sum = array.filter((_,i) => i%2 === 1).reduce((a,b) => a+b, 0);
+		// if (even_sum > Math.PI) { return undefined; }
+		return [Math.PI - even_sum, Math.PI - odd_sum];
+	}
+	const kawasaki_solutions = function() {
 		// get the interior angles of sectors around a vertex
-		return vectors.map((v,i,arr) => {
-			let nextV = arr[(i+1)%arr.length];
-			return Geometry.counter_clockwise_angle2(v, nextV);
-		}).map((_, i, arr) => {
+		return clockwise_order.map((_,i) => {
+			let thisV = _vectors[clockwise_order[i]];
+			let nextV = _vectors[clockwise_order[(i+1)%clockwise_order.length]];
+			return Geometry.counter_clockwise_angle2(thisV, nextV);
+		}).map((_, i, arr) =>
 			// for every sector, get an array of all the OTHER sectors
-			let a = arr.slice();
-			a.splice(i,1);
-			return a;
-		}).map(a => kawasaki_from_even(a))
+			arr.slice(i+1,arr.length).concat(arr.slice(0,i))
+		).map(a => kawasaki_from_even(a))
 		.map((kawasakis, i, arr) =>
 			// change these relative angle solutions to absolute angles
 			(kawasakis == null
 				? undefined
-				: vectors_as_angles[i] + kawasakis[1])
+				: _angles[clockwise_order[i]] + kawasakis[0])
 		).map(k => (k === undefined)
 			// convert to vectors
 			? undefined
@@ -80,18 +87,21 @@ export function Junction(center, points) {
 		);
 	}
 
-
 	return Object.freeze( {
 		kawasaki,
+		kawasaki_solutions,
 		alternatingAngleSum,
 		sectors,
+		get center() { return _center; },
 		get points() { return _points; },
 		get vectors() { return _vectors; },
 		get angles() { return _angles; },
 	} );
 }
 
-Junction.fromVectors = function(points) {
-	return Junction([0,0], points);
+Junction.fromVectors = function(center, vectors) {
+	let points = Input.get_array_of_vec(vectors)
+		.map(v => v.map((n,i) => n + center[i]))
+	return Junction(center, points);
 }
 

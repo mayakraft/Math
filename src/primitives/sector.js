@@ -1,6 +1,7 @@
 import * as Input from "../parse/input";
 import * as Geometry from "../core/geometry";
 import { Vector } from "./vector";
+import { Ray } from "./lines";
 import { clean_number } from "../parse/clean";
 
 // a sector is defined as the interior angle space FROM A to B
@@ -12,15 +13,10 @@ export function Sector(center, pointA, pointB) {
 	let _points = [pointA, pointB];
 	let _vectors = _points.map(p => p.map((_,i) => p[i] - _center[i]));
 	let _angle = Geometry.counter_clockwise_angle2(_vectors[0], _vectors[1]);
-
 	const bisect = function() {
-		// var vectors = this.vectors();
-		// var angles = vectors.map(function(el){ return Math.atan2(el.y, el.x); });
-		// while(angles[0] < 0){ angles[0] += Math.PI*2; }
-		// while(angles[1] < 0){ angles[1] += Math.PI*2; }
-		// var interior = Geometry.counter_clockwise_angle2_radians(angles[0], angles[1]);
-		// var bisected = angles[0] + interior*0.5;
-		// return new Ray(new XY(this.origin.x, this.origin.y), new XY(Math.cos(bisected), Math.sin(bisected)));
+		let angles = _vectors.map(el => Math.atan2(el[1], el[0]));
+		let bisected = angles[0] + _angle*0.5;
+		return Ray(_center[0], _center[1], Math.cos(bisected), Math.sin(bisected));
 	}
 	// const subsect = function(divisions:number):Ray[]{
 	const subsect = function(divisions) {
@@ -46,7 +42,6 @@ export function Sector(center, pointA, pointB) {
 		             (point[0] - _center[0]) * (_points[1][1] - _center[1]);
 		return cross0 < 0 && cross1 < 0;
 	}
-
 
 	return Object.freeze( {
 		contains,

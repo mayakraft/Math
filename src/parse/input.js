@@ -53,10 +53,10 @@ export function get_matrix2() {
  * @returns [[2,3],[10,11]]
 */
 export function get_edge() {
-	let params = Array.from(arguments);
+	let params = Array.from(arguments).filter(p => p != null);
 	let numbers = params.filter((param) => !isNaN(param));
 	let arrays = params.filter((param) => param.constructor === Array);
-	if (params.length == 0) { return undefined; }
+	if (params.length === 0) { return undefined; }
 	if (!isNaN(params[0]) && numbers.length >= 4) {
 		return [
 			[params[0], params[1]],
@@ -64,18 +64,19 @@ export function get_edge() {
 		];
 	}
 	if (arrays.length > 0) {
-		if (arrays.length == 2) {
+		if (arrays.length === 2) {
 			return [
 				[arrays[0][0], arrays[0][1]],
 				[arrays[1][0], arrays[1][1]]
 			];
 		}
-		if (arrays.length == 4) {
+		else if (arrays.length === 4) {
 			return [
 				[arrays[0], arrays[1]],
 				[arrays[2], arrays[3]]
 			];
 		}
+		else { return get_edge(...arrays[0]); }
 	}
 	if (params[0].constructor === Object) {
 		if(params[0].points.length > 0) {

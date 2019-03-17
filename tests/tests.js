@@ -66,7 +66,6 @@ let matrixTest = equivalentArrays(reflection1.m, reflection2.m)
 	&& equivalentArrays(reflection2.m, reflection3.m);
 test(matrixTest, "reflection matrices");
 
-
 // # nearest points on lines
 let nearest1 = line1.nearestPoint([0, 0]);
 let nearest2 = line1.nearestPoint([20,-10]);
