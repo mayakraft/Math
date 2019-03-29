@@ -58,7 +58,8 @@ export function Polygon() {
 		return Intersection.clip_ray_in_convex_poly(_points, line.point, line.vector);
 	}
 
-	return Object.freeze( {
+	// return Object.freeze( {
+	return {
 		contains,
 		scale,
 		rotate,
@@ -74,7 +75,7 @@ export function Polygon() {
 		get enclosingRectangle() {
 			return Rectangle(Geometry.enclosing_rectangle(_points));
 		},
-	} );
+	};
 }
 
 Polygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1) {
@@ -153,7 +154,8 @@ export function ConvexPolygon() {
 	Object.defineProperty(polygon, "scale", {value: scale});
 	Object.defineProperty(polygon, "rotate", {value: rotate});
 	
-	return Object.freeze(polygon);
+	// return Object.freeze(polygon);
+	return polygon;
 }
 
 ConvexPolygon.regularPolygon = function(sides, x = 0, y = 0, radius = 1) {
@@ -212,6 +214,7 @@ export function Rectangle(){
 	});
 	Object.defineProperty(rect, "scale", {value: scale});
 
-	return Object.freeze(rect);
+	// return Object.freeze(rect);
+	return rect;
 }
 

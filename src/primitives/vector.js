@@ -124,5 +124,6 @@ export function Vector() {
 		return Algebra.magnitude(_v);
 	}});
 
-	return Object.freeze(_v);
+	// return Object.freeze(_v);
+	return _v;
 }

@@ -87,7 +87,8 @@ export function Junction(center, points) {
 		);
 	}
 
-	return Object.freeze( {
+	// return Object.freeze( {
+	return {
 		kawasaki,
 		kawasaki_solutions,
 		alternatingAngleSum,
@@ -96,7 +97,7 @@ export function Junction(center, points) {
 		get points() { return _points; },
 		get vectors() { return _vectors; },
 		get angles() { return _angles; },
-	} );
+	};
 }
 
 Junction.fromVectors = function(center, vectors) {

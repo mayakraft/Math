@@ -18,12 +18,13 @@ export function Matrix2() {
 		let v = Input.get_vec(...arguments);
 		return Vector( Algebra.multiply_vector2_matrix2(v, _m) );
 	}
-	return Object.freeze( {
+	// return Object.freeze( {
+	return {
 		inverse,
 		multiply,
 		transform,
 		get m() { return _m; },
-	} );
+	};
 }
 // static methods
 Matrix2.makeIdentity = function() {

@@ -40,11 +40,12 @@ export function Circle(){
 		);
 	}
 
-	return Object.freeze( {
+	// return Object.freeze( {
+	return {
 		intersectionLine,
 		intersectionRay,
 		intersectionEdge,
 		get origin() { return _origin; },
 		get radius() { return _radius; },
-	} );
+	};
 }

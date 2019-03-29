@@ -43,7 +43,8 @@ export function Sector(center, pointA, pointB) {
 		return cross0 < 0 && cross1 < 0;
 	}
 
-	return Object.freeze( {
+	// return Object.freeze( {
+	return {
 		contains,
 		bisect,
 		subsect,
@@ -51,5 +52,5 @@ export function Sector(center, pointA, pointB) {
 		get points() { return _points; },
 		get vectors() { return _vectors; },
 		get angle() { return _angle; },
-	} );
+	};
 }
