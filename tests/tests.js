@@ -110,7 +110,6 @@ let poly2 = ConvexPolygon.regularPolygon(4);
 let clip1 = poly2.clipLine(line1);
 
 
-
 // check all tests
 let allTests = tests.reduce((prev, curr) => prev && curr.test, true);
 let result = allTests

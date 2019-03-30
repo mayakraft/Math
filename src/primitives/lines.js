@@ -72,7 +72,6 @@ function LinePrototype(proto) {
 	// Object.defineProperty(proto, "vec_cap_func", {value: vec_cap_func});
 
 	return Object.freeze(proto);
-	// return proto;
 }
 
 export function Line() {
@@ -84,13 +83,11 @@ export function Line() {
 	}
 	const transform = function() {
 		let mat = Input.get_matrix2(...arguments);
-		// todo: a little more elegant of a solution, please
-		let norm = Algebra.normalize(vector);
-		let temp = point.map((p,i) => p + norm[i])
-		if (temp == null) { return; }
-		var p0 = Algebra.multiply_vector2_matrix2(point, mat);
-		var p1 = Algebra.multiply_vector2_matrix2(temp, mat);
-		return Line.fromPoints([p0, p1]);
+		let new_point = Algebra.multiply_vector2_matrix2(point, mat);
+		let vec_point = vector.map((vec,i) => vec + point[i]);
+		let new_vector = Algebra.multiply_vector2_matrix2(vec_point, mat)
+			.map((vec,i) => vec - new_point[i]);
+		return Line(new_point, new_vector);
 	}
 
 	let line = Object.create(LinePrototype());
@@ -138,13 +135,11 @@ export function Ray() {
 
 	const transform = function() {
 		let mat = Input.get_matrix2(...arguments);
-		// todo: a little more elegant of a solution, please
-		let norm = Algebra.normalize(vector);
-		let temp = point.map((p,i) => p + norm[i])
-		if (temp == null) { return; }
-		var p0 = Algebra.multiply_vector2_matrix2(point, mat);
-		var p1 = Algebra.multiply_vector2_matrix2(temp, mat);
-		return Ray.fromPoints([p0, p1]);
+		let new_point = Algebra.multiply_vector2_matrix2(point, mat);
+		let vec_point = vector.map((vec,i) => vec + point[i]);
+		let new_vector = Algebra.multiply_vector2_matrix2(vec_point, mat)
+			.map((vec,i) => vec - new_point[i]);
+		return Ray(new_point, new_vector);
 	}
 
 	const rotate180 = function() {
