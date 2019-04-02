@@ -25,7 +25,7 @@ export function normalize(v) {
 export function magnitude(v) {
 	let sum = v
 		.map(component => component * component)
-		.reduce((prev,curr) => prev + curr);
+		.reduce((prev,curr) => prev + curr, 0);
 	return Math.sqrt(sum);
 }
 
@@ -33,8 +33,8 @@ export function magnitude(v) {
  * @param [number]
  * @returns boolean
  */
-export function degenerate(v) {
-	return Math.abs(v.reduce((a, b) => a + b, 0)) < EPSILON;
+export function degenerate(v, epsilon = EPSILON) {
+	return Math.abs(v.reduce((a, b) => a + b, 0)) < epsilon;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -78,6 +78,18 @@ export function average(vectors) {
 export function multiply_vector2_matrix2(vector, matrix) {
 	return [ vector[0] * matrix[0] + vector[1] * matrix[2] + matrix[4],
 	         vector[0] * matrix[1] + vector[1] * matrix[3] + matrix[5] ];
+}
+
+/**
+ * apply a matrix transform on a line, defined by point, vector
+ * returns a line as arrays inside a 2-array: [point, vector]
+ */
+export function multiply_line_matrix2(point, vector, matrix) {
+	let new_point = multiply_vector2_matrix2(point, matrix);
+	let vec_point = vector.map((vec,i) => vec + point[i]);
+	let new_vector = multiply_vector2_matrix2(vec_point, matrix)
+		.map((vec,i) => vec - new_point[i]);
+	return [new_point, new_vector];
 }
 
 /** 

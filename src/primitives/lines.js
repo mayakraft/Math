@@ -4,32 +4,48 @@ import * as Intersection from "../core/intersection";
 import { Vector } from "./vector";
 import { EPSILON } from "../parse/clean";
 
+/**
+ * this is a prototype for line types, it's required that you implement:
+ * - a point, and a vector
+ * - a function compare_function which takes two inputs (t0, epsilon) and returns
+ *   true if t0 lies inside the boundary of the line, t0 is scaled to vector
+ * - similarly, a function clip_function, takes two inputs (d, epsilon)
+ *   and returns a modified d for what is considered valid space between 0-1
+ */
 function LinePrototype(proto) {
 	if(proto == null) {
 		proto = {};
 	}
 
-	// these will be overwritten for each line type. defaults for Line()
-	// is it valid for t0 to be below 0, above 1, to the unit vector
-	// const vec_comp_func = function(t0) { return true; }
-	
-	// cap d below 0 or above 1, to the unit vector, for rays/edges
-	// const vec_cap_func = function(d) { return d; }
-
-	// const parallel = function(line, epsilon){}
-	// const collinear = function(point){}
-	// const equivalent = function(line, epsilon){}
-	// const degenrate = function(epsilon){}
-
+	const isParallel = function(line, epsilon){
+		if (line.vector == null) {
+			throw "line isParallel(): please ensure object contains a vector";
+		}
+		let this_is_smaller = (this.vector.length < line.vector.length);
+		let sm = this_is_smaller ? this.vector : line.vector;
+		let lg = this_is_smaller ? line.vector : this.vector;
+		return Algebra.parallel(sm, lg, epsilon);
+	}
+	const isDegenrate = function(epsilon){
+		return Algebra.degenerate(this.vector, epsilon);
+	}
 	const reflection = function() {
 		return Matrix2.makeReflection(this.vector, this.point);
 	}
-
 	const nearestPoint = function() {
 		let point = Input.get_vec(...arguments);
-		return Vector(Intersection.nearest_point(this.point, this.vector, point, this.vec_cap_func));
+		return Vector(Intersection.nearest_point(this.point, this.vector, point, this.clip_function));
 	}
-	
+	const intersect = function(other) {
+		return Intersection.intersection_function(
+			this.point, this.vector,
+			other.point, other.vector,
+			function(t0, t1, epsilon = EPSILON) {
+				return this.compare_function(t0, epsilon)
+				   && other.compare_function(t1, epsilon);
+			}.bind(this)
+		);
+	}
 	const intersectLine = function() {
 		let line = Input.get_line(...arguments);
 		return Intersection.intersection_function(
@@ -54,22 +70,28 @@ function LinePrototype(proto) {
 	}
 
 	const compare_to_line = function(t0, t1, epsilon = EPSILON) {
-		return this.vec_comp_func(t0, epsilon) && true;
+		return this.compare_function(t0, epsilon) && true;
 	}
 	const compare_to_ray = function(t0, t1, epsilon = EPSILON) {
-		return this.vec_comp_func(t0, epsilon) && t1 >= -epsilon;
+		return this.compare_function(t0, epsilon) && t1 >= -epsilon;
 	}
 	const compare_to_edge = function(t0, t1, epsilon = EPSILON) {
-		return this.vec_comp_func(t0, epsilon) && t1 >= -epsilon && t1 <= 1+epsilon;
+		return this.compare_function(t0, epsilon) && t1 >= -epsilon && t1 <= 1+epsilon;
 	}
 
-	Object.defineProperty(proto, "reflection", {value: reflection});
+	// const collinear = function(point){}
+	// const equivalent = function(line, epsilon){}
+
+	Object.defineProperty(proto, "isParallel", {value: isParallel});
+	Object.defineProperty(proto, "isDegenrate", {value: isDegenrate});
 	Object.defineProperty(proto, "nearestPoint", {value: nearestPoint});
+	Object.defineProperty(proto, "reflection", {value: reflection});
+	Object.defineProperty(proto, "intersect", {value: intersect});
 	Object.defineProperty(proto, "intersectLine", {value: intersectLine});
 	Object.defineProperty(proto, "intersectRay", {value: intersectRay});
 	Object.defineProperty(proto, "intersectEdge", {value: intersectEdge});
-	// Object.defineProperty(proto, "vec_comp_func", {value: vec_comp_func});
-	// Object.defineProperty(proto, "vec_cap_func", {value: vec_cap_func});
+	// Object.defineProperty(proto, "compare_function", {value: compare_function});
+	// Object.defineProperty(proto, "clip_function", {value: clip_function});
 
 	return Object.freeze(proto);
 }
@@ -77,30 +99,27 @@ function LinePrototype(proto) {
 export function Line() {
 	let { point, vector } = Input.get_line(...arguments);
 
-	const isParallel = function() {
-		let line = Input.get_line(...arguments);
-		return Algebra.parallel(vector, line.vector);
-	}
+	// const isParallel = function() {
+	// 	let line = Input.get_line(...arguments);
+	// 	return Algebra.parallel(vector, line.vector);
+	// }
 	const transform = function() {
 		let mat = Input.get_matrix2(...arguments);
-		let new_point = Algebra.multiply_vector2_matrix2(point, mat);
-		let vec_point = vector.map((vec,i) => vec + point[i]);
-		let new_vector = Algebra.multiply_vector2_matrix2(vec_point, mat)
-			.map((vec,i) => vec - new_point[i]);
-		return Line(new_point, new_vector);
+		let line = Algebra.multiply_line_matrix2(point, vector, mat);
+		return Line(line[0], line[1]);
 	}
 
 	let line = Object.create(LinePrototype());
-	const vec_comp_func = function() { return true; }
-	const vec_cap_func = function(d) { return d; }
-	Object.defineProperty(line, "vec_comp_func", {value: vec_comp_func});
-	Object.defineProperty(line, "vec_cap_func", {value: vec_cap_func});
+	const compare_function = function() { return true; }
+	const clip_function = function(d) { return d; }
+	Object.defineProperty(line, "compare_function", {value: compare_function});
+	Object.defineProperty(line, "clip_function", {value: clip_function});
 
 	Object.defineProperty(line, "point", {get: function(){ return Vector(point); }});
 	Object.defineProperty(line, "vector", {get: function(){ return Vector(vector); }});
 	Object.defineProperty(line, "length", {get: function(){ return Infinity; }});
 	Object.defineProperty(line, "transform", {value: transform});
-	Object.defineProperty(line, "isParallel", {value: isParallel});
+	// Object.defineProperty(line, "isParallel", {value: isParallel});
 
 	// return Object.freeze(line);
 	return line;
@@ -147,10 +166,10 @@ export function Ray() {
 	}
 
 	let ray = Object.create(LinePrototype());
-	const vec_comp_func = function(t0, ep) { return t0 >= -ep; }
-	const vec_cap_func = function(d, ep) { return (d < -ep ? 0 : d); }
-	Object.defineProperty(ray, "vec_comp_func", {value: vec_comp_func});
-	Object.defineProperty(ray, "vec_cap_func", {value: vec_cap_func});
+	const compare_function = function(t0, ep) { return t0 >= -ep; }
+	const clip_function = function(d, ep) { return (d < -ep ? 0 : d); }
+	Object.defineProperty(ray, "compare_function", {value: compare_function});
+	Object.defineProperty(ray, "clip_function", {value: clip_function});
 
 	Object.defineProperty(ray, "point", {get: function(){ return Vector(point); }});
 	Object.defineProperty(ray, "vector", {get: function(){ return Vector(vector); }});
@@ -202,14 +221,14 @@ export function Edge() {
 		               + Math.pow(edge[1][1] - edge[0][1],2));
 	}
 
-	const vec_comp_func = function(t0, ep) { return t0 >= -ep && t0 <= 1+ep; }
-	const vec_cap_func = function(d, ep) {
+	const compare_function = function(t0, ep) { return t0 >= -ep && t0 <= 1+ep; }
+	const clip_function = function(d, ep) {
 		if (d < -ep) { return 0; }
 		if (d > 1+ep) { return 1; }
 		return d;
 	}
-	Object.defineProperty(edge, "vec_comp_func", {value: vec_comp_func});
-	Object.defineProperty(edge, "vec_cap_func", {value: vec_cap_func});
+	Object.defineProperty(edge, "compare_function", {value: compare_function});
+	Object.defineProperty(edge, "clip_function", {value: clip_function});
 
 	// Object.defineProperty(edge, "points", {get: function(){ return edge; }});
 	Object.defineProperty(edge, "point", {get: function(){ return edge[0]; }});

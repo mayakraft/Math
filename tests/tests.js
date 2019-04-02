@@ -50,6 +50,7 @@ let ray1 = Ray(10,0,-1,1);
 let ray2 = Ray(10,0,1,1);
 let edge1 = Edge(10,0,0,10);
 let edge2 = Edge(10,0,-1,1);
+let edge3 = Edge(0,0,-2,2);
 
 let intersect1 = line2.intersectLine(line1);
 test(intersect1[0] === 5 && intersect1[1] === 5, "lines intersection");
@@ -57,6 +58,14 @@ let intersect2 = line2.intersectRay(ray1);
 test(intersect2[0] === 5 && intersect2[1] === 5, "line-ray intersection");
 let intersect3 = line2.intersectEdge(edge1);
 test(intersect3[0] === 5 && intersect3[1] === 5, "line-edge intersection");
+
+test(line2.isParallel(ray2) === true, "parallel line and ray");
+test(line1.isParallel(edge3) === true, "parallel line and edge");
+test(line2.isParallel(edge2) === false, "not parallel line and edge");
+
+let intersect1b = line2.intersect(line1);
+test(equivalentArrays(intersect1, intersect1b), "new intersection type inference");
+
 
 // # reflection matrices
 let reflection1 = line1.reflection();
