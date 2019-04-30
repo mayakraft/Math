@@ -1,6 +1,6 @@
 import { point_on_line, line_edge_exclusive } from "./intersection";
 import { EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number } from "../parse/clean";
-import { normalize, cross2 } from "./algebra";
+import { normalize, cross2, midpoint } from "./algebra";
 
 export function make_regular_polygon(sides, x = 0, y = 0, radius = 1) {
 	var halfwedge = 2*Math.PI/sides * 0.5;
@@ -85,23 +85,19 @@ export function bisect_vectors(a, b) {
 export function bisect_lines2(pointA, vectorA, pointB, vectorB) {
 	let denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
 	if (Math.abs(denominator) < EPSILON) { /* parallel */
-		return [midpoint(pointA, pointB), vectorA.slice()];
+		let solution = [midpoint(pointA, pointB), [vectorA[0], vectorA[1]]];
+		let array = [solution, solution];
+		let dot = vectorA[0]*vectorB[0] + vectorA[1]*vectorB[1];
+		(dot > 0 ? delete array[1] : delete array[0])
+		return array;
 	}
 	let vectorC = [pointB[0]-pointA[0], pointB[1]-pointA[1]];
-	// var numerator = vectorC[0] * vectorB[1] - vectorB[0] * vectorC[1];
 	let numerator = (pointB[0]-pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1]-pointA[1]);
-	var t = numerator / denominator;
+	let t = numerator / denominator;
 	let x = pointA[0] + vectorA[0]*t;
 	let y = pointA[1] + vectorA[1]*t;
-	var bisects = bisect_vectors(vectorA, vectorB);
+	let bisects = bisect_vectors(vectorA, vectorB);
 	bisects[1] = [ bisects[1][1], -bisects[1][0] ];
-	// swap to make smaller interior angle first
-	if (Math.abs(cross2(vectorA, bisects[1])) <
-	   Math.abs(cross2(vectorA, bisects[0]))) {
-		var swap = bisects[0];
-		bisects[0] = bisects[1];
-		bisects[1] = swap;
-	}
 	return bisects.map((el) => [[x,y], el]);
 }
 

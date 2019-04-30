@@ -1,32 +1,54 @@
 /**
  *  Geometry library
- *  The goal of this user-facing library is to type check all arguments for a
- *  likely use case, which might slow runtime by a small fraction.
- *  Use the core library functions for fastest-possible calculations.
+ *  The user-facing types (Vector, Sector) interpret arguments for the best
+ *  use case. The core methods are as fast as possible and don't type check.
+ *  in the core all vector types are expecting as Javascript arrays.
  */
-
-// all static constructors start with "make". eg: Matrix.makeRotation(...)
-// all boolean tests start with "is" or "are" eg: Line.isParallel(...)
-
-// For now, this library is 2D.
-// however a lot of types and operations are built to function in n-dimensions.
-
 
 import * as algebra from "./core/algebra";
 import * as geometry from "./core/geometry";
 import * as intersection from "./core/intersection";
 import * as origami from "./core/origami";
-
 import { EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number } from "./parse/clean";
 
-// let core = { algebra, geometry, intersection, origami };
-let core = { algebra, geometry, intersection, origami, EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number };
+let core = Object.create(null);
+Object.assign(core, algebra, geometry);
+core.EPSILON_LOW = EPSILON_LOW;
+core.EPSILON = EPSILON;
+core.EPSILON_HIGH = EPSILON_HIGH;
+core.intersection = intersection;
+core.clean_number = clean_number;
+core.axiom = [];
+core.axiom[1] = origami.axiom1;
+core.axiom[2] = origami.axiom2;
+core.axiom[3] = origami.axiom3;
+core.axiom[4] = origami.axiom4;
+core.axiom[5] = origami.axiom5;
+core.axiom[6] = origami.axiom6;
+core.axiom[7] = origami.axiom7;
+delete core.axiom[0];
+Object.freeze(core.axiom);
+Object.freeze(core);
 
-export { core };
-export { Vector } from "./primitives/vector";
-export { Circle } from "./primitives/circle";
-export { Polygon, ConvexPolygon, Rectangle } from "./primitives/polygon";
-export { Matrix2 } from "./primitives/matrix";
-export { Line, Ray, Edge } from "./primitives/lines";
-export { Junction } from "./primitives/junction";
-export { Sector } from "./primitives/sector";
+import { Vector } from "./primitives/vector";
+import { Circle } from "./primitives/circle";
+import { Polygon, ConvexPolygon, Rectangle } from "./primitives/polygon";
+import { Matrix2 } from "./primitives/matrix";
+import { Line, Ray, Edge } from "./primitives/lines";
+import { Junction } from "./primitives/junction";
+import { Sector } from "./primitives/sector";
+
+export {
+	Vector,
+	Circle,
+	Polygon,
+	ConvexPolygon,
+	Rectangle,
+	Matrix2,
+	Line,
+	Ray,
+	Edge,
+	Junction,
+	Sector,
+	core
+};

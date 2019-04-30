@@ -8,7 +8,7 @@ export function Circle(){
 	let params = Array.from(arguments);
 	let numbers = params.filter((param) => !isNaN(param));
 	if (numbers.length === 3) {
-		_origin = numbers.slice(0,2);
+		_origin = Vector(numbers.slice(0,2));
 		_radius = numbers[2];
 	}
 
@@ -47,5 +47,6 @@ export function Circle(){
 		intersectionEdge,
 		get origin() { return _origin; },
 		get radius() { return _radius; },
+		set radius(newRadius) { _radius = newRadius; },
 	};
 }

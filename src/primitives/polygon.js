@@ -1,17 +1,23 @@
 import * as Input from "../parse/input";
+import * as Algebra from "../core/algebra";
 import * as Geometry from "../core/geometry";
 import * as Intersection from "../core/intersection";
 import { Vector } from "./vector";
 import { Line, Ray, Edge } from "./lines";
+import { Sector } from "./sector";
 import { clean_number } from "../parse/clean";
 
 export function Polygon() {
 
-	let _points = Input.get_array_of_vec(...arguments);
+	let _points = Input.get_array_of_vec(...arguments).map(p => Vector(p));
 	if (_points === undefined) {
 		// todo, best practices here
 		return undefined;
 	}
+
+	let _sides = _points
+		.map((p,i,arr) => [p, arr[(i+1)%arr.length]])
+		.map(ps => Edge(ps[0][0], ps[0][1], ps[1][0], ps[1][1]))
 
 	const contains = function() {
 		let point = Input.get_vec(...arguments)
@@ -38,6 +44,12 @@ export function Polygon() {
 		return Polygon(newPoints);
 	}
 
+	const sectors = function() {
+		return _points.map((p,i,arr) =>
+			[arr[(i+arr.length-1)%arr.length], p, arr[(i+1)%arr.length]]
+		).map(points => Sector(points[1], points[2], points[0]));
+	}
+
 	const split = function() {
 		let line = Input.get_line(...arguments);
 		return Geometry.split_polygon(_points, line.point, line.vector)
@@ -58,6 +70,18 @@ export function Polygon() {
 		return Intersection.clip_ray_in_convex_poly(_points, line.point, line.vector);
 	}
 
+	const nearest = function() {
+		let point = Input.get_vec(...arguments);
+		let points = _sides.map(edge => edge.nearestPoint(point))
+		let lowD = Infinity, lowI;
+		points.map(p => Algebra.distance2(point, p))
+			.forEach((d,i) => { if(d < lowD){ lowD = d; lowI = i;} });
+		return {
+			point: points[lowI],
+			edge: _sides[lowI],
+		}
+	}
+
 	// return Object.freeze( {
 	return {
 		contains,
@@ -68,10 +92,14 @@ export function Polygon() {
 		clipLine,
 		clipRay,
 		get points() { return _points; },
+		get sides() { return _sides; },
+		get edges() { return _sides; },
+		get sectors() { return sectors(); },
 		get area() { return Geometry.signed_area(_points); },
 		get signedArea() { return Geometry.signed_area(_points); },
 		get centroid() { return Geometry.centroid(_points); },
 		get midpoint() { return Algebra.average(_points); },
+		nearest,
 		get enclosingRectangle() {
 			return Rectangle(Geometry.enclosing_rectangle(_points));
 		},
@@ -125,6 +153,14 @@ export function ConvexPolygon() {
 		let points = Input.get_array_of_vec(...arguments);
 		return Intersection.convex_polygons_overlap(polygon.points, points);
 	}
+
+
+
+	// todo: a ConvexPolygon ConvexPolygon overlap method that returns
+	// the boolean space between them as another ConvexPolygon.
+	// then, generalize for Polygon
+
+
 
 	const scale = function(magnitude, center = Geometry.centroid(polygon.points)) {
 		let newPoints = polygon.points

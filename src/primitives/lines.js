@@ -99,10 +99,6 @@ function LinePrototype(proto) {
 export function Line() {
 	let { point, vector } = Input.get_line(...arguments);
 
-	// const isParallel = function() {
-	// 	let line = Input.get_line(...arguments);
-	// 	return Algebra.parallel(vector, line.vector);
-	// }
 	const transform = function() {
 		let mat = Input.get_matrix2(...arguments);
 		let line = Algebra.multiply_line_matrix2(point, vector, mat);
@@ -119,7 +115,6 @@ export function Line() {
 	Object.defineProperty(line, "vector", {get: function(){ return Vector(vector); }});
 	Object.defineProperty(line, "length", {get: function(){ return Infinity; }});
 	Object.defineProperty(line, "transform", {value: transform});
-	// Object.defineProperty(line, "isParallel", {value: isParallel});
 
 	// return Object.freeze(line);
 	return line;

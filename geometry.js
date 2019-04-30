@@ -40,7 +40,7 @@
 	function parallel(a, b, epsilon = EPSILON) {
 		return 1 - Math.abs(dot(normalize(a), normalize(b))) < epsilon;
 	}
-	function midpoint$1(a, b) {
+	function midpoint(a, b) {
 		return a.map((ai,i) => (ai+b[i])*0.5);
 	}
 	function average(vectors) {
@@ -132,7 +132,7 @@
 		dot: dot,
 		equivalent: equivalent,
 		parallel: parallel,
-		midpoint: midpoint$1,
+		midpoint: midpoint,
 		average: average,
 		multiply_vector2_matrix2: multiply_vector2_matrix2,
 		multiply_line_matrix2: multiply_line_matrix2,
@@ -226,8 +226,8 @@
 	const intersection_function = function(aPt, aVec, bPt, bVec, compFunction, epsilon = EPSILON) {
 		function det(a,b) { return a[0] * b[1] - b[0] * a[1]; }
 		let denominator0 = det(aVec, bVec);
-		let denominator1 = -denominator0;
 		if (Math.abs(denominator0) < epsilon) { return undefined; }
+		let denominator1 = -denominator0;
 		let numerator0 = det([bPt[0]-aPt[0], bPt[1]-aPt[1]], bVec);
 		let numerator1 = det([aPt[0]-bPt[0], aPt[1]-bPt[1]], aVec);
 		let t0 = numerator0 / denominator0;
@@ -500,21 +500,19 @@
 	function bisect_lines2(pointA, vectorA, pointB, vectorB) {
 		let denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
 		if (Math.abs(denominator) < EPSILON) {
-			return [midpoint(pointA, pointB), vectorA.slice()];
+			let solution = [midpoint(pointA, pointB), [vectorA[0], vectorA[1]]];
+			let array = [solution, solution];
+			let dot$$1 = vectorA[0]*vectorB[0] + vectorA[1]*vectorB[1];
+			(dot$$1 > 0 ? delete array[1] : delete array[0]);
+			return array;
 		}
 		let vectorC = [pointB[0]-pointA[0], pointB[1]-pointA[1]];
 		let numerator = (pointB[0]-pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1]-pointA[1]);
-		var t = numerator / denominator;
+		let t = numerator / denominator;
 		let x = pointA[0] + vectorA[0]*t;
 		let y = pointA[1] + vectorA[1]*t;
-		var bisects = bisect_vectors(vectorA, vectorB);
+		let bisects = bisect_vectors(vectorA, vectorB);
 		bisects[1] = [ bisects[1][1], -bisects[1][0] ];
-		if (Math.abs(cross2(vectorA, bisects[1])) <
-		   Math.abs(cross2(vectorA, bisects[0]))) {
-			var swap = bisects[0];
-			bisects[0] = bisects[1];
-			bisects[1] = swap;
-		}
 		return bisects.map((el) => [[x,y], el]);
 	}
 	function signed_area(points) {
@@ -674,7 +672,7 @@
 		return [a, a.map((_,i) => b[i] - a[i])];
 	}
 	function axiom2(a, b) {
-		let mid = midpoint$1(a, b);
+		let mid = midpoint(a, b);
 		let vec = a.map((_,i) => b[i] - a[i]);
 		return [mid, [vec[1], -vec[0]] ];
 	}
@@ -692,16 +690,6 @@
 	}
 	function axiom7(pointA, vectorA, pointB, vectorB, pointC) {
 	}
-
-	var origami = /*#__PURE__*/Object.freeze({
-		axiom1: axiom1,
-		axiom2: axiom2,
-		axiom3: axiom3,
-		axiom4: axiom4,
-		axiom5: axiom5,
-		axiom6: axiom6,
-		axiom7: axiom7
-	});
 
 	function get_vec() {
 		let params = Array.from(arguments);
@@ -866,11 +854,11 @@
 			let m = get_matrix2(...arguments);
 			return Vector( multiply_vector2_matrix2(_v, m) );
 		};
-		const add = function(){
+		const add = function() {
 			let vec = get_vec(...arguments);
 			return Vector( _v.map((v,i) => v + vec[i]) );
 		};
-		const subtract = function(){
+		const subtract = function() {
 			let vec = get_vec(...arguments);
 			return Vector( _v.map((v,i) => v - vec[i]) );
 		};
@@ -915,16 +903,16 @@
 		const scale = function(mag) {
 			return Vector( _v.map(v => v * mag) );
 		};
-		const midpoint = function() {
+		const midpoint$$1 = function() {
 			let vec = get_vec(...arguments);
 			let sm = (_v.length < vec.length) ? _v.slice() : vec;
 			let lg = (_v.length < vec.length) ? vec : _v.slice();
-			for(var i = sm.length; i < lg.length; i++){ sm[i] = 0; }
+			for (let i = sm.length; i < lg.length; i++) { sm[i] = 0; }
 			return Vector(lg.map((_,i) => (sm[i] + lg[i]) * 0.5));
 		};
-		const bisect = function(){
+		const bisect = function() {
 			let vec = get_vec(...arguments);
-			return Vector( bisect_vectors(_v, vec) );
+			return bisect_vectors(_v, vec).map(b => Vector(b));
 		};
 		Object.defineProperty(_v, "normalize", {value: normalize$$1});
 		Object.defineProperty(_v, "dot", {value: dot$$1});
@@ -942,7 +930,7 @@
 		Object.defineProperty(_v, "isEquivalent", {value: isEquivalent});
 		Object.defineProperty(_v, "isParallel", {value: isParallel});
 		Object.defineProperty(_v, "scale", {value: scale});
-		Object.defineProperty(_v, "midpoint", {value: midpoint});
+		Object.defineProperty(_v, "midpoint", {value: midpoint$$1});
 		Object.defineProperty(_v, "bisect", {value: bisect});
 		Object.defineProperty(_v, "x", {get: function(){ return _v[0]; }});
 		Object.defineProperty(_v, "y", {get: function(){ return _v[1]; }});
@@ -950,6 +938,7 @@
 		Object.defineProperty(_v, "magnitude", {get: function() {
 			return magnitude(_v);
 		}});
+		Object.defineProperty(_v, "copy", {value: function() { return Vector(..._v);}});
 		return _v;
 	}
 
@@ -958,7 +947,7 @@
 		let params = Array.from(arguments);
 		let numbers = params.filter((param) => !isNaN(param));
 		if (numbers.length === 3) {
-			_origin = numbers.slice(0,2);
+			_origin = Vector(numbers.slice(0,2));
 			_radius = numbers[2];
 		}
 		const intersectionLine = function() {
@@ -992,6 +981,7 @@
 			intersectionEdge,
 			get origin() { return _origin; },
 			get radius() { return _radius; },
+			set radius(newRadius) { _radius = newRadius; },
 		};
 	}
 
@@ -1104,7 +1094,7 @@
 			points[1][1] - points[0][1]
 		]);
 		return Line({
-			point: midpoint$1(points[0], points[1]),
+			point: midpoint(points[0], points[1]),
 			vector: [vec[1], -vec[0]]
 		});
 	};
@@ -1180,19 +1170,53 @@
 		return edge;
 	}
 
+	function Sector(center, pointA, pointB) {
+		let _center = get_vec(center);
+		let _points = [pointA, pointB];
+		let _vectors = _points.map(p => p.map((_,i) => p[i] - _center[i]));
+		let _angle = counter_clockwise_angle2(_vectors[0], _vectors[1]);
+		const bisect = function() {
+			let angles = _vectors.map(el => Math.atan2(el[1], el[0]));
+			let bisected = angles[0] + _angle*0.5;
+			return Ray(_center[0], _center[1], Math.cos(bisected), Math.sin(bisected));
+		};
+		const subsect = function(divisions) {
+		};
+		const contains = function() {
+			let point = get_vec(...arguments);
+			var cross0 = (point[1] - _points[0][1]) * (_center[0] - _points[0][0]) -
+			             (point[0] - _points[0][0]) * (_center[1] - _points[0][1]);
+			var cross1 = (point[1] - _center[1]) * (_points[1][0] - _center[0]) -
+			             (point[0] - _center[0]) * (_points[1][1] - _center[1]);
+			return cross0 < 0 && cross1 < 0;
+		};
+		return {
+			contains,
+			bisect,
+			subsect,
+			get center() { return _center; },
+			get points() { return _points; },
+			get vectors() { return _vectors; },
+			get angle() { return _angle; },
+		};
+	}
+
 	function Polygon() {
-		let _points = get_array_of_vec(...arguments);
+		let _points = get_array_of_vec(...arguments).map(p => Vector(p));
 		if (_points === undefined) {
 			return undefined;
 		}
+		let _sides = _points
+			.map((p,i,arr) => [p, arr[(i+1)%arr.length]])
+			.map(ps => Edge(ps[0][0], ps[0][1], ps[1][0], ps[1][1]));
 		const contains = function() {
 			let point = get_vec(...arguments);
 			return point_in_poly(_points, point);
 		};
-		const scale = function(magnitude, center = centroid(_points)) {
+		const scale = function(magnitude$$1, center = centroid(_points)) {
 			let newPoints = _points
 				.map(p => [0,1].map((_,i) => p[i] - center[i]))
-				.map(vec => vec.map((_,i) => center[i] + vec[i] * magnitude));
+				.map(vec => vec.map((_,i) => center[i] + vec[i] * magnitude$$1));
 			return Polygon(newPoints);
 		};
 		const rotate = function(angle, centerPoint = centroid(_points)) {
@@ -1206,6 +1230,11 @@
 				];
 			});
 			return Polygon(newPoints);
+		};
+		const sectors = function() {
+			return _points.map((p,i,arr) =>
+				[arr[(i+arr.length-1)%arr.length], p, arr[(i+1)%arr.length]]
+			).map(points => Sector(points[1], points[2], points[0]));
 		};
 		const split = function() {
 			let line = get_line(...arguments);
@@ -1224,6 +1253,17 @@
 			let line = get_line(...arguments);
 			return clip_ray_in_convex_poly(_points, line.point, line.vector);
 		};
+		const nearest = function() {
+			let point = get_vec(...arguments);
+			let points = _sides.map(edge => edge.nearestPoint(point));
+			let lowD = Infinity, lowI;
+			points.map(p => distance2(point, p))
+				.forEach((d,i) => { if(d < lowD){ lowD = d; lowI = i;} });
+			return {
+				point: points[lowI],
+				edge: _sides[lowI],
+			}
+		};
 		return {
 			contains,
 			scale,
@@ -1233,10 +1273,14 @@
 			clipLine,
 			clipRay,
 			get points() { return _points; },
+			get sides() { return _sides; },
+			get edges() { return _sides; },
+			get sectors() { return sectors(); },
 			get area() { return signed_area(_points); },
 			get signedArea() { return signed_area(_points); },
 			get centroid() { return centroid(_points); },
-			get midpoint() { return Algebra.average(_points); },
+			get midpoint() { return average(_points); },
+			nearest,
 			get enclosingRectangle() {
 				return Rectangle(enclosing_rectangle(_points));
 			},
@@ -1276,10 +1320,10 @@
 			let points = get_array_of_vec(...arguments);
 			return convex_polygons_overlap(polygon.points, points);
 		};
-		const scale = function(magnitude, center = centroid(polygon.points)) {
+		const scale = function(magnitude$$1, center = centroid(polygon.points)) {
 			let newPoints = polygon.points
 				.map(p => [0,1].map((_,i) => p[i] - center[i]))
-				.map(vec => vec.map((_,i) => center[i] + vec[i] * magnitude));
+				.map(vec => vec.map((_,i) => center[i] + vec[i] * magnitude$$1));
 			return ConvexPolygon(newPoints);
 		};
 		const rotate = function(angle, centerPoint = centroid(polygon.points)) {
@@ -1336,13 +1380,13 @@
 			[_origin[0], _origin[1] + _height],
 		];
 		let rect = Object.create(ConvexPolygon(points));
-		const scale = function(magnitude, center) {
+		const scale = function(magnitude$$1, center) {
 			if (center == null) {
 				center = [_origin[0] + _width, _origin[1] + _height];
 			}
-			let x = _origin[0] + (center[0] - _origin[0]) * (1-magnitude);
-			let y = _origin[1] + (center[1] - _origin[1]) * (1-magnitude);
-			return Rectangle(x, y, _width*magnitude, _height*magnitude);
+			let x = _origin[0] + (center[0] - _origin[0]) * (1-magnitude$$1);
+			let y = _origin[1] + (center[1] - _origin[1]) * (1-magnitude$$1);
+			return Rectangle(x, y, _width*magnitude$$1, _height*magnitude$$1);
 		};
 		Object.defineProperty(rect, "origin", {get: function(){ return _origin; }});
 		Object.defineProperty(rect, "width", {get: function(){ return _width; }});
@@ -1383,37 +1427,6 @@
 	Matrix2$1.makeReflection = function(vector, origin) {
 		return Matrix2$1( make_matrix2_reflection(vector, origin) );
 	};
-
-	function Sector(center, pointA, pointB) {
-		let _center = get_vec(center);
-		let _points = [pointA, pointB];
-		let _vectors = _points.map(p => p.map((_,i) => p[i] - _center[i]));
-		let _angle = counter_clockwise_angle2(_vectors[0], _vectors[1]);
-		const bisect = function() {
-			let angles = _vectors.map(el => Math.atan2(el[1], el[0]));
-			let bisected = angles[0] + _angle*0.5;
-			return Ray(_center[0], _center[1], Math.cos(bisected), Math.sin(bisected));
-		};
-		const subsect = function(divisions) {
-		};
-		const contains = function() {
-			let point = get_vec(...arguments);
-			var cross0 = (point[1] - _points[0][1]) * (_center[0] - _points[0][0]) -
-			             (point[0] - _points[0][0]) * (_center[1] - _points[0][1]);
-			var cross1 = (point[1] - _center[1]) * (_points[1][0] - _center[0]) -
-			             (point[0] - _center[0]) * (_points[1][1] - _center[1]);
-			return cross0 < 0 && cross1 < 0;
-		};
-		return {
-			contains,
-			bisect,
-			subsect,
-			get center() { return _center; },
-			get points() { return _points; },
-			get vectors() { return _vectors; },
-			get angle() { return _angle; },
-		};
-	}
 
 	function Junction(center, points) {
 		let _points = get_array_of_vec(points);
@@ -1491,9 +1504,25 @@
 		return Junction(center, points);
 	};
 
-	let core = { algebra, geometry, intersection, origami, EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number };
+	let core = Object.create(null);
+	Object.assign(core, algebra, geometry);
+	core.EPSILON_LOW = EPSILON_LOW;
+	core.EPSILON = EPSILON;
+	core.EPSILON_HIGH = EPSILON_HIGH;
+	core.intersection = intersection;
+	core.clean_number = clean_number;
+	core.axiom = [];
+	core.axiom[1] = axiom1;
+	core.axiom[2] = axiom2;
+	core.axiom[3] = axiom3;
+	core.axiom[4] = axiom4;
+	core.axiom[5] = axiom5;
+	core.axiom[6] = axiom6;
+	core.axiom[7] = axiom7;
+	delete core.axiom[0];
+	Object.freeze(core.axiom);
+	Object.freeze(core);
 
-	exports.core = core;
 	exports.Vector = Vector;
 	exports.Circle = Circle;
 	exports.Polygon = Polygon;
@@ -1505,6 +1534,7 @@
 	exports.Edge = Edge;
 	exports.Junction = Junction;
 	exports.Sector = Sector;
+	exports.core = core;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 

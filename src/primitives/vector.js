@@ -2,7 +2,7 @@ import * as Input from "../parse/input";
 import * as Algebra from "../core/algebra";
 import { bisect_vectors } from "../core/geometry";
 
-/** n-dimensional vector, with some operations meant only for 2D */
+/** n-dimensional vector, but some operations meant only for 2D */
 export function Vector() {
 
 	let _v = Input.get_vec(...arguments);
@@ -36,11 +36,11 @@ export function Vector() {
 		let m = Input.get_matrix2(...arguments);
 		return Vector( Algebra.multiply_vector2_matrix2(_v, m) );
 	}
-	const add = function(){
+	const add = function() {
 		let vec = Input.get_vec(...arguments);
 		return Vector( _v.map((v,i) => v + vec[i]) );
 	}
-	const subtract = function(){
+	const subtract = function() {
 		let vec = Input.get_vec(...arguments);
 		return Vector( _v.map((v,i) => v - vec[i]) );
 	}
@@ -91,12 +91,12 @@ export function Vector() {
 		let vec = Input.get_vec(...arguments);
 		let sm = (_v.length < vec.length) ? _v.slice() : vec;
 		let lg = (_v.length < vec.length) ? vec : _v.slice();
-		for(var i = sm.length; i < lg.length; i++){ sm[i] = 0; }
+		for (let i = sm.length; i < lg.length; i++) { sm[i] = 0; }
 		return Vector(lg.map((_,i) => (sm[i] + lg[i]) * 0.5));
 	}
-	const bisect = function(){
+	const bisect = function() {
 		let vec = Input.get_vec(...arguments);
-		return Vector( bisect_vectors(_v, vec) );
+		return bisect_vectors(_v, vec).map(b => Vector(b));
 	}
 
 	Object.defineProperty(_v, "normalize", {value: normalize});
@@ -120,9 +120,18 @@ export function Vector() {
 	Object.defineProperty(_v, "x", {get: function(){ return _v[0]; }});
 	Object.defineProperty(_v, "y", {get: function(){ return _v[1]; }});
 	Object.defineProperty(_v, "z", {get: function(){ return _v[2]; }});
+
+	// Object.defineProperty(_v, "0", {
+	// 	get: function(){ return _v[0]; },
+	// 	set: function(input){ _v[0] = input; console.log("done"); }
+	// });
+	// Object.defineProperty(_v, "1", {get: function(){ return _v[0]; }});
+	// Object.defineProperty(_v, "2", {get: function(){ return _v[0]; }});
+
 	Object.defineProperty(_v, "magnitude", {get: function() {
 		return Algebra.magnitude(_v);
 	}});
+	Object.defineProperty(_v, "copy", {value: function() { return Vector(..._v);}});
 
 	// return Object.freeze(_v);
 	return _v;

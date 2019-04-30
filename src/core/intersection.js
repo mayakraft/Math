@@ -117,8 +117,8 @@ const edge_edge_comp_exclusive = function(t0, t1, epsilon = EPSILON) {
 export const intersection_function = function(aPt, aVec, bPt, bVec, compFunction, epsilon = EPSILON) {
 	function det(a,b) { return a[0] * b[1] - b[0] * a[1]; }
 	let denominator0 = det(aVec, bVec);
-	let denominator1 = -denominator0;
 	if (Math.abs(denominator0) < epsilon) { return undefined; } /* parallel */
+	let denominator1 = -denominator0;
 	let numerator0 = det([bPt[0]-aPt[0], bPt[1]-aPt[1]], bVec);
 	let numerator1 = det([aPt[0]-bPt[0], aPt[1]-bPt[1]], aVec);
 	let t0 = numerator0 / denominator0;
