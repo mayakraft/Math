@@ -137,7 +137,7 @@ export const intersection_function = function(aPt, aVec, bPt, bVec, compFunction
 
 
 /** is a point collinear to a line, within an epsilon */
-export function point_on_line(linePoint, lineVector, point, epsilon = EPSILON) {
+export function point_on_line(linePoint, lineVector, point, epsilon=EPSILON) {
 	let pointPoint = [point[0] - linePoint[0], point[1] - linePoint[1]];
 	let cross = pointPoint[0]*lineVector[1] - pointPoint[1]*lineVector[0];
 	return Math.abs(cross) < epsilon;
@@ -146,12 +146,12 @@ export function point_on_line(linePoint, lineVector, point, epsilon = EPSILON) {
 /** is a point collinear to an edge, between endpoints, within an epsilon */
 export function point_on_edge(edge0, edge1, point, epsilon = EPSILON) {
 	// distance between endpoints A,B should be equal to point->A + point->B
-	let dEdge = Math.sqrt(Math.pow(edge0[0]-edge1[0],2) +
-	                      Math.pow(edge0[1]-edge1[1],2));
-	let dP0 = Math.sqrt(Math.pow(point[0]-edge0[0],2) +
-	                    Math.pow(point[1]-edge0[1],2));
-	let dP1 = Math.sqrt(Math.pow(point[0]-edge1[0],2) +
-	                    Math.pow(point[1]-edge1[1],2));
+	let edge0_1 = [edge0[0]-edge1[0], edge0[1]-edge1[1]];
+	let edge0_p = [edge0[0]-point[0], edge0[1]-point[1]];
+	let edge1_p = [edge1[0]-point[0], edge1[1]-point[1]];
+	let dEdge = Math.sqrt(edge0_1[0]*edge0_1[0] + edge0_1[1]*edge0_1[1]);
+	let dP0   = Math.sqrt(edge0_p[0]*edge0_p[0] + edge0_p[1]*edge0_p[1]);
+	let dP1   = Math.sqrt(edge1_p[0]*edge1_p[0] + edge1_p[1]*edge1_p[1]);
 	return Math.abs(dEdge - dP0 - dP1) < epsilon;
 }
 
@@ -163,11 +163,13 @@ export function point_on_edge(edge0, edge1, point, epsilon = EPSILON) {
  * var isInside = point_in_poly([0.5, 0.5], polygonPoints)
  */
 export function point_in_poly(point, poly, epsilon = EPSILON) {
-	// W. Randolph Franklin https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
+	// W. Randolph Franklin
+	// https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
 	let isInside = false;
 	for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
 		if ( (poly[i][1] > point[1]) != (poly[j][1] > point[1]) &&
-		point[0] < (poly[j][0] - poly[i][0]) * (point[1] - poly[i][1]) / (poly[j][1] - poly[i][1]) + poly[i][0] ) {
+		point[0] < (poly[j][0] - poly[i][0]) * (point[1] - poly[i][1])
+		/ (poly[j][1] - poly[i][1]) + poly[i][0] ) {
 			isInside = !isInside;
 		}
 	}
@@ -266,48 +268,32 @@ export function clip_ray_in_convex_poly(poly, linePoint, lineVector) {
 
 export function clip_edge_in_convex_poly(poly, edgeA, edgeB) {
 	let intersections = poly
-		.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // poly points into edge pairs
+		.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // polygon into edge pairs
 		.map(el => edge_edge_exclusive(edgeA, edgeB, el[0], el[1]))
 		.filter(el => el != null);
-	// more efficient if we make sure these are unique
-	// for (var i = 0; i < intersections.length; i++) {
-	// 	for (var j = intersections.length-1; j > i; j--) {
-	// 		if (equivalent2(intersections[i], intersections[j], 0.0000001)) {
-	// 			intersections.splice(j, 1);
-	// 		}
-	// 	}
-	// }
-	let aInside = point_in_convex_poly_exclusive(edgeA, poly);
-	let bInside = point_in_convex_poly_exclusive(edgeB, poly);
-	let aInsideCollinear = point_in_convex_poly(edgeA, poly);
-	let bInsideCollinear = point_in_convex_poly(edgeB, poly);
+
+	let aInsideExclusive = point_in_convex_poly_exclusive(edgeA, poly);
+	let bInsideExclusive = point_in_convex_poly_exclusive(edgeB, poly);
+	let aInsideInclusive = point_in_convex_poly(edgeA, poly);
+	let bInsideInclusive = point_in_convex_poly(edgeB, poly);
 
 	// both are inside, OR, one is inside and the other is collinear to poly
 	if (intersections.length === 0 && 
-		(aInside || bInside)) {
+		(aInsideExclusive || bInsideExclusive)) {
 		return [edgeA, edgeB];
 	}
 	if(intersections.length === 0 &&
-		(aInsideCollinear && bInsideCollinear)) {
+		(aInsideInclusive && bInsideInclusive)) {
 		return [edgeA, edgeB];
 	}
 	switch (intersections.length) {
-		case 0: return ( aInside
+		case 0: return ( aInsideExclusive
 			? [[...edgeA], [...edgeB]]
 			: undefined );
-		case 2: return intersections;
-		// this one is complicated, the point could lie on top of 
-		case 1: 
-			// let equivA = poly.map(p => equivalent2(p, edgeA))
-			// 	.reduce((a,b) => a || b, false);
-			// let equivB = poly.map(p => equivalent2(p, edgeB))
-			// 	.reduce((a,b) => a || b, false);
-		// if (equivA && equivB) { return [edgeA, edgeB]; }
-		// if (equivA) { return bInside ? [edgeA, edgeB] : undefined; }
-		// if (equivB) { return aInside ? [edgeA, edgeB] : undefined; }
-		return ( aInside 
+		case 1: return ( aInsideInclusive
 			? [[...edgeA], intersections[0]]
 			: [[...edgeB], intersections[0]] );
+		case 2: return intersections;
 		default: throw "clipping edge in a convex polygon resulting in 3 or more points";
 	}
 }
