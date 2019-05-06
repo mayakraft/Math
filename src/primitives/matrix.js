@@ -30,6 +30,9 @@ export function Matrix2() {
 Matrix2.makeIdentity = function() {
 	return Matrix2(1,0,0,1,0,0);
 }
+Matrix2.makeTranslation = function(tx, ty) {
+	return Matrix2(1,0,0,1,tx,ty);
+}
 Matrix2.makeRotation = function(angle, origin) {
 	return Matrix2( Algebra.make_matrix2_rotation(angle, origin) );
 }

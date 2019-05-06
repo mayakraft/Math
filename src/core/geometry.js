@@ -1,5 +1,5 @@
 import { point_on_line, line_edge_exclusive } from "./intersection";
-import { EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number } from "../parse/clean";
+import { EPSILON, clean_number } from "../parse/clean";
 import { normalize, cross2, midpoint } from "./algebra";
 
 export function make_regular_polygon(sides, x = 0, y = 0, radius = 1) {
@@ -168,7 +168,7 @@ export function enclosing_rectangle(points) {
 	return [mins, lengths];
 }
 
-export function convex_hull(points, include_collinear = false, epsilon = EPSILON_HIGH) {
+export function convex_hull(points, include_collinear = false, epsilon = EPSILON) {
 	// # points in the convex hull before escaping function
 	var INFINITE_LOOP = 10000;
 	// sort points by y. if ys are equivalent, sort by x
@@ -229,7 +229,6 @@ export function convex_hull(points, include_collinear = false, epsilon = EPSILON
 	} while(infiniteLoop < INFINITE_LOOP);
 	return undefined;
 }
-
 
 export function split_polygon(poly, linePoint, lineVector) {
 	//    point: intersection [x,y] point or null if no intersection

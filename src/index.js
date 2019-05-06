@@ -9,13 +9,11 @@ import * as algebra from "./core/algebra";
 import * as geometry from "./core/geometry";
 import * as intersection from "./core/intersection";
 import * as origami from "./core/origami";
-import { EPSILON_LOW, EPSILON, EPSILON_HIGH, clean_number } from "./parse/clean";
+import { EPSILON, clean_number } from "./parse/clean";
 
 let core = Object.create(null);
 Object.assign(core, algebra, geometry);
-core.EPSILON_LOW = EPSILON_LOW;
 core.EPSILON = EPSILON;
-core.EPSILON_HIGH = EPSILON_HIGH;
 core.intersection = intersection;
 core.clean_number = clean_number;
 core.axiom = [];

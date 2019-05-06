@@ -21,7 +21,7 @@ export function Polygon() {
 
 	const contains = function() {
 		let point = Input.get_vec(...arguments)
-		return Intersection.point_in_poly(_points, point);
+		return Intersection.point_in_poly(point, _points);
 	}
 
 	const scale = function(magnitude, center = Geometry.centroid(_points)) {
@@ -41,6 +41,19 @@ export function Polygon() {
 				centerPoint[1] + Math.sin(a+angle) * mag
 			];
 		});
+		return Polygon(newPoints);
+	}
+
+	const translate = function() {
+		let vec = Input.get_vec(...arguments);
+		let newPoints = _points.map(p => p.map((n,i) => n+vec[i]));
+		return Polygon(newPoints);
+	}
+
+	const transform = function() {
+		let m = Input.get_matrix2(...arguments);
+		let newPoints = _points
+			.map(p => Vector(Algebra.multiply_vector2_matrix2(p, m)));
 		return Polygon(newPoints);
 	}
 
@@ -87,6 +100,8 @@ export function Polygon() {
 		contains,
 		scale,
 		rotate,
+		translate,
+		transform,
 		split,
 		clipEdge,
 		clipLine,

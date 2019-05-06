@@ -2,6 +2,7 @@ import * as Input from "../parse/input";
 import * as Algebra from "../core/algebra";
 import * as Intersection from "../core/intersection";
 import { Vector } from "./vector";
+import { Matrix2 } from "./matrix";
 import { EPSILON } from "../parse/clean";
 
 /**
@@ -26,7 +27,7 @@ function LinePrototype(proto) {
 		let lg = this_is_smaller ? line.vector : this.vector;
 		return Algebra.parallel(sm, lg, epsilon);
 	}
-	const isDegenrate = function(epsilon){
+	const isDegenerate = function(epsilon){
 		return Algebra.degenerate(this.vector, epsilon);
 	}
 	const reflection = function() {
@@ -83,7 +84,7 @@ function LinePrototype(proto) {
 	// const equivalent = function(line, epsilon){}
 
 	Object.defineProperty(proto, "isParallel", {value: isParallel});
-	Object.defineProperty(proto, "isDegenrate", {value: isDegenrate});
+	Object.defineProperty(proto, "isDegenerate", {value: isDegenerate});
 	Object.defineProperty(proto, "nearestPoint", {value: nearestPoint});
 	Object.defineProperty(proto, "reflection", {value: reflection});
 	Object.defineProperty(proto, "intersect", {value: intersect});
