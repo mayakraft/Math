@@ -72,15 +72,18 @@ export function Polygon() {
 	// todo: need non-convex clipping functions returns an array of edges
 	const clipEdge = function() {
 		let edge = Input.get_edge(...arguments);
-		return Intersection.clip_edge_in_convex_poly(_points, edge[0], edge[1]);
+		let e = Intersection.clip_edge_in_convex_poly(_points, edge[0], edge[1]);
+		return e === undefined ? undefined : Edge(e);
 	}
 	const clipLine = function() {
 		let line = Input.get_line(...arguments);
-		return Intersection.clip_line_in_convex_poly(_points, line.point, line.vector);
+		let e = Intersection.clip_line_in_convex_poly(_points, line.point, line.vector);
+		return e === undefined ? undefined : Edge(e);
 	}
 	const clipRay = function() {
 		let line = Input.get_line(...arguments);
-		return Intersection.clip_ray_in_convex_poly(_points, line.point, line.vector);
+		let e = Intersection.clip_ray_in_convex_poly(_points, line.point, line.vector);
+		return e === undefined ? undefined : Edge(e);
 	}
 
 	const nearest = function() {

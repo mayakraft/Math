@@ -101,13 +101,16 @@ export function get_line() {
 		};
 	}
 	if (arrays.length > 0) {
-		if (arrays.length == 2) {
+		if (arrays.length === 1) {
+			return get_line(...arrays[0]);
+		}
+		if (arrays.length === 2) {
 			return {
 				point: [arrays[0][0], arrays[0][1]],
 				vector: [arrays[1][0], arrays[1][1]]
 			};
 		}
-		if (arrays.length == 4) {
+		if (arrays.length === 4) {
 			return {
 				point: [arrays[0], arrays[1]],
 				vector: [arrays[2], arrays[3]]

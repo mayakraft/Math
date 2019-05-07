@@ -212,6 +212,10 @@ export function Edge() {
 		);
 	}
 
+	const midpoint = function() {
+		return Vector(Algebra.midpoint(_endpoints[0], _endpoints[1]));
+	}
+
 	const length = function() {
 		return Math.sqrt(Math.pow(edge[1][0] - edge[0][0],2)
 		               + Math.pow(edge[1][1] - edge[0][1],2));
@@ -229,6 +233,7 @@ export function Edge() {
 	// Object.defineProperty(edge, "points", {get: function(){ return edge; }});
 	Object.defineProperty(edge, "point", {get: function(){ return edge[0]; }});
 	Object.defineProperty(edge, "vector", {get: function(){ return vector(); }});
+	Object.defineProperty(edge, "midpoint", {value: midpoint});
 	Object.defineProperty(edge, "length", {get: function(){ return length(); }});
 	Object.defineProperty(edge, "transform", {value: transform});
 
