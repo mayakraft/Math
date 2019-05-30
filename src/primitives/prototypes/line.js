@@ -1,10 +1,10 @@
-import * as Input from "../parse/input";
-import { intersection_function } from "../core/intersection";
-import * as Query from "../core/query";
-import * as Geometry from "../core/geometry";
-import Vector from "./vector";
-import Matrix2 from "./matrix";
-import { EPSILON } from "../parse/clean";
+import * as Input from "../../parse/input";
+import { intersection_function } from "../../core/intersection";
+import * as Query from "../../core/query";
+import * as Geometry from "../../core/geometry";
+import Vector from "../vector";
+import Matrix2 from "../matrix";
+import { EPSILON } from "../../parse/clean";
 
 /**
  * this prototype is shared among line types: lines, rays, edges/segments.
@@ -16,10 +16,9 @@ import { EPSILON } from "../parse/clean";
  * - similarly, clip_function, takes two inputs (d, epsilon)
  *   and returns a modified d for what is considered valid space between 0-1
  */
-export default function (proto) {
-  if (proto == null) {
-    proto = {};
-  }
+export default function (subtype, prototype) {
+  const proto = (prototype != null) ? prototype : {};
+  const Type = subtype;
 
   const compare_to_line = function (t0, t1, epsilon = EPSILON) {
     return this.compare_function (t0, epsilon) && true;
@@ -28,7 +27,8 @@ export default function (proto) {
     return this.compare_function (t0, epsilon) && t1 >= -epsilon;
   };
   const compare_to_edge = function (t0, t1, epsilon = EPSILON) {
-    return this.compare_function (t0, epsilon) && t1 >= -epsilon && t1 <= 1+epsilon;
+    return this.compare_function (t0, epsilon)
+      && t1 >= -epsilon && t1 <= 1 + epsilon;
   };
 
   const isParallel = function (line, epsilon) {
@@ -48,37 +48,26 @@ export default function (proto) {
     return Vector(Geometry.nearest_point(this.point, this.vector, point, this.clip_function));
   };
   const intersect = function (other) {
-    return intersection_function(
-      this.point, this.vector,
-      other.point, other.vector,
+    return intersection_function(this.point, this.vector, other.point,
+      other.vector,
       ((t0, t1, epsilon = EPSILON) => this.compare_function(t0, epsilon)
-           && other.compare_function(t1, epsilon)),
-    );
+        && other.compare_function(t1, epsilon)));
   };
   const intersectLine = function (...args) {
     const line = Input.get_line(args);
-    return intersection_function(
-      this.point, this.vector,
-      line.point, line.vector,
-      compare_to_line.bind(this),
-    );
+    return intersection_function(this.point, this.vector, line.point,
+      line.vector, compare_to_line.bind(this));
   };
   const intersectRay = function (...args) {
     const ray = Input.get_ray(args);
-    return intersection_function(
-      this.point, this.vector,
-      ray.point, ray.vector,
-      compare_to_ray.bind(this),
-    );
+    return intersection_function(this.point, this.vector, ray.point, ray.vector,
+      compare_to_ray.bind(this));
   };
   const intersectEdge = function (...args) {
     const edge = Input.get_edge(args);
     const edgeVec = [edge[1][0] - edge[0][0], edge[1][1] - edge[0][1]];
-    return intersection_function(
-      this.point, this.vector,
-      edge[0], edgeVec,
-      compare_to_edge.bind(this),
-    );
+    return intersection_function(this.point, this.vector, edge[0], edgeVec,
+      compare_to_edge.bind(this));
   };
 
   // const collinear = function (point){}

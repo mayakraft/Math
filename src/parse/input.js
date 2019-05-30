@@ -136,35 +136,46 @@ export function get_ray() {
   return get_line(...arguments);
 }
 
-export function get_two_vec2() {
-  let params = Array.from(arguments);
-  let numbers = params.filter((param) => !isNaN(param));
-  let arrays = params.filter((param) => param.constructor === Array);
+export function get_two_vec2(...args) {
+  if (args.length === 0) { return undefined; }
+  if (args.length === 1 && args[0] !== undefined) {
+    return get_two_vec2(...args[0]);
+  }
+  const params = Array.from(args);
+  const numbers = params.filter((param) => !isNaN(param));
+  const arrays = params.filter((param) => param.constructor === Array);
   if (numbers.length >= 4) {
     return [
       [numbers[0], numbers[1]],
-      [numbers[2], numbers[3]]
+      [numbers[2], numbers[3]],
     ];
   }
   if (arrays.length >= 2 && !isNaN(arrays[0][0])) {
     return arrays;
   }
-  if (arrays.length == 1 && !isNaN(arrays[0][0][0])) {
+  if (arrays.length === 1 && !isNaN(arrays[0][0][0])) {
     return arrays[0];
   }
 }
 
-export function get_array_of_vec() {
-  let params = Array.from(arguments);
-  let arrays = params.filter((param) => param.constructor === Array);
-  if (arrays.length == 1 && arrays[0].length > 0 && arrays[0][0].length > 0 && !isNaN(arrays[0][0][0])) {
-    return arrays[0];
+export function get_array_of_vec(...args) {
+  if (args.length === 0) { return undefined; }
+  if (args.length === 1 && args[0] !== undefined) {
+    return get_array_of_vec(...args[0]);
   }
-  if (params[0].constructor === Object) {
-    if (params[0].points != null) {
-      return params[0].points;
-    }
-  }
+  console.log(Array.from(args));
+  // let params = Array.from(args);
+  return Array.from(args);
+
+  // let arrays = params.filter((param) => param.constructor === Array);
+  // if (arrays.length == 1 && arrays[0].length > 0 && arrays[0][0].length > 0 && !isNaN(arrays[0][0][0])) {
+  //   return arrays[0];
+  // }
+  // if (params[0].constructor === Object) {
+  //   if (params[0].points != null) {
+  //     return params[0].points;
+  //   }
+  // }
 }
 
 

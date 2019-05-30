@@ -13,7 +13,7 @@ const Line = function (...args) {
     return Line(line[0], line[1]);
   };
 
-  const line = Object.create(Prototype());
+  const line = Object.create(Prototype(Line));
   const compare_function = function () { return true; };
 
   Object.defineProperty(line, "compare_function", { value: compare_function });

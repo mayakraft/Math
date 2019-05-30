@@ -20,7 +20,7 @@ const Ray = function (...args) {
     return Ray(point[0], point[1], -vector[0], -vector[1]);
   };
 
-  const ray = Object.create(Prototype());
+  const ray = Object.create(Prototype(Ray));
   const compare_function = function (t0, ep) { return t0 >= -ep; };
   Object.defineProperty(ray, "point", { get: () => Vector(point) });
   Object.defineProperty(ray, "vector", { get: () => Vector(vector) });
