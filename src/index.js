@@ -1,32 +1,24 @@
-/**
- *  Geometry library
- *  The user-facing types (Vector, Sector) interpret arguments for the best
- *  use case. The core methods are as fast as possible and don't type check.
- *  in the core all vector types are expecting as Javascript arrays.
+/*
+ * all points are array syntax [x,y]
+ * all edges are array syntax [[x,y], [x,y]]
+ * all infinite lines are defined as point and vector, both [x,y]
+ * all polygons are an ordered set of points ([x,y]), either winding direction
  */
-
+/**               _                       _                      _   _
+                 (_)                     (_)                    | | | |
+        ___  _ __ _  __ _  __ _ _ __ ___  _      _ __ ___   __ _| |_| |__
+       / _ \| '__| |/ _` |/ _` | '_ ` _ \| |    | '_ ` _ \ / _` | __| '_ \
+      | (_) | |  | | (_| | (_| | | | | | | |    | | | | | | (_| | |_| | | |
+       \___/|_|  |_|\__, |\__,_|_| |_| |_|_|    |_| |_| |_|\__,_|\__|_| |_|
+                     __/ |
+                    |___/
+ */
 import * as algebra from "./core/algebra";
 import * as geometry from "./core/geometry";
+import * as query from "./core/query";
 import * as intersection from "./core/intersection";
-import * as origami from "./core/origami";
+import * as input from "./parse/input";
 import { EPSILON, clean_number } from "./parse/clean";
-
-let core = Object.create(null);
-Object.assign(core, algebra, geometry);
-core.EPSILON = EPSILON;
-core.intersection = intersection;
-core.clean_number = clean_number;
-core.axiom = [];
-core.axiom[1] = origami.axiom1;
-core.axiom[2] = origami.axiom2;
-core.axiom[3] = origami.axiom3;
-core.axiom[4] = origami.axiom4;
-core.axiom[5] = origami.axiom5;
-core.axiom[6] = origami.axiom6;
-core.axiom[7] = origami.axiom7;
-delete core.axiom[0];
-Object.freeze(core.axiom);
-Object.freeze(core);
 
 import { Vector } from "./primitives/vector";
 import Circle from "./primitives/circle";
@@ -36,17 +28,24 @@ import { Line, Ray, Edge } from "./primitives/lines";
 import { Junction } from "./primitives/junction";
 import { Sector } from "./primitives/sector";
 
+const core = Object.create(null);
+Object.assign(core, algebra, geometry, query, input);
+core.EPSILON = EPSILON;
+core.intersection = intersection;
+core.clean_number = clean_number;
+Object.freeze(core);
+
 export {
-	Vector,
-	Circle,
-	Polygon,
-	ConvexPolygon,
-	Rectangle,
-	Matrix2,
-	Line,
-	Ray,
-	Edge,
-	Junction,
-	Sector,
-	core
+  Vector,
+  Circle,
+  Polygon,
+  ConvexPolygon,
+  Rectangle,
+  Matrix2,
+  Line,
+  Ray,
+  Edge,
+  Junction,
+  Sector,
+  core,
 };

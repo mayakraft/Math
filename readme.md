@@ -1,5 +1,7 @@
 # math for origami
 
+[![Build Status](https://travis-ci.org/robbykraft/Math.svg?branch=master)](https://travis-ci.org/robbykraft/Math)
+
 this is the math engine for an [origami library](https://github.com/robbykraft/Origami). it has no dependencies. it's small. you probably want a different library if you're just browsing and ended up here.
 
 ## mostly the reason
@@ -15,8 +17,10 @@ i wrote this is because origami math often deals with edge cases, like the inter
 ## node
 
 ``` js
-require("rabbit-ear-math");
+require("math");
 ```
+
+this isn't published on npm yet. its name will change.
 
 ## dev
 
