@@ -1,15 +1,20 @@
-import * as Input from "../parse/input";
-import * as Geometry from "../core/geometry";
+import {
+  get_vector,
+  get_array_of_vec,
+} from "../parse/input";
+
+import { counter_clockwise_angle2 } from "../core/geometry";
+
 import Sector from "./sector";
 
 const Junction = function (center_point, adjacent_points) {
-  const points = Input.get_array_of_vec(adjacent_points);
+  const points = get_array_of_vec(adjacent_points);
   if (points === undefined) {
     // todo, best practices here
     return undefined;
   }
 
-  const center = Input.get_vector(center_point);
+  const center = get_vector(center_point);
   const vectors = points.map(p => p.map((_, i) => p[i] - center_point[i]));
   const angles = vectors.map(v => Math.atan2(v[1], v[0]));
 
@@ -70,7 +75,7 @@ const Junction = function (center_point, adjacent_points) {
     return clockwise_order.map((_, i, arr) => {
       const thisV = vectors[arr[i]];
       const nextV = vectors[arr[(i + 1) % arr.length]];
-      return Geometry.counter_clockwise_angle2(thisV, nextV);
+      return counter_clockwise_angle2(thisV, nextV);
     })
       .map((_, i, arr) => arr
         .slice(i + 1, arr.length).concat(arr.slice(0, i)))
@@ -100,7 +105,7 @@ const Junction = function (center_point, adjacent_points) {
 };
 
 Junction.fromVectors = function (center, vectors) {
-  const points = Input.get_array_of_vec(vectors)
+  const points = get_array_of_vec(vectors)
     .map(v => v.map((n, i) => n + center[i]));
   return Junction(center, points);
 };

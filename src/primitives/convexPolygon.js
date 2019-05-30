@@ -1,13 +1,23 @@
-import * as Query from "../core/query";
-import * as Geometry from "../core/geometry";
-import * as Input from "../parse/input";
+import { convex_polygons_overlap } from "../core/query";
+
+import {
+  centroid,
+  convex_hull,
+  split_convex_polygon,
+  make_regular_polygon,
+} from "../core/geometry";
+
+import {
+  get_line,
+  get_array_of_vec,
+} from "../parse/input";
+
 import Edge from "./edge";
 import Vector from "./vector";
-
 import Prototype from "./prototypes/polygon";
 
 const ConvexPolygon = function (...args) {
-  const points = Input.get_array_of_vec(args).map(p => Vector(p));
+  const points = get_array_of_vec(args).map(p => Vector(p));
   // todo, best practices here
   if (points === undefined) { return undefined; }
   const sides = points
@@ -29,28 +39,28 @@ const ConvexPolygon = function (...args) {
   // const clipRay = function () { };
 
   const split = function (...innerArgs) {
-    const line = Input.get_line(innerArgs);
-    return Geometry.split_convex_polygon(points, line.point, line.vector)
+    const line = get_line(innerArgs);
+    return split_convex_polygon(points, line.point, line.vector)
       .map(poly => ConvexPolygon(poly));
   };
 
   const overlaps = function (...innerArgs) {
-    const poly2Points = Input.get_array_of_vec(innerArgs);
-    return Query.convex_polygons_overlap(points, poly2Points);
+    const poly2Points = get_array_of_vec(innerArgs);
+    return convex_polygons_overlap(points, poly2Points);
   };
 
   // todo: a ConvexPolygon ConvexPolygon overlap method that returns
   // the boolean space between them as another ConvexPolygon.
   // then, generalize for Polygon
 
-  const scale = function (magnitude, center = Geometry.centroid(polygon.points)) {
+  const scale = function (magnitude, center = centroid(polygon.points)) {
     const newPoints = polygon.points
       .map(p => [0, 1].map((_, i) => p[i] - center[i]))
       .map(vec => vec.map((_, i) => center[i] + vec[i] * magnitude));
     return ConvexPolygon(newPoints);
   };
 
-  const rotate = function (angle, centerPoint = Geometry.centroid(polygon.points)) {
+  const rotate = function (angle, centerPoint = centroid(polygon.points)) {
     const newPoints = polygon.points.map((p) => {
       const vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
       const mag = Math.sqrt((vec[0] ** 2) + (vec[1] ** 2));
@@ -79,11 +89,11 @@ const ConvexPolygon = function (...args) {
 };
 
 ConvexPolygon.regularPolygon = function (sides, x = 0, y = 0, radius = 1) {
-  const points = Geometry.make_regular_polygon(sides, x, y, radius);
+  const points = make_regular_polygon(sides, x, y, radius);
   return ConvexPolygon(points);
 };
 ConvexPolygon.convexHull = function (points, includeCollinear = false) {
-  const hull = Geometry.convex_hull(points, includeCollinear);
+  const hull = convex_hull(points, includeCollinear);
   return ConvexPolygon(hull);
 };
 

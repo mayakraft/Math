@@ -1,22 +1,31 @@
-import * as Input from "../parse/input";
-import * as Algebra from "../core/algebra";
+import {
+  get_vector,
+  get_matrix2,
+} from "../parse/input";
+
+import {
+  make_matrix2_inverse,
+  multiply_matrices2,
+  multiply_vector2_matrix2,
+} from "../core/algebra";
+
 import Vector from "./vector";
 /**
  * 2D Matrix (2x3) with translation component in x,y
  */
 const Matrix2 = function (...args) {
-  const matrix = Input.get_matrix2(args);
+  const matrix = get_matrix2(args);
 
   const inverse = function () {
-    return Matrix2(Algebra.make_matrix2_inverse(matrix));
+    return Matrix2(make_matrix2_inverse(matrix));
   };
   const multiply = function (...innerArgs) {
-    const m2 = Input.get_matrix2(innerArgs);
-    return Matrix2(Algebra.multiply_matrices2(matrix, m2));
+    const m2 = get_matrix2(innerArgs);
+    return Matrix2(multiply_matrices2(matrix, m2));
   };
   const transform = function (...innerArgs) {
-    const v = Input.get_vector(innerArgs);
-    return Vector(Algebra.multiply_vector2_matrix2(v, matrix));
+    const v = get_vector(innerArgs);
+    return Vector(multiply_vector2_matrix2(v, matrix));
   };
   // return Object.freeze( {
   return {

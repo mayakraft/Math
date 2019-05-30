@@ -1,5 +1,10 @@
-import * as Input from "../parse/input";
-import * as Geometry from "../core/geometry";
+import { get_array_of_vec } from "../parse/input";
+
+import {
+  make_regular_polygon,
+  convex_hull,
+} from "../core/geometry";
+
 import Vector from "./vector";
 import Edge from "./edge";
 
