@@ -1,6 +1,4 @@
-import {
-  EPSILON,
-} from "../parse/clean";
+import { EPSILON } from "../parse/clean";
 
 import {
   point_in_convex_poly,

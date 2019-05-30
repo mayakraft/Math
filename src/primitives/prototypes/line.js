@@ -6,22 +6,13 @@ import {
 } from "../../parse/input";
 
 import {
-  EPSILON,
-} from "../../parse/clean";
-
-import {
-  intersection_function,
-} from "../../core/intersection";
-
-import {
   parallel,
   degenerate,
 } from "../../core/query";
 
-import {
-  nearest_point,
-} from "../../core/geometry";
-
+import { EPSILON } from "../../parse/clean";
+import { intersection_function } from "../../core/intersection";
+import { nearest_point } from "../../core/geometry";
 import Vector from "../vector";
 import Matrix2 from "../matrix";
 

@@ -19,9 +19,7 @@ import {
   magnitude,
 } from "../../core/algebra";
 
-import {
-  bisect_vectors,
-} from "../../core/geometry";
+import { bisect_vectors } from "../../core/geometry";
 
 const VectorPrototype = function (subtype) {
   const proto = [];
