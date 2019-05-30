@@ -907,122 +907,238 @@
     is_number: is_number
   });
 
-  function Vector() {
-    let _v = get_vector(...arguments);
-    if (_v === undefined) { return; }
-    const normalize$$1 = function() {
-      return Vector( normalize(_v) );
+  function Matrix2() {
+    let _m = get_matrix2(...arguments);
+    const inverse = function() {
+      return Matrix2( make_matrix2_inverse(_m) );
     };
-    const dot$$1 = function() {
+    const multiply = function() {
+      let m2 = get_matrix2(...arguments);
+      return Matrix2( multiply_matrices2(_m, m2) );
+    };
+    const transform = function() {
+      let v = get_vector(...arguments);
+      return Vector( multiply_vector2_matrix2(v, _m) );
+    };
+    return {
+      inverse,
+      multiply,
+      transform,
+      get m() { return _m; },
+    };
+  }
+  Matrix2.makeIdentity = function() {
+    return Matrix2(1,0,0,1,0,0);
+  };
+  Matrix2.makeTranslation = function(tx, ty) {
+    return Matrix2(1,0,0,1,tx,ty);
+  };
+  Matrix2.makeRotation = function(angle, origin) {
+    return Matrix2( make_matrix2_rotation(angle, origin) );
+  };
+  Matrix2.makeReflection = function(vector, origin) {
+    return Matrix2( make_matrix2_reflection(vector, origin) );
+  };
+
+  const VectorProto = function (proto) {
+    if (proto == null) {
+      proto = [];
+    }
+    let _this;
+    const bind = function(that) {
+      _this = that;
+    };
+    const normalize$$1 = function () {
+      return Vector( normalize(_this) );
+    };
+    const dot$$1 = function () {
       let vec = get_vector(...arguments);
-      return _v.length > vec.length
-        ? dot(vec, _v)
-        : dot(_v, vec);
+      return this.length > vec.length
+        ? dot(vec, _this)
+        : dot(_this, vec);
     };
-    const cross = function() {
+    const cross = function () {
       let b = get_vector(...arguments);
-      let a = _v.slice();
+      let a = _this.slice();
       if(a[2] == null){ a[2] = 0; }
       if(b[2] == null){ b[2] = 0; }
       return Vector( cross3(a, b) );
     };
-    const distanceTo = function() {
+    const distanceTo = function () {
       let vec = get_vector(...arguments);
-      let length = (_v.length < vec.length) ? _v.length : vec.length;
+      let length = (_this.length < vec.length) ? _this.length : vec.length;
       let sum = Array.from(Array(length))
-        .map((_,i) => Math.pow(_v[i] - vec[i], 2))
+        .map((_,i) => Math.pow(_this[i] - vec[i], 2))
         .reduce((prev, curr) => prev + curr, 0);
       return Math.sqrt(sum);
     };
-    const transform = function() {
+    const transform = function () {
       let m = get_matrix2(...arguments);
-      return Vector( multiply_vector2_matrix2(_v, m) );
+      return Vector( multiply_vector2_matrix2(_this, m) );
     };
-    const add = function() {
+    const add = function () {
       let vec = get_vector(...arguments);
-      return Vector( _v.map((v,i) => v + vec[i]) );
+      return Vector( _this.map((v,i) => v + vec[i]) );
     };
-    const subtract = function() {
+    const subtract = function () {
       let vec = get_vector(...arguments);
-      return Vector( _v.map((v,i) => v - vec[i]) );
+      return Vector( _this.map((v,i) => v - vec[i]) );
     };
-    const rotateZ = function(angle, origin) {
+    const rotateZ = function (angle, origin) {
       var m = make_matrix2_rotation(angle, origin);
-      return Vector( multiply_vector2_matrix2(_v, m) );
+      return Vector( multiply_vector2_matrix2(_this, m) );
     };
-    const rotateZ90 = function() {
-      return Vector(-_v[1], _v[0]);
+    const rotateZ90 = function () {
+      return Vector(-_this[1], _this[0]);
     };
-    const rotateZ180 = function() {
-      return Vector(-_v[0], -_v[1]);
+    const rotateZ180 = function () {
+      return Vector(-_this[0], -_this[1]);
     };
-    const rotateZ270 = function() {
-      return Vector(_v[1], -_v[0]);
+    const rotateZ270 = function () {
+      return Vector(_this[1], -_this[0]);
     };
-    const reflect = function() {
+    const reflect = function () {
       let reflect = get_line(...arguments);
       let m = make_matrix2_reflection(reflect.vector, reflect.point);
-      return Vector( multiply_vector2_matrix2(_v, m) );
+      return Vector( multiply_vector2_matrix2(_this, m) );
     };
-    const lerp = function(vector, pct) {
+    const lerp = function (vector, pct) {
       let vec = get_vector(vector);
       let inv = 1.0 - pct;
-      let length = (_v.length < vec.length) ? _v.length : vec.length;
+      let length = (_this.length < vec.length) ? _this.length : vec.length;
       let components = Array.from(Array(length))
-        .map((_,i) => _v[i] * pct + vec[i] * inv);
+        .map((_,i) => _this[i] * pct + vec[i] * inv);
       return Vector(components);
     };
-    const isEquivalent = function() {
+    const isEquivalent = function () {
       let vec = get_vector(...arguments);
-      let sm = (_v.length < vec.length) ? _v : vec;
-      let lg = (_v.length < vec.length) ? vec : _v;
+      let sm = (_this.length < vec.length) ? _this : vec;
+      let lg = (_this.length < vec.length) ? vec : _this;
       return equivalent(sm, lg);
     };
-    const isParallel = function() {
+    const isParallel = function () {
       let vec = get_vector(...arguments);
-      let sm = (_v.length < vec.length) ? _v : vec;
-      let lg = (_v.length < vec.length) ? vec : _v;
+      let sm = (_this.length < vec.length) ? _this : vec;
+      let lg = (_this.length < vec.length) ? vec : _this;
       return parallel(sm, lg);
     };
-    const scale = function(mag) {
-      return Vector( _v.map(v => v * mag) );
+    const scale = function (mag) {
+      return Vector( _this.map(v => v * mag) );
     };
-    const midpoint = function() {
+    const midpoint = function () {
       let vec = get_vector(...arguments);
-      let sm = (_v.length < vec.length) ? _v.slice() : vec;
-      let lg = (_v.length < vec.length) ? vec : _v.slice();
+      let sm = (_this.length < vec.length) ? _this.slice() : vec;
+      let lg = (_this.length < vec.length) ? vec : _this.slice();
       for (let i = sm.length; i < lg.length; i++) { sm[i] = 0; }
       return Vector(lg.map((_,i) => (sm[i] + lg[i]) * 0.5));
     };
-    const bisect = function() {
+    const bisect = function () {
       let vec = get_vector(...arguments);
-      return bisect_vectors(_v, vec).map(b => Vector(b));
+      return bisect_vectors(_this, vec).map(b => Vector(b));
     };
-    Object.defineProperty(_v, "normalize", {value: normalize$$1});
-    Object.defineProperty(_v, "dot", {value: dot$$1});
-    Object.defineProperty(_v, "cross", {value: cross});
-    Object.defineProperty(_v, "distanceTo", {value: distanceTo});
-    Object.defineProperty(_v, "transform", {value: transform});
-    Object.defineProperty(_v, "add", {value: add});
-    Object.defineProperty(_v, "subtract", {value: subtract});
-    Object.defineProperty(_v, "rotateZ", {value: rotateZ});
-    Object.defineProperty(_v, "rotateZ90", {value: rotateZ90});
-    Object.defineProperty(_v, "rotateZ180", {value: rotateZ180});
-    Object.defineProperty(_v, "rotateZ270", {value: rotateZ270});
-    Object.defineProperty(_v, "reflect", {value: reflect});
-    Object.defineProperty(_v, "lerp", {value: lerp});
-    Object.defineProperty(_v, "isEquivalent", {value: isEquivalent});
-    Object.defineProperty(_v, "isParallel", {value: isParallel});
-    Object.defineProperty(_v, "scale", {value: scale});
-    Object.defineProperty(_v, "midpoint", {value: midpoint});
-    Object.defineProperty(_v, "bisect", {value: bisect});
+    Object.defineProperty(proto, "normalize", {value: normalize$$1});
+    Object.defineProperty(proto, "dot", {value: dot$$1});
+    Object.defineProperty(proto, "cross", {value: cross});
+    Object.defineProperty(proto, "distanceTo", {value: distanceTo});
+    Object.defineProperty(proto, "transform", {value: transform});
+    Object.defineProperty(proto, "add", {value: add});
+    Object.defineProperty(proto, "subtract", {value: subtract});
+    Object.defineProperty(proto, "rotateZ", {value: rotateZ});
+    Object.defineProperty(proto, "rotateZ90", {value: rotateZ90});
+    Object.defineProperty(proto, "rotateZ180", {value: rotateZ180});
+    Object.defineProperty(proto, "rotateZ270", {value: rotateZ270});
+    Object.defineProperty(proto, "reflect", {value: reflect});
+    Object.defineProperty(proto, "lerp", {value: lerp});
+    Object.defineProperty(proto, "isEquivalent", {value: isEquivalent});
+    Object.defineProperty(proto, "isParallel", {value: isParallel});
+    Object.defineProperty(proto, "scale", {value: scale});
+    Object.defineProperty(proto, "midpoint", {value: midpoint});
+    Object.defineProperty(proto, "bisect", {value: bisect});
+    Object.defineProperty(proto, "bind", {value: bind});
+    Object.defineProperty(proto, "magnitude", {get: function () {
+      console.log(_this);
+      return magnitude(_this);
+    }});
+    Object.defineProperty(proto, "copy", {value: function () { return Vector(..._this);}});
+    return proto;
+  };
+  const Line = function (proto) {
+    if (proto == null) {
+      proto = {};
+    }
+    const compare_to_line = function (t0, t1, epsilon = EPSILON) {
+      return this.compare_function (t0, epsilon) && true;
+    };
+    const compare_to_ray = function (t0, t1, epsilon = EPSILON) {
+      return this.compare_function (t0, epsilon) && t1 >= -epsilon;
+    };
+    const compare_to_edge = function (t0, t1, epsilon = EPSILON) {
+      return this.compare_function (t0, epsilon) && t1 >= -epsilon && t1 <= 1+epsilon;
+    };
+    const isParallel = function (line, epsilon) {
+      if (line.vector == null) {
+        throw "line isParallel(): please ensure object contains a vector";
+      }
+      const this_is_smaller = (this.vector.length < line.vector.length);
+      const sm = this_is_smaller ? this.vector : line.vector;
+      const lg = this_is_smaller ? line.vector : this.vector;
+      return parallel(sm, lg, epsilon);
+    };
+    const isDegenerate = epsilon => degenerate(this.vector, epsilon);
+    const reflection = () => Matrix2.makeReflection(this.vector, this.point);
+    const nearestPoint = function (...args) {
+      const point = get_vector(args);
+      return Vector(nearest_point(this.point, this.vector, point, this.clip_function));
+    };
+    const intersect = function (other) {
+      return intersection_function (
+        this.point, this.vector,
+        other.point, other.vector,
+        ((t0, t1, epsilon = EPSILON) => this.compare_function (t0, epsilon)
+             && other.compare_function (t1, epsilon))
+          .bind(this));
+    };
+    const intersectLine = function (...args) {
+      const line = get_line(args);
+      return intersection_function (
+        this.point, this.vector,
+        line.point, line.vector,
+        compare_to_line.bind(this));
+    };
+    const intersectRay = function (...args) {
+      let ray = get_ray(args);
+      return intersection_function (
+        this.point, this.vector,
+        ray.point, ray.vector,
+        compare_to_ray.bind(this));
+    };
+    const intersectEdge = function (...args) {
+      let edge = get_edge(args);
+      let edgeVec = [edge[1][0] - edge[0][0], edge[1][1] - edge[0][1]];
+      return intersection_function (
+        this.point, this.vector,
+        edge[0], edgeVec,
+        compare_to_edge.bind(this));
+    };
+    Object.defineProperty(proto, "isParallel", { value: isParallel });
+    Object.defineProperty(proto, "isDegenerate", { value: isDegenerate });
+    Object.defineProperty(proto, "nearestPoint", { value: nearestPoint });
+    Object.defineProperty(proto, "reflection", { value: reflection });
+    Object.defineProperty(proto, "intersect", { value: intersect });
+    Object.defineProperty(proto, "intersectLine", { value: intersectLine });
+    Object.defineProperty(proto, "intersectRay", { value: intersectRay });
+    Object.defineProperty(proto, "intersectEdge", { value: intersectEdge });
+    return Object.freeze(proto);
+  };
+
+  function Vector(...args) {
+    let proto = VectorProto();
+    let _v = Object.create(proto);
+    proto.bind(_v);
+    get_vector(args).forEach((v, i) => { _v.push(v); });
     Object.defineProperty(_v, "x", {get: function(){ return _v[0]; }});
     Object.defineProperty(_v, "y", {get: function(){ return _v[1]; }});
     Object.defineProperty(_v, "z", {get: function(){ return _v[2]; }});
-    Object.defineProperty(_v, "magnitude", {get: function() {
-      return magnitude(_v);
-    }});
-    Object.defineProperty(_v, "copy", {value: function() { return Vector(..._v);}});
     return _v;
   }
 
@@ -1069,108 +1185,6 @@
       set radius(newRadius) { _radius = newRadius; },
     };
   }
-
-  function Matrix2() {
-    let _m = get_matrix2(...arguments);
-    const inverse = function() {
-      return Matrix2( make_matrix2_inverse(_m) );
-    };
-    const multiply = function() {
-      let m2 = get_matrix2(...arguments);
-      return Matrix2( multiply_matrices2(_m, m2) );
-    };
-    const transform = function() {
-      let v = get_vector(...arguments);
-      return Vector( multiply_vector2_matrix2(v, _m) );
-    };
-    return {
-      inverse,
-      multiply,
-      transform,
-      get m() { return _m; },
-    };
-  }
-  Matrix2.makeIdentity = function() {
-    return Matrix2(1,0,0,1,0,0);
-  };
-  Matrix2.makeTranslation = function(tx, ty) {
-    return Matrix2(1,0,0,1,tx,ty);
-  };
-  Matrix2.makeRotation = function(angle, origin) {
-    return Matrix2( make_matrix2_rotation(angle, origin) );
-  };
-  Matrix2.makeReflection = function(vector, origin) {
-    return Matrix2( make_matrix2_reflection(vector, origin) );
-  };
-
-  const Line = function (proto) {
-    if (proto == null) {
-      proto = {};
-    }
-    const compare_to_line = function (t0, t1, epsilon = EPSILON) {
-      return this.compare_function (t0, epsilon) && true;
-    };
-    const compare_to_ray = function (t0, t1, epsilon = EPSILON) {
-      return this.compare_function (t0, epsilon) && t1 >= -epsilon;
-    };
-    const compare_to_edge = function (t0, t1, epsilon = EPSILON) {
-      return this.compare_function (t0, epsilon) && t1 >= -epsilon && t1 <= 1+epsilon;
-    };
-    const isParallel = function (line, epsilon) {
-      if (line.vector == null) {
-        throw "line isParallel(): please ensure object contains a vector";
-      }
-      const this_is_smaller = (this.vector.length < line.vector.length);
-      const sm = this_is_smaller ? this.vector : line.vector;
-      const lg = this_is_smaller ? line.vector : this.vector;
-      return parallel(sm, lg, epsilon);
-    };
-    const isDegenerate = epsilon => degenerate(this.vector, epsilon);
-    const reflection = () => Matrix2.makeReflection(this.vector, this.point);
-    const nearestPoint = function (...args) {
-      const point = get_vector(args);
-      return Vector(nearest_point(this.point, this.vector, point, this.clip_function));
-    };
-    const intersect = function (other) {
-      return intersection_function(
-        this.point, this.vector,
-        other.point, other.vector,
-        ((t0, t1, epsilon = EPSILON) => this.compare_function(t0, epsilon)
-             && other.compare_function(t1, epsilon))
-          .bind(this));
-    };
-    const intersectLine = function (...args) {
-      const line = get_line(args);
-      return intersection_function(
-        this.point, this.vector,
-        line.point, line.vector,
-        compare_to_line.bind(this));
-    };
-    const intersectRay = function (...args) {
-      let ray = get_ray(args);
-      return intersection_function(
-        this.point, this.vector,
-        ray.point, ray.vector,
-        compare_to_ray.bind(this));
-    };
-    const intersectEdge = function (...args) {
-      let edge = get_edge(args);
-      let edgeVec = [edge[1][0] - edge[0][0], edge[1][1] - edge[0][1]];
-      return intersection_function(
-        this.point, this.vector,
-        edge[0], edgeVec,
-        compare_to_edge.bind(this));
-    };
-    Object.defineProperty(proto, "isParallel", { value: isParallel });
-    Object.defineProperty(proto, "isDegenerate", { value: isDegenerate });
-    Object.defineProperty(proto, "nearestPoint", { value: nearestPoint });
-    Object.defineProperty(proto, "reflection", { value: reflection });
-    Object.defineProperty(proto, "intersect", { value: intersect });
-    Object.defineProperty(proto, "intersectLine", { value: intersectLine });
-    Object.defineProperty(proto, "intersectRay", { value: intersectRay });
-    Object.defineProperty(proto, "intersectEdge", { value: intersectEdge });
-    return Object.freeze(proto);
-  };
 
   function Line$1(...args) {
     const { point, vector } = get_line(args);
