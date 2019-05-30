@@ -13,6 +13,7 @@
                      __/ |
                     |___/
  */
+
 import * as algebra from "./core/algebra";
 import * as geometry from "./core/geometry";
 import * as query from "./core/query";
@@ -24,7 +25,9 @@ import { Vector } from "./primitives/vector";
 import Circle from "./primitives/circle";
 import { Polygon, ConvexPolygon, Rectangle } from "./primitives/polygon";
 import { Matrix2 } from "./primitives/matrix";
-import { Line, Ray, Edge } from "./primitives/lines";
+import Line from "./primitives/line";
+import Ray from "./primitives/ray";
+import Edge from "./primitives/edge";
 import { Junction } from "./primitives/junction";
 import { Sector } from "./primitives/sector";
 

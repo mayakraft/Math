@@ -4,7 +4,9 @@ import * as Geometry from "../core/geometry";
 import * as Query from "../core/query";
 import * as Intersection from "../core/intersection";
 import { Vector } from "./vector";
-import { Line, Ray, Edge } from "./lines";
+import Line from "./line";
+import Ray from "./ray";
+import Edge from "./edge";
 import { Sector } from "./sector";
 import { clean_number } from "../parse/clean";
 
