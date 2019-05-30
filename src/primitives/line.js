@@ -1,15 +1,26 @@
-import * as Input from "../parse/input";
-import * as Algebra from "../core/algebra";
-import * as Intersection from "../core/intersection";
+import {
+  get_line,
+  get_matrix2,
+  get_two_vec2,
+} from "../parse/input";
+
+import {
+  normalize,
+  average,
+  multiply_line_matrix2,
+} from "../core/algebra";
+
+import { limit_line } from "../core/intersection";
+
 import Vector from "./vector";
 import Prototype from "./prototypes/line";
 
 const Line = function (...args) {
-  const { point, vector } = Input.get_line(args);
+  const { point, vector } = get_line(args);
 
   const transform = function () {
-    const mat = Input.get_matrix2(args);
-    const line = Algebra.multiply_line_matrix2(point, vector, mat);
+    const mat = get_matrix2(args);
+    const line = multiply_line_matrix2(point, vector, mat);
     return Line(line[0], line[1]);
   };
 
@@ -17,7 +28,7 @@ const Line = function (...args) {
   const compare_function = function () { return true; };
 
   Object.defineProperty(line, "compare_function", { value: compare_function });
-  Object.defineProperty(line, "clip_function", { value: Intersection.limit_line });
+  Object.defineProperty(line, "clip_function", { value: limit_line });
 
   Object.defineProperty(line, "point", { get: () => Vector(point) });
   Object.defineProperty(line, "vector", { get: () => Vector(vector) });
@@ -30,10 +41,10 @@ const Line = function (...args) {
 
 // static methods
 Line.fromPoints = function (...args) {
-  const points = Input.get_two_vec2(args);
+  const points = get_two_vec2(args);
   return Line({
     point: points[0],
-    vector: Algebra.normalize([
+    vector: normalize([
       points[1][0] - points[0][0],
       points[1][1] - points[0][1],
     ]),
@@ -41,15 +52,15 @@ Line.fromPoints = function (...args) {
 };
 
 Line.perpendicularBisector = function (...args) {
-  const points = Input.get_two_vec2(args);
-  const vec = Algebra.normalize([
+  const points = get_two_vec2(args);
+  const vec = normalize([
     points[1][0] - points[0][0],
     points[1][1] - points[0][1],
   ]);
   return Line({
-    point: Algebra.average(points[0], points[1]),
+    point: average(points[0], points[1]),
     vector: [vec[1], -vec[0]],
-    // vector: Algebra.cross3(vec, [0,0,1])
+    // vector: cross3(vec, [0,0,1])
   });
 };
 

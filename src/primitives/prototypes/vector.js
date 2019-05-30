@@ -1,7 +1,27 @@
-import * as Input from "../../parse/input";
-import * as Algebra from "../../core/algebra";
-import * as Query from "../../core/query";
-import * as Geometry from "../../core/geometry";
+import {
+  get_vector,
+  get_matrix2,
+  get_line,
+} from "../../parse/input";
+
+import {
+  equivalent,
+  parallel,
+} from "../../core/query";
+
+import {
+  normalize,
+  dot,
+  cross3,
+  multiply_vector2_matrix2,
+  make_matrix2_rotation,
+  make_matrix2_reflection,
+  magnitude,
+} from "../../core/algebra";
+
+import {
+  bisect_vectors,
+} from "../../core/geometry";
 
 const VectorPrototype = function (subtype) {
   const proto = [];
@@ -12,24 +32,24 @@ const VectorPrototype = function (subtype) {
     _this = that;
   };
 
-  const normalize = function () {
-    return Type(Algebra.normalize(_this));
+  const vecNormalize = function () {
+    return Type(normalize(_this));
   };
-  const dot = function (...args) {
-    const vec = Input.get_vector(args);
+  const vecDot = function (...args) {
+    const vec = get_vector(args);
     return this.length > vec.length
-      ? Algebra.dot(vec, _this)
-      : Algebra.dot(_this, vec);
+      ? dot(vec, _this)
+      : dot(_this, vec);
   };
   const cross = function (...args) {
-    const b = Input.get_vector(args);
+    const b = get_vector(args);
     const a = _this.slice();
     if (a[2] == null) { a[2] = 0; }
     if (b[2] == null) { b[2] = 0; }
-    return Type(Algebra.cross3(a, b));
+    return Type(cross3(a, b));
   };
   const distanceTo = function (...args) {
-    const vec = Input.get_vector(args);
+    const vec = get_vector(args);
     const length = (_this.length < vec.length) ? _this.length : vec.length;
     const sum = Array.from(Array(length))
       .map((_, i) => (_this[i] - vec[i]) ** 2)
@@ -37,21 +57,21 @@ const VectorPrototype = function (subtype) {
     return Math.sqrt(sum);
   };
   const transform = function (...args) {
-    const m = Input.get_matrix2(args);
-    return Type(Algebra.multiply_vector2_matrix2(_this, m));
+    const m = get_matrix2(args);
+    return Type(multiply_vector2_matrix2(_this, m));
   };
   const add = function (...args) {
-    const vec = Input.get_vector(args);
+    const vec = get_vector(args);
     return Type(_this.map((v, i) => v + vec[i]));
   };
   const subtract = function (...args) {
-    const vec = Input.get_vector(args);
+    const vec = get_vector(args);
     return Type(_this.map((v, i) => v - vec[i]));
   };
   // these are implicitly 2D functions, and will convert the vector into 2D
   const rotateZ = function (angle, origin) {
-    const m = Algebra.make_matrix2_rotation(angle, origin);
-    return Type(Algebra.multiply_vector2_matrix2(_this, m));
+    const m = make_matrix2_rotation(angle, origin);
+    return Type(multiply_vector2_matrix2(_this, m));
   };
   const rotateZ90 = function () {
     return Type(-_this[1], _this[0]);
@@ -63,12 +83,12 @@ const VectorPrototype = function (subtype) {
     return Type(_this[1], -_this[0]);
   };
   const reflect = function (...args) {
-    const ref = Input.get_line(args);
-    const m = Algebra.make_matrix2_reflection(ref.vector, ref.point);
-    return Type(Algebra.multiply_vector2_matrix2(_this, m));
+    const ref = get_line(args);
+    const m = make_matrix2_reflection(ref.vector, ref.point);
+    return Type(multiply_vector2_matrix2(_this, m));
   };
   const lerp = function (vector, pct) {
-    const vec = Input.get_vector(vector);
+    const vec = get_vector(vector);
     const inv = 1.0 - pct;
     const length = (_this.length < vec.length) ? _this.length : vec.length;
     const components = Array.from(Array(length))
@@ -77,34 +97,34 @@ const VectorPrototype = function (subtype) {
   };
   const isEquivalent = function (...args) {
     // rect bounding box for now, much cheaper than radius calculation
-    const vec = Input.get_vector(args);
+    const vec = get_vector(args);
     const sm = (_this.length < vec.length) ? _this : vec;
     const lg = (_this.length < vec.length) ? vec : _this;
-    return Query.equivalent(sm, lg);
+    return equivalent(sm, lg);
   };
   const isParallel = function (...args) {
-    const vec = Input.get_vector(args);
+    const vec = get_vector(args);
     const sm = (_this.length < vec.length) ? _this : vec;
     const lg = (_this.length < vec.length) ? vec : _this;
-    return Query.parallel(sm, lg);
+    return parallel(sm, lg);
   };
   const scale = function (mag) {
     return Type(_this.map(v => v * mag));
   };
   const midpoint = function (...args) {
-    const vec = Input.get_vector(args);
+    const vec = get_vector(args);
     const sm = (_this.length < vec.length) ? _this.slice() : vec;
     const lg = (_this.length < vec.length) ? vec : _this.slice();
     for (let i = sm.length; i < lg.length; i += 1) { sm[i] = 0; }
     return Type(lg.map((_, i) => (sm[i] + lg[i]) * 0.5));
   };
   const bisect = function (...args) {
-    const vec = Input.get_vector(args);
-    return Geometry.bisect_vectors(_this, vec).map(b => Type(b));
+    const vec = get_vector(args);
+    return bisect_vectors(_this, vec).map(b => Type(b));
   };
 
-  Object.defineProperty(proto, "normalize", { value: normalize });
-  Object.defineProperty(proto, "dot", { value: dot });
+  Object.defineProperty(proto, "normalize", { value: vecNormalize });
+  Object.defineProperty(proto, "dot", { value: vecDot });
   Object.defineProperty(proto, "cross", { value: cross });
   Object.defineProperty(proto, "distanceTo", { value: distanceTo });
   Object.defineProperty(proto, "transform", { value: transform });
@@ -123,7 +143,7 @@ const VectorPrototype = function (subtype) {
   Object.defineProperty(proto, "bisect", { value: bisect });
   Object.defineProperty(proto, "copy", { value: () => Type(..._this) });
   Object.defineProperty(proto, "magnitude", {
-    get: () => Algebra.magnitude(_this),
+    get: () => magnitude(_this),
   });
   Object.defineProperty(proto, "bind", { value: bind });
   return proto;

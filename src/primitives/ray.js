@@ -1,17 +1,27 @@
-import * as Input from "../parse/input";
-import * as Algebra from "../core/algebra";
+import {
+  get_line,
+  get_matrix2,
+  get_two_vec2,
+} from "../parse/input";
+
+import {
+  normalize,
+  multiply_vector2_matrix2,
+} from "../core/algebra";
+
 import { limit_ray } from "../core/intersection";
+
 import Vector from "./vector";
 import Prototype from "./prototypes/line";
 
 const Ray = function (...args) {
-  const { point, vector } = Input.get_line(args);
+  const { point, vector } = get_line(args);
 
   const transform = function (...innerArgs) {
-    const mat = Input.get_matrix2(innerArgs);
-    const new_point = Algebra.multiply_vector2_matrix2(point, mat);
+    const mat = get_matrix2(innerArgs);
+    const new_point = multiply_vector2_matrix2(point, mat);
     const vec_point = vector.map((vec, i) => vec + point[i]);
-    const new_vector = Algebra.multiply_vector2_matrix2(vec_point, mat)
+    const new_vector = multiply_vector2_matrix2(vec_point, mat)
       .map((vec, i) => vec - new_point[i]);
     return Ray(new_point, new_vector);
   };
@@ -36,10 +46,10 @@ const Ray = function (...args) {
 
 // static methods
 Ray.fromPoints = function (...args) {
-  const points = Input.get_two_vec2(args);
+  const points = get_two_vec2(args);
   return Ray({
     point: points[0],
-    vector: Algebra.normalize([
+    vector: normalize([
       points[1][0] - points[0][0],
       points[1][1] - points[0][1],
     ]),

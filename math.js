@@ -934,10 +934,10 @@
     const bind = function (that) {
       _this = that;
     };
-    const normalize$$1 = function () {
+    const vecNormalize = function () {
       return Type(normalize(_this));
     };
-    const dot$$1 = function (...args) {
+    const vecDot = function (...args) {
       const vec = get_vector(args);
       return this.length > vec.length
         ? dot(vec, _this)
@@ -1022,8 +1022,8 @@
       const vec = get_vector(args);
       return bisect_vectors(_this, vec).map(b => Type(b));
     };
-    Object.defineProperty(proto, "normalize", { value: normalize$$1 });
-    Object.defineProperty(proto, "dot", { value: dot$$1 });
+    Object.defineProperty(proto, "normalize", { value: vecNormalize });
+    Object.defineProperty(proto, "dot", { value: vecDot });
     Object.defineProperty(proto, "cross", { value: cross });
     Object.defineProperty(proto, "distanceTo", { value: distanceTo });
     Object.defineProperty(proto, "transform", { value: transform });
@@ -1081,8 +1081,10 @@
   };
   Matrix2.makeIdentity = () => Matrix2(1, 0, 0, 1, 0, 0);
   Matrix2.makeTranslation = (tx, ty) => Matrix2(1, 0, 0, 1, tx, ty);
-  Matrix2.makeRotation = (angle, origin) => Matrix2(make_matrix2_rotation(angle, origin));
-  Matrix2.makeReflection = (vector, origin) => Matrix2(make_matrix2_reflection(vector, origin));
+  Matrix2.makeRotation = (angle, origin) => Matrix2(Algebra
+    .make_matrix2_rotation(angle, origin));
+  Matrix2.makeReflection = (vector, origin) => Matrix2(Algebra
+    .make_matrix2_reflection(vector, origin));
 
   function Prototype (subtype, prototype) {
     const proto = (prototype != null) ? prototype : {};
@@ -1258,7 +1260,7 @@
     const numbers = params.filter(param => !isNaN(param));
     if (numbers.length === 3) {
       origin = Vector(numbers[0], numbers[1]);
-      radius = numbers[2];
+      [, , radius] = numbers;
     }
     const intersectionLine = function (...innerArgs) {
       const line = get_line(innerArgs);
@@ -1322,7 +1324,6 @@
     const proto = {};
     const Type = subtype;
     const area = () => signed_area(this.points);
-    const centroid$$1 = () => centroid(this.points);
     const midpoint = () => average(this.points);
     const enclosingRectangle = () => enclosing_rectangle(this.points);
     const sectors = function () {
@@ -1398,7 +1399,7 @@
       return Type(newPoints);
     };
     Object.defineProperty(proto, "area", { value: area });
-    Object.defineProperty(proto, "centroid", { value: centroid$$1 });
+    Object.defineProperty(proto, "centroid", { value: centroid(this.points) });
     Object.defineProperty(proto, "midpoint", { value: midpoint });
     Object.defineProperty(proto, "enclosingRectangle", { value: enclosingRectangle });
     Object.defineProperty(proto, "contains", { value: contains });
@@ -1418,7 +1419,7 @@
   }
 
   const Polygon = function (...args) {
-    const points = get_array_of_vec(args).map(p => Vector(p));
+    const points = Input.get_array_of_vec(args).map(p => Vector(p));
     if (points === undefined) { return undefined; }
     const sides = points
       .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
@@ -1429,11 +1430,11 @@
     return polygon;
   };
   Polygon.regularPolygon = function (sides, x = 0, y = 0, radius = 1) {
-    const points = make_regular_polygon(sides, x, y, radius);
+    const points = Geometry.make_regular_polygon(sides, x, y, radius);
     return Polygon(points);
   };
   Polygon.convexHull = function (points, includeCollinear = false) {
-    const hull = convex_hull(points, includeCollinear);
+    const hull = Geometry.convex_hull(points, includeCollinear);
     return Polygon(hull);
   };
 
