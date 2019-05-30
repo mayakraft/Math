@@ -95,11 +95,11 @@ testEqual(false, math.Line(0, 0, -1, 1).isParallel(math.Edge(10, 0, 1, 1)));
 name = "line ray edge reflection matrices";
 testEqual(
   math.Line(10, 0, -1, 1).reflection().m,
-  math.Ray(10, 0, -1, 1).reflection().m,
+  math.Ray(10, 0, -1, 1).reflection().m
 );
 testEqual(
   math.Edge(10, 0, 0, 10).reflection().m,
-  math.Ray(10, 0, -1, 1).reflection().m,
+  math.Ray(10, 0, -1, 1).reflection().m
 );
 
 name = "line ray edge nearest points";
@@ -111,11 +111,11 @@ testEqual([10, 0], math.Edge(10, 0, 0, 10).nearestPoint([20, -10]));
 testEqual([0, 10], math.Edge(10, 0, 0, 10).nearestPoint([-10, 100]));
 testEqual(
   math.Ray(10, 0, -1, 1).nearestPoint([0, 0]),
-  math.Line(10, 0, -1, 1).nearestPoint([0, 0]),
+  math.Line(10, 0, -1, 1).nearestPoint([0, 0])
 );
 testEqual(
   math.Edge(10, 0, 0, 10).nearestPoint([0, 0]),
-  math.Ray(10, 0, -1, 1).nearestPoint([0, 0]),
+  math.Ray(10, 0, -1, 1).nearestPoint([0, 0])
 );
 
 // name = "circle";
