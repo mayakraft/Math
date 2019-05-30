@@ -139,9 +139,11 @@ const VectorPrototype = function (subtype) {
   Object.defineProperty(proto, "scale", { value: scale });
   Object.defineProperty(proto, "midpoint", { value: midpoint });
   Object.defineProperty(proto, "bisect", { value: bisect });
-  Object.defineProperty(proto, "copy", { value: () => Type(..._this) });
+  Object.defineProperty(proto, "copy", {
+    value: function () { return Type(..._this); }
+  });
   Object.defineProperty(proto, "magnitude", {
-    get: () => magnitude(_this),
+    get: function () { return magnitude(_this); },
   });
   Object.defineProperty(proto, "bind", { value: bind });
   return proto;

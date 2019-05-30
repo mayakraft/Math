@@ -18,13 +18,14 @@ import Prototype from "./prototypes/line";
 const Line = function (...args) {
   const { point, vector } = get_line(args);
 
-  const transform = function () {
-    const mat = get_matrix2(args);
+  const transform = function (...innerArgs) {
+    const mat = get_matrix2(innerArgs);
     const line = multiply_line_matrix2(point, vector, mat);
     return Line(line[0], line[1]);
   };
 
-  const line = Object.create(Prototype(Line));
+  const proto = Prototype.bind(this);
+  const line = Object.create(proto(Line));
   const compare_function = function () { return true; };
 
   Object.defineProperty(line, "compare_function", { value: compare_function });

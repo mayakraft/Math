@@ -24,7 +24,8 @@ const ConvexPolygon = function (...args) {
     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
     .map(ps => Edge(ps[0][0], ps[0][1], ps[1][0], ps[1][1]));
 
-  const polygon = Object.create(Prototype(ConvexPolygon));
+  const proto = Prototype.bind(this);
+  const polygon = Object.create(proto(ConvexPolygon));
 
   // const liesOnEdge = function (p) {
   //  for(var i = 0; i < this.edges.length; i++) {

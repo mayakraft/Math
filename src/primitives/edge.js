@@ -15,7 +15,8 @@ import Vector from "./vector";
 
 const Edge = function (...args) {
   const inputs = get_two_vec2(args);
-  const edge = Object.create(Prototype(Edge, []));
+  const proto = Prototype.bind(this);
+  const edge = Object.create(proto(Edge, []));
 
   const vecPts = (inputs.length > 0 ? inputs.map(p => Vector(p)) : undefined);
   if (vecPts === undefined) { return undefined; }

@@ -1,6 +1,9 @@
 import { EPSILON } from "../parse/clean";
 import { dot, normalize } from "./algebra";
 
+export const is_number = (n => n != null && !isNaN(n));
+export const is_vector = (a => a != null && a[0] != null && !isNaN(a[0]));
+
 /**
  * the generalized vector intersection function
  * requires a compFunction to describe valid bounds checking
@@ -66,24 +69,43 @@ export const equivalent_numbers = function (...args) {
  * @param {...number[]} compare n number of vectors, requires a consistent dimension
  * @returns boolean
  */
-export const equivalent_vectors = function (...args) {
-  if (args.length === 0) { return false; }
-  if (args.length === 1 && args[0] !== undefined) {
-    return equivalent_vectors(...args[0]);
-  }
-  const dimension = args[0].length;
-  const dim_array = Array.from(Array(dimension));
-  return Array
-    .from(Array(args.length - 1))
-    .map((element, i) => dim_array
-      .map((_, di) => Math.abs(args[i][di] - args[i + 1][di]) < EPSILON)
-      .reduce((prev, curr) => prev && curr, true))
-    .reduce((prev, curr) => prev && curr, true)
-  && Array
-    .from(Array(args.length - 1))
-    .map((_, i) => args[0].length === args[i + 1].length)
-    .reduce((a, b) => a && b, true);
-};
+// export const equivalent_vectors = function (...args) {
+//   console.log("detail", args, args.length);
+//   if (args.length === 0) { return false; }
+//   if (args.length === 1 && args[0] !== undefined) {
+//     return equivalent_vectors(...args[0]);
+//   }
+//   const dimension = args[0].length;
+//   const dim_array = Array.from(Array(dimension));
+
+//   console.log("dim_array", dim_array);
+//   console.log("dimension", dimension);
+//   console.log("test a", Array
+//     .from(Array(args.length - 1))
+//     .map((element, i) => dim_array
+//       .map((_, di) => {
+//         console.log(args[i][di], args[i + 1][di]);
+//         return Math.abs(args[i][di] - args[i + 1][di]) < EPSILON;
+//       })
+//       .reduce((prev, curr) => prev && curr, true))
+//     .reduce((prev, curr) => prev && curr, true));
+//   console.log("test b", Array
+//     .from(Array(args.length - 1))
+//     .map((element, i) => dim_array
+//       .map((_, di) => Math.abs(args[i][di] - args[i + 1][di]) < EPSILON)
+//       .reduce((prev, curr) => prev && curr, true)));
+
+//   return Array
+//     .from(Array(args.length - 1))
+//     .map((element, i) => dim_array
+//       .map((_, di) => Math.abs(args[i][di] - args[i + 1][di]) < EPSILON)
+//       .reduce((prev, curr) => prev && curr, true))
+//     .reduce((prev, curr) => prev && curr, true)
+//   && Array
+//     .from(Array(args.length - 1))
+//     .map((_, i) => args[0].length === args[i + 1].length)
+//     .reduce((a, b) => a && b, true);
+// };
 /**
  * @param {*} comma-separated sequence of either
  *   1. boolean

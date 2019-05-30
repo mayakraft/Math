@@ -37,7 +37,8 @@ const Rectangle = function (...args) {
     [_origin[0], _origin[1] + _height],
   ];
 
-  const rect = Object.create(Prototype(Rectangle));
+  const proto = Prototype.bind(this);
+  const rect = Object.create(proto(Rectangle));
 
   // overwrite prototype methods
   const scale = function (magnitude, center_point) {

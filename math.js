@@ -129,6 +129,8 @@
       : parseFloat(num.toFixed(decimalPlaces)));
   };
 
+  const is_number = (n => n != null && !isNaN(n));
+  const is_vector = (a => a != null && a[0] != null && !isNaN(a[0]));
   const overlap_function = function (aPt, aVec, bPt, bVec, compFunc) {
     const det = (a, b) => a[0] * b[1] - b[0] * a[1];
     const denominator0 = det(aVec, bVec);
@@ -163,24 +165,6 @@
     return Array
       .from(Array(args.length - 1))
       .map((_, i) => Math.abs(args[0] - args[i + 1]) < EPSILON)
-      .reduce((a, b) => a && b, true);
-  };
-  const equivalent_vectors = function (...args) {
-    if (args.length === 0) { return false; }
-    if (args.length === 1 && args[0] !== undefined) {
-      return equivalent_vectors(...args[0]);
-    }
-    const dimension = args[0].length;
-    const dim_array = Array.from(Array(dimension));
-    return Array
-      .from(Array(args.length - 1))
-      .map((element, i) => dim_array
-        .map((_, di) => Math.abs(args[i][di] - args[i + 1][di]) < EPSILON)
-        .reduce((prev, curr) => prev && curr, true))
-      .reduce((prev, curr) => prev && curr, true)
-    && Array
-      .from(Array(args.length - 1))
-      .map((_, i) => args[0].length === args[i + 1].length)
       .reduce((a, b) => a && b, true);
   };
   const equivalent = function (...args) {
@@ -290,12 +274,13 @@
   };
 
   var query = /*#__PURE__*/Object.freeze({
+    is_number: is_number,
+    is_vector: is_vector,
     overlap_function: overlap_function,
     edge_edge_overlap: edge_edge_overlap,
     degenerate: degenerate,
     parallel: parallel,
     equivalent_numbers: equivalent_numbers,
-    equivalent_vectors: equivalent_vectors,
     equivalent: equivalent,
     point_on_line: point_on_line,
     point_on_edge: point_on_edge,
@@ -780,24 +765,22 @@
     }
     return get_vector(...args[0]);
   };
-  function get_matrix2() {
-    let params = Array.from(arguments);
-    let numbers = params.filter((param) => !isNaN(param));
-    let arrays = params.filter((param) => param.constructor === Array);
-    if (params.length == 0) { return [1,0,0,1,0,0]; }
-    if (params[0].m != null && params[0].m.constructor == Array) {
-      numbers = params[0].m.slice();
+  const identity = [1, 0, 0, 1, 0, 0];
+  const get_matrix2 = function (...args) {
+    if (args.length === 0) { return undefined; }
+    if (args.length === 1 && args[0] !== undefined) {
+      return get_matrix2(...args[0]);
     }
-    if (numbers.length == 0 && arrays.length >= 1) { numbers = arrays[0]; }
-    if (numbers.length >= 6) { return numbers.slice(0,6); }
-    else if (numbers.length >= 4) {
-      let m = numbers.slice(0,4);
-      m[4] = 0;
-      m[5] = 0;
-      return m;
+    if (typeof args[0] === "number") {
+      const m = Array.from(args);
+      if (m.length === 6) { return m; }
+      if (m.length === 4) { m.push(0); m.push(0); return m; }
+      if (m.length === 9) { return [m[0], m[1], m[3], m[4], 0, 0]; }
+      const m2 = matrix.slice(0, 6);
+      while (m2.length < 6) { m2.push(identity[m2.length]); }
     }
-    return [1, 0, 0, 1, 0, 0];
-  }
+    return undefined;
+  };
   function get_edge() {
     let params = Array.from(arguments).filter(p => p != null);
     let numbers = params.filter((param) => !isNaN(param));
@@ -897,7 +880,6 @@
     if (args.length === 1 && args[0] !== undefined) {
       return get_array_of_vec(...args[0]);
     }
-    console.log(Array.from(args));
     return Array.from(args);
   }
   function get_array_of_vec2() {
@@ -906,13 +888,10 @@
     if (arrays.length >= 2 && !isNaN(arrays[0][0])) {
       return arrays;
     }
-    if (arrays.length == 1 && arrays[0].length >= 1) {
+    if (arrays.length === 1 && arrays[0].length >= 1) {
       return arrays[0];
     }
     return params;
-  }
-  function is_number(n) {
-    return n != null && !isNaN(n);
   }
 
   var input = /*#__PURE__*/Object.freeze({
@@ -923,8 +902,7 @@
     get_ray: get_ray,
     get_two_vec2: get_two_vec2,
     get_array_of_vec: get_array_of_vec,
-    get_array_of_vec2: get_array_of_vec2,
-    is_number: is_number
+    get_array_of_vec2: get_array_of_vec2
   });
 
   const VectorPrototype = function (subtype) {
@@ -1040,9 +1018,11 @@
     Object.defineProperty(proto, "scale", { value: scale });
     Object.defineProperty(proto, "midpoint", { value: midpoint });
     Object.defineProperty(proto, "bisect", { value: bisect });
-    Object.defineProperty(proto, "copy", { value: () => Type(..._this) });
+    Object.defineProperty(proto, "copy", {
+      value: function () { return Type(..._this); }
+    });
     Object.defineProperty(proto, "magnitude", {
-      get: () => magnitude(_this),
+      get: function () { return magnitude(_this); },
     });
     Object.defineProperty(proto, "bind", { value: bind });
     return proto;
@@ -1062,15 +1042,18 @@
   const Matrix2 = function (...args) {
     const matrix = get_matrix2(args);
     const inverse = function () {
-      return Matrix2(make_matrix2_inverse(matrix));
+      return Matrix2(make_matrix2_inverse(matrix)
+        .map(n => clean_number(n)));
     };
     const multiply = function (...innerArgs) {
       const m2 = get_matrix2(innerArgs);
-      return Matrix2(multiply_matrices2(matrix, m2));
+      return Matrix2(multiply_matrices2(matrix, m2)
+        .map(n => clean_number(n)));
     };
     const transform = function (...innerArgs) {
       const v = get_vector(innerArgs);
-      return Vector(multiply_vector2_matrix2(v, matrix));
+      return Vector(multiply_vector2_matrix2(v, matrix)
+        .map(n => clean_number(n)));
     };
     return {
       inverse,
@@ -1081,10 +1064,12 @@
   };
   Matrix2.makeIdentity = () => Matrix2(1, 0, 0, 1, 0, 0);
   Matrix2.makeTranslation = (tx, ty) => Matrix2(1, 0, 0, 1, tx, ty);
-  Matrix2.makeRotation = (angle, origin) => Matrix2(Algebra
-    .make_matrix2_rotation(angle, origin));
-  Matrix2.makeReflection = (vector, origin) => Matrix2(Algebra
-    .make_matrix2_reflection(vector, origin));
+  Matrix2.makeRotation = ((angle, origin) => Matrix2(
+    make_matrix2_rotation(angle, origin).map(n => clean_number(n, 13)),
+  ));
+  Matrix2.makeReflection = ((vector, origin) => Matrix2(
+    make_matrix2_reflection(vector, origin).map(n => clean_number(n, 13)),
+  ));
 
   function Prototype (subtype, prototype) {
     const proto = (prototype != null) ? prototype : {};
@@ -1107,8 +1092,12 @@
       const lg = this_is_smaller ? line.vector : this.vector;
       return parallel(sm, lg, epsilon);
     };
-    const isDegenerate = epsilon => degenerate(this.vector, epsilon);
-    const reflection = () => Matrix2.makeReflection(this.vector, this.point);
+    const isDegenerate = function (epsilon = EPSILON) {
+      return degenerate(this.vector, epsilon);
+    };
+    const reflection = function () {
+      return Matrix2.makeReflection(this.vector, this.point);
+    };
     const nearestPoint = function (...args) {
       const point = get_vector(args);
       return Vector(nearest_point(this.point, this.vector, point, this.clip_function));
@@ -1148,12 +1137,13 @@
 
   const Line = function (...args) {
     const { point, vector } = get_line(args);
-    const transform = function () {
-      const mat = get_matrix2(args);
+    const transform = function (...innerArgs) {
+      const mat = get_matrix2(innerArgs);
       const line = multiply_line_matrix2(point, vector, mat);
       return Line(line[0], line[1]);
     };
-    const line = Object.create(Prototype(Line));
+    const proto = Prototype.bind(this);
+    const line = Object.create(proto(Line));
     const compare_function = function () { return true; };
     Object.defineProperty(line, "compare_function", { value: compare_function });
     Object.defineProperty(line, "clip_function", { value: limit_line });
@@ -1198,7 +1188,8 @@
     const rotate180 = function () {
       return Ray(point[0], point[1], -vector[0], -vector[1]);
     };
-    const ray = Object.create(Prototype(Ray));
+    const proto = Prototype.bind(this);
+    const ray = Object.create(proto(Ray));
     const compare_function = function (t0, ep) { return t0 >= -ep; };
     Object.defineProperty(ray, "point", { get: () => Vector(point) });
     Object.defineProperty(ray, "vector", { get: () => Vector(vector) });
@@ -1222,7 +1213,8 @@
 
   const Edge = function (...args) {
     const inputs = get_two_vec2(args);
-    const edge = Object.create(Prototype(Edge, []));
+    const proto = Prototype.bind(this);
+    const edge = Object.create(proto(Edge, []));
     const vecPts = (inputs.length > 0 ? inputs.map(p => Vector(p)) : undefined);
     if (vecPts === undefined) { return undefined; }
     vecPts.forEach((p, i) => { edge[i] = p; });
@@ -1299,8 +1291,6 @@
       const bisected = angles[0] + angle * 0.5;
       return Ray(center[0], center[1], Math.cos(bisected), Math.sin(bisected));
     };
-    const subsect = function (divisions) {
-    };
     const contains = function (...args) {
       const point = get_vector(args);
       const cross0 = (point[1] - points[0][1]) * (center[0] - points[0][0])
@@ -1312,7 +1302,6 @@
     return {
       contains,
       bisect,
-      subsect,
       get center() { return center; },
       get points() { return points; },
       get vectors() { return vectors; },
@@ -1323,9 +1312,11 @@
   function Prototype$1 (subtype) {
     const proto = {};
     const Type = subtype;
-    const area = () => signed_area(this.points);
-    const midpoint = () => average(this.points);
-    const enclosingRectangle = () => enclosing_rectangle(this.points);
+    const area = function () { return signed_area(this.points); };
+    const midpoint = function () { return average(this.points); };
+    const enclosingRectangle = function () {
+      return enclosing_rectangle(this.points);
+    };
     const sectors = function () {
       return this.points
         .map((p, i, a) => [
@@ -1336,6 +1327,9 @@
     };
     const contains = function (...args) {
       return point_in_poly(get_vector(args), this.points);
+    };
+    const polyCentroid = function () {
+      return centroid(this.points);
     };
     const nearest = function (...args) {
       const point = get_vector(args);
@@ -1399,7 +1393,7 @@
       return Type(newPoints);
     };
     Object.defineProperty(proto, "area", { value: area });
-    Object.defineProperty(proto, "centroid", { value: centroid(this.points) });
+    Object.defineProperty(proto, "centroid", { value: polyCentroid });
     Object.defineProperty(proto, "midpoint", { value: midpoint });
     Object.defineProperty(proto, "enclosingRectangle", { value: enclosingRectangle });
     Object.defineProperty(proto, "contains", { value: contains });
@@ -1412,29 +1406,34 @@
     Object.defineProperty(proto, "rotate", { value: rotate });
     Object.defineProperty(proto, "translate", { value: translate });
     Object.defineProperty(proto, "transform", { value: transform });
-    Object.defineProperty(proto, "edges", { get: () => this.sides });
-    Object.defineProperty(proto, "sectors", { get: () => sectors() });
+    Object.defineProperty(proto, "edges", {
+      get: function () { return this.sides; },
+    });
+    Object.defineProperty(proto, "sectors", {
+      get: function () { return sectors(); },
+    });
     Object.defineProperty(proto, "signedArea", { value: area });
     return Object.freeze(proto);
   }
 
   const Polygon = function (...args) {
-    const points = Input.get_array_of_vec(args).map(p => Vector(p));
+    const points = get_array_of_vec(args).map(p => Vector(p));
     if (points === undefined) { return undefined; }
     const sides = points
       .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
       .map(ps => Edge(ps[0][0], ps[0][1], ps[1][0], ps[1][1]));
-    const polygon = Object.create(Prototype$1());
+    const proto = Prototype$1.bind(this);
+    const polygon = Object.create(proto());
     Object.defineProperty(polygon, "points", { get: () => points });
     Object.defineProperty(polygon, "sides", { get: () => sides });
     return polygon;
   };
   Polygon.regularPolygon = function (sides, x = 0, y = 0, radius = 1) {
-    const points = Geometry.make_regular_polygon(sides, x, y, radius);
+    const points = make_regular_polygon(sides, x, y, radius);
     return Polygon(points);
   };
   Polygon.convexHull = function (points, includeCollinear = false) {
-    const hull = Geometry.convex_hull(points, includeCollinear);
+    const hull = convex_hull(points, includeCollinear);
     return Polygon(hull);
   };
 
@@ -1444,7 +1443,8 @@
     const sides = points
       .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
       .map(ps => Edge(ps[0][0], ps[0][1], ps[1][0], ps[1][1]));
-    const polygon = Object.create(Prototype$1(ConvexPolygon));
+    const proto = Prototype$1.bind(this);
+    const polygon = Object.create(proto(ConvexPolygon));
     const split = function (...innerArgs) {
       const line = get_line(innerArgs);
       return split_convex_polygon(points, line.point, line.vector)
@@ -1514,7 +1514,8 @@
       [_origin[0] + _width, _origin[1] + _height],
       [_origin[0], _origin[1] + _height],
     ];
-    const rect = Object.create(Prototype$1(Rectangle));
+    const proto = Prototype$1.bind(this);
+    const rect = Object.create(proto(Rectangle));
     const scale = function (magnitude, center_point) {
       const center = (center_point != null)
         ? center_point
