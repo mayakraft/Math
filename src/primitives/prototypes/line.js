@@ -16,6 +16,10 @@ import { nearest_point } from "../../core/geometry";
 import Vector from "../vector";
 import Matrix2 from "../matrix";
 
+// warning do not define object methods as arrow functions in here
+// they overwrite the .bind(this) called inside the object initializers.
+// it is okay to use arrow functions inside methods.
+
 /**
  * this prototype is shared among line types: lines, rays, edges/segments.
  * each must implement:
@@ -50,8 +54,12 @@ export default function (subtype, prototype) {
     const lg = this_is_smaller ? line.vector : this.vector;
     return parallel(sm, lg, epsilon);
   };
-  const isDegenerate = epsilon => degenerate(this.vector, epsilon);
-  const reflection = () => Matrix2.makeReflection(this.vector, this.point);
+  const isDegenerate = function (epsilon = EPSILON) {
+    return degenerate(this.vector, epsilon);
+  };
+  const reflection = function () {
+    return Matrix2.makeReflection(this.vector, this.point);
+  };
 
   const nearestPoint = function (...args) {
     const point = get_vector(args);

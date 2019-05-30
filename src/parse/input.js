@@ -1,4 +1,11 @@
 /**
+ * one way to improve these input finders is to search in all indices
+ * of the arguments list, right now it assumes THIS is the only thing
+ * you're passing in. in the case that it isn't and there's an object
+ * in the first slot, it won't find the valid data in the second.
+ */
+
+/**
  * this searches user-provided inputs for a valid n-dimensional vector
  * which includes objects {x:, y:}, arrays [x,y], or sequences of numbers
  *
@@ -30,28 +37,29 @@ export const get_vector = function (...args) {
 };
 
 
+const identity = [1, 0, 0, 1, 0, 0];
+
 /**
  * @returns (number[]) array of number components
  *  invalid/no input returns the identity matrix
 */
-export function get_matrix2() {
-  let params = Array.from(arguments);
-  let numbers = params.filter((param) => !isNaN(param));
-  let arrays = params.filter((param) => param.constructor === Array);
-  if (params.length == 0) { return [1,0,0,1,0,0]; }
-  if (params[0].m != null && params[0].m.constructor == Array) {
-    numbers = params[0].m.slice(); // Matrix type
+export const get_matrix2 = function (...args) {
+  if (args.length === 0) { return undefined; }
+  if (args.length === 1 && args[0] !== undefined) {
+    return get_matrix2(...args[0]);
   }
-  if (numbers.length == 0 && arrays.length >= 1) { numbers = arrays[0]; }
-  if (numbers.length >= 6) { return numbers.slice(0,6); }
-  else if (numbers.length >= 4) {
-    let m = numbers.slice(0,4);
-    m[4] = 0;
-    m[5] = 0;
-    return m;
+  // NaN still passes test
+  if (typeof args[0] === "number") {
+    const m = Array.from(args);
+    if (m.length === 6) { return m; }
+    if (m.length === 4) { m.push(0); m.push(0); return m; }
+    // this must be a 3x3 rotation-only matrix. ignoring the Z
+    if (m.length === 9) { return [m[0], m[1], m[3], m[4], 0, 0]; }
+    const m2 = matrix.slice(0, 6);
+    while (m2.length < 6) { m2.push(identity[m2.length]); }
   }
-  return [1, 0, 0, 1, 0, 0];
-}
+  return undefined;
+};
 
 /**
  * @returns [[2,3],[10,11]]
@@ -163,7 +171,6 @@ export function get_array_of_vec(...args) {
   if (args.length === 1 && args[0] !== undefined) {
     return get_array_of_vec(...args[0]);
   }
-  console.log(Array.from(args));
   // let params = Array.from(args);
   return Array.from(args);
 
@@ -186,16 +193,11 @@ export function get_array_of_vec2() {
   if (arrays.length >= 2 && !isNaN(arrays[0][0])) {
     return arrays;
   }
-  if (arrays.length == 1 && arrays[0].length >= 1) {
+  if (arrays.length === 1 && arrays[0].length >= 1) {
     return arrays[0];
   }
   // if (arrays[0] != null && arrays[0].length >= 2 && arrays[0][0] != null && !isNaN(arrays[0][0][0])) {
   //  return arrays[0];
   // }
   return params;
-}
-
-// unused
-export function is_number(n) {
-  return n != null && !isNaN(n);
 }

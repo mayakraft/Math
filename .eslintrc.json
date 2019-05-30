@@ -18,6 +18,7 @@
     "func-names": ["error", "never"],
     "no-confusing-arrow": ["error", {"allowParens": true}],
     "camelcase": ["error", {"allow": [".*"]}],
-    "no-restricted-globals": 0
+    "no-restricted-globals": 0,
+    "comma-dangle": 0
   }
 }

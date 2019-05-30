@@ -34,15 +34,20 @@ import Sector from "../sector";
 
 /**
  * this prototype is shared among polygons: polygon, convex polygon
+ * and is expecting you implement
+ * - points
+ * - sides
  */
 export default function (subtype) {
   const proto = {};
   // Type === Polygon or ConvexPolygon or Rectangle...
   const Type = subtype;
 
-  const area = () => signed_area(this.points);
-  const midpoint = () => average(this.points);
-  const enclosingRectangle = () => enclosing_rectangle(this.points);
+  const area = function () { return signed_area(this.points); };
+  const midpoint = function () { return average(this.points); };
+  const enclosingRectangle = function () {
+    return enclosing_rectangle(this.points);
+  };
   const sectors = function () {
     return this.points
       .map((p, i, a) => [
@@ -53,6 +58,9 @@ export default function (subtype) {
   };
   const contains = function (...args) {
     return point_in_poly(get_vector(args), this.points);
+  };
+  const polyCentroid = function () {
+    return centroid(this.points);
   };
   const nearest = function (...args) {
     const point = get_vector(args);
@@ -121,7 +129,7 @@ export default function (subtype) {
   };
 
   Object.defineProperty(proto, "area", { value: area });
-  Object.defineProperty(proto, "centroid", { value: centroid(this.points) });
+  Object.defineProperty(proto, "centroid", { value: polyCentroid });
   Object.defineProperty(proto, "midpoint", { value: midpoint });
   Object.defineProperty(proto, "enclosingRectangle", { value: enclosingRectangle });
   Object.defineProperty(proto, "contains", { value: contains });
@@ -135,8 +143,12 @@ export default function (subtype) {
   Object.defineProperty(proto, "translate", { value: translate });
   Object.defineProperty(proto, "transform", { value: transform });
 
-  Object.defineProperty(proto, "edges", { get: () => this.sides });
-  Object.defineProperty(proto, "sectors", { get: () => sectors() });
+  Object.defineProperty(proto, "edges", {
+    get: function () { return this.sides; },
+  });
+  Object.defineProperty(proto, "sectors", {
+    get: function () { return sectors(); },
+  });
   Object.defineProperty(proto, "signedArea", { value: area });
 
   return Object.freeze(proto);
