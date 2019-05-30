@@ -11,9 +11,7 @@ import {
   convex_poly_ray,
 } from "../../core/intersection";
 
-import {
-  point_in_poly,
-} from "../../core/query";
+import { point_in_poly } from "../../core/query";
 
 import {
   signed_area,

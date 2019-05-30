@@ -11,7 +11,7 @@ import Edge from "./edge";
 import Prototype from "./prototypes/polygon";
 
 const Polygon = function (...args) {
-  const points = Input.get_array_of_vec(args).map(p => Vector(p));
+  const points = get_array_of_vec(args).map(p => Vector(p));
   // todo, best practices here
   if (points === undefined) { return undefined; }
   const sides = points
@@ -25,11 +25,11 @@ const Polygon = function (...args) {
 };
 
 Polygon.regularPolygon = function (sides, x = 0, y = 0, radius = 1) {
-  const points = Geometry.make_regular_polygon(sides, x, y, radius);
+  const points = make_regular_polygon(sides, x, y, radius);
   return Polygon(points);
 };
 Polygon.convexHull = function (points, includeCollinear = false) {
-  const hull = Geometry.convex_hull(points, includeCollinear);
+  const hull = convex_hull(points, includeCollinear);
   return Polygon(hull);
 };
 

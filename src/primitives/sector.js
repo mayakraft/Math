@@ -17,21 +17,22 @@ const Sector = function (center_point, pointA, pointB) {
     return Ray(center[0], center[1], Math.cos(bisected), Math.sin(bisected));
   };
   // const subsect = function(divisions:number):Ray[]{
-  const subsect = function (divisions) {
-    // if(divisions == undefined || divisions < 2){
-    //  throw "subset() requires number parameter > 1";
-    // }
-    // var angles = this.vectors().map(function(el){ return Math.atan2(el.y, el.x); });
-    // while(angles[0] < 0){ angles[0] += Math.PI*2; }
-    // while(angles[1] < 0){ angles[1] += Math.PI*2; }
-    // var interior = counter_clockwise_angle2_radians(angles[0], angles[1]);
-    // var rays = [];
-    // for(var i = 1; i < divisions; i++){
-    //  var angleA = angles[0] + interior * (i/divisions);
-    //  rays.push(new Ray(new XY(this.origin.x, this.origin.y), new XY(Math.cos(angleA), Math.sin(angleA))));
-    // }
-    // return rays;
-  };
+  // const subsect = function (divisions) {
+  //   if(divisions == undefined || divisions < 2){
+  //    throw "subset() requires number parameter > 1";
+  //   }
+  //   var angles = this.vectors().map(function(el){ return Math.atan2(el.y, el.x); });
+  //   while(angles[0] < 0){ angles[0] += Math.PI*2; }
+  //   while(angles[1] < 0){ angles[1] += Math.PI*2; }
+  //   var interior = counter_clockwise_angle2_radians(angles[0], angles[1]);
+  //   var rays = [];
+  //   for(var i = 1; i < divisions; i++){
+  //    var angleA = angles[0] + interior * (i/divisions);
+  //    rays.push(new Ray(new XY(this.origin.x, this.origin.y),
+  //    new XY(Math.cos(angleA), Math.sin(angleA))));
+  //   }
+  //   return rays;
+  // };
 
   /** a sector contains a point if it is between the two edges in counter-clockwise order */
   const contains = function (...args) {
@@ -47,7 +48,7 @@ const Sector = function (center_point, pointA, pointB) {
   return {
     contains,
     bisect,
-    subsect,
+    // subsect,
     get center() { return center; },
     get points() { return points; },
     get vectors() { return vectors; },
