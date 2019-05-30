@@ -1,24 +1,24 @@
-/**
- * Query. methods which only return either true or false
- *
- */
-
 import { EPSILON } from "../parse/clean";
 import { dot, normalize } from "./algebra";
 
 /**
- * @param [number]
+ * @param {number[]} a vector in a Javascript array object
  * @returns boolean
  */
 export const degenerate = function (v) {
   return Math.abs(v.reduce((a, b) => a + b, 0)) < EPSILON;
 };
-
+/**
+ * @param {number[], number[]} two vectors in Javascript array objects
+ * @returns boolean
+ */
 export const parallel = function (a, b) {
   return 1 - Math.abs(dot(normalize(a), normalize(b))) < EPSILON;
 };
-
-// equivalency test for numbers
+/**
+ * @param {...number} a sequence of numbers
+ * @returns boolean
+ */
 export const equivalent_numbers = function (...args) {
   if (args.length === 0) { return false; }
   if (args.length === 1 && args[0] !== undefined) {
@@ -29,8 +29,10 @@ export const equivalent_numbers = function (...args) {
     .map((_, i) => Math.abs(args[0] - args[i + 1]) < EPSILON)
     .reduce((a, b) => a && b, true);
 };
-
-// equivalency test for n-dimensional vectors
+/**
+ * @param {...number[]} compare n number of vectors, requires a consistent dimension
+ * @returns boolean
+ */
 export const equivalent_vectors = function (...args) {
   if (args.length === 0) { return false; }
   if (args.length === 1 && args[0] !== undefined) {
@@ -49,9 +51,8 @@ export const equivalent_vectors = function (...args) {
     .map((_, i) => args[0].length === args[i + 1].length)
     .reduce((a, b) => a && b, true);
 };
-
 /**
- * @param comma-separated sequence of either
+ * @param {*} comma-separated sequence of either
  *   1. boolean
  *   2. number
  *   3. arrays of numbers (vectors)
@@ -88,19 +89,16 @@ export const equivalent = function (...args) {
   }
   return false;
 };
-
 /**
  *  Boolean tests
  *  collinearity, overlap, contains
  */
-
 /** is a point collinear to a line, within an epsilon */
 export const point_on_line = function (linePoint, lineVector, point, epsilon = EPSILON) {
   const pointPoint = [point[0] - linePoint[0], point[1] - linePoint[1]];
   const cross = pointPoint[0] * lineVector[1] - pointPoint[1] * lineVector[0];
   return Math.abs(cross) < epsilon;
 };
-
 /** is a point collinear to an edge, between endpoints, within an epsilon */
 export const point_on_edge = function (edge0, edge1, point, epsilon = EPSILON) {
   // distance between endpoints A,B should be equal to point->A + point->B
@@ -112,7 +110,6 @@ export const point_on_edge = function (edge0, edge1, point, epsilon = EPSILON) {
   const dP1 = Math.sqrt(edge1_p[0] * edge1_p[0] + edge1_p[1] * edge1_p[1]);
   return Math.abs(dEdge - dP0 - dP1) < epsilon;
 };
-
 /**
  * Tests whether or not a point is contained inside a polygon.
  * @returns {boolean} whether the point is inside the polygon or not
@@ -206,3 +203,13 @@ export const convex_polygons_enclose = function (inner, outer) {
     .reduce((a, b) => a && b, true);
   return (!outerGoesInside && innerGoesOutside);
 };
+
+
+/**
+████████╗ ██████╗  ██╗   ██╗ ███████╗      ███████╗  █████╗  ██╗      ███████╗ ███████╗
+╚══██╔══╝ ██╔══██╗ ██║   ██║ ██╔════╝      ██╔════╝ ██╔══██╗ ██║      ██╔════╝ ██╔════╝
+   ██║    ██████╔╝ ██║   ██║ █████╗        █████╗   ███████║ ██║      ███████╗ █████╗
+   ██║    ██╔══██╗ ██║   ██║ ██╔══╝        ██╔══╝   ██╔══██║ ██║      ╚════██║ ██╔══╝
+   ██║    ██║  ██║ ╚██████╔╝ ███████╗      ██║      ██║  ██║ ███████╗ ███████║ ███████╗
+   ╚═╝    ╚═╝  ╚═╝  ╚═════╝  ╚══════╝      ╚═╝      ╚═╝  ╚═╝ ╚══════╝ ╚══════╝ ╚══════╝
+ */

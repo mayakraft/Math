@@ -1,18 +1,27 @@
-/**
- *  all intersection functions are inclusive and return true if
- *  intersection lies directly on an edge's endpoint. to exclude
- *  endpoints, use "exclusive" functions
- */
+import {
+  EPSILON,
+} from "../parse/clean";
 
-import { EPSILON } from "../parse/clean";
 import {
   point_in_convex_poly,
   point_in_convex_poly_exclusive,
 } from "./query";
 
-/**
- * parameters: lines
+/*
+██╗      ██╗ ███╗   ██╗ ███████╗ ███████╗
+██║      ██║ ████╗  ██║ ██╔════╝ ██╔════╝
+██║      ██║ ██╔██╗ ██║ █████╗   ███████╗
+██║      ██║ ██║╚██╗██║ ██╔══╝   ╚════██║
+███████╗ ██║ ██║ ╚████║ ███████╗ ███████║
+╚══════╝ ╚═╝ ╚═╝  ╚═══╝ ╚══════╝ ╚══════╝
+ * inputs: lines
  * solutions: points
+ */
+
+/**
+ *  all intersection functions are inclusive and return true if
+ *  intersection lies directly on an edge's endpoint. to exclude
+ *  endpoints, use "exclusive" functions
  */
 
 /** comparison functions for a generalized vector intersection function */
@@ -110,89 +119,17 @@ export const edge_edge_exclusive = function (a0, a1, b0, b1, epsilon) {
   return intersection_function(a0, aVec, b0, bVec, edge_edge_comp_exclusive, epsilon);
 };
 
-/**
- * parameters: polygons, lines
- * solutions: lines, points
+
+/*
+ ██████╗ ██╗ ██████╗   ██████╗ ██╗      ███████╗ ███████╗
+██╔════╝ ██║ ██╔══██╗ ██╔════╝ ██║      ██╔════╝ ██╔════╝
+██║      ██║ ██████╔╝ ██║      ██║      █████╗   ███████╗
+██║      ██║ ██╔══██╗ ██║      ██║      ██╔══╝   ╚════██║
+╚██████╗ ██║ ██║  ██║ ╚██████╗ ███████╗ ███████╗ ███████║
+ ╚═════╝ ╚═╝ ╚═╝  ╚═╝  ╚═════╝ ╚══════╝ ╚══════╝ ╚══════╝
+ * inputs: circles, lines
+ * solutions: points
  */
-
-// equivalency test for 2d-vectors
-export const quick_equivalent_2 = function (a, b) {
-  return Math.abs(a[0] - b[0]) < EPSILON && Math.abs(a[1] - b[1]) < EPSILON;
-};
-
-/** clip an infinite line in a polygon, returns an edge or undefined if no intersection */
-export const clip_line_in_convex_poly = function (poly, linePoint, lineVector) {
-  const intersections = poly
-    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into edge pairs
-    .map(el => line_edge(linePoint, lineVector, el[0], el[1]))
-    .filter(el => el != null);
-  switch (intersections.length) {
-    case 0: return undefined;
-    case 1: return [intersections[0], intersections[0]]; // degenerate edge
-    case 2: return intersections;
-    default:
-      // special case: line intersects directly on a poly point (2 edges, same point)
-      //  filter to unique points by [x,y] comparison.
-      for (let i = 1; i < intersections.length; i += 1) {
-        if (!quick_equivalent_2(intersections[0], intersections[i])) {
-          return [intersections[0], intersections[i]];
-        }
-      }
-      return undefined;
-  }
-};
-
-export const clip_ray_in_convex_poly = function (poly, linePoint, lineVector) {
-  const intersections = poly
-    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into edge pairs
-    .map(el => ray_edge(linePoint, lineVector, el[0], el[1]))
-    .filter(el => el != null);
-  switch (intersections.length) {
-    case 0: return undefined;
-    case 1: return [linePoint, intersections[0]];
-    case 2: return intersections;
-    // default: throw "clipping ray in a convex polygon resulting in 3 or more points";
-    default:
-      for (let i = 1; i < intersections.length; i += 1) {
-        if (!quick_equivalent_2(intersections[0], intersections[i])) {
-          return [intersections[0], intersections[i]];
-        }
-      }
-      return undefined;
-  }
-};
-
-export const clip_edge_in_convex_poly = function (poly, edgeA, edgeB) {
-  const intersections = poly
-    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // polygon into edge pairs
-    .map(el => edge_edge_exclusive(edgeA, edgeB, el[0], el[1]))
-    .filter(el => el != null);
-
-  const aInsideExclusive = point_in_convex_poly_exclusive(edgeA, poly);
-  const bInsideExclusive = point_in_convex_poly_exclusive(edgeB, poly);
-  const aInsideInclusive = point_in_convex_poly(edgeA, poly);
-  const bInsideInclusive = point_in_convex_poly(edgeB, poly);
-
-  // both are inside, OR, one is inside and the other is collinear to poly
-  if (intersections.length === 0
-    && (aInsideExclusive || bInsideExclusive)) {
-    return [edgeA, edgeB];
-  }
-  if (intersections.length === 0
-    && (aInsideInclusive && bInsideInclusive)) {
-    return [edgeA, edgeB];
-  }
-  switch (intersections.length) {
-    case 0: return (aInsideExclusive
-      ? [[...edgeA], [...edgeB]]
-      : undefined);
-    case 1: return (aInsideInclusive
-      ? [[...edgeA], intersections[0]]
-      : [[...edgeB], intersections[0]]);
-    case 2: return intersections;
-    default: throw "clipping edge in a convex polygon resulting in 3 or more points";
-  }
-};
 
 /*
  * returns an array of array of numbers
@@ -264,5 +201,96 @@ export const circle_edge = function (center, radius, p0, p1) {
   }
   if (!x2_NaN) {
     return [[x_2 + center[0], y_2 + center[1]]];
+  }
+};
+
+
+/*
+██████╗   ██████╗  ██╗   ██╗ ██╗       ██████╗   ██████╗  ███╗   ██╗ ███████╗
+██╔══██╗ ██╔═══██╗ ╚██╗ ██╔╝ ██║      ██╔════╝  ██╔═══██╗ ████╗  ██║ ██╔════╝
+██████╔╝ ██║   ██║  ╚████╔╝  ██║      ██║  ███╗ ██║   ██║ ██╔██╗ ██║ ███████╗
+██╔═══╝  ██║   ██║   ╚██╔╝   ██║      ██║   ██║ ██║   ██║ ██║╚██╗██║ ╚════██║
+██║      ╚██████╔╝    ██║    ███████╗ ╚██████╔╝ ╚██████╔╝ ██║ ╚████║ ███████║
+╚═╝       ╚═════╝     ╚═╝    ╚══════╝  ╚═════╝   ╚═════╝  ╚═╝  ╚═══╝ ╚══════╝
+ * inputs: polygons, lines
+ * solutions: lines, points
+ */
+
+// equivalency test for 2d-vectors
+const quick_equivalent_2 = function (a, b) {
+  return Math.abs(a[0] - b[0]) < EPSILON && Math.abs(a[1] - b[1]) < EPSILON;
+};
+
+/** clip an infinite line in a polygon, returns an edge or undefined if no intersection */
+export const convex_poly_line = function (poly, linePoint, lineVector) {
+  const intersections = poly
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into edge pairs
+    .map(el => line_edge(linePoint, lineVector, el[0], el[1]))
+    .filter(el => el != null);
+  switch (intersections.length) {
+    case 0: return undefined;
+    case 1: return [intersections[0], intersections[0]]; // degenerate edge
+    case 2: return intersections;
+    default:
+      // special case: line intersects directly on a poly point (2 edges, same point)
+      //  filter to unique points by [x,y] comparison.
+      for (let i = 1; i < intersections.length; i += 1) {
+        if (!quick_equivalent_2(intersections[0], intersections[i])) {
+          return [intersections[0], intersections[i]];
+        }
+      }
+      return undefined;
+  }
+};
+
+export const convex_poly_ray = function (poly, linePoint, lineVector) {
+  const intersections = poly
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into edge pairs
+    .map(el => ray_edge(linePoint, lineVector, el[0], el[1]))
+    .filter(el => el != null);
+  switch (intersections.length) {
+    case 0: return undefined;
+    case 1: return [linePoint, intersections[0]];
+    case 2: return intersections;
+    // default: throw "clipping ray in a convex polygon resulting in 3 or more points";
+    default:
+      for (let i = 1; i < intersections.length; i += 1) {
+        if (!quick_equivalent_2(intersections[0], intersections[i])) {
+          return [intersections[0], intersections[i]];
+        }
+      }
+      return undefined;
+  }
+};
+
+export const convex_poly_edge = function (poly, edgeA, edgeB) {
+  const intersections = poly
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // polygon into edge pairs
+    .map(el => edge_edge_exclusive(edgeA, edgeB, el[0], el[1]))
+    .filter(el => el != null);
+
+  const aInsideExclusive = point_in_convex_poly_exclusive(edgeA, poly);
+  const bInsideExclusive = point_in_convex_poly_exclusive(edgeB, poly);
+  const aInsideInclusive = point_in_convex_poly(edgeA, poly);
+  const bInsideInclusive = point_in_convex_poly(edgeB, poly);
+
+  // both are inside, OR, one is inside and the other is collinear to poly
+  if (intersections.length === 0
+    && (aInsideExclusive || bInsideExclusive)) {
+    return [edgeA, edgeB];
+  }
+  if (intersections.length === 0
+    && (aInsideInclusive && bInsideInclusive)) {
+    return [edgeA, edgeB];
+  }
+  switch (intersections.length) {
+    case 0: return (aInsideExclusive
+      ? [[...edgeA], [...edgeB]]
+      : undefined);
+    case 1: return (aInsideInclusive
+      ? [[...edgeA], intersections[0]]
+      : [[...edgeB], intersections[0]]);
+    case 2: return intersections;
+    default: throw "clipping edge in a convex polygon resulting in 3 or more points";
   }
 };

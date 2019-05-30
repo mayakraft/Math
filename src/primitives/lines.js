@@ -47,7 +47,7 @@ Line.perpendicularBisector = function (...args) {
     points[1][1] - points[0][1],
   ]);
   return Line({
-    point: Algebra.midpoint(points[0], points[1]),
+    point: Algebra.average(points[0], points[1]),
     vector: [vec[1], -vec[0]],
     // vector: Algebra.cross3(vec, [0,0,1])
   });
@@ -121,7 +121,7 @@ export function Edge() {
   };
 
   const midpoint = function () {
-    return Vector(Algebra.midpoint(_endpoints[0], _endpoints[1]));
+    return Vector(Algebra.average(_endpoints[0], _endpoints[1]));
   };
 
   const length = function () {

@@ -1,8 +1,7 @@
 import { point_on_line } from "./query";
 import { line_edge_exclusive } from "./intersection";
 import { EPSILON, clean_number } from "../parse/clean";
-import { normalize, midpoint } from "./algebra";
-
+import { normalize, midpoint2 } from "./algebra";
 
 export const make_regular_polygon = function (sides, x = 0, y = 0, radius = 1) {
   const halfwedge = 2 * Math.PI / sides * 0.5;
@@ -14,7 +13,6 @@ export const make_regular_polygon = function (sides, x = 0, y = 0, radius = 1) {
     return [px, py]; // align point along Y
   });
 };
-
 
 export const nearest_point = function (linePoint, lineVec, point, limiterFunc, epsilon = EPSILON) {
   const magSquared = (lineVec[0] ** 2) + (lineVec[1] ** 2);
@@ -107,7 +105,7 @@ export const bisect_vectors = function (a, b) {
 export const bisect_lines2 = function (pointA, vectorA, pointB, vectorB) {
   const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
   if (Math.abs(denominator) < EPSILON) { /* parallel */
-    const solution = [midpoint(pointA, pointB), [vectorA[0], vectorA[1]]];
+    const solution = [midpoint2(pointA, pointB), [vectorA[0], vectorA[1]]];
     const array = [solution, solution];
     const dot = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
     delete (dot > 0 ? array[1] : array[0]);
