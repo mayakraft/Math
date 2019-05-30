@@ -50,11 +50,10 @@ export function get_matrix2() {
     m[5] = 0;
     return m;
   }
-  return [1,0,0,1,0,0];
+  return [1, 0, 0, 1, 0, 0];
 }
 
-
-/** 
+/**
  * @returns [[2,3],[10,11]]
 */
 export function get_edge() {
@@ -91,7 +90,7 @@ export function get_edge() {
 }
 
 
-/** 
+/**
  * @returns ({ point:[], vector:[] })
 */
 export function get_line() {

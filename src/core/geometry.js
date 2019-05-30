@@ -177,8 +177,9 @@ export const split_polygon = function (poly, linePoint, lineVector) {
     return { type: "e", point: intersection, at_index: i };
   }).filter(el => el.point != null);
 
-  const sorted = vertices_intersections.concat(edges_intersections).sort((a, b) =>
-    (Math.abs(a.point[0] - b.point[0]) < EPSILON
+  const sorted = vertices_intersections
+    .concat(edges_intersections)
+    .sort((a, b) => (Math.abs(a.point[0] - b.point[0]) < EPSILON
       ? a.point[1] - b.point[1]
       : a.point[0] - b.point[0]));
   console.log(sorted);

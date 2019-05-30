@@ -21,15 +21,15 @@ import * as intersection from "./core/intersection";
 import * as input from "./parse/input";
 import { EPSILON, clean_number } from "./parse/clean";
 
-import { Vector } from "./primitives/vector";
+import Vector from "./primitives/vector";
 import Circle from "./primitives/circle";
 import { Polygon, ConvexPolygon, Rectangle } from "./primitives/polygon";
-import { Matrix2 } from "./primitives/matrix";
+import Matrix2 from "./primitives/matrix";
 import Line from "./primitives/line";
 import Ray from "./primitives/ray";
 import Edge from "./primitives/edge";
-import { Junction } from "./primitives/junction";
-import { Sector } from "./primitives/sector";
+import Junction from "./primitives/junction";
+import Sector from "./primitives/sector";
 
 const core = Object.create(null);
 Object.assign(core, algebra, geometry, query, input);

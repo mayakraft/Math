@@ -6,7 +6,7 @@ this is the math engine for an [origami library](https://github.com/robbykraft/O
 
 ## mostly the reason
 
-i wrote this is because origami math often deals with edge cases, like the intersection of a line parallel on top of a polygon's side, we have to be very particular about the result, and the epsilon testing in these cases.
+i wrote this is because origami math often deals with edge cases like asking the intersection when a line is parallel and on top of a polygon's side while managing the epsilon.
 
 ## html
 

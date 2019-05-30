@@ -3,15 +3,12 @@ import * as Algebra from "../core/algebra";
 import * as Geometry from "../core/geometry";
 import * as Query from "../core/query";
 import * as Intersection from "../core/intersection";
-import { Vector } from "./vector";
-import Line from "./line";
-import Ray from "./ray";
+import Vector from "./vector";
 import Edge from "./edge";
-import { Sector } from "./sector";
+import Sector from "./sector";
 import { clean_number } from "../parse/clean";
 
 export function Polygon() {
-
   let _points = Input.get_array_of_vec(...arguments).map(p => Vector(p));
   if (_points === undefined) {
     // todo, best practices here
