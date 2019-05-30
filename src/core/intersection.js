@@ -1,398 +1,268 @@
-/** 
- *  all intersection functions are inclusive and return true if 
+/**
+ *  all intersection functions are inclusive and return true if
  *  intersection lies directly on an edge's endpoint. to exclude
  *  endpoints, use "exclusive" functions
  */
 
 import { EPSILON } from "../parse/clean";
-
-// equivalency test for numbers
-function equivalent(a, b, epsilon = EPSILON) {
-	return Math.abs(a-b) < epsilon;
-}
-// equivalency test for 2d-vectors
-function equivalent2(a, b, epsilon = EPSILON) {
-	return Math.abs(a[0]-b[0]) < epsilon && Math.abs(a[1]-b[1]) < epsilon;
-}
-// equivalency test for n-dimensional vectors
-function equivalentVectors(a, b, epsilon = EPSILON) {
-	return a.map((_,i) => Math.abs(a[i]-b[i]) < epsilon)
-		.reduce((a,b) => a && b, true);
-}
-
-export function line_line(aPt, aVec, bPt, bVec, epsilon) {
-	return intersection_function(aPt, aVec, bPt, bVec, line_line_comp, epsilon);
-}
-export function line_ray(linePt, lineVec, rayPt, rayVec, epsilon) {
-	return intersection_function(linePt, lineVec, rayPt, rayVec, line_ray_comp, epsilon);
-}
-export function line_edge(point, vec, edge0, edge1, epsilon) {
-	let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
-	return intersection_function(point, vec, edge0, edgeVec, line_edge_comp, epsilon);
-}
-export function ray_ray(aPt, aVec, bPt, bVec, epsilon) {
-	return intersection_function(aPt, aVec, bPt, bVec, ray_ray_comp, epsilon);
-}
-export function ray_edge(rayPt, rayVec, edge0, edge1, epsilon) {
-	let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
-	return intersection_function(rayPt, rayVec, edge0, edgeVec, ray_edge_comp, epsilon);
-}
-export function edge_edge(a0, a1, b0, b1, epsilon) {
-	let aVec = [a1[0]-a0[0], a1[1]-a0[1]];
-	let bVec = [b1[0]-b0[0], b1[1]-b0[1]];
-	return intersection_function(a0, aVec, b0, bVec, edge_edge_comp, epsilon);
-}
-
-
-// no such thing, except to be comprehensive
-// export function line_line_exclusive(aPt, aVec, bPt, bVec, epsilon) {
-// 	return intersection_function(aPt, aVec, bPt, bVec, line_line_comp_exclusive, epsilon);
-// }
-export function line_ray_exclusive(linePt, lineVec, rayPt, rayVec, epsilon) {
-	return intersection_function(linePt, lineVec, rayPt, rayVec, line_ray_comp_exclusive, epsilon);
-}
-export function line_edge_exclusive(point, vec, edge0, edge1, epsilon) {
-	let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
-	return intersection_function(point, vec, edge0, edgeVec, line_edge_comp_exclusive, epsilon);
-}
-export function ray_ray_exclusive(aPt, aVec, bPt, bVec, epsilon) {
-	return intersection_function(aPt, aVec, bPt, bVec, ray_ray_comp_exclusive, epsilon);
-}
-export function ray_edge_exclusive(rayPt, rayVec, edge0, edge1, epsilon) {
-	let edgeVec = [edge1[0]-edge0[0], edge1[1]-edge0[1]];
-	return intersection_function(rayPt, rayVec, edge0, edgeVec, ray_edge_comp_exclusive, epsilon);
-}
-export function edge_edge_exclusive(a0, a1, b0, b1, epsilon) {
-	let aVec = [a1[0]-a0[0], a1[1]-a0[1]];
-	let bVec = [b1[0]-b0[0], b1[1]-b0[1]];
-	return intersection_function(a0, aVec, b0, bVec, edge_edge_comp_exclusive, epsilon);
-}
-
-
-/** comparison functions for a generalized vector intersection function */
-const line_line_comp = function() { return true; }
-const line_ray_comp = function(t0, t1, epsilon = EPSILON) {
-	return t1 >= -epsilon;
-}
-const line_edge_comp = function(t0, t1, epsilon = EPSILON) {
-	return t1 >= -epsilon && t1 <= 1+epsilon;
-}
-const ray_ray_comp = function(t0, t1, epsilon = EPSILON) {
-	return t0 >= -epsilon && t1 >= -epsilon;
-}
-const ray_edge_comp = function(t0, t1, epsilon = EPSILON) {
-	return t0 >= -epsilon && t1 >= -epsilon && t1 <= 1+epsilon;
-}
-const edge_edge_comp = function(t0, t1, epsilon = EPSILON) {
-	return t0 >= -epsilon && t0 <= 1+epsilon &&
-	       t1 >= -epsilon && t1 <= 1+epsilon;
-}
-
-// todo this has not been tested yet
-
-// no such thing, except to be comprehensive
-// const line_line_comp_exclusive = function() { return true; }
-const line_ray_comp_exclusive = function(t0, t1, epsilon = EPSILON) {
-	return t1 > epsilon;
-}
-const line_edge_comp_exclusive = function(t0, t1, epsilon = EPSILON) {
-	return t1 > epsilon && t1 < 1-epsilon;
-}
-const ray_ray_comp_exclusive = function(t0, t1, epsilon = EPSILON) {
-	return t0 > epsilon && t1 > epsilon;
-}
-const ray_edge_comp_exclusive = function(t0, t1, epsilon = EPSILON) {
-	return t0 > epsilon && t1 > epsilon && t1 < 1-epsilon;
-}
-const edge_edge_comp_exclusive = function(t0, t1, epsilon = EPSILON) {
-	return t0 > epsilon && t0 < 1-epsilon &&
-	       t1 > epsilon && t1 < 1-epsilon;
-}
-
-/** 
- * the generalized vector intersection function
- * requires a compFunction to describe valid bounds checking 
- * line always returns true, ray is true for t > 0, edge must be between 0 < t < 1
-*/
-export const intersection_function = function(aPt, aVec, bPt, bVec, compFunction, epsilon = EPSILON) {
-	function det(a,b) { return a[0] * b[1] - b[0] * a[1]; }
-	let denominator0 = det(aVec, bVec);
-	if (Math.abs(denominator0) < epsilon) { return undefined; } /* parallel */
-	let denominator1 = -denominator0;
-	let numerator0 = det([bPt[0]-aPt[0], bPt[1]-aPt[1]], bVec);
-	let numerator1 = det([aPt[0]-bPt[0], aPt[1]-bPt[1]], aVec);
-	let t0 = numerator0 / denominator0;
-	let t1 = numerator1 / denominator1;
-	if (compFunction(t0, t1, epsilon)) {
-		return [aPt[0] + aVec[0]*t0, aPt[1] + aVec[1]*t0];
-	}
-}
-
-
-
-/** 
- *  Boolean tests
- *  collinearity, overlap, contains
- */
-
-
-/** is a point collinear to a line, within an epsilon */
-export function point_on_line(linePoint, lineVector, point, epsilon=EPSILON) {
-	let pointPoint = [point[0] - linePoint[0], point[1] - linePoint[1]];
-	let cross = pointPoint[0]*lineVector[1] - pointPoint[1]*lineVector[0];
-	return Math.abs(cross) < epsilon;
-}
-
-/** is a point collinear to an edge, between endpoints, within an epsilon */
-export function point_on_edge(edge0, edge1, point, epsilon = EPSILON) {
-	// distance between endpoints A,B should be equal to point->A + point->B
-	let edge0_1 = [edge0[0]-edge1[0], edge0[1]-edge1[1]];
-	let edge0_p = [edge0[0]-point[0], edge0[1]-point[1]];
-	let edge1_p = [edge1[0]-point[0], edge1[1]-point[1]];
-	let dEdge = Math.sqrt(edge0_1[0]*edge0_1[0] + edge0_1[1]*edge0_1[1]);
-	let dP0   = Math.sqrt(edge0_p[0]*edge0_p[0] + edge0_p[1]*edge0_p[1]);
-	let dP1   = Math.sqrt(edge1_p[0]*edge1_p[0] + edge1_p[1]*edge1_p[1]);
-	return Math.abs(dEdge - dP0 - dP1) < epsilon;
-}
-
+import {
+  point_in_convex_poly,
+  point_in_convex_poly_exclusive,
+} from "./query";
 
 /**
- * Tests whether or not a point is contained inside a polygon.
- * @returns {boolean} whether the point is inside the polygon or not
- * @example
- * var isInside = point_in_poly([0.5, 0.5], polygonPoints)
+ * parameters: lines
+ * solutions: points
  */
-export function point_in_poly(point, poly, epsilon = EPSILON) {
-	// W. Randolph Franklin
-	// https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
-	let isInside = false;
-	for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-		if ( (poly[i][1] > point[1]) != (poly[j][1] > point[1]) &&
-		point[0] < (poly[j][0] - poly[i][0]) * (point[1] - poly[i][1])
-		/ (poly[j][1] - poly[i][1]) + poly[i][0] ) {
-			isInside = !isInside;
-		}
-	}
-	return isInside;
-}
 
-/** is a point inside of a convex polygon? 
- * including along the boundary within epsilon 
- *
- * @param poly is an array of points [ [x,y], [x,y]...]
- * @returns {boolean} true if point is inside polygon
+/** comparison functions for a generalized vector intersection function */
+const line_line_comp = () => true;
+const line_ray_comp = (t0, t1) => t1 >= -EPSILON;
+const line_edge_comp = (t0, t1) => t1 >= -EPSILON && t1 <= 1 + EPSILON;
+const ray_ray_comp = (t0, t1) => t0 >= -EPSILON && t1 >= -EPSILON;
+const ray_edge_comp = (t0, t1) => t0 >= -EPSILON && t1 >= -EPSILON && t1 <= 1 + EPSILON;
+const edge_edge_comp = (t0, t1) => t0 >= -EPSILON && t0 <= 1 + EPSILON && t1 >= -EPSILON
+  && t1 <= 1 + EPSILON;
+
+// todo this has not been tested yet
+// const line_line_comp_exclusive = function () { return true; } // redundant
+const line_ray_comp_exclusive = (t0, t1) => t1 > EPSILON;
+const line_edge_comp_exclusive = (t0, t1) => t1 > EPSILON && t1 < 1 - EPSILON;
+const ray_ray_comp_exclusive = (t0, t1) => t0 > EPSILON && t1 > EPSILON;
+const ray_edge_comp_exclusive = (t0, t1) => t0 > EPSILON && t1 > EPSILON && t1 < 1 - EPSILON;
+const edge_edge_comp_exclusive = (t0, t1) => t0 > EPSILON && t0 < 1 - EPSILON && t1 > EPSILON
+  && t1 < 1 - EPSILON;
+
+// distance is between 0 and 1, representing the vector between start and end. cap accordingly
+export const limit_line = dist => dist;
+export const limit_ray = dist => (dist < -EPSILON ? 0 : dist);
+export const limit_edge = (dist) => {
+  if (dist < -EPSILON) { return 0; }
+  if (dist > 1 + EPSILON) { return 1; }
+  return dist;
+};
+
+/**
+ * the generalized vector intersection function
+ * requires a compFunction to describe valid bounds checking
+ * line always returns true, ray is true for t > 0, edge must be between 0 < t < 1
+*/
+export const intersection_function = function (aPt, aVec, bPt, bVec, compFunc, epsilon = EPSILON) {
+  function det(a, b) { return a[0] * b[1] - b[0] * a[1]; }
+  const denominator0 = det(aVec, bVec);
+  if (Math.abs(denominator0) < epsilon) { return undefined; } /* parallel */
+  const denominator1 = -denominator0;
+  const numerator0 = det([bPt[0] - aPt[0], bPt[1] - aPt[1]], bVec);
+  const numerator1 = det([aPt[0] - bPt[0], aPt[1] - bPt[1]], aVec);
+  const t0 = numerator0 / denominator0;
+  const t1 = numerator1 / denominator1;
+  if (compFunc(t0, t1, epsilon)) {
+    return [aPt[0] + aVec[0] * t0, aPt[1] + aVec[1] * t0];
+  }
+  return undefined;
+};
+
+export const line_line = function (aPt, aVec, bPt, bVec, epsilon) {
+  return intersection_function(aPt, aVec, bPt, bVec, line_line_comp, epsilon);
+};
+export const line_ray = function (linePt, lineVec, rayPt, rayVec, epsilon) {
+  return intersection_function(linePt, lineVec, rayPt, rayVec, line_ray_comp, epsilon);
+};
+export const line_edge = function (point, vec, edge0, edge1, epsilon) {
+  const edgeVec = [edge1[0] - edge0[0], edge1[1] - edge0[1]];
+  return intersection_function(point, vec, edge0, edgeVec, line_edge_comp, epsilon);
+};
+export const ray_ray = function (aPt, aVec, bPt, bVec, epsilon) {
+  return intersection_function(aPt, aVec, bPt, bVec, ray_ray_comp, epsilon);
+};
+export const ray_edge = function (rayPt, rayVec, edge0, edge1, epsilon) {
+  const edgeVec = [edge1[0] - edge0[0], edge1[1] - edge0[1]];
+  return intersection_function(rayPt, rayVec, edge0, edgeVec, ray_edge_comp, epsilon);
+};
+export const edge_edge = function (a0, a1, b0, b1, epsilon) {
+  const aVec = [a1[0] - a0[0], a1[1] - a0[1]];
+  const bVec = [b1[0] - b0[0], b1[1] - b0[1]];
+  return intersection_function(a0, aVec, b0, bVec, edge_edge_comp, epsilon);
+};
+
+
+// no reason
+// export const line_line_exclusive = function (aPt, aVec, bPt, bVec, epsilon) {
+//  return intersection_function(aPt, aVec, bPt, bVec, line_line_comp_exclusive, epsilon);
+// }
+export const line_ray_exclusive = function (linePt, lineVec, rayPt, rayVec, epsilon) {
+  return intersection_function(linePt, lineVec, rayPt, rayVec, line_ray_comp_exclusive, epsilon);
+};
+export const line_edge_exclusive = function (point, vec, edge0, edge1, epsilon) {
+  const edgeVec = [edge1[0] - edge0[0], edge1[1] - edge0[1]];
+  return intersection_function(point, vec, edge0, edgeVec, line_edge_comp_exclusive, epsilon);
+};
+export const ray_ray_exclusive = function (aPt, aVec, bPt, bVec, epsilon) {
+  return intersection_function(aPt, aVec, bPt, bVec, ray_ray_comp_exclusive, epsilon);
+};
+export const ray_edge_exclusive = function (rayPt, rayVec, edge0, edge1, epsilon) {
+  const edgeVec = [edge1[0] - edge0[0], edge1[1] - edge0[1]];
+  return intersection_function(rayPt, rayVec, edge0, edgeVec, ray_edge_comp_exclusive, epsilon);
+};
+export const edge_edge_exclusive = function (a0, a1, b0, b1, epsilon) {
+  const aVec = [a1[0] - a0[0], a1[1] - a0[1]];
+  const bVec = [b1[0] - b0[0], b1[1] - b0[1]];
+  return intersection_function(a0, aVec, b0, bVec, edge_edge_comp_exclusive, epsilon);
+};
+
+/**
+ * parameters: polygons, lines
+ * solutions: lines, points
  */
-export function point_in_convex_poly(point, poly, epsilon = EPSILON) {
-	if (poly == null || !(poly.length > 0)) { return false; }
-	return poly.map( (p,i,arr) => {
-		let nextP = arr[(i+1)%arr.length];
-		let a = [ nextP[0]-p[0], nextP[1]-p[1] ];
-		let b = [ point[0]-p[0], point[1]-p[1] ];
-		return a[0] * b[1] - a[1] * b[0] > -epsilon;
-	}).map((s,i,arr) => s === arr[0])
-		.reduce((prev,curr) => prev && curr, true);
-}
 
-export function point_in_convex_poly_exclusive(point, poly, epsilon=EPSILON) {
-	if (poly == null || !(poly.length > 0)) { return false; }
-	return poly.map( (p,i,arr) => {
-		let nextP = arr[(i+1)%arr.length];
-		let a = [ nextP[0]-p[0], nextP[1]-p[1] ];
-		let b = [ point[0]-p[0], point[1]-p[1] ];
-		return a[0] * b[1] - a[1] * b[0] > epsilon;
-	}).map((s,i,arr) => s === arr[0])
-		.reduce((prev,curr) => prev && curr, true);
-}
-
-/** do two convex polygons overlap one another */
-export function convex_polygons_overlap(ps1, ps2) {
-	// convert array of points into edges [point, nextPoint]
-	let e1 = ps1.map((p,i,arr) => [p, arr[(i+1)%arr.length]] )
-	let e2 = ps2.map((p,i,arr) => [p, arr[(i+1)%arr.length]] )
-	for (let i = 0; i < e1.length; i++) {
-		for (let j = 0; j < e2.length; j++) {
-			if (edge_edge(e1[i][0], e1[i][1], e2[j][0], e2[j][1]) != undefined) {
-				return true;
-			}
-		}
-	}
-	if (point_in_poly(ps2[0], ps1)) { return true; }
-	if (point_in_poly(ps1[0], ps2)) { return true; }
-	return false;
-}
-
-/** 
- *  Clipping operations
- *  
- */
+// equivalency test for 2d-vectors
+export const quick_equivalent_2 = function (a, b) {
+  return Math.abs(a[0] - b[0]) < EPSILON && Math.abs(a[1] - b[1]) < EPSILON;
+};
 
 /** clip an infinite line in a polygon, returns an edge or undefined if no intersection */
-export function clip_line_in_convex_poly(poly, linePoint, lineVector) {
-	let intersections = poly
-		.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // poly points into edge pairs
-		.map(el => line_edge(linePoint, lineVector, el[0], el[1]))
-		.filter(el => el != null);
-	switch (intersections.length) {
-	case 0: return undefined;
-	case 1: return [intersections[0], intersections[0]]; // degenerate edge
-	case 2: return intersections;
-	default:
-	// special case: line intersects directly on a poly point (2 edges, same point)
-	//  filter to unique points by [x,y] comparison.
-		for (let i = 1; i < intersections.length; i++) {
-			if ( !equivalent2(intersections[0], intersections[i])) {
-				return [intersections[0], intersections[i]];
-			}
-		}
-	}
-}
+export const clip_line_in_convex_poly = function (poly, linePoint, lineVector) {
+  const intersections = poly
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into edge pairs
+    .map(el => line_edge(linePoint, lineVector, el[0], el[1]))
+    .filter(el => el != null);
+  switch (intersections.length) {
+    case 0: return undefined;
+    case 1: return [intersections[0], intersections[0]]; // degenerate edge
+    case 2: return intersections;
+    default:
+      // special case: line intersects directly on a poly point (2 edges, same point)
+      //  filter to unique points by [x,y] comparison.
+      for (let i = 1; i < intersections.length; i += 1) {
+        if (!quick_equivalent_2(intersections[0], intersections[i])) {
+          return [intersections[0], intersections[i]];
+        }
+      }
+      return undefined;
+  }
+};
 
-export function clip_ray_in_convex_poly(poly, linePoint, lineVector) {
-	var intersections = poly
-		.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // poly points into edge pairs
-		.map(el => ray_edge(linePoint, lineVector, el[0], el[1]))
-		.filter(el => el != null);
-	switch (intersections.length) {
-	case 0: return undefined;
-	case 1: return [linePoint, intersections[0]];
-	case 2: return intersections;
-	// default: throw "clipping ray in a convex polygon resulting in 3 or more points";
-	default:
-		for (let i = 1; i < intersections.length; i++) {
-			if ( !equivalent2(intersections[0], intersections[i])) {
-				return [intersections[0], intersections[i]];
-			}
-		}
-	}
-}
+export const clip_ray_in_convex_poly = function (poly, linePoint, lineVector) {
+  const intersections = poly
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into edge pairs
+    .map(el => ray_edge(linePoint, lineVector, el[0], el[1]))
+    .filter(el => el != null);
+  switch (intersections.length) {
+    case 0: return undefined;
+    case 1: return [linePoint, intersections[0]];
+    case 2: return intersections;
+    // default: throw "clipping ray in a convex polygon resulting in 3 or more points";
+    default:
+      for (let i = 1; i < intersections.length; i += 1) {
+        if (!quick_equivalent_2(intersections[0], intersections[i])) {
+          return [intersections[0], intersections[i]];
+        }
+      }
+      return undefined;
+  }
+};
 
-export function clip_edge_in_convex_poly(poly, edgeA, edgeB) {
-	let intersections = poly
-		.map((p,i,arr) => [p, arr[(i+1)%arr.length]] ) // polygon into edge pairs
-		.map(el => edge_edge_exclusive(edgeA, edgeB, el[0], el[1]))
-		.filter(el => el != null);
+export const clip_edge_in_convex_poly = function (poly, edgeA, edgeB) {
+  const intersections = poly
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // polygon into edge pairs
+    .map(el => edge_edge_exclusive(edgeA, edgeB, el[0], el[1]))
+    .filter(el => el != null);
 
-	let aInsideExclusive = point_in_convex_poly_exclusive(edgeA, poly);
-	let bInsideExclusive = point_in_convex_poly_exclusive(edgeB, poly);
-	let aInsideInclusive = point_in_convex_poly(edgeA, poly);
-	let bInsideInclusive = point_in_convex_poly(edgeB, poly);
+  const aInsideExclusive = point_in_convex_poly_exclusive(edgeA, poly);
+  const bInsideExclusive = point_in_convex_poly_exclusive(edgeB, poly);
+  const aInsideInclusive = point_in_convex_poly(edgeA, poly);
+  const bInsideInclusive = point_in_convex_poly(edgeB, poly);
 
-	// both are inside, OR, one is inside and the other is collinear to poly
-	if (intersections.length === 0 && 
-		(aInsideExclusive || bInsideExclusive)) {
-		return [edgeA, edgeB];
-	}
-	if(intersections.length === 0 &&
-		(aInsideInclusive && bInsideInclusive)) {
-		return [edgeA, edgeB];
-	}
-	switch (intersections.length) {
-		case 0: return ( aInsideExclusive
-			? [[...edgeA], [...edgeB]]
-			: undefined );
-		case 1: return ( aInsideInclusive
-			? [[...edgeA], intersections[0]]
-			: [[...edgeB], intersections[0]] );
-		case 2: return intersections;
-		default: throw "clipping edge in a convex polygon resulting in 3 or more points";
-	}
-}
-
-export function nearest_point(linePoint, lineVector, point, limiterFunc, epsilon = EPSILON) {
-	let magSquared = Math.pow(lineVector[0],2) + Math.pow(lineVector[1],2);
-	let vectorToPoint = [0,1].map((_,i) => point[i] - linePoint[i]);
-	let pTo0 = [0,1].map((_,i) => point[i] - linePoint[i]);
-	let dot = [0,1]
-		.map((_,i) => lineVector[i] * vectorToPoint[i])
-		.reduce((a,b) => a + b, 0);
-	let distance = dot / magSquared;
-	// limit depending on line, ray, edge
-	let d = limiterFunc(distance, epsilon);
-	return [0,1].map((_,i) => linePoint[i] + lineVector[i] * d);
-}
-
-const nearest_limiter_line = function(distance, epsilon) {
-	return distance;
-}
-const nearest_limiter_ray = function(distance, epsilon) {
-	return (distance < -epsilon ? 0 : distance);
-}
-const nearest_limiter_edge = function(distance, epsilon) {
-	if (distance < -epsilon) { return 0; }
-	if (distance > 1+epsilon) { return 1; }
-	return distance;
-}
-
+  // both are inside, OR, one is inside and the other is collinear to poly
+  if (intersections.length === 0
+    && (aInsideExclusive || bInsideExclusive)) {
+    return [edgeA, edgeB];
+  }
+  if (intersections.length === 0
+    && (aInsideInclusive && bInsideInclusive)) {
+    return [edgeA, edgeB];
+  }
+  switch (intersections.length) {
+    case 0: return (aInsideExclusive
+      ? [[...edgeA], [...edgeB]]
+      : undefined);
+    case 1: return (aInsideInclusive
+      ? [[...edgeA], intersections[0]]
+      : [[...edgeB], intersections[0]]);
+    case 2: return intersections;
+    default: throw "clipping edge in a convex polygon resulting in 3 or more points";
+  }
+};
 
 /*
  * returns an array of array of numbers
  */
-export function intersection_circle_line(center, radius, p0, p1, epsilon = EPSILON) {
-	// move the origin to the center of the circle
-	let x1 = p0[0] - center[0];
-	let y1 = p0[1] - center[1];
-	let x2 = p1[0] - center[0];
-	let y2 = p1[1] - center[1];
-	let dx = x2 - x1;
-	let dy = y2 - y1;
-	let det = x1*y2 - x2*y1;
-	let det_sq = det * det;
-	let r_sq = radius * radius;
-	let dr_sq = Math.abs(dx*dx + dy*dy);
-	let delta = r_sq * dr_sq - det_sq;
-	// no solution
-	if (delta < -epsilon) { return undefined; }
-	// shorthand things
-	let suffix = Math.sqrt(r_sq*dr_sq - det_sq);
-	function sgn(x) { return (x < -epsilon) ? -1 : 1; }
-	let solutionA = [
-		center[0] + (det * dy + sgn(dy)*dx * suffix) / dr_sq,
-		center[1] + (-det * dx + Math.abs(dy) * suffix) / dr_sq
-	];
-	if (delta > epsilon) {
-		// two solutions
-		let solutionB = [
-			center[0] + (det * dy - sgn(dy)*dx * suffix) / dr_sq,
-			center[1] + (-det * dx - Math.abs(dy) * suffix) / dr_sq
-		];
-		return [solutionA, solutionB];
-	}
-	// else, delta == 0, line is tangent, one solution
-	return [solutionA];
-}
+export const circle_line = function (center, radius, p0, p1, epsilon = EPSILON) {
+  // move the origin to the center of the circle
+  const x1 = p0[0] - center[0];
+  const y1 = p0[1] - center[1];
+  const x2 = p1[0] - center[0];
+  const y2 = p1[1] - center[1];
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const det = x1 * y2 - x2 * y1;
+  const det_sq = det * det;
+  const r_sq = radius * radius;
+  const dr_sq = Math.abs(dx * dx + dy * dy);
+  const delta = r_sq * dr_sq - det_sq;
+  // no solution
+  if (delta < -epsilon) { return undefined; }
+  // shorthand things
+  const suffix = Math.sqrt(r_sq * dr_sq - det_sq);
+  function sgn(x) { return (x < -epsilon) ? -1 : 1; }
+  const solutionA = [
+    center[0] + (det * dy + sgn(dy) * dx * suffix) / dr_sq,
+    center[1] + (-det * dx + Math.abs(dy) * suffix) / dr_sq,
+  ];
+  if (delta > epsilon) {
+    // two solutions
+    const solutionB = [
+      center[0] + (det * dy - sgn(dy) * dx * suffix) / dr_sq,
+      center[1] + (-det * dx - Math.abs(dy) * suffix) / dr_sq,
+    ];
+    return [solutionA, solutionB];
+  }
+  // else, delta == 0, line is tangent, one solution
+  return [solutionA];
+};
 
-export function intersection_circle_ray(center, radius, p0, p1) {
-	throw "intersection_circle_ray has not been written yet";
-}
+export const circle_ray = function (center, radius, p0, p1) {
+  throw "circle_ray has not been written yet";
+};
 
-export function intersection_circle_edge(center, radius, p0, p1) {
-	var r_squared =  Math.pow(radius, 2);
-	var x1 = p0[0] - center[0];
-	var y1 = p0[1] - center[1];
-	var x2 = p1[0] - center[0];
-	var y2 = p1[1] - center[1];
-	var dx = x2 - x1;
-	var dy = y2 - y1;
-	var dr_squared = dx*dx + dy*dy;
-	var D = x1*y2 - x2*y1;
-	function sgn(x) { if (x < 0) {return -1;} return 1; }
-	var x1 = (D*dy + sgn(dy)*dx*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
-	var x2 = (D*dy - sgn(dy)*dx*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
-	var y1 = (-D*dx + Math.abs(dy)*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
-	var y2 = (-D*dx - Math.abs(dy)*Math.sqrt(r_squared*dr_squared - (D*D)))/(dr_squared);
-	let x1NaN = isNaN(x1);
-	let x2NaN = isNaN(x2);
-	if (!x1NaN && !x2NaN) {
-		return [
-			[x1 + center[0], y1 + center[1]],
-			[x2 + center[0], y2 + center[1]]
-		];
-	}
-	if (x1NaN && x2NaN) { return undefined; }
-	if (!x1NaN) {
-		return [ [x1 + center[0], y1 + center[1]] ];
-	}
-	if (!x2NaN) {
-		return [ [x2 + center[0], y2 + center[1]] ];
-	}
-}
+export const circle_edge = function (center, radius, p0, p1) {
+  const r_squared = radius ** 2;
+  const x1 = p0[0] - center[0];
+  const y1 = p0[1] - center[1];
+  const x2 = p1[0] - center[0];
+  const y2 = p1[1] - center[1];
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const dr_squared = dx * dx + dy * dy;
+  const D = x1 * y2 - x2 * y1;
+  function sgn(x) { if (x < 0) { return -1; } return 1; }
+  const x_1 = (D * dy + sgn(dy) * dx * Math.sqrt(r_squared * dr_squared - D * D)) / (dr_squared);
+  const x_2 = (D * dy - sgn(dy) * dx * Math.sqrt(r_squared * dr_squared - D * D)) / (dr_squared);
+  const y_1 = (-D * dx + Math.abs(dy) * Math.sqrt(r_squared * dr_squared - D * D)) / (dr_squared);
+  const y_2 = (-D * dx - Math.abs(dy) * Math.sqrt(r_squared * dr_squared - D * D)) / (dr_squared);
+  const x1_NaN = isNaN(x_1);
+  const x2_NaN = isNaN(x_2);
+  if (!x1_NaN && !x2_NaN) {
+    return [
+      [x_1 + center[0], y_1 + center[1]],
+      [x_2 + center[0], y_2 + center[1]],
+    ];
+  }
+  if (x1_NaN && x2_NaN) { return undefined; }
+  if (!x1_NaN) {
+    return [[x_1 + center[0], y_1 + center[1]]];
+  }
+  if (!x2_NaN) {
+    return [[x_2 + center[0], y_2 + center[1]]];
+  }
+};

@@ -29,7 +29,7 @@ Object.freeze(core.axiom);
 Object.freeze(core);
 
 import { Vector } from "./primitives/vector";
-import { Circle } from "./primitives/circle";
+import Circle from "./primitives/circle";
 import { Polygon, ConvexPolygon, Rectangle } from "./primitives/polygon";
 import { Matrix2 } from "./primitives/matrix";
 import { Line, Ray, Edge } from "./primitives/lines";
