@@ -1,7 +1,7 @@
 import * as Input from "../parse/input";
 import * as Geometry from "../core/geometry";
 import { Vector } from "./vector";
-import { Ray } from "./lines";
+import Ray from "./ray";
 import { clean_number } from "../parse/clean";
 
 // a sector is defined as the interior angle space FROM A to B
