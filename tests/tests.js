@@ -1,6 +1,6 @@
 // convenience
-function equivalent(a, b){ return Math.abs(a-b) < 1e-13; }
-function equivalentArrays(a, b){
+function equivalent(a, b) { return Math.abs(a-b) < 1e-13; }
+function equivalentArrays(a, b) {
 	return a.map((_,i) => Math.abs(a[i]-b[i]) < 1e-13).reduce((a,b) => a && b, true);
 }
 let Vector = Geometry.Vector;

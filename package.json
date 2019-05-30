@@ -1,0 +1,27 @@
+{
+  "name": "rabbit-ear-math",
+  "version": "0.1.0",
+  "description": "javascript library of origami math",
+  "main": "math.js",
+  "scripts": {
+    "test": "node test/tests.js"
+  },
+  "author": "Robby Kraft",
+  "license": "MIT",
+  "repository": "https://github.com/robbykraft/Math",
+  "keywords": [
+    "origami",
+    "math",
+    "linear algebra",
+    "algebra",
+    "geometry"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.17.3",
+    "rollup": "^1.12.4",
+    "rollup-plugin-cleanup": "^3.1.1"
+  }
+}
