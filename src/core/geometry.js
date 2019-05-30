@@ -3,6 +3,10 @@ import { line_edge_exclusive } from "./intersection";
 import { EPSILON, clean_number } from "../parse/clean";
 import { normalize, midpoint2 } from "./algebra";
 
+/**
+ * the radius parameter measures from the center to the midpoint of the edge
+ * todo: also possible to parameterize the radius as the center to the points
+ */
 export const make_regular_polygon = function (sides, x = 0, y = 0, radius = 1) {
   const halfwedge = 2 * Math.PI / sides * 0.5;
   const r = radius / Math.cos(halfwedge);
@@ -177,8 +181,9 @@ export const split_polygon = function (poly, linePoint, lineVector) {
     return { type: "e", point: intersection, at_index: i };
   }).filter(el => el.point != null);
 
-  const sorted = vertices_intersections.concat(edges_intersections).sort((a, b) =>
-    (Math.abs(a.point[0] - b.point[0]) < EPSILON
+  const sorted = vertices_intersections
+    .concat(edges_intersections)
+    .sort((a, b) => (Math.abs(a.point[0] - b.point[0]) < EPSILON
       ? a.point[1] - b.point[1]
       : a.point[0] - b.point[0]));
   console.log(sorted);

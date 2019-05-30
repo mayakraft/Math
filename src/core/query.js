@@ -2,6 +2,39 @@ import { EPSILON } from "../parse/clean";
 import { dot, normalize } from "./algebra";
 
 /**
+ * the generalized vector intersection function
+ * requires a compFunction to describe valid bounds checking
+ * line always returns true, ray is true for t > 0, edge must be between 0 < t < 1
+*/
+export const overlap_function = function (aPt, aVec, bPt, bVec, compFunc) {
+  const det = (a, b) => a[0] * b[1] - b[0] * a[1];
+  const denominator0 = det(aVec, bVec);
+  const denominator1 = -denominator0;
+  const numerator0 = det([bPt[0] - aPt[0], bPt[1] - aPt[1]], bVec);
+  const numerator1 = det([aPt[0] - bPt[0], aPt[1] - bPt[1]], aVec);
+  if (Math.abs(denominator0) < EPSILON) { // parallel
+    // todo:
+    // if parallel and one point is inside another's vector (two are on top)
+    // return true
+    // else
+    return false;
+  }
+  const t0 = numerator0 / denominator0;
+  const t1 = numerator1 / denominator1;
+  return compFunc(t0, t1);
+};
+
+const edge_edge_comp = (t0, t1) => t0 >= -EPSILON && t0 <= 1 + EPSILON
+  && t1 >= -EPSILON && t1 <= 1 + EPSILON;
+
+export const edge_edge_overlap = function (a0, a1, b0, b1) {
+  const aVec = [a1[0] - a0[0], a1[1] - a0[1]];
+  const bVec = [b1[0] - b0[0], b1[1] - b0[1]];
+  return overlap_function(a0, aVec, b0, bVec, edge_edge_comp);
+};
+
+
+/**
  * @param {number[]} a vector in a Javascript array object
  * @returns boolean
  */
@@ -165,7 +198,7 @@ export const convex_polygons_overlap = function (ps1, ps2) {
   const e2 = ps2.map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
   for (let i = 0; i < e1.length; i += 1) {
     for (let j = 0; j < e2.length; j += 1) {
-      if (edge_edge(e1[i][0], e1[i][1], e2[j][0], e2[j][1]) != undefined) {
+      if (edge_edge_overlap(e1[i][0], e1[i][1], e2[j][0], e2[j][1])) {
         return true;
       }
     }
@@ -206,10 +239,10 @@ export const convex_polygons_enclose = function (inner, outer) {
 
 
 /**
-████████╗ ██████╗  ██╗   ██╗ ███████╗      ███████╗  █████╗  ██╗      ███████╗ ███████╗
-╚══██╔══╝ ██╔══██╗ ██║   ██║ ██╔════╝      ██╔════╝ ██╔══██╗ ██║      ██╔════╝ ██╔════╝
-   ██║    ██████╔╝ ██║   ██║ █████╗        █████╗   ███████║ ██║      ███████╗ █████╗
-   ██║    ██╔══██╗ ██║   ██║ ██╔══╝        ██╔══╝   ██╔══██║ ██║      ╚════██║ ██╔══╝
-   ██║    ██║  ██║ ╚██████╔╝ ███████╗      ██║      ██║  ██║ ███████╗ ███████║ ███████╗
-   ╚═╝    ╚═╝  ╚═╝  ╚═════╝  ╚══════╝      ╚═╝      ╚═╝  ╚═╝ ╚══════╝ ╚══════╝ ╚══════╝
+████████╗██████╗ ██╗   ██╗███████╗    ███████╗ █████╗ ██╗     ███████╗███████╗
+╚══██╔══╝██╔══██╗██║   ██║██╔════╝    ██╔════╝██╔══██╗██║     ██╔════╝██╔════╝
+   ██║   ██████╔╝██║   ██║█████╗      █████╗  ███████║██║     ███████╗█████╗
+   ██║   ██╔══██╗██║   ██║██╔══╝      ██╔══╝  ██╔══██║██║     ╚════██║██╔══╝
+   ██║   ██║  ██║╚██████╔╝███████╗    ██║     ██║  ██║███████╗███████║███████╗
+   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚══════╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
  */

@@ -1,8 +1,8 @@
 import * as Input from "../parse/input";
 import * as Algebra from "../core/algebra";
 import * as Intersection from "../core/intersection";
-import { Vector } from "./vector";
-import LinePrototype from "./lineProto";
+import Vector from "./vector";
+import Prototype from "./prototypes/line";
 
 const Line = function (...args) {
   const { point, vector } = Input.get_line(args);
@@ -13,7 +13,7 @@ const Line = function (...args) {
     return Line(line[0], line[1]);
   };
 
-  const line = Object.create(LinePrototype());
+  const line = Object.create(Prototype(Line));
   const compare_function = function () { return true; };
 
   Object.defineProperty(line, "compare_function", { value: compare_function });
