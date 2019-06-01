@@ -2,7 +2,7 @@ import {
   get_line,
   get_matrix2,
   get_two_vec2,
-} from "../parse/input";
+} from "../parse/arguments";
 
 import {
   normalize,

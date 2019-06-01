@@ -2,7 +2,7 @@ import {
   get_vector,
   get_matrix2,
   get_line,
-} from "../../parse/input";
+} from "../../parse/arguments";
 
 import {
   equivalent,

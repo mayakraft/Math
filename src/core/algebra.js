@@ -1,3 +1,9 @@
+// make this a console.log replaecment. but only flips on when you include
+// in the header of rollup a flag set to true.
+const argument = {
+  // log: console.log,
+  log: function () {},
+};
 
 /**
  * the following operations generalize for n-dimensions
@@ -8,6 +14,7 @@
  * @returns {number}
  */
 export const magnitude = function (v) {
+  argument.log("magnitude", v);
   const sum = v
     .map(component => component * component)
     .reduce((prev, curr) => prev + curr, 0);
@@ -18,6 +25,7 @@ export const magnitude = function (v) {
  * @returns {number[]}
  */
 export const normalize = function (v) {
+  argument.log("normalize", v);
   const m = magnitude(v);
   // todo: should this catch divide by 0?
   return v.map(c => c / m);
@@ -51,6 +59,7 @@ export const average = function (...args) {
 /**
  * everything else that follows is hard coded to a certain dimension
  */
+
 /**
  * @param two vectors, 2-D
  * @returns vector
@@ -126,10 +135,50 @@ export const multiply_matrices2 = function (m1, m2) {
   return [a, b, c, d, tx, ty];
 };
 /**
+ * remember vector comes before origin. origin comes last, so that it's easy
+ * to leave it empty and make a reflection through the origin.
  * @param line in vector-origin form
  * @returns matrix
  */
 export const make_matrix2_reflection = function (vector, origin) {
+  // origin is optional
+  const origin_x = origin && origin[0] ? origin[0] : 0;
+  const origin_y = origin && origin[1] ? origin[1] : 0;
+  // const normalized = normalize(vector);
+  // // const turn90 = [vector[1], -vector[0]];
+  // const orthogonal = [-normalized[1], normalized[0]];
+  // const reflected = [normalized[1], -normalized[0]];
+  // const dotprod = dot(normalized, vector);
+  // const dotprod_90 = dot(normalized, [vector[1], -vector[0]]);
+  // let i_hat = [1, 0];
+  // let j_hat = [0, 1];
+  // const norm_x = normalized[0] * i_hat[0] + normalized[1] * i_hat[1];
+  // const norm_y = normalized[0] * j_hat[0] + normalized[1] * j_hat[1];
+  // const dot_x = dotprod * i_hat[0] + dotprod * i_hat[1];
+  // const dot_y = dotprod * j_hat[0] + dotprod * j_hat[1];
+  // console.log("norms", norm_x, norm_y);
+  // console.log("dots", dotprod, dotprod_90, dot_x, dot_y);
+  // return [
+  //   norm_x
+  // ]
+
+  // console.log("make_matrix2_reflection", normalized, orthogonal, origin_x, origin_y);
+  // let mat = [
+  //   normalized[0],
+  //   orthogonal[0],
+  //   normalized[1],
+  //   orthogonal[1],
+  //   origin_x, origin_y
+  // ];
+  // multiply_line_matrix2([origin_x, origin_y], vector, mat);
+  // let mat = [1, 0, 0, -1, origin_x, origin_y];
+
+  // //////////////////////////
+  // const a = normalized[0];
+  // const b = normalized[1];
+  // const c = turn90[1];
+  // const d = turn90[0];
+
   // the line of reflection passes through origin, runs along vector
   const angle = Math.atan2(vector[1], vector[0]);
   const cosAngle = Math.cos(angle);
@@ -140,8 +189,8 @@ export const make_matrix2_reflection = function (vector, origin) {
   const b = cosAngle * -sin_Angle + sinAngle * cos_Angle;
   const c = sinAngle * cos_Angle + -cosAngle * sin_Angle;
   const d = sinAngle * -sin_Angle + -cosAngle * cos_Angle;
-  const tx = origin[0] + a * -origin[0] + -origin[1] * c;
-  const ty = origin[1] + b * -origin[0] + -origin[1] * d;
+  const tx = origin_x + a * -origin_x + -origin_y * c;
+  const ty = origin_y + b * -origin_x + -origin_y * d;
   return [a, b, c, d, tx, ty];
 };
 /**

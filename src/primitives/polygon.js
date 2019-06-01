@@ -1,4 +1,4 @@
-import { get_array_of_vec } from "../parse/input";
+import { get_array_of_vec } from "../parse/arguments";
 
 import {
   make_regular_polygon,
