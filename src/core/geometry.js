@@ -1,6 +1,7 @@
+import { EPSILON } from "./equal";
 import { point_on_line } from "./query";
 import { line_edge_exclusive } from "./intersection";
-import { EPSILON, clean_number } from "../parse/clean";
+import { clean_number } from "../parsers/arguments";
 import { normalize, midpoint2 } from "./algebra";
 
 /**

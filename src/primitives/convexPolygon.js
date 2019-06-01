@@ -10,7 +10,7 @@ import {
 import {
   get_line,
   get_array_of_vec,
-} from "../parse/arguments";
+} from "../parsers/arguments";
 
 import Edge from "./edge";
 import Vector from "./vector";

@@ -1,4 +1,4 @@
-import { get_array_of_vec } from "../parse/arguments";
+import { get_vector_of_vectors } from "../parsers/arguments";
 
 import {
   make_regular_polygon,
@@ -11,7 +11,7 @@ import Edge from "./edge";
 import Prototype from "./prototypes/polygon";
 
 const Polygon = function (...args) {
-  const points = get_array_of_vec(args).map(p => Vector(p));
+  const points = get_vector_of_vectors(args).map(p => Vector(p));
   // todo, best practices here
   if (points === undefined) { return undefined; }
   const sides = points

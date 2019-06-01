@@ -24,8 +24,8 @@ import * as algebra from "./core/algebra";
 import * as geometry from "./core/geometry";
 import * as query from "./core/query";
 import * as intersection from "./core/intersection";
-import * as args from "./parse/arguments";
-import { EPSILON, clean_number } from "./parse/clean";
+import * as equal from "./core/equal";
+import * as args from "./parsers/arguments";
 
 import vector from "./primitives/vector";
 import matrix2 from "./primitives/matrix";
@@ -40,10 +40,26 @@ import junction from "./primitives/junction";
 import sector from "./primitives/sector";
 
 const core = Object.create(null);
-Object.assign(core, algebra, geometry, query, args);
-core.EPSILON = EPSILON;
+Object.assign(core, algebra, geometry, query, equal);
+// core.EPSILON = EPSILON;
+// don't copy over all arguments, only export what is needed
+core.clean_number = args.clean_number;
+core.is_number = args.is_number;
+core.is_vector = args.is_vector;
+core.is_iterable = args.is_iterable;
+core.flatten_input = args.flatten_input;
+core.semi_flatten_input = args.semi_flatten_input;
+core.get_vector = args.get_vector;
+core.get_vector_of_vectors = args.get_vector_of_vectors;
+core.get_matrix2 = args.get_matrix2;
+core.get_edge = args.get_edge;
+core.get_line = args.get_line;
+core.get_ray = args.get_ray;
+core.get_two_vec2 = args.get_two_vec2;
+core.get_array_of_vec = args.get_array_of_vec;
+core.get_array_of_vec2 = args.get_array_of_vec2;
+
 core.intersection = intersection;
-core.clean_number = clean_number;
 Object.freeze(core);
 
 const math = {

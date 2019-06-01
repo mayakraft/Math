@@ -1,13 +1,12 @@
+import { equivalent } from "../../core/equal";
+import { parallel } from "../../core/query";
+import { bisect_vectors } from "../../core/geometry";
+
 import {
   get_vector,
   get_matrix2,
   get_line,
-} from "../../parse/arguments";
-
-import {
-  equivalent,
-  parallel,
-} from "../../core/query";
+} from "../../parsers/arguments";
 
 import {
   normalize,
@@ -18,8 +17,6 @@ import {
   make_matrix2_reflection,
   magnitude,
 } from "../../core/algebra";
-
-import { bisect_vectors } from "../../core/geometry";
 
 const VectorPrototype = function (subtype) {
   const proto = [];

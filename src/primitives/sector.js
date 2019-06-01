@@ -1,4 +1,4 @@
-import { get_vector } from "../parse/arguments";
+import { get_vector } from "../parsers/arguments";
 import { counter_clockwise_angle2 } from "../core/geometry";
 import Ray from "./ray";
 

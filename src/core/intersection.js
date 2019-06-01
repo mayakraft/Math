@@ -1,8 +1,7 @@
-import { EPSILON } from "../parse/clean";
-
+import { EPSILON } from "./equal";
 import {
   point_in_convex_poly,
-  point_in_convex_poly_exclusive,
+  point_in_convex_poly_exclusive
 } from "./query";
 
 /*
