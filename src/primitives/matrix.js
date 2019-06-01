@@ -1,7 +1,7 @@
 import {
   get_vector,
   get_matrix2,
-} from "../parse/input";
+} from "../parse/arguments";
 
 import {
   make_matrix2_rotation,

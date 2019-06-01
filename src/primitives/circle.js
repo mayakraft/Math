@@ -2,7 +2,7 @@ import {
   get_line,
   get_ray,
   get_two_vec2,
-} from "../parse/input";
+} from "../parse/arguments";
 
 import {
   circle_line,
@@ -12,7 +12,7 @@ import {
 
 import Vector from "./vector";
 
-export default function (...args) {
+const Circle = function (...args) {
   let origin;
   let radius;
 
@@ -52,4 +52,7 @@ export default function (...args) {
     set origin(innerArgs) { origin = Vector(innerArgs); },
     set radius(newRadius) { radius = newRadius; },
   };
-}
+};
+
+export default Circle;
+

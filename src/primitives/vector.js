@@ -1,4 +1,4 @@
-import { get_vector } from "../parse/input";
+import { get_vector } from "../parse/arguments";
 import Prototype from "./prototypes/vector";
 
 /** n-dimensional vector, but some operations meant only for 2D */

@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/robbykraft/Math.svg?branch=master)](https://travis-ci.org/robbykraft/Math)
 
-this is the math engine for an [origami library](https://github.com/robbykraft/Origami). it has no dependencies. it's small. you probably want a different library if you're just browsing and ended up here.
+this is the math engine for an [origami library](https://github.com/robbykraft/Origami). it has no dependencies, and it's small. you probably want a different math library if a search brought you here.
 
 ## mostly the reason
 
@@ -16,11 +16,11 @@ i wrote this is because origami math often deals with edge cases like asking the
 
 ## node
 
+run it locally. it's not on npm
+
 ``` js
 require("math");
 ```
-
-this isn't published on npm yet. its name will change.
 
 ## dev
 

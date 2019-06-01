@@ -7,59 +7,58 @@
                     __/ |
                    |___/
  */
-
 /*
- * all the logic of the library is accessible under the .core subpath
- * inside .core, strictly obey:
+ * the logic is under ".core", the primitives are under the top level.
+ * the primitives have arguments type inference. the logic core is strict:
+ *
  * all points are array syntax [x,y]
  * all edges are array syntax [[x,y], [x,y]]
  * all infinite lines are defined as point and vector, both [x,y]
  * all polygons are an ordered set of points ([x,y]), either winding direction
- */
-
-/*
- * the primitives are much more accessible, they type check all their inputs
- * and hide their methods into their prototypes as best they can
- * the top level is trying to only contain properties (x,y,z for Vector)
+ *
+ * the primitives store object methods under their prototype,
+ * the top level has properties like x, y, z.
  */
 
 import * as algebra from "./core/algebra";
 import * as geometry from "./core/geometry";
 import * as query from "./core/query";
 import * as intersection from "./core/intersection";
-import * as input from "./parse/input";
+import * as args from "./parse/arguments";
 import { EPSILON, clean_number } from "./parse/clean";
 
-import Vector from "./primitives/vector";
-import Matrix2 from "./primitives/matrix";
-import Line from "./primitives/line";
-import Ray from "./primitives/ray";
-import Edge from "./primitives/edge";
-import Circle from "./primitives/circle";
-import Polygon from "./primitives/polygon";
-import ConvexPolygon from "./primitives/convexPolygon";
-import Rectangle from "./primitives/rectangle";
-import Junction from "./primitives/junction";
-import Sector from "./primitives/sector";
+import vector from "./primitives/vector";
+import matrix2 from "./primitives/matrix";
+import line from "./primitives/line";
+import ray from "./primitives/ray";
+import edge from "./primitives/edge";
+import circle from "./primitives/circle";
+import polygon from "./primitives/polygon";
+import convexPolygon from "./primitives/convexPolygon";
+import rectangle from "./primitives/rectangle";
+import junction from "./primitives/junction";
+import sector from "./primitives/sector";
 
 const core = Object.create(null);
-Object.assign(core, algebra, geometry, query, input);
+Object.assign(core, algebra, geometry, query, args);
 core.EPSILON = EPSILON;
 core.intersection = intersection;
 core.clean_number = clean_number;
 Object.freeze(core);
 
-export {
-  Vector,
-  Circle,
-  Polygon,
-  ConvexPolygon,
-  Rectangle,
-  Matrix2,
-  Line,
-  Ray,
-  Edge,
-  Junction,
-  Sector,
+const math = {
+  vector,
+  matrix2,
+  line,
+  ray,
+  edge,
+  circle,
+  polygon,
+  convexPolygon,
+  rectangle,
+  junction,
+  sector,
   core,
 };
+
+export default math;

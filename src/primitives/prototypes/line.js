@@ -3,7 +3,7 @@ import {
   get_line,
   get_ray,
   get_edge,
-} from "../../parse/input";
+} from "../../parse/arguments";
 
 import {
   parallel,

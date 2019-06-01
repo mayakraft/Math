@@ -5,6 +5,39 @@
  * in the first slot, it won't find the valid data in the second.
  */
 
+const is_iterable = obj => obj != null
+  && typeof obj[Symbol.iterator] === "function";
+
+/**
+ * totally flatten, recursive
+ * @returns an array, always.
+ */
+export const flatten_input = function (...args) {
+  switch (args.length) {
+    case undefined:
+    case 0: return args;
+    case 1: return is_iterable(args[0])
+      ? flatten_input(...args[0])
+      : [args[0]];
+    default:
+      return Array.from(args)
+        .map(a => (is_iterable(a)
+          ? [...flatten_input(a)]
+          : a))
+        .reduce((a, b) => a.concat(b), []);
+  }
+};
+
+/**
+ * flatten only until the point of comma separated entities. iterative
+ * @returns always an array
+ */
+export const semi_flatten_input = function (...args) {
+  let list = args;
+  while (list.length === 1 && list[0].length) { [list] = list; }
+  return list;
+};
+
 /**
  * this searches user-provided inputs for a valid n-dimensional vector
  * which includes objects {x:, y:}, arrays [x,y], or sequences of numbers
@@ -13,90 +46,44 @@
  *   invalid/no input returns an emptry array
 */
 export const get_vector = function (...args) {
-  if (args.length === 0) { return undefined; }
-  if (args.length === 1 && args[0] !== undefined) {
-    return get_vector(...args[0]);
+  let list = flatten_input(args);
+  // let list = semi_flatten_input(args);
+  if (!isNaN(list[0].x)) {
+    list = ["x", "y", "z"].map(c => list[0][c]).filter(a => a !== undefined);
   }
-  // NaN still passes test
-  if (typeof args[0] === "number") { return Array.from(args); }
-  // list of numbers 1, 2, 3, 4, 5
-  // todo, speed test these 2
-  // extra safe
-  //   return Array.from(args).filter(param => !isNaN(param));
-  // }
-  // object with a vector component: {vector:[1,2,3]}
-  if (args[0].vector !== undefined) { return get_vector(args[0].vector); }
-  if (!isNaN(args[0].x)) {
-    return ["x", "y", "z"].map(c => args[0][c]).filter(a => a != null);
-  }
-  // now things are less certain...
-  // if (typeof args[0] === "object") {
-  return get_vector(...args[0]);
-  // }
-  // const arrays = params.filter(param => param.constructor === Array);
+  // console.log("going to break", list);
+  return list.filter(n => typeof n === "number");
+};
+
+export const get_vector_of_vectors = function (...args) {
+  // console.log("get vector of vectors", args);
+  return semi_flatten_input(args)
+    .map(el => get_vector(el));
 };
 
 
 const identity = [1, 0, 0, 1, 0, 0];
-
 /**
  * @returns (number[]) array of number components
  *  invalid/no input returns the identity matrix
 */
 export const get_matrix2 = function (...args) {
-  if (args.length === 0) { return undefined; }
-  if (args.length === 1 && args[0] !== undefined) {
-    return get_matrix2(...args[0]);
+  const m = get_vector(args);
+  if (m.length === 6) { return m; }
+  if (m.length > 6) { return [m[0], m[1], m[3], m[4], m[5], m[6]]; }
+  if (m.length < 6) {
+    return identity.map((n, i) => m[i] || n);
   }
-  // NaN still passes test
-  if (typeof args[0] === "number") {
-    const m = Array.from(args);
-    if (m.length === 6) { return m; }
-    if (m.length === 4) { m.push(0); m.push(0); return m; }
-    // this must be a 3x3 rotation-only matrix. ignoring the Z
-    if (m.length === 9) { return [m[0], m[1], m[3], m[4], 0, 0]; }
-    const m2 = matrix.slice(0, 6);
-    while (m2.length < 6) { m2.push(identity[m2.length]); }
-  }
+  // m doesn't have a length
   return undefined;
 };
 
 /**
  * @returns [[2,3],[10,11]]
 */
-export function get_edge() {
-  let params = Array.from(arguments).filter(p => p != null);
-  let numbers = params.filter((param) => !isNaN(param));
-  let arrays = params.filter((param) => param.constructor === Array);
-  if (params.length === 0) { return undefined; }
-  if (!isNaN(params[0]) && numbers.length >= 4) {
-    return [
-      [params[0], params[1]],
-      [params[2], params[3]]
-    ];
-  }
-  if (arrays.length > 0) {
-    if (arrays.length === 2) {
-      return [
-        [arrays[0][0], arrays[0][1]],
-        [arrays[1][0], arrays[1][1]]
-      ];
-    }
-    else if (arrays.length === 4) {
-      return [
-        [arrays[0], arrays[1]],
-        [arrays[2], arrays[3]]
-      ];
-    }
-    else { return get_edge(...arrays[0]); }
-  }
-  if (params[0].constructor === Object) {
-    if(params[0].points.length > 0) {
-      return params[0].points;
-    }
-  }
+export function get_edge(...args) {
+  return get_vector_of_vectors(args);
 }
-
 
 /**
  * @returns ({ point:[], vector:[] })
