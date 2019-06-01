@@ -2,7 +2,7 @@ import {
   get_line,
   get_ray,
   get_two_vec2,
-} from "../parse/arguments";
+} from "../parsers/arguments";
 
 import {
   circle_line,
@@ -55,4 +55,3 @@ const Circle = function (...args) {
 };
 
 export default Circle;
-

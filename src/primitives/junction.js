@@ -1,7 +1,7 @@
 import {
   get_vector,
   get_array_of_vec,
-} from "../parse/arguments";
+} from "../parsers/arguments";
 
 import { counter_clockwise_angle2 } from "../core/geometry";
 

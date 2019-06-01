@@ -2,7 +2,7 @@
 // in the header of rollup a flag set to true.
 const argument = {
   // log: console.log,
-  log: function () {},
+  log: () => {}
 };
 
 /**

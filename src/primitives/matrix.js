@@ -1,7 +1,8 @@
 import {
   get_vector,
   get_matrix2,
-} from "../parse/arguments";
+  clean_number,
+} from "../parsers/arguments";
 
 import {
   make_matrix2_rotation,
@@ -10,8 +11,6 @@ import {
   multiply_matrices2,
   multiply_vector2_matrix2,
 } from "../core/algebra";
-
-import { clean_number } from "../parse/clean";
 
 import Vector from "./vector";
 /**

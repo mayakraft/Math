@@ -3,7 +3,7 @@ import {
   get_matrix2,
   get_line,
   get_edge,
-} from "../../parse/arguments";
+} from "../../parsers/arguments";
 
 import {
   convex_poly_edge,

@@ -3,14 +3,14 @@ import {
   get_line,
   get_ray,
   get_edge,
-} from "../../parse/arguments";
+} from "../../parsers/arguments";
 
 import {
   parallel,
   degenerate,
 } from "../../core/query";
 
-import { EPSILON } from "../../parse/clean";
+import { EPSILON } from "../../core/equal";
 import { intersection_function } from "../../core/intersection";
 import { nearest_point } from "../../core/geometry";
 import Vector from "../vector";

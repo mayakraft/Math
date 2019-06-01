@@ -5,7 +5,23 @@
  * in the first slot, it won't find the valid data in the second.
  */
 
-const is_iterable = obj => obj != null
+/**
+ * clean floating point numbers
+ * example: 15.0000000000000002 into 15
+ * the epsilon is adjustable default 15 places for Javascript's 16 digit float.
+ * the remainder will be chopped off, make this epsilon as small as possible.
+ * @args must be a number! do you own checking. this is for speed.
+ */
+export const clean_number = function (num, places = 15) {
+  return parseFloat(num.toFixed(places));
+};
+
+/**
+ * type checking
+ */
+export const is_number = (n => n != null && !isNaN(n));
+export const is_vector = (a => a != null && a[0] != null && !isNaN(a[0]));
+export const is_iterable = obj => obj != null
   && typeof obj[Symbol.iterator] === "function";
 
 /**
@@ -39,11 +55,10 @@ export const semi_flatten_input = function (...args) {
 };
 
 /**
- * this searches user-provided inputs for a valid n-dimensional vector
- * which includes objects {x:, y:}, arrays [x,y], or sequences of numbers
+ * search function arguments for a valid n-dimensional vector
+ * can handle object-vector representation {x:, y:}
  *
- * @returns (number[]) array of number components
- *   invalid/no input returns an emptry array
+ * @returns (number[]) vector in array form, or empty array for bad inputs
 */
 export const get_vector = function (...args) {
   let list = flatten_input(args);
@@ -55,17 +70,24 @@ export const get_vector = function (...args) {
   return list.filter(n => typeof n === "number");
 };
 
+/**
+ * search function arguments for a an array of vectors. a vector of vectors
+ * can handle object-vector representation {x:, y:}
+ *
+ * @returns (number[]) vector in array form, or empty array for bad inputs
+*/
 export const get_vector_of_vectors = function (...args) {
   // console.log("get vector of vectors", args);
   return semi_flatten_input(args)
     .map(el => get_vector(el));
 };
 
-
 const identity = [1, 0, 0, 1, 0, 0];
+
 /**
- * @returns (number[]) array of number components
- *  invalid/no input returns the identity matrix
+ * a matrix2 is a 2x3 matrix, 2x2 with a column to represent translation
+ *
+ * @returns {number[]} array of 6 numbers, or undefined if bad inputs
 */
 export const get_matrix2 = function (...args) {
   const m = get_vector(args);

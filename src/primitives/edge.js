@@ -6,7 +6,7 @@ import {
 import {
   get_two_vec2,
   get_matrix2,
-} from "../parse/arguments";
+} from "../parsers/arguments";
 
 import { limit_edge } from "../core/intersection";
 
