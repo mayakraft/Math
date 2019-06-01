@@ -190,7 +190,7 @@ testEqual(
 testName("circle");
 testEqual(
   [[0.5, Math.sqrt(3) / 2], [0.5, -Math.sqrt(3) / 2]],
-  math.circle(0, 0, 1).intersectionLine(math.line(0.5, 0, 0, 1)),
+  math.circle(0, 0, 1).intersectionLine(math.line(0.5, 0, 0, 1))
 );
 
 testName("polygon");

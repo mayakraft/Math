@@ -8,8 +8,8 @@ import {
 export const is_number = (n => n != null && !isNaN(n));
 export const is_vector = (a => a != null && a[0] != null && !isNaN(a[0]));
 
-const is_iterable = (o => o != null
-  && typeof o[Symbol.iterator] === "function");
+// const is_iterable = (o => o != null
+//   && typeof o[Symbol.iterator] === "function");
 
 /**
  * the generalized vector intersection function
