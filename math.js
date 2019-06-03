@@ -51,13 +51,13 @@
   var distance2 = function distance2(a, b) {
     var p = a[0] - b[0];
     var q = a[1] - b[1];
-    return Math.sqrt(Math.pow(p, 2) + Math.pow(q, 2));
+    return Math.sqrt(p * p + q * q);
   };
   var distance3 = function distance3(a, b) {
     var c = a[0] - b[0];
     var d = a[1] - b[1];
     var e = a[2] - b[2];
-    return Math.sqrt(Math.pow(c, 2) + Math.pow(d, 2) + Math.pow(e, 2));
+    return Math.sqrt(c * c + d * d + e * e);
   };
   var midpoint2 = function midpoint2(a, b) {
     return a.map(function (_, i) {
@@ -105,8 +105,8 @@
   var make_matrix2_rotation = function make_matrix2_rotation(angle, origin) {
     var a = Math.cos(angle);
     var b = Math.sin(angle);
-    var c = -Math.sin(angle);
-    var d = Math.cos(angle);
+    var c = -b;
+    var d = a;
     var tx = origin != null ? origin[0] : 0;
     var ty = origin != null ? origin[1] : 0;
     return [a, b, c, d, tx, ty];
@@ -1700,11 +1700,15 @@
   };
 
   var Matrix2 = function Matrix2() {
+    var matrix = [];
+
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    var matrix = get_matrix2(args);
+    get_matrix2(args).forEach(function (n) {
+      return matrix.push(n);
+    });
 
     var inverse = function inverse() {
       return Matrix2(make_matrix2_inverse(matrix).map(function (n) {
@@ -1734,16 +1738,16 @@
       }));
     };
 
-    return {
-      inverse: inverse,
-      multiply: multiply,
-      transform: transform,
-
-      get m() {
-        return matrix;
-      }
-
-    };
+    Object.defineProperty(matrix, "inverse", {
+      value: inverse
+    });
+    Object.defineProperty(matrix, "multiply", {
+      value: multiply
+    });
+    Object.defineProperty(matrix, "transform", {
+      value: transform
+    });
+    return Object.freeze(matrix);
   };
 
   Matrix2.makeIdentity = function () {

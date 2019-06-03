@@ -83,7 +83,7 @@ export const cross3 = function (a, b) {
 export const distance2 = function (a, b) {
   const p = a[0] - b[0];
   const q = a[1] - b[1];
-  return Math.sqrt((p ** 2) + (q ** 2));
+  return Math.sqrt((p * p) + (q * q));
 };
 /**
  * @param two vectors, 3-D
@@ -93,7 +93,7 @@ export const distance3 = function (a, b) {
   const c = a[0] - b[0];
   const d = a[1] - b[1];
   const e = a[2] - b[2];
-  return Math.sqrt((c ** 2) + (d ** 2) + (e ** 2));
+  return Math.sqrt((c * c) + (d * d) + (e * e));
 };
 /**
  * @param {number[]} two vectors
@@ -144,41 +144,6 @@ export const make_matrix2_reflection = function (vector, origin) {
   // origin is optional
   const origin_x = origin && origin[0] ? origin[0] : 0;
   const origin_y = origin && origin[1] ? origin[1] : 0;
-  // const normalized = normalize(vector);
-  // // const turn90 = [vector[1], -vector[0]];
-  // const orthogonal = [-normalized[1], normalized[0]];
-  // const reflected = [normalized[1], -normalized[0]];
-  // const dotprod = dot(normalized, vector);
-  // const dotprod_90 = dot(normalized, [vector[1], -vector[0]]);
-  // let i_hat = [1, 0];
-  // let j_hat = [0, 1];
-  // const norm_x = normalized[0] * i_hat[0] + normalized[1] * i_hat[1];
-  // const norm_y = normalized[0] * j_hat[0] + normalized[1] * j_hat[1];
-  // const dot_x = dotprod * i_hat[0] + dotprod * i_hat[1];
-  // const dot_y = dotprod * j_hat[0] + dotprod * j_hat[1];
-  // console.log("norms", norm_x, norm_y);
-  // console.log("dots", dotprod, dotprod_90, dot_x, dot_y);
-  // return [
-  //   norm_x
-  // ]
-
-  // console.log("make_matrix2_reflection", normalized, orthogonal, origin_x, origin_y);
-  // let mat = [
-  //   normalized[0],
-  //   orthogonal[0],
-  //   normalized[1],
-  //   orthogonal[1],
-  //   origin_x, origin_y
-  // ];
-  // multiply_line_matrix2([origin_x, origin_y], vector, mat);
-  // let mat = [1, 0, 0, -1, origin_x, origin_y];
-
-  // //////////////////////////
-  // const a = normalized[0];
-  // const b = normalized[1];
-  // const c = turn90[1];
-  // const d = turn90[0];
-
   // the line of reflection passes through origin, runs along vector
   const angle = Math.atan2(vector[1], vector[0]);
   const cosAngle = Math.cos(angle);
@@ -200,8 +165,8 @@ export const make_matrix2_reflection = function (vector, origin) {
 export const make_matrix2_rotation = function (angle, origin) {
   const a = Math.cos(angle);
   const b = Math.sin(angle);
-  const c = -Math.sin(angle);
-  const d = Math.cos(angle);
+  const c = -b;
+  const d = a;
   const tx = (origin != null) ? origin[0] : 0;
   const ty = (origin != null) ? origin[1] : 0;
   return [a, b, c, d, tx, ty];
