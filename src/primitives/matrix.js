@@ -17,7 +17,8 @@ import Vector from "./vector";
  * 2D Matrix (2x3) with translation component in x,y
  */
 const Matrix2 = function (...args) {
-  const matrix = get_matrix2(args);
+  const matrix = [];
+  get_matrix2(args).forEach(n => matrix.push(n));
 
   const inverse = function () {
     return Matrix2(make_matrix2_inverse(matrix)
@@ -33,13 +34,12 @@ const Matrix2 = function (...args) {
     return Vector(multiply_vector2_matrix2(v, matrix)
       .map(n => clean_number(n)));
   };
-  // return Object.freeze( {
-  return {
-    inverse,
-    multiply,
-    transform,
-    get m() { return matrix; },
-  };
+
+  Object.defineProperty(matrix, "inverse", { value: inverse });
+  Object.defineProperty(matrix, "multiply", { value: multiply });
+  Object.defineProperty(matrix, "transform", { value: transform });
+
+  return Object.freeze(matrix);
 };
 
 // static methods

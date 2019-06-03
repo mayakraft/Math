@@ -66,7 +66,6 @@ export const get_vector = function (...args) {
   if (!isNaN(list[0].x)) {
     list = ["x", "y", "z"].map(c => list[0][c]).filter(a => a !== undefined);
   }
-  // console.log("going to break", list);
   return list.filter(n => typeof n === "number");
 };
 
@@ -77,7 +76,6 @@ export const get_vector = function (...args) {
  * @returns (number[]) vector in array form, or empty array for bad inputs
 */
 export const get_vector_of_vectors = function (...args) {
-  // console.log("get vector of vectors", args);
   return semi_flatten_input(args)
     .map(el => get_vector(el));
 };

@@ -8,6 +8,10 @@ const bar = "============================================================";
 let name = "beginning of tests";
 let testNumber = 1;
 
+// math constants
+const sqrt05 = Math.sqrt(0.5);
+
+
 const testName = function (newName) {
   name = newName;
   testNumber = 1;
@@ -91,6 +95,7 @@ testName("get matrix");
 testEqual([1, 2, 3, 4, 5, 6], math.core.get_matrix2([[[1, 2, 3, 4, 5, 6]]]));
 testEqual([1, 2, 3, 4, 0, 0], math.core.get_matrix2([[1, 2, 3, 4]]));
 testEqual([1, 2, 3, 1, 0, 0], math.core.get_matrix2(1, 2, 3));
+testEqual([1, 2, 3, 1, 0, 0], math.core.get_matrix2(math.matrix2(1, 2, 3, 1)));
 
 /**
  * queries
@@ -151,6 +156,29 @@ testName("vector lerp");
 testEqual([15.5, 3.5, 3], math.vector(30, 5, 3).lerp([1, 2, 3], 0.5));
 
 /**
+ * matrices
+ */
+
+testName("matrices");
+testEqual([1, 2, 3, 4, 5, 6], math.matrix2(1, 2, 3, 4, 5, 6));
+testEqual([0, 3], math.matrix2(2, 1, -1, 2, -1, 0).transform(1, 1));
+testEqual([1, 0, 0, 1, 6, 7], math.matrix2.makeTranslation(6, 7));
+testEqual([0, 1, 1, -0, -8, 8], math.matrix2.makeReflection([1, 1], [-5, 3]));
+testEqual(
+  [sqrt05, sqrt05, -sqrt05, sqrt05, 1, 1],
+  math.matrix2.makeRotation(Math.PI / 4, [1, 1])
+);
+testEqual(
+  [sqrt05, -sqrt05, sqrt05, sqrt05, -sqrt05, sqrt05],
+  math.matrix2(sqrt05, sqrt05, -sqrt05, sqrt05, 1, 0).inverse()
+);
+testEqual(
+  [Math.sqrt(4.5), sqrt05, -sqrt05, Math.sqrt(4.5), Math.sqrt(4.5), sqrt05],
+  math.matrix2(sqrt05, -sqrt05, sqrt05, sqrt05, 0, 0)
+    .multiply(math.matrix2(1, 2, -2, 1, 1, 2))
+);
+
+/**
  * lines, rays, edges
  */
 
@@ -166,12 +194,12 @@ testEqual(false, math.line(0, 0, -1, 1).isParallel(math.edge(10, 0, 1, 1)));
 
 testName("line ray edge reflection matrices");
 testEqual(
-  math.line(10, 0, -1, 1).reflection().m,
-  math.ray(10, 0, -1, 1).reflection().m
+  math.line(10, 0, -1, 1).reflection(),
+  math.ray(10, 0, -1, 1).reflection()
 );
 testEqual(
-  math.edge(10, 0, 0, 10).reflection().m,
-  math.ray(10, 0, -1, 1).reflection().m
+  math.edge(10, 0, 0, 10).reflection(),
+  math.ray(10, 0, -1, 1).reflection()
 );
 
 testName("line ray edge nearest points");
@@ -191,10 +219,22 @@ testEqual(
 );
 
 testName("circle");
+testEqual(5, math.circle(1, 2, 5).radius);
+testEqual([1, 2], math.circle(1, 2, 5).origin);
 testEqual(
   [[0.5, Math.sqrt(3) / 2], [0.5, -Math.sqrt(3) / 2]],
   math.circle(0, 0, 1).intersectionLine(math.line(0.5, 0, 0, 1))
 );
+// todo, this needs to be written
+// testEqual(
+//   [Math.sqrt(2) / 2, -Math.sqrt(2) / 2],
+//   math.circle(0, 0, 1).intersectionRay(math.ray(0, 0, 0.1, 0.1))
+// );
+// testEqual(
+//   [Math.sqrt(2) / 2, -Math.sqrt(2) / 2],
+//   math.circle(0, 0, 1).intersectionEdge(math.edge(0, 0, 10, 10))
+// );
+
 
 testName("polygon");
 testEqual(
