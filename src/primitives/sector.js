@@ -1,46 +1,40 @@
-import { get_vector } from "../parsers/arguments";
-import { counter_clockwise_angle2 } from "../core/geometry";
-import Ray from "./ray";
+import {
+  get_vector
+} from "../parsers/arguments";
+
+import {
+  counter_clockwise_angle2,
+  subsect
+} from "../core/geometry";
+
+// in progress: thinking that "center" isn't necessary, should we remove?
+// import Ray from "./ray";
 
 // a sector is defined as the interior angle space FROM A to B
 // it's important you supply parameters in that order
-const Sector = function (center_point, pointA, pointB) {
-  const center = get_vector(center_point);
-  // const points = [get_vector(pointA), get_vector(pointB)];
-  const points = [pointA, pointB];
-  const vectors = points.map(p => p.map((_, i) => p[i] - center[i]));
-  const angle = counter_clockwise_angle2(vectors[0], vectors[1]);
+const Sector = function (vectorA, vectorB, center = [0, 0]) {
+  const vectors = [get_vector(vectorA), get_vector(vectorB)];
 
   const bisect = function () {
-    const angles = vectors.map(el => Math.atan2(el[1], el[0]));
-    const bisected = angles[0] + angle * 0.5;
-    return Ray(center[0], center[1], Math.cos(bisected), Math.sin(bisected));
+    const interior_angle = counter_clockwise_angle2(vectors[0], vectors[1]);
+    const vectors_radians = vectors.map(el => Math.atan2(el[1], el[0]));
+    const bisected = vectors_radians[0] + interior_angle * 0.5;
+    return [Math.cos(bisected), Math.sin(bisected)];
   };
+
   // const subsect = function(divisions:number):Ray[]{
-  // const subsect = function (divisions) {
-  //   if(divisions == undefined || divisions < 2){
-  //    throw "subset() requires number parameter > 1";
-  //   }
-  //   var angles = this.vectors().map(function(el){ return Math.atan2(el.y, el.x); });
-  //   while(angles[0] < 0){ angles[0] += Math.PI*2; }
-  //   while(angles[1] < 0){ angles[1] += Math.PI*2; }
-  //   var interior = counter_clockwise_angle2_radians(angles[0], angles[1]);
-  //   var rays = [];
-  //   for(var i = 1; i < divisions; i++){
-  //    var angleA = angles[0] + interior * (i/divisions);
-  //    rays.push(new Ray(new XY(this.origin.x, this.origin.y),
-  //    new XY(Math.cos(angleA), Math.sin(angleA))));
-  //   }
-  //   return rays;
-  // };
+  const subsect_sector = function (divisions) {
+    return subsect(divisions, vectors[0], vectors[1])
+      .map(vec => [vec[0], vec[1]]);
+  };
 
   /** a sector contains a point if it is between the two edges in counter-clockwise order */
   const contains = function (...args) {
-    const point = get_vector(args);
-    const cross0 = (point[1] - points[0][1]) * (center[0] - points[0][0])
-                 - (point[0] - points[0][0]) * (center[1] - points[0][1]);
-    const cross1 = (point[1] - center[1]) * (points[1][0] - center[0])
-                 - (point[0] - center[0]) * (points[1][1] - center[1]);
+    // move the point into the sector's space
+    const point = get_vector(args).map((n, i) => n + center[i]);
+    const cross0 = (point[1] - vectors[0][1]) * -vectors[0][0]
+                 - (point[0] - vectors[0][0]) * -vectors[0][1];
+    const cross1 = point[1] * vectors[1][0] - point[0] * vectors[1][1];
     return cross0 < 0 && cross1 < 0;
   };
 
@@ -48,12 +42,20 @@ const Sector = function (center_point, pointA, pointB) {
   return {
     contains,
     bisect,
-    // subsect,
+    subsect: subsect_sector,
     get center() { return center; },
-    get points() { return points; },
     get vectors() { return vectors; },
-    get angle() { return angle; },
+    get angle() { return counter_clockwise_angle2(vectors[0], vectors[1]); },
   };
+};
+
+Sector.fromVectors = function (vectorA, vectorB) {
+  return Sector(vectorA, vectorB);
+};
+
+Sector.fromPoints = function (pointA, pointB, center = [0, 0]) {
+  const vectors = [pointA, pointB].map(p => p.map((_, i) => p[i] - center[i]));
+  return Sector(vectors[0], vectors[1], center);
 };
 
 export default Sector;

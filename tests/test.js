@@ -7,6 +7,7 @@ const bar = "============================================================";
 // globals keep track of tests for more information during a fail
 let name = "beginning of tests";
 let testNumber = 1;
+const failedTests = [];
 
 // math constants
 const sqrt05 = Math.sqrt(0.5);
@@ -22,11 +23,15 @@ const testName = function (newName) {
  */
 const testEqual = function (...args) {
   if (!math.core.equivalent(...args)) {
-    console.log(`${bar}\ntest failed. #${testNumber} of ${name}\n${bar}`);
-    throw args;
-  }
-  if (verbose) {
-    console.log(`...test passed #${testNumber} of ${name}`);
+    // test failed
+    const message = `xxx test failed. #${testNumber} of ${name}`;
+    failedTests.push({ message, args });
+    if (verbose) { console.log(message); }
+  } else {
+    // test passed
+    if (verbose) {
+      console.log(`... test passed #${testNumber} of ${name}`);
+    }
   }
   testNumber += 1;
 };
@@ -218,6 +223,10 @@ testEqual(
   math.ray(10, 0, -1, 1).nearestPoint([0, 0])
 );
 
+/**
+ * polygons
+ */
+
 testName("circle");
 testEqual(5, math.circle(1, 2, 5).radius);
 testEqual([1, 2], math.circle(1, 2, 5).origin);
@@ -259,4 +268,76 @@ testName("prototype member variables accessing 'this'");
 testEqual(4, math.polygon.regularPolygon(4).edges.length);
 testEqual(4, math.polygon.regularPolygon(4).area());
 
-console.log(`${bar}\nall tests pass\n${bar}`);
+/**
+ * junctions, sectors, interior angles
+ */
+
+testName("interior angles");
+testEqual(
+  [Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
+  [[1, 0], [0, 1], [-1, 0], [0, -1]].map((v, i, ar) => math.core
+    .counter_clockwise_angle2(v, ar[(i + 1) % ar.length]))
+);
+testEqual(
+  [Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
+  [[1, 1], [-1, 1], [-1, -1], [1, -1]].map((v, i, ar) => math.core
+    .counter_clockwise_angle2(v, ar[(i + 1) % ar.length]))
+);
+
+testName("counter-clockwise vector sorting");
+testEqual(
+  [0, 1, 2, 3],
+  math.core.counter_clockwise_vector_order([1, 1], [-1, 1], [-1, -1], [1, -1])
+);
+testEqual(
+  [0, 3, 2, 1],
+  math.core.counter_clockwise_vector_order([1, -1], [-1, -1], [-1, 1], [1, 1])
+);
+
+testName("sectors");
+testEqual(Math.PI / 2, math.sector.fromVectors([1, 0], [0, 1]).angle);
+testEqual(true, math.sector.fromVectors([1, 0], [0, 1]).contains([1, 1]));
+testEqual(false, math.sector.fromVectors([1, 0], [0, 1]).contains([-1, 1]));
+testEqual(false, math.sector.fromVectors([1, 0], [0, 1]).contains([-1, -1]));
+testEqual(false, math.sector.fromVectors([1, 0], [0, 1]).contains([1, -1]));
+
+testName("junctions");
+testEqual([[1, 1], [1, -1], [-1, 1], [-1, -1]],
+  math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).vectors);
+testEqual([0, 2, 3, 1],
+  math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).vectorOrder);
+testEqual([Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
+  math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).angles());
+
+/**
+ * origami math
+ */
+
+testName("kawasaki's theorem math");
+testEqual([16, 20], math.core.alternating_sum(1, 2, 3, 4, 5, 6, 7, 8));
+testEqual([0, 0], math.core.kawasaki_sector_score(Math.PI, Math.PI));
+testEqual([0, 0], math.core.kawasaki_sector_score(
+  Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2
+));
+testEqual([1, -1],
+  math.core.kawasaki_sector_score(Math.PI - 1, Math.PI + 1));
+testEqual([0, 0],
+  math.core.kawasaki_sector_score(...math.core.interior_angles([1, 0], [0, 1], [-1, 0], [0, -1])));
+testEqual(
+  [[-sqrt05, -sqrt05], [1, 0], [sqrt05, -sqrt05]],
+  math.core.kawasaki_solutions_vectors([1, 0], [0, 1], [-1, 1])
+);
+testEqual(
+  [[-sqrt05, -sqrt05], [1, 0], [sqrt05, -sqrt05]],
+  math.core.kawasaki_solutions_radians(
+    Math.PI / 2, Math.PI / 4, Math.PI * 5 / 4
+  )
+);
+
+if (failedTests.length) {
+  console.log(`${bar}\nFailed tests and arguments\n`);
+  failedTests.forEach(test => console.log(`${test.message}\n${test.args}\n${bar}`));
+  throw new Error("tests failed");
+} else {
+  console.log(`${bar}\nall tests pass\n${bar}\n`);
+}

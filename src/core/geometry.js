@@ -76,16 +76,46 @@ export const counter_clockwise_angle2 = function (a, b) {
   return angle;
 };
 
-/** There are 2 interior angles between 2 vectors, return both, the smaller first
+/**
+ * given vectors, make a separate array of radially-sorted vector indices
+ * @returns {number[]}, already c-cwise sorted would give [0,1,2,3,4]
+ *
+ * maybe there is such thing as an absolute radial origin (x axis?)
+ * but this chooses the first element as the first element
+ * and sort everything else counter-clockwise around it.
+ */
+export const counter_clockwise_vector_order = function (...vectors) {
+  const vectors_radians = vectors.map(v => Math.atan2(v[1], v[0]));
+  const counter_clockwise = Array.from(Array(vectors_radians.length))
+    .map((_, i) => i)
+    .sort((a, b) => vectors_radians[a] - vectors_radians[b]);
+  return counter_clockwise
+    .slice(counter_clockwise.indexOf(0), counter_clockwise.length)
+    .concat(counter_clockwise.slice(0, counter_clockwise.indexOf(0)));
+};
+
+/** There are 2 interior angles between 2 vectors, return both,
+ * (no longer the the smaller first, but counter-clockwise from the first)
  * @param {[number, number]} vector
  * @returns {[number, number]} 2 angle measurements between vectors
  */
 export const interior_angles2 = function (a, b) {
-  const interior1 = clockwise_angle2(a, b);
+  const interior1 = counter_clockwise_angle2(a, b);
   const interior2 = Math.PI * 2 - interior1;
-  return (interior1 < interior2)
-    ? [interior1, interior2]
-    : [interior2, interior1];
+  // return (interior1 < interior2)
+  //   ? [interior1, interior2]
+  //   : [interior2, interior1];
+  return [interior1, interior2];
+};
+
+/**
+ * very important! this does not do any sorting. it calculates the interior
+ * angle between each consecutive vector. if you need them to add up to 360deg,
+ * you'll need to pre-sort your vectors with counter_clockwise_vector_order
+ */
+export const interior_angles = function (...vectors) {
+  return vectors
+    .map((v, i, ar) => counter_clockwise_angle2(v, ar[(i + 1) % ar.length]));
 };
 
 /** This bisects 2 vectors into both smaller and larger outside angle bisections [small, large]
@@ -124,6 +154,25 @@ export const bisect_lines2 = function (pointA, vectorA, pointB, vectorB) {
   const bisects = bisect_vectors(vectorA, vectorB);
   bisects[1] = [bisects[1][1], -bisects[1][0]];
   return bisects.map(el => [[x, y], el]);
+};
+
+/**
+ * subsect the angle between two vectors already converted to radians
+ */
+export const subsect_radians = function (divisions, angleA, angleB) {
+  const angle = counter_clockwise_angle2(angleA, angleB) / divisions;
+  return Array.from(Array(divisions - 1))
+    .map((_, i) => angleA + angle * i);
+};
+
+/**
+ * subsect the angle between two vectors (counter-clockwise from A to B)
+ */
+export const subsect = function (divisions, vectorA, vectorB) {
+  const angleA = Math.atan2(vectorA[1], vectorA[0]);
+  const angleB = Math.atan2(vectorB[1], vectorB[0]);
+  return subsect_radians(divisions, angleA, angleB)
+    .map(rad => [Math.cos(rad), Math.sin(rad)]);
 };
 
 /** Calculates the signed area of a polygon. This requires the polygon be non-intersecting.
