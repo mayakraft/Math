@@ -81,11 +81,16 @@ export const counter_clockwise_angle2 = function (a, b) {
  * @returns {[number, number]} 2 angle measurements between vectors
  */
 export const interior_angles2 = function (a, b) {
-  const interior1 = clockwise_angle2(a, b);
+  const interior1 = counter_clockwise_angle2(a, b);
   const interior2 = Math.PI * 2 - interior1;
   return (interior1 < interior2)
     ? [interior1, interior2]
     : [interior2, interior1];
+};
+
+export const interior_angles = function (...vectors) {
+  return vectors
+    .map((v, i, ar) => counter_clockwise_angle2(v, ar[(i + 1) % ar.length]));
 };
 
 /** This bisects 2 vectors into both smaller and larger outside angle bisections [small, large]

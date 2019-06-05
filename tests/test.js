@@ -259,4 +259,38 @@ testName("prototype member variables accessing 'this'");
 testEqual(4, math.polygon.regularPolygon(4).edges.length);
 testEqual(4, math.polygon.regularPolygon(4).area());
 
+testName("interior angles");
+testEqual(
+  [Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
+  [[1, 0], [0, 1], [-1, 0], [0, -1]].map((v, i, ar) => math.core
+    .counter_clockwise_angle2(v, ar[(i + 1) % ar.length]))
+);
+testEqual(
+  [Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
+  [[1, 1], [-1, 1], [-1, -1], [1, -1]].map((v, i, ar) => math.core
+    .counter_clockwise_angle2(v, ar[(i + 1) % ar.length]))
+);
+
+testName("kawasaki's theorem math");
+testEqual([16, 20], math.core.alternating_sum(1, 2, 3, 4, 5, 6, 7, 8));
+testEqual([0, 0], math.core.kawasaki_from_even_radians(Math.PI, Math.PI));
+testEqual([0, 0], math.core.kawasaki_from_even_radians(
+  Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2
+));
+testEqual([1, -1],
+  math.core.kawasaki_from_even_radians(Math.PI - 1, Math.PI + 1));
+testEqual([0, 0],
+  math.core.kawasaki_from_even_vectors([1, 0], [0, 1], [-1, 0], [0, -1]));
+testEqual(
+  [[-sqrt05, -sqrt05], [1, 0], [sqrt05, -sqrt05]],
+  math.core.kawasaki_solutions_vectors([1, 0], [0, 1], [-1, 1])
+);
+testEqual(
+  [[-sqrt05, -sqrt05], [1, 0], [sqrt05, -sqrt05]],
+  math.core.kawasaki_solutions_radians(
+    Math.PI / 2, Math.PI / 4, Math.PI * 5 / 4
+  )
+);
+
+
 console.log(`${bar}\nall tests pass\n${bar}`);

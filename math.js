@@ -1151,9 +1151,18 @@
     return angle;
   };
   var interior_angles2 = function interior_angles2(a, b) {
-    var interior1 = clockwise_angle2(a, b);
+    var interior1 = counter_clockwise_angle2(a, b);
     var interior2 = Math.PI * 2 - interior1;
     return interior1 < interior2 ? [interior1, interior2] : [interior2, interior1];
+  };
+  var interior_angles = function interior_angles() {
+    for (var _len = arguments.length, vectors = new Array(_len), _key = 0; _key < _len; _key++) {
+      vectors[_key] = arguments[_key];
+    }
+
+    return vectors.map(function (v, i, ar) {
+      return counter_clockwise_angle2(v, ar[(i + 1) % ar.length]);
+    });
   };
   var bisect_vectors = function bisect_vectors(a, b) {
     var aV = normalize(a);
@@ -1406,6 +1415,7 @@
     clockwise_angle2: clockwise_angle2,
     counter_clockwise_angle2: counter_clockwise_angle2,
     interior_angles2: interior_angles2,
+    interior_angles: interior_angles,
     bisect_vectors: bisect_vectors,
     bisect_lines2: bisect_lines2,
     signed_area: signed_area,
@@ -1414,6 +1424,54 @@
     split_polygon: split_polygon,
     split_convex_polygon: split_convex_polygon,
     convex_hull: convex_hull
+  });
+
+  var alternating_sum = function alternating_sum() {
+    for (var _len = arguments.length, angles = new Array(_len), _key = 0; _key < _len; _key++) {
+      angles[_key] = arguments[_key];
+    }
+
+    return [0, 1].map(function (even_odd) {
+      return angles.filter(function (_, i) {
+        return i % 2 === even_odd;
+      }).reduce(function (a, b) {
+        return a + b;
+      }, 0);
+    });
+  };
+  var kawasaki_from_even_radians = function kawasaki_from_even_radians() {
+    return alternating_sum.apply(void 0, arguments).map(function (s) {
+      return Math.PI - s;
+    });
+  };
+  var kawasaki_from_even_vectors = function kawasaki_from_even_vectors() {
+    return kawasaki_from_even_radians.apply(void 0, _toConsumableArray(interior_angles.apply(void 0, arguments)));
+  };
+  var kawasaki_solutions_radians = function kawasaki_solutions_radians() {
+    for (var _len2 = arguments.length, angles = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      angles[_key2] = arguments[_key2];
+    }
+
+    return angles.map(function (_, i, arr) {
+      return arr.slice(i + 1, arr.length).concat(arr.slice(0, i));
+    }).map(function (a) {
+      return kawasaki_from_even_radians.apply(void 0, _toConsumableArray(a));
+    }).map(function (kawasakis, i) {
+      return kawasakis == null ? undefined : angles[i] + kawasakis[0];
+    }).map(function (k) {
+      return k === undefined ? undefined : [Math.cos(k), Math.sin(k)];
+    });
+  };
+  var kawasaki_solutions_vectors = function kawasaki_solutions_vectors() {
+    return kawasaki_solutions_radians.apply(void 0, _toConsumableArray(interior_angles.apply(void 0, arguments)));
+  };
+
+  var origami = /*#__PURE__*/Object.freeze({
+    alternating_sum: alternating_sum,
+    kawasaki_from_even_radians: kawasaki_from_even_radians,
+    kawasaki_from_even_vectors: kawasaki_from_even_vectors,
+    kawasaki_solutions_radians: kawasaki_solutions_radians,
+    kawasaki_solutions_vectors: kawasaki_solutions_vectors
   });
 
   var VectorPrototype = function VectorPrototype(subtype) {
@@ -2818,7 +2876,7 @@
   };
 
   var core = Object.create(null);
-  Object.assign(core, algebra, geometry, query, equal);
+  Object.assign(core, algebra, geometry, query, equal, origami);
   core.clean_number = clean_number;
   core.is_number = is_number;
   core.is_vector = is_vector;
