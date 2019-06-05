@@ -267,7 +267,13 @@
       args[_key3] = arguments[_key3];
     }
 
-    var list = flatten_input(args);
+    var list = flatten_input(args).filter(function (a) {
+      return a !== undefined;
+    });
+
+    if (list.length === 0) {
+      return undefined;
+    }
 
     if (!isNaN(list[0].x)) {
       list = ["x", "y", "z"].map(function (c) {
@@ -727,6 +733,17 @@
     }, true);
     return !outerGoesInside && innerGoesOutside;
   };
+  var is_counter_clockwise_between = function is_counter_clockwise_between(angle, angleA, angleB) {
+    while (angleB < angleA) {
+      angleB += Math.PI * 2;
+    }
+
+    while (angle < angleA) {
+      angle += Math.PI * 2;
+    }
+
+    return angle < angleB;
+  };
 
   var query = /*#__PURE__*/Object.freeze({
     overlap_function: overlap_function,
@@ -740,7 +757,8 @@
     point_in_convex_poly_exclusive: point_in_convex_poly_exclusive,
     convex_polygons_overlap: convex_polygons_overlap,
     convex_polygon_is_enclosed: convex_polygon_is_enclosed,
-    convex_polygons_enclose: convex_polygons_enclose
+    convex_polygons_enclose: convex_polygons_enclose,
+    is_counter_clockwise_between: is_counter_clockwise_between
   });
 
   var line_line_comp = function line_line_comp() {
@@ -1471,34 +1489,47 @@
     });
   };
   var kawasaki_sector_score = function kawasaki_sector_score() {
-    return alternating_sum.apply(void 0, arguments).map(function (s) {
+    return alternating_sum.apply(void 0, arguments).map(function (a) {
+      return a < 0 ? a + Math.PI * 2 : a;
+    }).map(function (s) {
       return Math.PI - s;
     });
   };
   var kawasaki_solutions_radians = function kawasaki_solutions_radians() {
-    for (var _len2 = arguments.length, angles = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      angles[_key2] = arguments[_key2];
+    for (var _len2 = arguments.length, vectors_radians = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      vectors_radians[_key2] = arguments[_key2];
     }
 
-    return angles.map(function (_, i, arr) {
+    return vectors_radians.map(function (v, i, ar) {
+      return counter_clockwise_angle2_radians(v, ar[(i + 1) % ar.length]);
+    }).map(function (_, i, arr) {
       return arr.slice(i + 1, arr.length).concat(arr.slice(0, i));
-    }).map(function (a) {
-      return kawasaki_sector_score.apply(void 0, _toConsumableArray(a));
+    }).map(function (opposite_sectors) {
+      return kawasaki_sector_score.apply(void 0, _toConsumableArray(opposite_sectors));
     }).map(function (kawasakis, i) {
-      return kawasakis == null ? undefined : angles[i] + kawasakis[0];
-    }).map(function (k) {
-      return k === undefined ? undefined : [Math.cos(k), Math.sin(k)];
+      return vectors_radians[i] + kawasakis[0];
+    }).map(function (angle, i) {
+      return is_counter_clockwise_between(angle, vectors_radians[i], vectors_radians[(i + 1) % vectors_radians.length]) ? angle : undefined;
     });
   };
-  var kawasaki_solutions_vectors = function kawasaki_solutions_vectors() {
-    return kawasaki_solutions_radians.apply(void 0, _toConsumableArray(interior_angles.apply(void 0, arguments)));
+  var kawasaki_solutions = function kawasaki_solutions() {
+    for (var _len3 = arguments.length, vectors = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+      vectors[_key3] = arguments[_key3];
+    }
+
+    var vectors_radians = vectors.map(function (v) {
+      return Math.atan2(v[1], v[0]);
+    });
+    return kawasaki_solutions_radians.apply(void 0, _toConsumableArray(vectors_radians)).map(function (a) {
+      return a === undefined ? undefined : [clean_number(Math.cos(a), 14), clean_number(Math.sin(a), 14)];
+    });
   };
 
   var origami = /*#__PURE__*/Object.freeze({
     alternating_sum: alternating_sum,
     kawasaki_sector_score: kawasaki_sector_score,
     kawasaki_solutions_radians: kawasaki_solutions_radians,
-    kawasaki_solutions_vectors: kawasaki_solutions_vectors
+    kawasaki_solutions: kawasaki_solutions
   });
 
   var VectorPrototype = function VectorPrototype(subtype) {
@@ -2849,7 +2880,7 @@
       return kawasaki_sector_score.apply(void 0, _toConsumableArray(angles()));
     };
 
-    var kawasaki_solutions = function kawasaki_solutions() {
+    var kawasaki_solutions$$1 = function kawasaki_solutions$$1() {
       return kawasaki_solutions_radians.apply(void 0, _toConsumableArray(angles()));
     };
 
@@ -2857,7 +2888,7 @@
       sectors: sectors,
       angles: angles,
       kawasaki_score: kawasaki_score,
-      kawasaki_solutions: kawasaki_solutions,
+      kawasaki_solutions: kawasaki_solutions$$1,
       alternatingAngleSum: alternatingAngleSum,
 
       get vectors() {

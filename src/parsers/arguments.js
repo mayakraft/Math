@@ -61,8 +61,8 @@ export const semi_flatten_input = function (...args) {
  * @returns (number[]) vector in array form, or empty array for bad inputs
 */
 export const get_vector = function (...args) {
-  let list = flatten_input(args);
-  // let list = semi_flatten_input(args);
+  let list = flatten_input(args).filter(a => a !== undefined);
+  if (list.length === 0) { return undefined; }
   if (!isNaN(list[0].x)) {
     list = ["x", "y", "z"].map(c => list[0][c]).filter(a => a !== undefined);
   }

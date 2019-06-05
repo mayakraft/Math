@@ -163,6 +163,12 @@ export const convex_polygons_enclose = function (inner, outer) {
   return (!outerGoesInside && innerGoesOutside);
 };
 
+export const is_counter_clockwise_between = function (angle, angleA, angleB) {
+  while (angleB < angleA) { angleB += Math.PI * 2; }
+  while (angle < angleA) { angle += Math.PI * 2; }
+  return angle < angleB;
+};
+
 
 /**
 ████████╗██████╗ ██╗   ██╗███████╗    ███████╗ █████╗ ██╗     ███████╗███████╗

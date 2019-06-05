@@ -46,6 +46,7 @@ testEqual([5, 3], math.core.semi_flatten_input([[[5, 3]]]));
 testEqual([[5], [3]], math.core.semi_flatten_input([[[5], [3]]]));
 testEqual([[[5]], [[3]]], math.core.semi_flatten_input([[[5]], [[3]]]));
 testEqual([[[[5]]], [[[3]]]], math.core.semi_flatten_input([[[5]]], [[[3]]]));
+testEqual(true, undefined === math.core.get_vector(undefined, undefined));
 
 testName("flatten input");
 testEqual([1], math.core.flatten_input([[[1]], []]));
@@ -321,18 +322,39 @@ testEqual([0, 0], math.core.kawasaki_sector_score(
 ));
 testEqual([1, -1],
   math.core.kawasaki_sector_score(Math.PI - 1, Math.PI + 1));
+testEqual([1, -1],
+  math.core.kawasaki_sector_score(
+    Math.PI / 2 - 0.5,
+    Math.PI / 2 + 0.5,
+    Math.PI / 2 - 0.5,
+    Math.PI / 2 + 0.5
+  ));
 testEqual([0, 0],
   math.core.kawasaki_sector_score(...math.core.interior_angles([1, 0], [0, 1], [-1, 0], [0, -1])));
 testEqual(
-  [[-sqrt05, -sqrt05], [1, 0], [sqrt05, -sqrt05]],
-  math.core.kawasaki_solutions_vectors([1, 0], [0, 1], [-1, 1])
-);
-testEqual(
-  [[-sqrt05, -sqrt05], [1, 0], [sqrt05, -sqrt05]],
+  [undefined, undefined, 1.25 * Math.PI],
   math.core.kawasaki_solutions_radians(
-    Math.PI / 2, Math.PI / 4, Math.PI * 5 / 4
+    0, Math.PI / 2, Math.PI / 4 * 3
   )
 );
+testEqual(
+  [[Math.cos(Math.PI * 1 / 3), Math.sin(Math.PI * 1 / 3)],
+    [Math.cos(Math.PI * 3 / 3), Math.sin(Math.PI * 3 / 3)],
+    [Math.cos(Math.PI * 5 / 3), Math.sin(Math.PI * 5 / 3)]],
+  math.core.kawasaki_solutions(
+    [Math.cos(0), Math.sin(0)],
+    [Math.cos(Math.PI * 2 / 3), Math.sin(Math.PI * 2 / 3)],
+    [Math.cos(Math.PI * 4 / 3), Math.sin(Math.PI * 4 / 3)]
+  )
+);
+testEqual([undefined, undefined, [-sqrt05, -sqrt05]],
+  math.core.kawasaki_solutions(
+    [Math.cos(0), Math.sin(0)],
+    [Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)],
+    [Math.cos(Math.PI / 2), Math.sin(Math.PI / 2)]
+  ));
+
+
 
 if (failedTests.length) {
   console.log(`${bar}\nFailed tests and arguments\n`);
