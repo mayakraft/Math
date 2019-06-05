@@ -25,12 +25,12 @@ export const alternating_sum = function (...angles) {
  * sums is 2 arrays, array filtered into even and odd, summed
  *
  */
-export const kawasaki_from_even_radians = function (...angles) {
+export const kawasaki_sector_score = function (...angles) {
   return alternating_sum(...angles).map(s => Math.PI - s);
 };
-export const kawasaki_from_even_vectors = function (...vectors) {
-  return kawasaki_from_even_radians(...interior_angles(...vectors));
-};
+// export const kawasaki_from_even_vectors = function (...vectors) {
+//   return kawasaki_sector_score(...interior_angles(...vectors));
+// };
 
 /**
  *
@@ -41,7 +41,7 @@ export const kawasaki_solutions_radians = function (...angles) {
   return angles
     .map((_, i, arr) => arr.slice(i + 1, arr.length).concat(arr.slice(0, i)))
     // for every sector, get an array of all the OTHER sectors
-    .map(a => kawasaki_from_even_radians(...a))
+    .map(a => kawasaki_sector_score(...a))
     // change these relative angle solutions to absolute angles
     .map((kawasakis, i) => (kawasakis == null
       ? undefined

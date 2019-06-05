@@ -1150,14 +1150,29 @@
 
     return angle;
   };
+  var counter_clockwise_vector_order = function counter_clockwise_vector_order() {
+    for (var _len = arguments.length, vectors = new Array(_len), _key = 0; _key < _len; _key++) {
+      vectors[_key] = arguments[_key];
+    }
+
+    var vectors_radians = vectors.map(function (v) {
+      return Math.atan2(v[1], v[0]);
+    });
+    var counter_clockwise = Array.from(Array(vectors_radians.length)).map(function (_, i) {
+      return i;
+    }).sort(function (a, b) {
+      return vectors_radians[a] - vectors_radians[b];
+    });
+    return counter_clockwise.slice(counter_clockwise.indexOf(0), counter_clockwise.length).concat(counter_clockwise.slice(0, counter_clockwise.indexOf(0)));
+  };
   var interior_angles2 = function interior_angles2(a, b) {
     var interior1 = counter_clockwise_angle2(a, b);
     var interior2 = Math.PI * 2 - interior1;
-    return interior1 < interior2 ? [interior1, interior2] : [interior2, interior1];
+    return [interior1, interior2];
   };
   var interior_angles = function interior_angles() {
-    for (var _len = arguments.length, vectors = new Array(_len), _key = 0; _key < _len; _key++) {
-      vectors[_key] = arguments[_key];
+    for (var _len2 = arguments.length, vectors = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      vectors[_key2] = arguments[_key2];
     }
 
     return vectors.map(function (v, i, ar) {
@@ -1195,6 +1210,19 @@
     bisects[1] = [bisects[1][1], -bisects[1][0]];
     return bisects.map(function (el) {
       return [[x, y], el];
+    });
+  };
+  var subsect_radians = function subsect_radians(divisions, angleA, angleB) {
+    var angle = counter_clockwise_angle2(angleA, angleB) / divisions;
+    return Array.from(Array(divisions - 1)).map(function (_, i) {
+      return angleA + angle * i;
+    });
+  };
+  var subsect = function subsect(divisions, vectorA, vectorB) {
+    var angleA = Math.atan2(vectorA[1], vectorA[0]);
+    var angleB = Math.atan2(vectorB[1], vectorB[0]);
+    return subsect_radians(divisions, angleA, angleB).map(function (rad) {
+      return [Math.cos(rad), Math.sin(rad)];
     });
   };
   var signed_area = function signed_area(points) {
@@ -1414,10 +1442,13 @@
     counter_clockwise_angle2_radians: counter_clockwise_angle2_radians,
     clockwise_angle2: clockwise_angle2,
     counter_clockwise_angle2: counter_clockwise_angle2,
+    counter_clockwise_vector_order: counter_clockwise_vector_order,
     interior_angles2: interior_angles2,
     interior_angles: interior_angles,
     bisect_vectors: bisect_vectors,
     bisect_lines2: bisect_lines2,
+    subsect_radians: subsect_radians,
+    subsect: subsect,
     signed_area: signed_area,
     centroid: centroid,
     enclosing_rectangle: enclosing_rectangle,
@@ -1439,13 +1470,10 @@
       }, 0);
     });
   };
-  var kawasaki_from_even_radians = function kawasaki_from_even_radians() {
+  var kawasaki_sector_score = function kawasaki_sector_score() {
     return alternating_sum.apply(void 0, arguments).map(function (s) {
       return Math.PI - s;
     });
-  };
-  var kawasaki_from_even_vectors = function kawasaki_from_even_vectors() {
-    return kawasaki_from_even_radians.apply(void 0, _toConsumableArray(interior_angles.apply(void 0, arguments)));
   };
   var kawasaki_solutions_radians = function kawasaki_solutions_radians() {
     for (var _len2 = arguments.length, angles = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
@@ -1455,7 +1483,7 @@
     return angles.map(function (_, i, arr) {
       return arr.slice(i + 1, arr.length).concat(arr.slice(0, i));
     }).map(function (a) {
-      return kawasaki_from_even_radians.apply(void 0, _toConsumableArray(a));
+      return kawasaki_sector_score.apply(void 0, _toConsumableArray(a));
     }).map(function (kawasakis, i) {
       return kawasakis == null ? undefined : angles[i] + kawasakis[0];
     }).map(function (k) {
@@ -1468,8 +1496,7 @@
 
   var origami = /*#__PURE__*/Object.freeze({
     alternating_sum: alternating_sum,
-    kawasaki_from_even_radians: kawasaki_from_even_radians,
-    kawasaki_from_even_vectors: kawasaki_from_even_vectors,
+    kawasaki_sector_score: kawasaki_sector_score,
     kawasaki_solutions_radians: kawasaki_solutions_radians,
     kawasaki_solutions_vectors: kawasaki_solutions_vectors
   });
@@ -2255,22 +2282,23 @@
     };
   };
 
-  var Sector = function Sector(center_point, pointA, pointB) {
-    var center = get_vector(center_point);
-    var points = [pointA, pointB];
-    var vectors = points.map(function (p) {
-      return p.map(function (_, i) {
-        return p[i] - center[i];
-      });
-    });
-    var angle = counter_clockwise_angle2(vectors[0], vectors[1]);
+  var Sector = function Sector(vectorA, vectorB) {
+    var center = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [0, 0];
+    var vectors = [get_vector(vectorA), get_vector(vectorB)];
 
     var bisect = function bisect() {
-      var angles = vectors.map(function (el) {
+      var interior_angle = counter_clockwise_angle2(vectors[0], vectors[1]);
+      var vectors_radians = vectors.map(function (el) {
         return Math.atan2(el[1], el[0]);
       });
-      var bisected = angles[0] + angle * 0.5;
-      return Ray(center[0], center[1], Math.cos(bisected), Math.sin(bisected));
+      var bisected = vectors_radians[0] + interior_angle * 0.5;
+      return [Math.cos(bisected), Math.sin(bisected)];
+    };
+
+    var subsect_sector = function subsect_sector(divisions) {
+      return subsect(divisions, vectors[0], vectors[1]).map(function (vec) {
+        return [vec[0], vec[1]];
+      });
     };
 
     var contains = function contains() {
@@ -2278,22 +2306,21 @@
         args[_key] = arguments[_key];
       }
 
-      var point = get_vector(args);
-      var cross0 = (point[1] - points[0][1]) * (center[0] - points[0][0]) - (point[0] - points[0][0]) * (center[1] - points[0][1]);
-      var cross1 = (point[1] - center[1]) * (points[1][0] - center[0]) - (point[0] - center[0]) * (points[1][1] - center[1]);
+      var point = get_vector(args).map(function (n, i) {
+        return n + center[i];
+      });
+      var cross0 = (point[1] - vectors[0][1]) * -vectors[0][0] - (point[0] - vectors[0][0]) * -vectors[0][1];
+      var cross1 = point[1] * vectors[1][0] - point[0] * vectors[1][1];
       return cross0 < 0 && cross1 < 0;
     };
 
     return {
       contains: contains,
       bisect: bisect,
+      subsect: subsect_sector,
 
       get center() {
         return center;
-      },
-
-      get points() {
-        return points;
       },
 
       get vectors() {
@@ -2301,10 +2328,24 @@
       },
 
       get angle() {
-        return angle;
+        return counter_clockwise_angle2(vectors[0], vectors[1]);
       }
 
     };
+  };
+
+  Sector.fromVectors = function (vectorA, vectorB) {
+    return Sector(vectorA, vectorB);
+  };
+
+  Sector.fromPoints = function (pointA, pointB) {
+    var center = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [0, 0];
+    var vectors = [pointA, pointB].map(function (p) {
+      return p.map(function (_, i) {
+        return p[i] - center[i];
+      });
+    });
+    return Sector(vectors[0], vectors[1], center);
   };
 
   function Prototype$1 (subtype) {
@@ -2767,112 +2808,80 @@
     return rect;
   };
 
-  var Junction = function Junction(center_point, adjacent_points) {
-    var points = get_array_of_vec(adjacent_points);
+  var Junction = function Junction() {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    if (points === undefined) {
+    var vectors = get_vector_of_vectors(args);
+
+    if (vectors === undefined) {
       return undefined;
     }
 
-    var center = get_vector(center_point);
-    var vectors = points.map(function (p) {
-      return p.map(function (_, i) {
-        return p[i] - center_point[i];
-      });
-    });
-    var angles = vectors.map(function (v) {
-      return Math.atan2(v[1], v[0]);
-    });
-    var clockwise_order = Array.from(Array(angles.length)).map(function (_, i) {
-      return i;
-    }).sort(function (a, b) {
-      return angles[a] - angles[b];
-    });
-    clockwise_order = clockwise_order.slice(clockwise_order.indexOf(0), clockwise_order.length).concat(clockwise_order.slice(0, clockwise_order.indexOf(0)));
-
-    var kawasaki = function kawasaki() {};
+    var sorted_order = counter_clockwise_vector_order.apply(void 0, _toConsumableArray(vectors));
 
     var sectors = function sectors() {
-      return clockwise_order.map(function (_, i) {
-        return Sector(center, points[clockwise_order[i]], points[clockwise_order[(i + 1) % clockwise_order.length]]);
+      return sorted_order.map(function (i) {
+        return vectors[i];
+      }).map(function (v, i, arr) {
+        return [v, arr[(i + 1) % arr.length]];
+      }).map(function (pair) {
+        return Sector.fromVectors(pair[0], pair[1]);
+      });
+    };
+
+    var angles = function angles() {
+      return sorted_order.map(function (i) {
+        return vectors[i];
+      }).map(function (v, i, arr) {
+        return [v, arr[(i + 1) % arr.length]];
+      }).map(function (pair) {
+        return counter_clockwise_angle2(pair[0], pair[1]);
       });
     };
 
     var alternatingAngleSum = function alternatingAngleSum() {
-      var interior = sectors().map(function (s) {
-        return s.angle;
-      });
-      return [interior.filter(function (_, i) {
-        return i % 2 === 0;
-      }).reduce(function (a, b) {
-        return a + b;
-      }, 0), interior.filter(function (_, i) {
-        return i % 2 === 1;
-      }).reduce(function (a, b) {
-        return a + b;
-      }, 0)];
+      return alternating_sum.apply(void 0, _toConsumableArray(angles()));
     };
 
-    var kawasaki_from_even = function kawasaki_from_even(array) {
-      return [0, 1].map(function (e_o) {
-        return array.filter(function (_, i) {
-          return i % 2 === e_o;
-        }).reduce(function (a, b) {
-          return a + b;
-        }, 0);
-      }).map(function (s) {
-        return Math.PI - s;
-      });
+    var kawasaki_score = function kawasaki_score() {
+      return kawasaki_sector_score.apply(void 0, _toConsumableArray(angles()));
     };
 
     var kawasaki_solutions = function kawasaki_solutions() {
-      return clockwise_order.map(function (_, i, arr) {
-        var thisV = vectors[arr[i]];
-        var nextV = vectors[arr[(i + 1) % arr.length]];
-        return counter_clockwise_angle2(thisV, nextV);
-      }).map(function (_, i, arr) {
-        return arr.slice(i + 1, arr.length).concat(arr.slice(0, i));
-      }).map(function (a) {
-        return kawasaki_from_even(a);
-      }).map(function (kawasakis, i) {
-        return kawasakis == null ? undefined : angles[clockwise_order[i]] + kawasakis[0];
-      }).map(function (k) {
-        return k === undefined ? undefined : [Math.cos(k), Math.sin(k)];
-      });
+      return kawasaki_solutions_radians.apply(void 0, _toConsumableArray(angles()));
     };
 
     return {
-      kawasaki: kawasaki,
+      sectors: sectors,
+      angles: angles,
+      kawasaki_score: kawasaki_score,
       kawasaki_solutions: kawasaki_solutions,
       alternatingAngleSum: alternatingAngleSum,
-      sectors: sectors,
-
-      get center() {
-        return center;
-      },
-
-      get points() {
-        return points;
-      },
 
       get vectors() {
         return vectors;
       },
 
-      get angles() {
-        return angles;
+      get vectorOrder() {
+        return _toConsumableArray(sorted_order);
       }
 
     };
   };
 
-  Junction.fromVectors = function (center, vectors) {
-    var points = get_array_of_vec(vectors).map(function (v) {
-      return v.map(function (n, i) {
-        return n + center[i];
+  Junction.fromVectors = function () {
+    return Junction.apply(void 0, arguments);
+  };
+
+  Junction.fromPoints = function (center, edge_adjacent_points) {
+    var vectors = edge_adjacent_points.map(function (p) {
+      return p.map(function (_, i) {
+        return p[i] - center[i];
       });
     });
-    return Junction(center, points);
+    return Junction.fromVectors(vectors);
   };
 
   var core = Object.create(null);
