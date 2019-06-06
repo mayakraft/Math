@@ -59,6 +59,16 @@
     var e = a[2] - b[2];
     return Math.sqrt(c * c + d * d + e * e);
   };
+  var distance = function distance(a, b) {
+    var dimension = a.length;
+    var sum = 0;
+
+    for (var i = 0; i < dimension; i += 1) {
+      sum += Math.pow(a[i] - b[i], 2);
+    }
+
+    return Math.sqrt(sum);
+  };
   var midpoint2 = function midpoint2(a, b) {
     return a.map(function (_, i) {
       return (a[i] + b[i]) / 2;
@@ -130,6 +140,7 @@
     cross3: cross3,
     distance2: distance2,
     distance3: distance3,
+    distance: distance,
     midpoint2: midpoint2,
     multiply_vector2_matrix2: multiply_vector2_matrix2,
     multiply_line_matrix2: multiply_line_matrix2,
@@ -432,6 +443,8 @@
     if (arrays.length === 1 && !isNaN(arrays[0][0][0])) {
       return arrays[0];
     }
+
+    return undefined;
   }
   function get_array_of_vec() {
     for (var _len8 = arguments.length, args = new Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
@@ -1089,39 +1102,6 @@
     convex_poly_edge: convex_poly_edge
   });
 
-  var make_regular_polygon = function make_regular_polygon(sides) {
-    var x = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-    var y = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-    var radius = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
-    var halfwedge = 2 * Math.PI / sides * 0.5;
-    var r = radius / Math.cos(halfwedge);
-    return Array.from(Array(Math.floor(sides))).map(function (_, i) {
-      var a = -2 * Math.PI * i / sides + halfwedge;
-      var px = clean_number(x + r * Math.sin(a), 14);
-      var py = clean_number(y + r * Math.cos(a), 14);
-      return [px, py];
-    });
-  };
-  var nearest_point = function nearest_point(linePoint, lineVec, point, limiterFunc) {
-    var epsilon = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : EPSILON;
-    var magSquared = Math.pow(lineVec[0], 2) + Math.pow(lineVec[1], 2);
-    var vectorToPoint = [0, 1].map(function (_, i) {
-      return point[i] - linePoint[i];
-    });
-    var pTo0 = [0, 1].map(function (_, i) {
-      return point[i] - linePoint[i];
-    });
-    var dot$$1 = [0, 1].map(function (_, i) {
-      return lineVec[i] * vectorToPoint[i];
-    }).reduce(function (a, b) {
-      return a + b;
-    }, 0);
-    var distance = dot$$1 / magSquared;
-    var d = limiterFunc(distance, epsilon);
-    return [0, 1].map(function (_, i) {
-      return linePoint[i] + lineVec[i] * d;
-    });
-  };
   var clockwise_angle2_radians = function clockwise_angle2_radians(a, b) {
     while (a < 0) {
       a += Math.PI * 2;
@@ -1287,6 +1267,69 @@
     });
     return [mins, lengths];
   };
+  var make_regular_polygon = function make_regular_polygon(sides) {
+    var x = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var y = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var radius = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
+    var halfwedge = 2 * Math.PI / sides * 0.5;
+    var r = radius / Math.cos(halfwedge);
+    return Array.from(Array(Math.floor(sides))).map(function (_, i) {
+      var a = -2 * Math.PI * i / sides + halfwedge;
+      var px = clean_number(x + r * Math.sin(a), 14);
+      var py = clean_number(y + r * Math.cos(a), 14);
+      return [px, py];
+    });
+  };
+
+  var smallest_comparison_search = function smallest_comparison_search(obj, array, compare_func) {
+    var objs = array.map(function (o, i) {
+      return {
+        o: o,
+        i: i,
+        d: compare_func(obj, o)
+      };
+    });
+    var index;
+    var smallest_value = Infinity;
+
+    for (var i = 0; i < objs.length; i += 1) {
+      if (objs[i].d < smallest_value) {
+        index = i;
+        smallest_value = objs[i].d;
+      }
+    }
+
+    return index;
+  };
+
+  var nearest_point2 = function nearest_point2(point, array_of_points) {
+    var index = smallest_comparison_search(point, array_of_points, distance2);
+    return index === undefined ? undefined : array_of_points[index];
+  };
+  var nearest_point = function nearest_point(point, array_of_points) {
+    var index = smallest_comparison_search(point, array_of_points, distance);
+    return index === undefined ? undefined : array_of_points[index];
+  };
+  var nearest_point_on_line = function nearest_point_on_line(linePoint, lineVec, point, limiterFunc) {
+    var epsilon = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : EPSILON;
+    var magSquared = Math.pow(lineVec[0], 2) + Math.pow(lineVec[1], 2);
+    var vectorToPoint = [0, 1].map(function (_, i) {
+      return point[i] - linePoint[i];
+    });
+    var pTo0 = [0, 1].map(function (_, i) {
+      return point[i] - linePoint[i];
+    });
+    var dot$$1 = [0, 1].map(function (_, i) {
+      return lineVec[i] * vectorToPoint[i];
+    }).reduce(function (a, b) {
+      return a + b;
+    }, 0);
+    var distance$$1 = dot$$1 / magSquared;
+    var d = limiterFunc(distance$$1, epsilon);
+    return [0, 1].map(function (_, i) {
+      return linePoint[i] + lineVec[i] * d;
+    });
+  };
   var split_polygon = function split_polygon(poly, linePoint, lineVector) {
     var vertices_intersections = poly.map(function (v, i) {
       var intersection = point_on_line(linePoint, lineVector, v);
@@ -1425,8 +1468,8 @@
       angles = angles.filter(function (el) {
         return Math.abs(rightTurn.angle - el.angle) < epsilon;
       }).map(function (el) {
-        var distance = Math.sqrt(Math.pow(hull[h][0] - el.node[0], 2) + Math.pow(hull[h][1] - el.node[1], 2));
-        el.distance = distance;
+        var distance$$1 = Math.sqrt(Math.pow(hull[h][0] - el.node[0], 2) + Math.pow(hull[h][1] - el.node[1], 2));
+        el.distance = distance$$1;
         return el;
       }).sort(function (a, b) {
         return a.distance < b.distance ? 1 : a.distance > b.distance ? -1 : 0;
@@ -1454,8 +1497,6 @@
   };
 
   var geometry = /*#__PURE__*/Object.freeze({
-    make_regular_polygon: make_regular_polygon,
-    nearest_point: nearest_point,
     clockwise_angle2_radians: clockwise_angle2_radians,
     counter_clockwise_angle2_radians: counter_clockwise_angle2_radians,
     clockwise_angle2: clockwise_angle2,
@@ -1470,6 +1511,10 @@
     signed_area: signed_area,
     centroid: centroid,
     enclosing_rectangle: enclosing_rectangle,
+    make_regular_polygon: make_regular_polygon,
+    nearest_point2: nearest_point2,
+    nearest_point: nearest_point,
+    nearest_point_on_line: nearest_point_on_line,
     split_polygon: split_polygon,
     split_convex_polygon: split_convex_polygon,
     convex_hull: convex_hull
@@ -1930,7 +1975,7 @@
       }
 
       var point = get_vector(args);
-      return Vector(nearest_point(this.point, this.vector, point, this.clip_function));
+      return Vector(nearest_point_on_line(this.point, this.vector, point, this.clip_function));
     };
 
     var intersect = function intersect(other) {

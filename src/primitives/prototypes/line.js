@@ -12,7 +12,7 @@ import {
 
 import { EPSILON } from "../../core/equal";
 import { intersection_function } from "../../core/intersection";
-import { nearest_point } from "../../core/geometry";
+import { nearest_point_on_line } from "../../core/geometry";
 import Vector from "../vector";
 import Matrix2 from "../matrix";
 
@@ -63,7 +63,7 @@ export default function (subtype, prototype) {
 
   const nearestPoint = function (...args) {
     const point = get_vector(args);
-    return Vector(nearest_point(this.point, this.vector, point, this.clip_function));
+    return Vector(nearest_point_on_line(this.point, this.vector, point, this.clip_function));
   };
   const intersect = function (other) {
     return intersection_function(this.point, this.vector, other.point,
