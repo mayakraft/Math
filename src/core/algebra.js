@@ -96,6 +96,18 @@ export const distance3 = function (a, b) {
   return Math.sqrt((c * c) + (d * d) + (e * e));
 };
 /**
+ * @param two vectors, n-dimensions
+ * @returns vector
+ */
+export const distance = function (a, b) {
+  const dimension = a.length;
+  let sum = 0;
+  for (let i = 0; i < dimension; i += 1) {
+    sum += (a[i] - b[i]) ** 2;
+  }
+  return Math.sqrt(sum);
+};
+/**
  * @param {number[]} two vectors
  * @returns {number[]} one vector
  */

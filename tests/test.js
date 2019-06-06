@@ -97,6 +97,12 @@ testEqual([[1], [2], [3], [4]],
 testEqual([[1], [2], [3], [4]],
   math.core.get_vector_of_vectors([[[1, 2, 3, 4]]]));
 
+testName("get two vectors");
+testEqual([[1, 2], [3, 4]], math.edge(1, 2, 3, 4));
+testEqual([[1, 2], [3, 4]], math.edge([1, 2], [3, 4]));
+testEqual([[1, 2], [3, 4]], math.edge([1, 2, 3, 4]));
+testEqual([[1, 2], [3, 4]], math.edge([[1, 2], [3, 4]]));
+
 testName("get matrix");
 testEqual([1, 2, 3, 4, 5, 6], math.core.get_matrix2([[[1, 2, 3, 4, 5, 6]]]));
 testEqual([1, 2, 3, 4, 0, 0], math.core.get_matrix2([[1, 2, 3, 4]]));
@@ -354,7 +360,12 @@ testEqual([undefined, undefined, [-sqrt05, -sqrt05]],
     [Math.cos(Math.PI / 2), Math.sin(Math.PI / 2)]
   ));
 
-
+testName("nearest point");
+testEqual([5, 5], math.core.nearest_point2([10, 0],
+  [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9]]));
+testEqual([6, 6, 0], math.core.nearest_point([10, 0, 0],
+  [[0, 0, 0], [1, 1, 0], [2, 2, 0], [3, 3, 0], [4, 4, 1],
+    [5, 5, 10], [6, 6, 0], [7, 7, 0], [8, 8, 0], [9, 9, 0]]));
 
 if (failedTests.length) {
   console.log(`${bar}\nFailed tests and arguments\n`);

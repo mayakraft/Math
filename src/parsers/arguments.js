@@ -157,8 +157,8 @@ export function get_two_vec2(...args) {
     return get_two_vec2(...args[0]);
   }
   const params = Array.from(args);
-  const numbers = params.filter((param) => !isNaN(param));
-  const arrays = params.filter((param) => param.constructor === Array);
+  const numbers = params.filter(param => !isNaN(param));
+  const arrays = params.filter(param => param.constructor === Array);
   if (numbers.length >= 4) {
     return [
       [numbers[0], numbers[1]],
@@ -171,6 +171,7 @@ export function get_two_vec2(...args) {
   if (arrays.length === 1 && !isNaN(arrays[0][0][0])) {
     return arrays[0];
   }
+  return undefined;
 }
 
 export function get_array_of_vec(...args) {
