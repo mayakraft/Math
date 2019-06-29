@@ -428,7 +428,9 @@
     var numbers = params.filter(function (param) {
       return !isNaN(param);
     });
-    var arrays = params.filter(function (param) {
+    var arrays = params.filter(function (o) {
+      return _typeof(o) === "object";
+    }).filter(function (param) {
       return param.constructor === Array;
     });
 
@@ -1074,7 +1076,36 @@
         return intersections;
 
       default:
-        throw "clipping edge in a convex polygon resulting in 3 or more points";
+        throw new Error("clipping edge in a convex polygon resulting in 3 or more points");
+    }
+  };
+  var convex_poly_ray_exclusive = function convex_poly_ray_exclusive(poly, linePoint, lineVector) {
+    var intersections = poly.map(function (p, i, arr) {
+      return [p, arr[(i + 1) % arr.length]];
+    }).map(function (el) {
+      return ray_edge_exclusive(linePoint, lineVector, el[0], el[1]);
+    }).filter(function (el) {
+      return el != null;
+    });
+
+    switch (intersections.length) {
+      case 0:
+        return undefined;
+
+      case 1:
+        return [linePoint, intersections[0]];
+
+      case 2:
+        return intersections;
+
+      default:
+        for (var i = 1; i < intersections.length; i += 1) {
+          if (!quick_equivalent_2(intersections[0], intersections[i])) {
+            return [intersections[0], intersections[i]];
+          }
+        }
+
+        return undefined;
     }
   };
 
@@ -1099,7 +1130,8 @@
     circle_edge: circle_edge,
     convex_poly_line: convex_poly_line,
     convex_poly_ray: convex_poly_ray,
-    convex_poly_edge: convex_poly_edge
+    convex_poly_edge: convex_poly_edge,
+    convex_poly_ray_exclusive: convex_poly_ray_exclusive
   });
 
   var clockwise_angle2_radians = function clockwise_angle2_radians(a, b) {
@@ -1873,7 +1905,7 @@
 
     var inverse = function inverse() {
       return Matrix2(make_matrix2_inverse(matrix).map(function (n) {
-        return clean_number(n);
+        return clean_number(n, 13);
       }));
     };
 
@@ -1884,7 +1916,7 @@
 
       var m2 = get_matrix2(innerArgs);
       return Matrix2(multiply_matrices2(matrix, m2).map(function (n) {
-        return clean_number(n);
+        return clean_number(n, 13);
       }));
     };
 
@@ -1895,7 +1927,7 @@
 
       var v = get_vector(innerArgs);
       return Vector(multiply_vector2_matrix2(v, matrix).map(function (n) {
-        return clean_number(n);
+        return clean_number(n, 13);
       }));
     };
 

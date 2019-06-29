@@ -288,6 +288,28 @@ export const convex_poly_edge = function (poly, edgeA, edgeB) {
       ? [[...edgeA], intersections[0]]
       : [[...edgeB], intersections[0]]);
     case 2: return intersections;
-    default: throw "clipping edge in a convex polygon resulting in 3 or more points";
+    default: throw new Error("clipping edge in a convex polygon resulting in 3 or more points");
+  }
+};
+
+// exclusive functions
+
+export const convex_poly_ray_exclusive = function (poly, linePoint, lineVector) {
+  const intersections = poly
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into edge pairs
+    .map(el => ray_edge_exclusive(linePoint, lineVector, el[0], el[1]))
+    .filter(el => el != null);
+  switch (intersections.length) {
+    case 0: return undefined;
+    case 1: return [linePoint, intersections[0]];
+    case 2: return intersections;
+    // default: throw "clipping ray in a convex polygon resulting in 3 or more points";
+    default:
+      for (let i = 1; i < intersections.length; i += 1) {
+        if (!quick_equivalent_2(intersections[0], intersections[i])) {
+          return [intersections[0], intersections[i]];
+        }
+      }
+      return undefined;
   }
 };

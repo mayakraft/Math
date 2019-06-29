@@ -158,7 +158,8 @@ export function get_two_vec2(...args) {
   }
   const params = Array.from(args);
   const numbers = params.filter(param => !isNaN(param));
-  const arrays = params.filter(param => param.constructor === Array);
+  const arrays = params.filter(o => typeof o === "object")
+    .filter(param => param.constructor === Array);
   if (numbers.length >= 4) {
     return [
       [numbers[0], numbers[1]],
