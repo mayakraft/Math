@@ -6,12 +6,11 @@ import {
 
 import {
   normalize,
-  average,
-  multiply_line_matrix2,
+  average
 } from "../core/algebra";
 
+import { multiply_line_matrix2 } from "../core/matrix";
 import { limit_line } from "../core/intersection";
-
 import Vector from "./vector";
 import Prototype from "./prototypes/line";
 

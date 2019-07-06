@@ -10,7 +10,7 @@ import {
   make_matrix2_inverse,
   multiply_matrices2,
   multiply_vector2_matrix2,
-} from "../core/algebra";
+} from "../core/matrix";
 
 import Vector from "./vector";
 /**

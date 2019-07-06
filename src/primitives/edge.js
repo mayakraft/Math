@@ -1,8 +1,5 @@
-import {
-  average,
-  multiply_vector2_matrix2,
-} from "../core/algebra";
-
+import { average } from "../core/algebra";
+import { multiply_vector2_matrix2 } from "../core/matrix";
 import {
   get_two_vec2,
   get_matrix2,

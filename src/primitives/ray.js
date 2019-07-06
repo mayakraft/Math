@@ -6,9 +6,9 @@ import {
 
 import {
   normalize,
-  multiply_vector2_matrix2,
 } from "../core/algebra";
 
+import { multiply_vector2_matrix2 } from "../core/matrix";
 import { limit_ray } from "../core/intersection";
 
 import Vector from "./vector";
