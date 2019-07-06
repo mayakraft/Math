@@ -7,8 +7,8 @@ module.exports = [{
   output: {
     name: "math",
     file: "math.js",
-    // format: "umd",
-    format: "es",
+    format: "umd",
+    // format: "es",
     banner: "/* Math (c) Robby Kraft, MIT License */",
   },
   plugins: [
@@ -27,8 +27,8 @@ module.exports = [{
   output: {
     name: "math",
     file: "math.min.js",
-    // format: "umd",
-    format: "es",
+    format: "umd",
+    // format: "es",
     banner: "/* Math (c) Robby Kraft, MIT License */",
   },
   plugins: [
