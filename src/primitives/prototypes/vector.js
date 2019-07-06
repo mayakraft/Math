@@ -12,11 +12,14 @@ import {
   normalize,
   dot,
   cross3,
+  magnitude,
+} from "../../core/algebra";
+
+import {
   multiply_vector2_matrix2,
   make_matrix2_rotation,
   make_matrix2_reflection,
-  magnitude,
-} from "../../core/algebra";
+} from "../../core/matrix";
 
 const VectorPrototype = function (subtype) {
   const proto = [];

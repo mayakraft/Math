@@ -22,9 +22,10 @@ import {
 
 import {
   average,
-  distance2,
-  multiply_vector2_matrix2,
+  distance2
 } from "../../core/algebra";
+
+import { multiply_vector2_matrix2 } from "../../core/matrix";
 
 import Vector from "../vector";
 import Edge from "../edge";

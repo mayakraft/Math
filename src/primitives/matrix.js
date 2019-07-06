@@ -10,7 +10,8 @@ import {
   make_matrix2_inverse,
   multiply_matrices2,
   multiply_vector2_matrix2,
-} from "../core/algebra";
+  make_matrix2_scale,
+} from "../core/matrix";
 
 import Vector from "./vector";
 /**
@@ -45,6 +46,7 @@ const Matrix2 = function (...args) {
 // static methods
 Matrix2.makeIdentity = () => Matrix2(1, 0, 0, 1, 0, 0);
 Matrix2.makeTranslation = (tx, ty) => Matrix2(1, 0, 0, 1, tx, ty);
+Matrix2.makeScale = (...args) => Matrix2(...make_matrix2_scale(...args));
 Matrix2.makeRotation = ((angle, origin) => Matrix2(
   make_matrix2_rotation(angle, origin).map(n => clean_number(n, 13))
 ));
