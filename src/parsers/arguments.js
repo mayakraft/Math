@@ -32,7 +32,8 @@ export const flatten_input = function (...args) {
   switch (args.length) {
     case undefined:
     case 0: return args;
-    case 1: return is_iterable(args[0])
+    // only if its an array (is iterable) and NOT a string
+    case 1: return is_iterable(args[0]) && typeof args[0] !== "string"
       ? flatten_input(...args[0])
       : [args[0]];
     default:
@@ -62,6 +63,7 @@ export const semi_flatten_input = function (...args) {
 */
 export const get_vector = function (...args) {
   let list = flatten_input(args).filter(a => a !== undefined);
+  if (list === undefined) { return undefined; }
   if (list.length === 0) { return undefined; }
   if (!isNaN(list[0].x)) {
     list = ["x", "y", "z"].map(c => list[0][c]).filter(a => a !== undefined);
@@ -80,7 +82,8 @@ export const get_vector_of_vectors = function (...args) {
     .map(el => get_vector(el));
 };
 
-const identity = [1, 0, 0, 1, 0, 0];
+const identity2 = [1, 0, 0, 1, 0, 0];
+const identity4 = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
 /**
  * a matrix2 is a 2x3 matrix, 2x2 with a column to represent translation
@@ -89,10 +92,59 @@ const identity = [1, 0, 0, 1, 0, 0];
 */
 export const get_matrix2 = function (...args) {
   const m = get_vector(args);
+  if (m === undefined) { return undefined; }
   if (m.length === 6) { return m; }
-  if (m.length > 6) { return [m[0], m[1], m[3], m[4], m[5], m[6]]; }
+  if (m.length > 6) { return [m[0], m[1], m[2], m[3], m[4], m[5]]; }
   if (m.length < 6) {
-    return identity.map((n, i) => m[i] || n);
+    return identity2.map((n, i) => m[i] || n);
+  }
+  // m doesn't have a length
+  return undefined;
+};
+
+/**
+ * a matrix4 is a 4x4 matrix, 3x3 orientation with a column for translation
+ *
+ * @returns {number[]} array of 6 numbers, or undefined if bad inputs
+*/
+export const get_matrix4 = function (...args) {
+  const m = get_vector(args);
+  if (m === undefined) { return undefined; }
+  if (m.length === 16) { return m; }
+  if (m.length === 9) {
+    return [
+      m[0], m[1], m[2], 0,
+      m[3], m[4], m[5], 0,
+      m[6], m[7], m[8], 0,
+      0, 0, 0, 1
+    ];
+  }
+  if (m.length === 6) {
+    return [
+      m[0], m[1], 0, 0,
+      m[2], m[3], 0, 0,
+      0, 0, 1, 0,
+      m[4], m[5], 0, 1 // todo is translation in the right spot?
+    ];
+  }
+  if (m.length === 4) {
+    return [
+      m[0], m[1], 0, 0,
+      m[2], m[3], 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1
+    ];
+  }
+  if (m.length > 16) {
+    return [
+      m[0], m[1], m[2], m[3],
+      m[4], m[5], m[6], m[7],
+      m[8], m[9], m[10], m[11],
+      m[12], m[13], m[14], m[15]
+    ];
+  }
+  if (m.length < 16) {
+    return identity4.map((n, i) => m[i] || n);
   }
   // m doesn't have a length
   return undefined;
