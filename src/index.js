@@ -21,7 +21,7 @@
  */
 
 import * as algebra from "./core/algebra";
-import * as matrix from "./core/matrix";
+import * as matrixCore from "./core/matrix";
 import * as geometry from "./core/geometry";
 import * as query from "./core/query";
 import * as intersection from "./core/intersection";
@@ -30,10 +30,13 @@ import * as origami from "./core/origami";
 import * as args from "./parsers/arguments";
 
 import vector from "./primitives/vector";
-import matrix2 from "./primitives/matrix";
+import {
+  Matrix2 as matrix2,
+  Matrix as matrix
+} from "./primitives/matrix";
 import line from "./primitives/line";
 import ray from "./primitives/ray";
-import edge from "./primitives/edge";
+import segment from "./primitives/edge";
 import circle from "./primitives/circle";
 import polygon from "./primitives/polygon";
 import convexPolygon from "./primitives/convexPolygon";
@@ -42,7 +45,7 @@ import junction from "./primitives/junction";
 import sector from "./primitives/sector";
 
 const core = Object.create(null);
-Object.assign(core, algebra, matrix, geometry, query, equal, origami);
+Object.assign(core, algebra, matrixCore, geometry, query, equal, origami);
 // core.EPSILON = EPSILON;
 // don't copy over all arguments, only export what is needed
 core.clean_number = args.clean_number;
@@ -67,9 +70,10 @@ Object.freeze(core);
 const math = {
   vector,
   matrix2,
+  matrix,
   line,
   ray,
-  edge,
+  segment,
   circle,
   polygon,
   convexPolygon,

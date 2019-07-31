@@ -14,7 +14,7 @@ import { EPSILON } from "../../core/equal";
 import { intersection_function } from "../../core/intersection";
 import { nearest_point_on_line } from "../../core/geometry";
 import Vector from "../vector";
-import Matrix2 from "../matrix";
+import { Matrix2 } from "../matrix";
 
 // warning do not define object methods as arrow functions in here
 // they overwrite the .bind(this) called inside the object initializers.

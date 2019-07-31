@@ -98,10 +98,10 @@ testEqual([[1], [2], [3], [4]],
   math.core.get_vector_of_vectors([[[1, 2, 3, 4]]]));
 
 testName("get two vectors");
-testEqual([[1, 2], [3, 4]], math.edge(1, 2, 3, 4));
-testEqual([[1, 2], [3, 4]], math.edge([1, 2], [3, 4]));
-testEqual([[1, 2], [3, 4]], math.edge([1, 2, 3, 4]));
-testEqual([[1, 2], [3, 4]], math.edge([[1, 2], [3, 4]]));
+testEqual([[1, 2], [3, 4]], math.segment(1, 2, 3, 4));
+testEqual([[1, 2], [3, 4]], math.segment([1, 2], [3, 4]));
+testEqual([[1, 2], [3, 4]], math.segment([1, 2, 3, 4]));
+testEqual([[1, 2], [3, 4]], math.segment([[1, 2], [3, 4]]));
 
 testName("get matrix");
 testEqual([1, 2, 3, 4, 5, 6], math.core.get_matrix2([[[1, 2, 3, 4, 5, 6]]]));
@@ -196,42 +196,42 @@ testEqual([1, 1], math.matrix2.makeScale(0.5, [1, 1]).transform([1, 1]));
 testEqual([0.75, 0.75], math.matrix2.makeScale(0.5, [0.5, 0.5]).transform([1, 1]));
 
 /**
- * lines, rays, edges
+ * lines, rays, segments
  */
 
-testName("line ray edge intersections");
+testName("line ray segment intersections");
 testEqual([5, 5], math.line(0, 0, 1, 1).intersect(math.line(10, 0, -1, 1)));
 testEqual([5, 5], math.line(0, 0, 1, 1).intersect(math.ray(10, 0, -1, 1)));
-testEqual([5, 5], math.line(0, 0, 1, 1).intersect(math.edge(10, 0, 0, 10)));
+testEqual([5, 5], math.line(0, 0, 1, 1).intersect(math.segment(10, 0, 0, 10)));
 
-testName("line ray edge parallel");
+testName("line ray segment parallel");
 testEqual(true, math.line(0, 0, 1, 1).isParallel(math.ray(10, 0, 1, 1)));
-testEqual(true, math.line(0, 0, -1, 1).isParallel(math.edge(0, 0, -2, 2)));
-testEqual(false, math.line(0, 0, -1, 1).isParallel(math.edge(10, 0, 1, 1)));
+testEqual(true, math.line(0, 0, -1, 1).isParallel(math.segment(0, 0, -2, 2)));
+testEqual(false, math.line(0, 0, -1, 1).isParallel(math.segment(10, 0, 1, 1)));
 
-testName("line ray edge reflection matrices");
+testName("line ray segment reflection matrices");
 testEqual(
   math.line(10, 0, -1, 1).reflection(),
   math.ray(10, 0, -1, 1).reflection()
 );
 testEqual(
-  math.edge(10, 0, 0, 10).reflection(),
+  math.segment(10, 0, 0, 10).reflection(),
   math.ray(10, 0, -1, 1).reflection()
 );
 
-testName("line ray edge nearest points");
+testName("line ray segment nearest points");
 testEqual([20, -10], math.line(10, 0, -1, 1).nearestPoint([20, -10]));
 testEqual([-50, 60], math.line(10, 0, -1, 1).nearestPoint([-10, 100]));
 testEqual([10, 0], math.ray(10, 0, -1, 1).nearestPoint([20, -10]));
 testEqual([-50, 60], math.ray(10, 0, -1, 1).nearestPoint([-10, 100]));
-testEqual([10, 0], math.edge(10, 0, 0, 10).nearestPoint([20, -10]));
-testEqual([0, 10], math.edge(10, 0, 0, 10).nearestPoint([-10, 100]));
+testEqual([10, 0], math.segment(10, 0, 0, 10).nearestPoint([20, -10]));
+testEqual([0, 10], math.segment(10, 0, 0, 10).nearestPoint([-10, 100]));
 testEqual(
   math.ray(10, 0, -1, 1).nearestPoint([0, 0]),
   math.line(10, 0, -1, 1).nearestPoint([0, 0])
 );
 testEqual(
-  math.edge(10, 0, 0, 10).nearestPoint([0, 0]),
+  math.segment(10, 0, 0, 10).nearestPoint([0, 0]),
   math.ray(10, 0, -1, 1).nearestPoint([0, 0])
 );
 
@@ -253,7 +253,7 @@ testEqual(
 // );
 // testEqual(
 //   [Math.sqrt(2) / 2, -Math.sqrt(2) / 2],
-//   math.circle(0, 0, 1).intersectionEdge(math.edge(0, 0, 10, 10))
+//   math.circle(0, 0, 1).intersectionEdge(math.segment(0, 0, 10, 10))
 // );
 
 
