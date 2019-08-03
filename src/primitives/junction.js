@@ -7,12 +7,6 @@ import {
   counter_clockwise_vector_order
 } from "../core/geometry";
 
-import {
-  alternating_sum,
-  kawasaki_sector_score,
-  kawasaki_solutions_radians
-} from "../core/origami";
-
 /**
  * use static initializers! at bottom of page
  */
@@ -37,26 +31,10 @@ const Junction = function (...args) {
       .map(pair => counter_clockwise_angle2(pair[0], pair[1]));
   };
 
-  const alternatingAngleSum = function () {
-    return alternating_sum(...angles());
-  };
-
-  const kawasaki_score = function () {
-    return kawasaki_sector_score(...angles());
-  };
-
-  const kawasaki_solutions = function () {
-    // get the interior angles of sectors around a vertex
-    return kawasaki_solutions_radians(...angles());
-  };
-
   // return Object.freeze( {
   return {
     sectors,
     angles,
-    kawasaki_score,
-    kawasaki_solutions,
-    alternatingAngleSum,
     get vectors() { return vectors; },
     // get angles() { return angles(); },
     // get sectors() { return sectors(); },
