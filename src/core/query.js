@@ -4,7 +4,7 @@ import { dot, normalize } from "./algebra";
 /**
  * the generalized vector intersection function
  * requires a compFunction to describe valid bounds checking
- * line always returns true, ray is true for t > 0, edge must be between 0 < t < 1
+ * line always returns true, ray is true for t > 0, segment must be between 0 < t < 1
 */
 export const overlap_function = function (aPt, aVec, bPt, bVec, compFunc) {
   const det = (a, b) => a[0] * b[1] - b[0] * a[1];
@@ -24,13 +24,13 @@ export const overlap_function = function (aPt, aVec, bPt, bVec, compFunc) {
   return compFunc(t0, t1);
 };
 
-const edge_edge_comp = (t0, t1) => t0 >= -EPSILON && t0 <= 1 + EPSILON
+const segment_segment_comp = (t0, t1) => t0 >= -EPSILON && t0 <= 1 + EPSILON
   && t1 >= -EPSILON && t1 <= 1 + EPSILON;
 
-export const edge_edge_overlap = function (a0, a1, b0, b1) {
+export const segment_segment_overlap = function (a0, a1, b0, b1) {
   const aVec = [a1[0] - a0[0], a1[1] - a0[1]];
   const bVec = [b1[0] - b0[0], b1[1] - b0[1]];
-  return overlap_function(a0, aVec, b0, bVec, edge_edge_comp);
+  return overlap_function(a0, aVec, b0, bVec, segment_segment_comp);
 };
 
 /**
@@ -58,15 +58,15 @@ export const point_on_line = function (linePoint, lineVector, point, epsilon = E
   const cross = pointPoint[0] * lineVector[1] - pointPoint[1] * lineVector[0];
   return Math.abs(cross) < epsilon;
 };
-/** is a point collinear to an edge, between endpoints, within an epsilon */
-export const point_on_edge = function (edge0, edge1, point, epsilon = EPSILON) {
+/** is a point collinear to an segment, between endpoints, within an epsilon */
+export const point_on_segment = function (seg0, seg1, point, epsilon = EPSILON) {
   // distance between endpoints A,B should be equal to point->A + point->B
-  const edge0_1 = [edge0[0] - edge1[0], edge0[1] - edge1[1]];
-  const edge0_p = [edge0[0] - point[0], edge0[1] - point[1]];
-  const edge1_p = [edge1[0] - point[0], edge1[1] - point[1]];
-  const dEdge = Math.sqrt(edge0_1[0] * edge0_1[0] + edge0_1[1] * edge0_1[1]);
-  const dP0 = Math.sqrt(edge0_p[0] * edge0_p[0] + edge0_p[1] * edge0_p[1]);
-  const dP1 = Math.sqrt(edge1_p[0] * edge1_p[0] + edge1_p[1] * edge1_p[1]);
+  const seg0_1 = [seg0[0] - seg1[0], seg0[1] - seg1[1]];
+  const seg0_p = [seg0[0] - point[0], seg0[1] - point[1]];
+  const seg1_p = [seg1[0] - point[0], seg1[1] - point[1]];
+  const dEdge = Math.sqrt(seg0_1[0] * seg0_1[0] + seg0_1[1] * seg0_1[1]);
+  const dP0 = Math.sqrt(seg0_p[0] * seg0_p[0] + seg0_p[1] * seg0_p[1]);
+  const dP1 = Math.sqrt(seg1_p[0] * seg1_p[0] + seg1_p[1] * seg1_p[1]);
   return Math.abs(dEdge - dP0 - dP1) < epsilon;
 };
 /**
@@ -119,12 +119,12 @@ export const point_in_convex_poly_exclusive = function (point, poly, epsilon = E
 
 /** do two convex polygons overlap one another */
 export const convex_polygons_overlap = function (ps1, ps2) {
-  // convert array of points into edges [point, nextPoint]
+  // convert array of points into segments [point, nextPoint]
   const e1 = ps1.map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
   const e2 = ps2.map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
   for (let i = 0; i < e1.length; i += 1) {
     for (let j = 0; j < e2.length; j += 1) {
-      if (edge_edge_overlap(e1[i][0], e1[i][1], e2[j][0], e2[j][1])) {
+      if (segment_segment_overlap(e1[i][0], e1[i][1], e2[j][0], e2[j][1])) {
         return true;
       }
     }
