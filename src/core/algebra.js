@@ -28,7 +28,8 @@ export const normalize = function (v) {
   argument.log("normalize", v);
   const m = magnitude(v);
   // todo: should this catch divide by 0?
-  return v.map(c => c / m);
+  // should a vector with magnitude 0 return the untouched argument?
+  return m === 0 ? v : v.map(c => c / m);
 };
 
 /**
