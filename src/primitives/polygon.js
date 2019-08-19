@@ -6,7 +6,7 @@ import {
 } from "../core/geometry";
 
 import Vector from "./vector";
-import Edge from "./edge";
+import Segment from "./segment";
 
 import Prototype from "./prototypes/polygon";
 
@@ -16,7 +16,7 @@ const Polygon = function (...args) {
   if (points === undefined) { return undefined; }
   const sides = points
     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
-    .map(ps => Edge(ps[0][0], ps[0][1], ps[1][0], ps[1][1]));
+    .map(ps => Segment(ps[0][0], ps[0][1], ps[1][0], ps[1][1]));
 
   const proto = Prototype.bind(this);
   const polygon = Object.create(proto());

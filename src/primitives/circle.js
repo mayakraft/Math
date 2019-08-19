@@ -7,7 +7,7 @@ import {
 import {
   circle_line,
   circle_ray,
-  circle_edge,
+  circle_segment,
 } from "../core/intersection";
 
 import Vector from "./vector";
@@ -36,9 +36,9 @@ const Circle = function (...args) {
     return (result === undefined ? undefined : result.map(i => Vector(i)));
   };
 
-  const intersectionEdge = function (...innerArgs) {
-    const edge = get_two_vec2(innerArgs);
-    const result = circle_edge(origin, radius, edge[0], edge[1]);
+  const intersectionSegment = function (...innerArgs) {
+    const segment = get_two_vec2(innerArgs);
+    const result = circle_segment(origin, radius, segment[0], segment[1]);
     return (result === undefined ? undefined : result.map(i => Vector(i)));
   };
 
@@ -46,7 +46,7 @@ const Circle = function (...args) {
   return {
     intersectionLine,
     intersectionRay,
-    intersectionEdge,
+    intersectionSegment,
     get origin() { return origin; },
     get radius() { return radius; },
     set origin(innerArgs) { origin = Vector(innerArgs); },

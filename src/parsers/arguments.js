@@ -153,7 +153,7 @@ export const get_matrix4 = function (...args) {
 /**
  * @returns [[2,3],[10,11]]
 */
-export function get_edge(...args) {
+export function get_segment(...args) {
   return get_vector_of_vectors(args);
 }
 
@@ -164,7 +164,7 @@ export function get_line() {
   let params = Array.from(arguments);
   let numbers = params.filter((param) => !isNaN(param));
   let arrays = params.filter((param) => param.constructor === Array);
-  if (params.length == 0) { return {vector: [], point: []}; }
+  if (params.length === 0) { return { vector: [], point: [] }; }
   if (!isNaN(params[0]) && numbers.length >= 4) {
     return {
       point: [params[0], params[1]],

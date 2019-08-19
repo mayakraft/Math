@@ -450,7 +450,7 @@
 
     return undefined;
   };
-  function get_edge() {
+  function get_segment() {
     for (var _len7 = arguments.length, args = new Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
       args[_key7] = arguments[_key7];
     }
@@ -466,7 +466,7 @@
       return param.constructor === Array;
     });
 
-    if (params.length == 0) {
+    if (params.length === 0) {
       return {
         vector: [],
         point: []
@@ -735,14 +735,14 @@
     return compFunc(t0, t1);
   };
 
-  var edge_edge_comp = function edge_edge_comp(t0, t1) {
+  var segment_segment_comp = function segment_segment_comp(t0, t1) {
     return t0 >= -EPSILON && t0 <= 1 + EPSILON && t1 >= -EPSILON && t1 <= 1 + EPSILON;
   };
 
-  var edge_edge_overlap = function edge_edge_overlap(a0, a1, b0, b1) {
+  var segment_segment_overlap = function segment_segment_overlap(a0, a1, b0, b1) {
     var aVec = [a1[0] - a0[0], a1[1] - a0[1]];
     var bVec = [b1[0] - b0[0], b1[1] - b0[1]];
-    return overlap_function(a0, aVec, b0, bVec, edge_edge_comp);
+    return overlap_function(a0, aVec, b0, bVec, segment_segment_comp);
   };
   var degenerate = function degenerate(v) {
     return Math.abs(v.reduce(function (a, b) {
@@ -758,14 +758,14 @@
     var cross = pointPoint[0] * lineVector[1] - pointPoint[1] * lineVector[0];
     return Math.abs(cross) < epsilon;
   };
-  var point_on_edge = function point_on_edge(edge0, edge1, point) {
+  var point_on_segment = function point_on_segment(seg0, seg1, point) {
     var epsilon = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : EPSILON;
-    var edge0_1 = [edge0[0] - edge1[0], edge0[1] - edge1[1]];
-    var edge0_p = [edge0[0] - point[0], edge0[1] - point[1]];
-    var edge1_p = [edge1[0] - point[0], edge1[1] - point[1]];
-    var dEdge = Math.sqrt(edge0_1[0] * edge0_1[0] + edge0_1[1] * edge0_1[1]);
-    var dP0 = Math.sqrt(edge0_p[0] * edge0_p[0] + edge0_p[1] * edge0_p[1]);
-    var dP1 = Math.sqrt(edge1_p[0] * edge1_p[0] + edge1_p[1] * edge1_p[1]);
+    var seg0_1 = [seg0[0] - seg1[0], seg0[1] - seg1[1]];
+    var seg0_p = [seg0[0] - point[0], seg0[1] - point[1]];
+    var seg1_p = [seg1[0] - point[0], seg1[1] - point[1]];
+    var dEdge = Math.sqrt(seg0_1[0] * seg0_1[0] + seg0_1[1] * seg0_1[1]);
+    var dP0 = Math.sqrt(seg0_p[0] * seg0_p[0] + seg0_p[1] * seg0_p[1]);
+    var dP1 = Math.sqrt(seg1_p[0] * seg1_p[0] + seg1_p[1] * seg1_p[1]);
     return Math.abs(dEdge - dP0 - dP1) < epsilon;
   };
   var point_in_poly = function point_in_poly(point, poly) {
@@ -825,7 +825,7 @@
 
     for (var i = 0; i < e1.length; i += 1) {
       for (var j = 0; j < e2.length; j += 1) {
-        if (edge_edge_overlap(e1[i][0], e1[i][1], e2[j][0], e2[j][1])) {
+        if (segment_segment_overlap(e1[i][0], e1[i][1], e2[j][0], e2[j][1])) {
           return true;
         }
       }
@@ -881,11 +881,11 @@
 
   var query = /*#__PURE__*/Object.freeze({
     overlap_function: overlap_function,
-    edge_edge_overlap: edge_edge_overlap,
+    segment_segment_overlap: segment_segment_overlap,
     degenerate: degenerate,
     parallel: parallel,
     point_on_line: point_on_line,
-    point_on_edge: point_on_edge,
+    point_on_segment: point_on_segment,
     point_in_poly: point_in_poly,
     point_in_convex_poly: point_in_convex_poly,
     point_in_convex_poly_exclusive: point_in_convex_poly_exclusive,
@@ -903,7 +903,7 @@
     return t1 >= -EPSILON;
   };
 
-  var line_edge_comp = function line_edge_comp(t0, t1) {
+  var line_segment_comp = function line_segment_comp(t0, t1) {
     return t1 >= -EPSILON && t1 <= 1 + EPSILON;
   };
 
@@ -911,11 +911,11 @@
     return t0 >= -EPSILON && t1 >= -EPSILON;
   };
 
-  var ray_edge_comp = function ray_edge_comp(t0, t1) {
+  var ray_segment_comp = function ray_segment_comp(t0, t1) {
     return t0 >= -EPSILON && t1 >= -EPSILON && t1 <= 1 + EPSILON;
   };
 
-  var edge_edge_comp$1 = function edge_edge_comp(t0, t1) {
+  var segment_segment_comp$1 = function segment_segment_comp(t0, t1) {
     return t0 >= -EPSILON && t0 <= 1 + EPSILON && t1 >= -EPSILON && t1 <= 1 + EPSILON;
   };
 
@@ -923,7 +923,7 @@
     return t1 > EPSILON;
   };
 
-  var line_edge_comp_exclusive = function line_edge_comp_exclusive(t0, t1) {
+  var line_segment_comp_exclusive = function line_segment_comp_exclusive(t0, t1) {
     return t1 > EPSILON && t1 < 1 - EPSILON;
   };
 
@@ -931,11 +931,11 @@
     return t0 > EPSILON && t1 > EPSILON;
   };
 
-  var ray_edge_comp_exclusive = function ray_edge_comp_exclusive(t0, t1) {
+  var ray_segment_comp_exclusive = function ray_segment_comp_exclusive(t0, t1) {
     return t0 > EPSILON && t1 > EPSILON && t1 < 1 - EPSILON;
   };
 
-  var edge_edge_comp_exclusive = function edge_edge_comp_exclusive(t0, t1) {
+  var segment_segment_comp_exclusive = function segment_segment_comp_exclusive(t0, t1) {
     return t0 > EPSILON && t0 < 1 - EPSILON && t1 > EPSILON && t1 < 1 - EPSILON;
   };
 
@@ -945,7 +945,7 @@
   var limit_ray = function limit_ray(dist) {
     return dist < -EPSILON ? 0 : dist;
   };
-  var limit_edge = function limit_edge(dist) {
+  var limit_segment = function limit_segment(dist) {
     if (dist < -EPSILON) {
       return 0;
     }
@@ -987,40 +987,40 @@
   var line_ray = function line_ray(linePt, lineVec, rayPt, rayVec, epsilon) {
     return intersection_function(linePt, lineVec, rayPt, rayVec, line_ray_comp, epsilon);
   };
-  var line_edge = function line_edge(point, vec, edge0, edge1, epsilon) {
-    var edgeVec = [edge1[0] - edge0[0], edge1[1] - edge0[1]];
-    return intersection_function(point, vec, edge0, edgeVec, line_edge_comp, epsilon);
+  var line_segment = function line_segment(point, vec, segment0, segment1, epsilon) {
+    var segmentVec = [segment1[0] - segment0[0], segment1[1] - segment0[1]];
+    return intersection_function(point, vec, segment0, segmentVec, line_segment_comp, epsilon);
   };
   var ray_ray = function ray_ray(aPt, aVec, bPt, bVec, epsilon) {
     return intersection_function(aPt, aVec, bPt, bVec, ray_ray_comp, epsilon);
   };
-  var ray_edge = function ray_edge(rayPt, rayVec, edge0, edge1, epsilon) {
-    var edgeVec = [edge1[0] - edge0[0], edge1[1] - edge0[1]];
-    return intersection_function(rayPt, rayVec, edge0, edgeVec, ray_edge_comp, epsilon);
+  var ray_segment = function ray_segment(rayPt, rayVec, segment0, segment1, epsilon) {
+    var segmentVec = [segment1[0] - segment0[0], segment1[1] - segment0[1]];
+    return intersection_function(rayPt, rayVec, segment0, segmentVec, ray_segment_comp, epsilon);
   };
-  var edge_edge = function edge_edge(a0, a1, b0, b1, epsilon) {
+  var segment_segment = function segment_segment(a0, a1, b0, b1, epsilon) {
     var aVec = [a1[0] - a0[0], a1[1] - a0[1]];
     var bVec = [b1[0] - b0[0], b1[1] - b0[1]];
-    return intersection_function(a0, aVec, b0, bVec, edge_edge_comp$1, epsilon);
+    return intersection_function(a0, aVec, b0, bVec, segment_segment_comp$1, epsilon);
   };
   var line_ray_exclusive = function line_ray_exclusive(linePt, lineVec, rayPt, rayVec, epsilon) {
     return intersection_function(linePt, lineVec, rayPt, rayVec, line_ray_comp_exclusive, epsilon);
   };
-  var line_edge_exclusive = function line_edge_exclusive(point, vec, edge0, edge1, epsilon) {
-    var edgeVec = [edge1[0] - edge0[0], edge1[1] - edge0[1]];
-    return intersection_function(point, vec, edge0, edgeVec, line_edge_comp_exclusive, epsilon);
+  var line_segment_exclusive = function line_segment_exclusive(point, vec, segment0, segment1, epsilon) {
+    var segmentVec = [segment1[0] - segment0[0], segment1[1] - segment0[1]];
+    return intersection_function(point, vec, segment0, segmentVec, line_segment_comp_exclusive, epsilon);
   };
   var ray_ray_exclusive = function ray_ray_exclusive(aPt, aVec, bPt, bVec, epsilon) {
     return intersection_function(aPt, aVec, bPt, bVec, ray_ray_comp_exclusive, epsilon);
   };
-  var ray_edge_exclusive = function ray_edge_exclusive(rayPt, rayVec, edge0, edge1, epsilon) {
-    var edgeVec = [edge1[0] - edge0[0], edge1[1] - edge0[1]];
-    return intersection_function(rayPt, rayVec, edge0, edgeVec, ray_edge_comp_exclusive, epsilon);
+  var ray_segment_exclusive = function ray_segment_exclusive(rayPt, rayVec, segment0, segment1, epsilon) {
+    var segmentVec = [segment1[0] - segment0[0], segment1[1] - segment0[1]];
+    return intersection_function(rayPt, rayVec, segment0, segmentVec, ray_segment_comp_exclusive, epsilon);
   };
-  var edge_edge_exclusive = function edge_edge_exclusive(a0, a1, b0, b1, epsilon) {
+  var segment_segment_exclusive = function segment_segment_exclusive(a0, a1, b0, b1, epsilon) {
     var aVec = [a1[0] - a0[0], a1[1] - a0[1]];
     var bVec = [b1[0] - b0[0], b1[1] - b0[1]];
-    return intersection_function(a0, aVec, b0, bVec, edge_edge_comp_exclusive, epsilon);
+    return intersection_function(a0, aVec, b0, bVec, segment_segment_comp_exclusive, epsilon);
   };
   var circle_line = function circle_line(center, radius, p0, p1) {
     var epsilon = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : EPSILON;
@@ -1058,7 +1058,7 @@
   var circle_ray = function circle_ray(center, radius, p0, p1) {
     throw "circle_ray has not been written yet";
   };
-  var circle_edge = function circle_edge(center, radius, p0, p1) {
+  var circle_segment = function circle_segment(center, radius, p0, p1) {
     var r_squared = Math.pow(radius, 2);
     var x1 = p0[0] - center[0];
     var y1 = p0[1] - center[1];
@@ -1099,6 +1099,8 @@
     if (!x2_NaN) {
       return [[x_2 + center[0], y_2 + center[1]]];
     }
+
+    return undefined;
   };
 
   var quick_equivalent_2 = function quick_equivalent_2(a, b) {
@@ -1109,7 +1111,7 @@
     var intersections = poly.map(function (p, i, arr) {
       return [p, arr[(i + 1) % arr.length]];
     }).map(function (el) {
-      return line_edge(linePoint, lineVector, el[0], el[1]);
+      return line_segment(linePoint, lineVector, el[0], el[1]);
     }).filter(function (el) {
       return el != null;
     });
@@ -1138,7 +1140,7 @@
     var intersections = poly.map(function (p, i, arr) {
       return [p, arr[(i + 1) % arr.length]];
     }).map(function (el) {
-      return ray_edge(linePoint, lineVector, el[0], el[1]);
+      return ray_segment(linePoint, lineVector, el[0], el[1]);
     }).filter(function (el) {
       return el != null;
     });
@@ -1163,46 +1165,46 @@
         return undefined;
     }
   };
-  var convex_poly_edge = function convex_poly_edge(poly, edgeA, edgeB) {
+  var convex_poly_segment = function convex_poly_segment(poly, segmentA, segmentB) {
     var intersections = poly.map(function (p, i, arr) {
       return [p, arr[(i + 1) % arr.length]];
     }).map(function (el) {
-      return edge_edge_exclusive(edgeA, edgeB, el[0], el[1]);
+      return segment_segment_exclusive(segmentA, segmentB, el[0], el[1]);
     }).filter(function (el) {
       return el != null;
     });
-    var aInsideExclusive = point_in_convex_poly_exclusive(edgeA, poly);
-    var bInsideExclusive = point_in_convex_poly_exclusive(edgeB, poly);
-    var aInsideInclusive = point_in_convex_poly(edgeA, poly);
-    var bInsideInclusive = point_in_convex_poly(edgeB, poly);
+    var aInsideExclusive = point_in_convex_poly_exclusive(segmentA, poly);
+    var bInsideExclusive = point_in_convex_poly_exclusive(segmentB, poly);
+    var aInsideInclusive = point_in_convex_poly(segmentA, poly);
+    var bInsideInclusive = point_in_convex_poly(segmentB, poly);
 
     if (intersections.length === 0 && (aInsideExclusive || bInsideExclusive)) {
-      return [edgeA, edgeB];
+      return [segmentA, segmentB];
     }
 
     if (intersections.length === 0 && aInsideInclusive && bInsideInclusive) {
-      return [edgeA, edgeB];
+      return [segmentA, segmentB];
     }
 
     switch (intersections.length) {
       case 0:
-        return aInsideExclusive ? [_toConsumableArray(edgeA), _toConsumableArray(edgeB)] : undefined;
+        return aInsideExclusive ? [_toConsumableArray(segmentA), _toConsumableArray(segmentB)] : undefined;
 
       case 1:
-        return aInsideInclusive ? [_toConsumableArray(edgeA), intersections[0]] : [_toConsumableArray(edgeB), intersections[0]];
+        return aInsideInclusive ? [_toConsumableArray(segmentA), intersections[0]] : [_toConsumableArray(segmentB), intersections[0]];
 
       case 2:
         return intersections;
 
       default:
-        throw new Error("clipping edge in a convex polygon resulting in 3 or more points");
+        throw new Error("clipping segment in a convex polygon resulting in 3 or more points");
     }
   };
   var convex_poly_ray_exclusive = function convex_poly_ray_exclusive(poly, linePoint, lineVector) {
     var intersections = poly.map(function (p, i, arr) {
       return [p, arr[(i + 1) % arr.length]];
     }).map(function (el) {
-      return ray_edge_exclusive(linePoint, lineVector, el[0], el[1]);
+      return ray_segment_exclusive(linePoint, lineVector, el[0], el[1]);
     }).filter(function (el) {
       return el != null;
     });
@@ -1231,25 +1233,25 @@
   var intersection = /*#__PURE__*/Object.freeze({
     limit_line: limit_line,
     limit_ray: limit_ray,
-    limit_edge: limit_edge,
+    limit_segment: limit_segment,
     intersection_function: intersection_function,
     line_line: line_line,
     line_ray: line_ray,
-    line_edge: line_edge,
+    line_segment: line_segment,
     ray_ray: ray_ray,
-    ray_edge: ray_edge,
-    edge_edge: edge_edge,
+    ray_segment: ray_segment,
+    segment_segment: segment_segment,
     line_ray_exclusive: line_ray_exclusive,
-    line_edge_exclusive: line_edge_exclusive,
+    line_segment_exclusive: line_segment_exclusive,
     ray_ray_exclusive: ray_ray_exclusive,
-    ray_edge_exclusive: ray_edge_exclusive,
-    edge_edge_exclusive: edge_edge_exclusive,
+    ray_segment_exclusive: ray_segment_exclusive,
+    segment_segment_exclusive: segment_segment_exclusive,
     circle_line: circle_line,
     circle_ray: circle_ray,
-    circle_edge: circle_edge,
+    circle_segment: circle_segment,
     convex_poly_line: convex_poly_line,
     convex_poly_ray: convex_poly_ray,
-    convex_poly_edge: convex_poly_edge,
+    convex_poly_segment: convex_poly_segment,
     convex_poly_ray_exclusive: convex_poly_ray_exclusive
   });
 
@@ -1493,7 +1495,7 @@
       return el.point != null;
     });
     var edges_intersections = poly.map(function (v, i, arr) {
-      var intersection = line_edge_exclusive(linePoint, lineVector, v, arr[(i + 1) % arr.length]);
+      var intersection = line_segment_exclusive(linePoint, lineVector, v, arr[(i + 1) % arr.length]);
       return {
         type: "e",
         point: intersection,
@@ -1519,7 +1521,7 @@
       return el.point != null;
     });
     var edges_intersections = poly.map(function (v, i, arr) {
-      var intersection = line_edge_exclusive(linePoint, lineVector, v, arr[(i + 1) % arr.length]);
+      var intersection = line_segment_exclusive(linePoint, lineVector, v, arr[(i + 1) % arr.length]);
       return {
         point: intersection,
         at_index: i
@@ -2113,7 +2115,7 @@
       return this.compare_function(t0, epsilon) && t1 >= -epsilon;
     };
 
-    var compare_to_edge = function compare_to_edge(t0, t1) {
+    var compare_to_segment = function compare_to_segment(t0, t1) {
       var epsilon = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : EPSILON;
       return this.compare_function(t0, epsilon) && t1 >= -epsilon && t1 <= 1 + epsilon;
     };
@@ -2179,9 +2181,9 @@
         args[_key4] = arguments[_key4];
       }
 
-      var edge = get_edge(args);
+      var edge = get_segment(args);
       var edgeVec = [edge[1][0] - edge[0][0], edge[1][1] - edge[0][1]];
-      return intersection_function(this.point, this.vector, edge[0], edgeVec, compare_to_edge.bind(this));
+      return intersection_function(this.point, this.vector, edge[0], edgeVec, compare_to_segment.bind(this));
     };
 
     Object.defineProperty(proto, "isParallel", {
@@ -2367,14 +2369,14 @@
     });
   };
 
-  var Edge = function Edge() {
+  var Segment = function Segment() {
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
     var inputs = get_two_vec2(args);
     var proto = Prototype.bind(this);
-    var edge = Object.create(proto(Edge, []));
+    var segment = Object.create(proto(Segment, []));
     var vecPts = inputs.length > 0 ? inputs.map(function (p) {
       return Vector(p);
     }) : undefined;
@@ -2384,7 +2386,7 @@
     }
 
     vecPts.forEach(function (p, i) {
-      edge[i] = p;
+      segment[i] = p;
     });
 
     var transform = function transform() {
@@ -2393,56 +2395,56 @@
       }
 
       var mat = get_matrix2(innerArgs);
-      var transformed_points = edge.map(function (point) {
+      var transformed_points = segment.map(function (point) {
         return multiply_vector2_matrix2(point, mat);
       });
-      return Edge(transformed_points);
+      return Segment(transformed_points);
     };
 
     var vector = function vector() {
-      return Vector(edge[1][0] - edge[0][0], edge[1][1] - edge[0][1]);
+      return Vector(segment[1][0] - segment[0][0], segment[1][1] - segment[0][1]);
     };
 
     var midpoint = function midpoint() {
-      return Vector(average(edge[0], edge[1]));
+      return Vector(average(segment[0], segment[1]));
     };
 
     var length = function length() {
-      return Math.sqrt(Math.pow(edge[1][0] - edge[0][0], 2) + Math.pow(edge[1][1] - edge[0][1], 2));
+      return Math.sqrt(Math.pow(segment[1][0] - segment[0][0], 2) + Math.pow(segment[1][1] - segment[0][1], 2));
     };
 
     var compare_function = function compare_function(t0, ep) {
       return t0 >= -ep && t0 <= 1 + ep;
     };
 
-    Object.defineProperty(edge, "point", {
+    Object.defineProperty(segment, "point", {
       get: function get() {
-        return edge[0];
+        return segment[0];
       }
     });
-    Object.defineProperty(edge, "vector", {
+    Object.defineProperty(segment, "vector", {
       get: function get() {
         return vector();
       }
     });
-    Object.defineProperty(edge, "midpoint", {
+    Object.defineProperty(segment, "midpoint", {
       value: midpoint
     });
-    Object.defineProperty(edge, "length", {
+    Object.defineProperty(segment, "length", {
       get: function get() {
         return length();
       }
     });
-    Object.defineProperty(edge, "transform", {
+    Object.defineProperty(segment, "transform", {
       value: transform
     });
-    Object.defineProperty(edge, "compare_function", {
+    Object.defineProperty(segment, "compare_function", {
       value: compare_function
     });
-    Object.defineProperty(edge, "clip_function", {
-      value: limit_edge
+    Object.defineProperty(segment, "clip_function", {
+      value: limit_segment
     });
-    return edge;
+    return segment;
   };
 
   var Circle = function Circle() {
@@ -2491,13 +2493,13 @@
       });
     };
 
-    var intersectionEdge = function intersectionEdge() {
+    var intersectionSegment = function intersectionSegment() {
       for (var _len4 = arguments.length, innerArgs = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
         innerArgs[_key4] = arguments[_key4];
       }
 
-      var edge = get_two_vec2(innerArgs);
-      var result = circle_edge(origin, radius, edge[0], edge[1]);
+      var segment = get_two_vec2(innerArgs);
+      var result = circle_segment(origin, radius, segment[0], segment[1]);
       return result === undefined ? undefined : result.map(function (i) {
         return Vector(i);
       });
@@ -2506,7 +2508,7 @@
     return {
       intersectionLine: intersectionLine,
       intersectionRay: intersectionRay,
-      intersectionEdge: intersectionEdge,
+      intersectionSegment: intersectionSegment,
 
       get origin() {
         return origin;
@@ -2654,14 +2656,14 @@
       };
     };
 
-    var clipEdge = function clipEdge() {
+    var clipSegment = function clipSegment() {
       for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
         args[_key3] = arguments[_key3];
       }
 
-      var edge = get_edge(args);
-      var e = convex_poly_edge(this.points, edge[0], edge[1]);
-      return e === undefined ? undefined : Edge(e);
+      var edge = get_segment(args);
+      var e = convex_poly_segment(this.points, edge[0], edge[1]);
+      return e === undefined ? undefined : Segment(e);
     };
 
     var clipLine = function clipLine() {
@@ -2671,7 +2673,7 @@
 
       var line = get_line(args);
       var e = convex_poly_line(this.points, line.point, line.vector);
-      return e === undefined ? undefined : Edge(e);
+      return e === undefined ? undefined : Segment(e);
     };
 
     var clipRay = function clipRay() {
@@ -2681,7 +2683,7 @@
 
       var line = get_line(args);
       var e = convex_poly_ray(this.points, line.point, line.vector);
-      return e === undefined ? undefined : Edge(e);
+      return e === undefined ? undefined : Segment(e);
     };
 
     var split = function split() {
@@ -2764,8 +2766,8 @@
     Object.defineProperty(proto, "nearest", {
       value: nearest
     });
-    Object.defineProperty(proto, "clipEdge", {
-      value: clipEdge
+    Object.defineProperty(proto, "clipSegment", {
+      value: clipSegment
     });
     Object.defineProperty(proto, "clipLine", {
       value: clipLine
@@ -2820,7 +2822,7 @@
     var sides = points.map(function (p, i, arr) {
       return [p, arr[(i + 1) % arr.length]];
     }).map(function (ps) {
-      return Edge(ps[0][0], ps[0][1], ps[1][0], ps[1][1]);
+      return Segment(ps[0][0], ps[0][1], ps[1][0], ps[1][1]);
     });
     var proto = Prototype$1.bind(this);
     var polygon = Object.create(proto());
@@ -2867,7 +2869,7 @@
     var sides = points.map(function (p, i, arr) {
       return [p, arr[(i + 1) % arr.length]];
     }).map(function (ps) {
-      return Edge(ps[0][0], ps[0][1], ps[1][0], ps[1][1]);
+      return Segment(ps[0][0], ps[0][1], ps[1][0], ps[1][1]);
     });
     var proto = Prototype$1.bind(this);
     var polygon = Object.create(proto(ConvexPolygon));
@@ -3053,6 +3055,44 @@
     return rect;
   };
 
+  var alternating_sum = function alternating_sum() {
+    for (var _len = arguments.length, angles = new Array(_len), _key = 0; _key < _len; _key++) {
+      angles[_key] = arguments[_key];
+    }
+
+    return [0, 1].map(function (even_odd) {
+      return angles.filter(function (_, i) {
+        return i % 2 === even_odd;
+      }).reduce(function (a, b) {
+        return a + b;
+      }, 0);
+    });
+  };
+  var kawasaki_sector_score = function kawasaki_sector_score() {
+    return alternating_sum.apply(void 0, arguments).map(function (a) {
+      return a < 0 ? a + Math.PI * 2 : a;
+    }).map(function (s) {
+      return Math.PI - s;
+    });
+  };
+  var kawasaki_solutions_radians = function kawasaki_solutions_radians() {
+    for (var _len2 = arguments.length, vectors_radians = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      vectors_radians[_key2] = arguments[_key2];
+    }
+
+    return vectors_radians.map(function (v, i, ar) {
+      return counter_clockwise_angle2_radians(v, ar[(i + 1) % ar.length]);
+    }).map(function (_, i, arr) {
+      return arr.slice(i + 1, arr.length).concat(arr.slice(0, i));
+    }).map(function (opposite_sectors) {
+      return kawasaki_sector_score.apply(void 0, _toConsumableArray(opposite_sectors));
+    }).map(function (kawasakis, i) {
+      return vectors_radians[i] + kawasakis[0];
+    }).map(function (angle, i) {
+      return is_counter_clockwise_between(angle, vectors_radians[i], vectors_radians[(i + 1) % vectors_radians.length]) ? angle : undefined;
+    });
+  };
+
   var Junction = function Junction() {
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
@@ -3125,7 +3165,7 @@
   core.get_vector = get_vector;
   core.get_vector_of_vectors = get_vector_of_vectors;
   core.get_matrix2 = get_matrix2;
-  core.get_edge = get_edge;
+  core.get_segment = get_segment;
   core.get_line = get_line;
   core.get_ray = get_ray;
   core.get_two_vec2 = get_two_vec2;
@@ -3139,7 +3179,7 @@
     matrix: Matrix,
     line: Line,
     ray: Ray,
-    segment: Edge,
+    segment: Segment,
     circle: Circle,
     polygon: Polygon,
     convexPolygon: ConvexPolygon,
