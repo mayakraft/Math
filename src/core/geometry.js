@@ -2,7 +2,12 @@ import { EPSILON } from "./equal";
 import { point_on_line } from "./query";
 import { line_segment_exclusive } from "./intersection";
 import { clean_number } from "../parsers/arguments";
-import { normalize, midpoint2, distance, distance2 } from "./algebra";
+import {
+  normalize,
+  midpoint2,
+  distance,
+  distance2
+} from "./algebra";
 
 /** There are 2 interior angles between 2 absolute angle measurements, from A to B return the clock
 wise one
