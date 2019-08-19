@@ -8,8 +8,8 @@ import { is_counter_clockwise_between } from "./query";
 /**
  * two varieties: vectors, radians, with a very important difference!:
  *
- * 1. the vectors describe the direction of the edge (length doesn't matter)
- * 2. the angles in radians are the INTERIOR ANGLES between the edges, not
+ * 1. the vectors describe the direction of the segment (length doesn't matter)
+ * 2. the angles in radians are the INTERIOR ANGLES between the segments, not
  * the radians form of the vectors in case 1.
  *
  * case 2. is generally the faster way, vectors have to be turned into interior

@@ -1,6 +1,6 @@
 import { EPSILON } from "./equal";
 import { point_on_line } from "./query";
-import { line_edge_exclusive } from "./intersection";
+import { line_segment_exclusive } from "./intersection";
 import { clean_number } from "../parsers/arguments";
 import { normalize, midpoint2, distance, distance2 } from "./algebra";
 
@@ -236,7 +236,7 @@ export const nearest_point_on_line = function (
   const dot = [0, 1].map((_, i) => lineVec[i] * vectorToPoint[i])
     .reduce((a, b) => a + b, 0);
   const distance = dot / magSquared;
-  // limit depending on line, ray, edge
+  // limit depending on line, ray, segment
   const d = limiterFunc(distance, epsilon);
   return [0, 1].map((_, i) => linePoint[i] + lineVec[i] * d);
 };
@@ -249,7 +249,7 @@ export const split_polygon = function (poly, linePoint, lineVector) {
     return { type: "v", point: intersection ? v : null, at_index: i };
   }).filter(el => el.point != null);
   const edges_intersections = poly.map((v, i, arr) => {
-    const intersection = line_edge_exclusive(linePoint, lineVector, v, arr[(i + 1) % arr.length]);
+    const intersection = line_segment_exclusive(linePoint, lineVector, v, arr[(i + 1) % arr.length]);
     return { type: "e", point: intersection, at_index: i };
   }).filter(el => el.point != null);
 
@@ -273,7 +273,7 @@ export const split_convex_polygon = function (poly, linePoint, lineVector) {
     return { point: intersection ? v : null, at_index: i };
   }).filter(el => el.point != null);
   let edges_intersections = poly.map((v,i,arr) => {
-    let intersection = line_edge_exclusive(linePoint, lineVector, v, arr[(i+1)%arr.length])
+    let intersection = line_segment_exclusive(linePoint, lineVector, v, arr[(i+1)%arr.length])
     return { point: intersection, at_index: i };
   }).filter(el => el.point != null);
 

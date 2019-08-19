@@ -17,32 +17,32 @@ import {
 
 /**
  *  all intersection functions are inclusive and return true if
- *  intersection lies directly on an edge's endpoint. to exclude
+ *  intersection lies directly on a segment's endpoint. to exclude
  *  endpoints, use "exclusive" functions
  */
 
 /** comparison functions for a generalized vector intersection function */
 const line_line_comp = () => true;
 const line_ray_comp = (t0, t1) => t1 >= -EPSILON;
-const line_edge_comp = (t0, t1) => t1 >= -EPSILON && t1 <= 1 + EPSILON;
+const line_segment_comp = (t0, t1) => t1 >= -EPSILON && t1 <= 1 + EPSILON;
 const ray_ray_comp = (t0, t1) => t0 >= -EPSILON && t1 >= -EPSILON;
-const ray_edge_comp = (t0, t1) => t0 >= -EPSILON && t1 >= -EPSILON && t1 <= 1 + EPSILON;
-const edge_edge_comp = (t0, t1) => t0 >= -EPSILON && t0 <= 1 + EPSILON && t1 >= -EPSILON
+const ray_segment_comp = (t0, t1) => t0 >= -EPSILON && t1 >= -EPSILON && t1 <= 1 + EPSILON;
+const segment_segment_comp = (t0, t1) => t0 >= -EPSILON && t0 <= 1 + EPSILON && t1 >= -EPSILON
   && t1 <= 1 + EPSILON;
 
 // todo this has not been tested yet
 // const line_line_comp_exclusive = function () { return true; } // redundant
 const line_ray_comp_exclusive = (t0, t1) => t1 > EPSILON;
-const line_edge_comp_exclusive = (t0, t1) => t1 > EPSILON && t1 < 1 - EPSILON;
+const line_segment_comp_exclusive = (t0, t1) => t1 > EPSILON && t1 < 1 - EPSILON;
 const ray_ray_comp_exclusive = (t0, t1) => t0 > EPSILON && t1 > EPSILON;
-const ray_edge_comp_exclusive = (t0, t1) => t0 > EPSILON && t1 > EPSILON && t1 < 1 - EPSILON;
-const edge_edge_comp_exclusive = (t0, t1) => t0 > EPSILON && t0 < 1 - EPSILON && t1 > EPSILON
+const ray_segment_comp_exclusive = (t0, t1) => t0 > EPSILON && t1 > EPSILON && t1 < 1 - EPSILON;
+const segment_segment_comp_exclusive = (t0, t1) => t0 > EPSILON && t0 < 1 - EPSILON && t1 > EPSILON
   && t1 < 1 - EPSILON;
 
 // distance is between 0 and 1, representing the vector between start and end. cap accordingly
 export const limit_line = dist => dist;
 export const limit_ray = dist => (dist < -EPSILON ? 0 : dist);
-export const limit_edge = (dist) => {
+export const limit_segment = (dist) => {
   if (dist < -EPSILON) { return 0; }
   if (dist > 1 + EPSILON) { return 1; }
   return dist;
@@ -51,7 +51,7 @@ export const limit_edge = (dist) => {
 /**
  * the generalized vector intersection function
  * requires a compFunction to describe valid bounds checking
- * line always returns true, ray is true for t > 0, edge must be between 0 < t < 1
+ * line always returns true, ray is true for t > 0, segment must be between 0 < t < 1
 */
 export const intersection_function = function (aPt, aVec, bPt, bVec, compFunc, epsilon = EPSILON) {
   function det(a, b) { return a[0] * b[1] - b[0] * a[1]; }
@@ -74,21 +74,33 @@ export const line_line = function (aPt, aVec, bPt, bVec, epsilon) {
 export const line_ray = function (linePt, lineVec, rayPt, rayVec, epsilon) {
   return intersection_function(linePt, lineVec, rayPt, rayVec, line_ray_comp, epsilon);
 };
-export const line_edge = function (point, vec, edge0, edge1, epsilon) {
-  const edgeVec = [edge1[0] - edge0[0], edge1[1] - edge0[1]];
-  return intersection_function(point, vec, edge0, edgeVec, line_edge_comp, epsilon);
+export const line_segment = function (point, vec, segment0, segment1, epsilon) {
+  const segmentVec = [segment1[0] - segment0[0], segment1[1] - segment0[1]];
+  return intersection_function(
+    point, vec,
+    segment0, segmentVec,
+    line_segment_comp, epsilon
+  );
 };
 export const ray_ray = function (aPt, aVec, bPt, bVec, epsilon) {
   return intersection_function(aPt, aVec, bPt, bVec, ray_ray_comp, epsilon);
 };
-export const ray_edge = function (rayPt, rayVec, edge0, edge1, epsilon) {
-  const edgeVec = [edge1[0] - edge0[0], edge1[1] - edge0[1]];
-  return intersection_function(rayPt, rayVec, edge0, edgeVec, ray_edge_comp, epsilon);
+export const ray_segment = function (rayPt, rayVec, segment0, segment1, epsilon) {
+  const segmentVec = [segment1[0] - segment0[0], segment1[1] - segment0[1]];
+  return intersection_function(
+    rayPt, rayVec,
+    segment0, segmentVec,
+    ray_segment_comp, epsilon
+  );
 };
-export const edge_edge = function (a0, a1, b0, b1, epsilon) {
+export const segment_segment = function (a0, a1, b0, b1, epsilon) {
   const aVec = [a1[0] - a0[0], a1[1] - a0[1]];
   const bVec = [b1[0] - b0[0], b1[1] - b0[1]];
-  return intersection_function(a0, aVec, b0, bVec, edge_edge_comp, epsilon);
+  return intersection_function(
+    a0, aVec,
+    b0, bVec,
+    segment_segment_comp, epsilon
+  );
 };
 
 
@@ -97,23 +109,41 @@ export const edge_edge = function (a0, a1, b0, b1, epsilon) {
 //  return intersection_function(aPt, aVec, bPt, bVec, line_line_comp_exclusive, epsilon);
 // }
 export const line_ray_exclusive = function (linePt, lineVec, rayPt, rayVec, epsilon) {
-  return intersection_function(linePt, lineVec, rayPt, rayVec, line_ray_comp_exclusive, epsilon);
+  return intersection_function(
+    linePt, lineVec,
+    rayPt, rayVec,
+    line_ray_comp_exclusive, epsilon
+  );
 };
-export const line_edge_exclusive = function (point, vec, edge0, edge1, epsilon) {
-  const edgeVec = [edge1[0] - edge0[0], edge1[1] - edge0[1]];
-  return intersection_function(point, vec, edge0, edgeVec, line_edge_comp_exclusive, epsilon);
+export const line_segment_exclusive = function (point, vec, segment0, segment1, epsilon) {
+  const segmentVec = [segment1[0] - segment0[0], segment1[1] - segment0[1]];
+  return intersection_function(
+    point, vec,
+    segment0, segmentVec,
+    line_segment_comp_exclusive, epsilon
+  );
 };
 export const ray_ray_exclusive = function (aPt, aVec, bPt, bVec, epsilon) {
-  return intersection_function(aPt, aVec, bPt, bVec, ray_ray_comp_exclusive, epsilon);
+  return intersection_function(
+    aPt, aVec, bPt, bVec, ray_ray_comp_exclusive, epsilon
+  );
 };
-export const ray_edge_exclusive = function (rayPt, rayVec, edge0, edge1, epsilon) {
-  const edgeVec = [edge1[0] - edge0[0], edge1[1] - edge0[1]];
-  return intersection_function(rayPt, rayVec, edge0, edgeVec, ray_edge_comp_exclusive, epsilon);
+export const ray_segment_exclusive = function (rayPt, rayVec, segment0, segment1, epsilon) {
+  const segmentVec = [segment1[0] - segment0[0], segment1[1] - segment0[1]];
+  return intersection_function(
+    rayPt, rayVec,
+    segment0, segmentVec,
+    ray_segment_comp_exclusive, epsilon
+  );
 };
-export const edge_edge_exclusive = function (a0, a1, b0, b1, epsilon) {
+export const segment_segment_exclusive = function (a0, a1, b0, b1, epsilon) {
   const aVec = [a1[0] - a0[0], a1[1] - a0[1]];
   const bVec = [b1[0] - b0[0], b1[1] - b0[1]];
-  return intersection_function(a0, aVec, b0, bVec, edge_edge_comp_exclusive, epsilon);
+  return intersection_function(
+    a0, aVec,
+    b0, bVec,
+    segment_segment_comp_exclusive, epsilon
+  );
 };
 
 
@@ -169,7 +199,7 @@ export const circle_ray = function (center, radius, p0, p1) {
   throw "circle_ray has not been written yet";
 };
 
-export const circle_edge = function (center, radius, p0, p1) {
+export const circle_segment = function (center, radius, p0, p1) {
   const r_squared = radius ** 2;
   const x1 = p0[0] - center[0];
   const y1 = p0[1] - center[1];
@@ -199,6 +229,7 @@ export const circle_edge = function (center, radius, p0, p1) {
   if (!x2_NaN) {
     return [[x_2 + center[0], y_2 + center[1]]];
   }
+  return undefined;
 };
 
 
@@ -218,18 +249,18 @@ const quick_equivalent_2 = function (a, b) {
   return Math.abs(a[0] - b[0]) < EPSILON && Math.abs(a[1] - b[1]) < EPSILON;
 };
 
-/** clip an infinite line in a polygon, returns an edge or undefined if no intersection */
+/** clip an infinite line in a polygon, returns a segment or undefined if no intersection */
 export const convex_poly_line = function (poly, linePoint, lineVector) {
   const intersections = poly
-    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into edge pairs
-    .map(el => line_edge(linePoint, lineVector, el[0], el[1]))
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into segment pairs
+    .map(el => line_segment(linePoint, lineVector, el[0], el[1]))
     .filter(el => el != null);
   switch (intersections.length) {
     case 0: return undefined;
-    case 1: return [intersections[0], intersections[0]]; // degenerate edge
+    case 1: return [intersections[0], intersections[0]]; // degenerate segment
     case 2: return intersections;
     default:
-      // special case: line intersects directly on a poly point (2 edges, same point)
+      // special case: line intersects directly on a poly point (2 segments, same point)
       //  filter to unique points by [x,y] comparison.
       for (let i = 1; i < intersections.length; i += 1) {
         if (!quick_equivalent_2(intersections[0], intersections[i])) {
@@ -242,8 +273,8 @@ export const convex_poly_line = function (poly, linePoint, lineVector) {
 
 export const convex_poly_ray = function (poly, linePoint, lineVector) {
   const intersections = poly
-    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into edge pairs
-    .map(el => ray_edge(linePoint, lineVector, el[0], el[1]))
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into segment pairs
+    .map(el => ray_segment(linePoint, lineVector, el[0], el[1]))
     .filter(el => el != null);
   switch (intersections.length) {
     case 0: return undefined;
@@ -260,35 +291,35 @@ export const convex_poly_ray = function (poly, linePoint, lineVector) {
   }
 };
 
-export const convex_poly_edge = function (poly, edgeA, edgeB) {
+export const convex_poly_segment = function (poly, segmentA, segmentB) {
   const intersections = poly
-    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // polygon into edge pairs
-    .map(el => edge_edge_exclusive(edgeA, edgeB, el[0], el[1]))
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // polygon into segment pairs
+    .map(el => segment_segment_exclusive(segmentA, segmentB, el[0], el[1]))
     .filter(el => el != null);
 
-  const aInsideExclusive = point_in_convex_poly_exclusive(edgeA, poly);
-  const bInsideExclusive = point_in_convex_poly_exclusive(edgeB, poly);
-  const aInsideInclusive = point_in_convex_poly(edgeA, poly);
-  const bInsideInclusive = point_in_convex_poly(edgeB, poly);
+  const aInsideExclusive = point_in_convex_poly_exclusive(segmentA, poly);
+  const bInsideExclusive = point_in_convex_poly_exclusive(segmentB, poly);
+  const aInsideInclusive = point_in_convex_poly(segmentA, poly);
+  const bInsideInclusive = point_in_convex_poly(segmentB, poly);
 
   // both are inside, OR, one is inside and the other is collinear to poly
   if (intersections.length === 0
     && (aInsideExclusive || bInsideExclusive)) {
-    return [edgeA, edgeB];
+    return [segmentA, segmentB];
   }
   if (intersections.length === 0
     && (aInsideInclusive && bInsideInclusive)) {
-    return [edgeA, edgeB];
+    return [segmentA, segmentB];
   }
   switch (intersections.length) {
     case 0: return (aInsideExclusive
-      ? [[...edgeA], [...edgeB]]
+      ? [[...segmentA], [...segmentB]]
       : undefined);
     case 1: return (aInsideInclusive
-      ? [[...edgeA], intersections[0]]
-      : [[...edgeB], intersections[0]]);
+      ? [[...segmentA], intersections[0]]
+      : [[...segmentB], intersections[0]]);
     case 2: return intersections;
-    default: throw new Error("clipping edge in a convex polygon resulting in 3 or more points");
+    default: throw new Error("clipping segment in a convex polygon resulting in 3 or more points");
   }
 };
 
@@ -296,8 +327,8 @@ export const convex_poly_edge = function (poly, edgeA, edgeB) {
 
 export const convex_poly_ray_exclusive = function (poly, linePoint, lineVector) {
   const intersections = poly
-    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into edge pairs
-    .map(el => ray_edge_exclusive(linePoint, lineVector, el[0], el[1]))
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into segment pairs
+    .map(el => ray_segment_exclusive(linePoint, lineVector, el[0], el[1]))
     .filter(el => el != null);
   switch (intersections.length) {
     case 0: return undefined;

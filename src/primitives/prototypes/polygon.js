@@ -2,11 +2,11 @@ import {
   get_vector,
   get_matrix2,
   get_line,
-  get_edge,
+  get_segment,
 } from "../../parsers/arguments";
 
 import {
-  convex_poly_edge,
+  convex_poly_segment,
   convex_poly_line,
   convex_poly_ray,
 } from "../../core/intersection";
@@ -28,7 +28,7 @@ import {
 import { multiply_vector2_matrix2 } from "../../core/matrix";
 
 import Vector from "../vector";
-import Edge from "../edge";
+import Segment from "../segment";
 import Sector from "../sector";
 
 // todo: need non-convex clipping functions returns an array of edges!!
@@ -77,20 +77,20 @@ export default function (subtype) {
   };
   // const enclosingRectangle = () => Rectangle(enclosing_rectangle(this.points));
   // todo: need non-convex clipping functions returns an array of edges
-  const clipEdge = function (...args) {
-    const edge = get_edge(args);
-    const e = convex_poly_edge(this.points, edge[0], edge[1]);
-    return e === undefined ? undefined : Edge(e);
+  const clipSegment = function (...args) {
+    const edge = get_segment(args);
+    const e = convex_poly_segment(this.points, edge[0], edge[1]);
+    return e === undefined ? undefined : Segment(e);
   };
   const clipLine = function (...args) {
     const line = get_line(args);
     const e = convex_poly_line(this.points, line.point, line.vector);
-    return e === undefined ? undefined : Edge(e);
+    return e === undefined ? undefined : Segment(e);
   };
   const clipRay = function (...args) {
     const line = get_line(args);
     const e = convex_poly_ray(this.points, line.point, line.vector);
-    return e === undefined ? undefined : Edge(e);
+    return e === undefined ? undefined : Segment(e);
   };
   const split = function (...args) {
     const line = get_line(args);
@@ -135,7 +135,7 @@ export default function (subtype) {
   Object.defineProperty(proto, "enclosingRectangle", { value: enclosingRectangle });
   Object.defineProperty(proto, "contains", { value: contains });
   Object.defineProperty(proto, "nearest", { value: nearest });
-  Object.defineProperty(proto, "clipEdge", { value: clipEdge });
+  Object.defineProperty(proto, "clipSegment", { value: clipSegment });
   Object.defineProperty(proto, "clipLine", { value: clipLine });
   Object.defineProperty(proto, "clipRay", { value: clipRay });
   Object.defineProperty(proto, "split", { value: split });

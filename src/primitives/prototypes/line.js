@@ -2,7 +2,7 @@ import {
   get_vector,
   get_line,
   get_ray,
-  get_edge,
+  get_segment,
 } from "../../parsers/arguments";
 
 import {
@@ -21,7 +21,7 @@ import { Matrix2 } from "../matrix";
 // it is okay to use arrow functions inside methods.
 
 /**
- * this prototype is shared among line types: lines, rays, edges/segments.
+ * this prototype is shared among line types: lines, rays, segments.
  * each must implement:
  * - a point
  * - a vector
@@ -40,7 +40,7 @@ export default function (subtype, prototype) {
   const compare_to_ray = function (t0, t1, epsilon = EPSILON) {
     return this.compare_function (t0, epsilon) && t1 >= -epsilon;
   };
-  const compare_to_edge = function (t0, t1, epsilon = EPSILON) {
+  const compare_to_segment = function (t0, t1, epsilon = EPSILON) {
     return this.compare_function (t0, epsilon)
       && t1 >= -epsilon && t1 <= 1 + epsilon;
   };
@@ -82,10 +82,10 @@ export default function (subtype, prototype) {
       compare_to_ray.bind(this));
   };
   const intersectEdge = function (...args) {
-    const edge = get_edge(args);
+    const edge = get_segment(args);
     const edgeVec = [edge[1][0] - edge[0][0], edge[1][1] - edge[0][1]];
     return intersection_function(this.point, this.vector, edge[0], edgeVec,
-      compare_to_edge.bind(this));
+      compare_to_segment.bind(this));
   };
 
   // const collinear = function (point){}
