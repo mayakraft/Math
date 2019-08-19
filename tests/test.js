@@ -369,6 +369,7 @@ testEqual([undefined, undefined, [-sqrt05, -sqrt05]],
     [Math.cos(Math.PI / 2), Math.sin(Math.PI / 2)]
   ));
 */
+
 testName("nearest point");
 testEqual([5, 5], math.core.nearest_point2([10, 0],
   [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9]]));

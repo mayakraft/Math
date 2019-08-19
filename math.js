@@ -3126,24 +3126,9 @@
       });
     };
 
-    var alternatingAngleSum = function alternatingAngleSum() {
-      return alternating_sum.apply(void 0, _toConsumableArray(angles()));
-    };
-
-    var kawasaki_score = function kawasaki_score() {
-      return kawasaki_sector_score.apply(void 0, _toConsumableArray(angles()));
-    };
-
-    var kawasaki_solutions$$1 = function kawasaki_solutions$$1() {
-      return kawasaki_solutions_radians.apply(void 0, _toConsumableArray(angles()));
-    };
-
     return {
       sectors: sectors,
       angles: angles,
-      kawasaki_score: kawasaki_score,
-      kawasaki_solutions: kawasaki_solutions$$1,
-      alternatingAngleSum: alternatingAngleSum,
 
       get vectors() {
         return vectors;
