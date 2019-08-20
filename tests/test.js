@@ -167,6 +167,9 @@ testEqual(true, math.line(100, 101, 3, 4).isParallel(math.line(5, 5, -6, -8)));
 testName("vector lerp");
 testEqual([15.5, 3.5, 3], math.vector(30, 5, 3).lerp([1, 2, 3], 0.5));
 
+testName("vector copy");
+testEqual([1, 2, 3], math.vector(1, 2, 3).copy().copy());
+
 /**
  * matrices
  */

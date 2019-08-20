@@ -28,7 +28,7 @@ const Sector = function (vectorA, vectorB, center = [0, 0]) {
       .map(vec => [vec[0], vec[1]]);
   };
 
-  /** a sector contains a point if it is between the two edges in counter-clockwise order */
+  /** a sector contains a vector if it lies between the two vectors in counter-clockwise order */
   const contains = function (...args) {
     // move the point into the sector's space
     const point = get_vector(args).map((n, i) => n + center[i]);

@@ -11,7 +11,7 @@ const Vector = function (...args) {
   Object.defineProperty(vector, "x", { get: () => vector[0] });
   Object.defineProperty(vector, "y", { get: () => vector[1] });
   Object.defineProperty(vector, "z", { get: () => vector[2] });
-  // return Object.freeze(vector);
+
   return vector;
 };
 

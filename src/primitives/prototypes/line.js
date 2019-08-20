@@ -32,22 +32,22 @@ import { Matrix2 } from "../matrix";
  */
 export default function (subtype, prototype) {
   const proto = (prototype != null) ? prototype : {};
-  const Type = subtype;
+  // const Type = subtype;
 
   const compare_to_line = function (t0, t1, epsilon = EPSILON) {
-    return this.compare_function (t0, epsilon) && true;
+    return this.compare_function(t0, epsilon) && true;
   };
   const compare_to_ray = function (t0, t1, epsilon = EPSILON) {
-    return this.compare_function (t0, epsilon) && t1 >= -epsilon;
+    return this.compare_function(t0, epsilon) && t1 >= -epsilon;
   };
   const compare_to_segment = function (t0, t1, epsilon = EPSILON) {
-    return this.compare_function (t0, epsilon)
+    return this.compare_function(t0, epsilon)
       && t1 >= -epsilon && t1 <= 1 + epsilon;
   };
 
   const isParallel = function (line, epsilon) {
     if (line.vector == null) {
-      throw "line isParallel(): please ensure object contains a vector";
+      throw new Error("isParallel() argument is missing a vector");
     }
     const this_is_smaller = (this.vector.length < line.vector.length);
     const sm = this_is_smaller ? this.vector : line.vector;

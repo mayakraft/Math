@@ -1,9 +1,9 @@
 // make this a console.log replaecment. but only flips on when you include
 // in the header of rollup a flag set to true.
-const argument = {
-  // log: console.log,
-  log: () => {}
-};
+// const argument = {
+//   // log: console.log,
+//   log: () => {}
+// };
 
 /**
  * the following operations generalize for n-dimensions
@@ -14,7 +14,7 @@ const argument = {
  * @returns {number}
  */
 export const magnitude = function (v) {
-  argument.log("magnitude", v);
+  // argument.log("magnitude", v);
   const sum = v
     .map(component => component * component)
     .reduce((prev, curr) => prev + curr, 0);
@@ -25,7 +25,7 @@ export const magnitude = function (v) {
  * @returns {number[]}
  */
 export const normalize = function (v) {
-  argument.log("normalize", v);
+  // argument.log("normalize", v);
   const m = magnitude(v);
   // todo: should this catch divide by 0?
   // should a vector with magnitude 0 return the untouched argument?
