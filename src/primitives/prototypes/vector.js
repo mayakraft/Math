@@ -21,104 +21,111 @@ import {
   make_matrix2_reflection,
 } from "../../core/matrix";
 
+// couple thoughts on design:
+//
+// if we want to "lock" this object, so that it is never able to be modified
+// then the last line should return Object.freeze(proto)
+// and the initialization needs to pass in ...values, like:
+// const VectorPrototype = function (subtype, ...values)
+//
 const VectorPrototype = function (subtype) {
   const proto = [];
   // Type === Vector
   const Type = subtype;
-  let _this;
-  const bind = function (that) {
-    _this = that;
+  let that;
+  const bind = function (theother) {
+    that = theother;
   };
 
   const vecNormalize = function () {
-    return Type(normalize(_this));
+    return Type(normalize(that));
   };
   const vecDot = function (...args) {
     const vec = get_vector(args);
     return this.length > vec.length
-      ? dot(vec, _this)
-      : dot(_this, vec);
+      ? dot(vec, that)
+      : dot(that, vec);
   };
   const cross = function (...args) {
     const b = get_vector(args);
-    const a = _this.slice();
+    const a = that.slice();
     if (a[2] == null) { a[2] = 0; }
     if (b[2] == null) { b[2] = 0; }
     return Type(cross3(a, b));
   };
   const distanceTo = function (...args) {
     const vec = get_vector(args);
-    const length = (_this.length < vec.length) ? _this.length : vec.length;
+    const length = (that.length < vec.length) ? that.length : vec.length;
     const sum = Array.from(Array(length))
-      .map((_, i) => (_this[i] - vec[i]) ** 2)
+      .map((_, i) => (that[i] - vec[i]) ** 2)
       .reduce((prev, curr) => prev + curr, 0);
     return Math.sqrt(sum);
   };
   const transform = function (...args) {
     const m = get_matrix2(args);
-    return Type(multiply_vector2_matrix2(_this, m));
+    return Type(multiply_vector2_matrix2(that, m));
   };
   const add = function (...args) {
     const vec = get_vector(args);
-    return Type(_this.map((v, i) => v + vec[i]));
+    return Type(that.map((v, i) => v + vec[i]));
   };
   const subtract = function (...args) {
     const vec = get_vector(args);
-    return Type(_this.map((v, i) => v - vec[i]));
+    return Type(that.map((v, i) => v - vec[i]));
   };
   // these are implicitly 2D functions, and will convert the vector into 2D
   const rotateZ = function (angle, origin) {
     const m = make_matrix2_rotation(angle, origin);
-    return Type(multiply_vector2_matrix2(_this, m));
+    return Type(multiply_vector2_matrix2(that, m));
   };
   const rotateZ90 = function () {
-    return Type(-_this[1], _this[0]);
+    return Type(-that[1], that[0]);
   };
   const rotateZ180 = function () {
-    return Type(-_this[0], -_this[1]);
+    return Type(-that[0], -that[1]);
   };
   const rotateZ270 = function () {
-    return Type(_this[1], -_this[0]);
+    return Type(that[1], -that[0]);
   };
   const reflect = function (...args) {
     const ref = get_line(args);
     const m = make_matrix2_reflection(ref.vector, ref.point);
-    return Type(multiply_vector2_matrix2(_this, m));
+    return Type(multiply_vector2_matrix2(that, m));
   };
   const lerp = function (vector, pct) {
     const vec = get_vector(vector);
     const inv = 1.0 - pct;
-    const length = (_this.length < vec.length) ? _this.length : vec.length;
+    const length = (that.length < vec.length) ? that.length : vec.length;
     const components = Array.from(Array(length))
-      .map((_, i) => _this[i] * pct + vec[i] * inv);
+      .map((_, i) => that[i] * pct + vec[i] * inv);
     return Type(components);
   };
   const isEquivalent = function (...args) {
     // rect bounding box for now, much cheaper than radius calculation
     const vec = get_vector(args);
-    const sm = (_this.length < vec.length) ? _this : vec;
-    const lg = (_this.length < vec.length) ? vec : _this;
+    const sm = (that.length < vec.length) ? that : vec;
+    const lg = (that.length < vec.length) ? vec : that;
     return equivalent(sm, lg);
   };
   const isParallel = function (...args) {
     const vec = get_vector(args);
-    const sm = (_this.length < vec.length) ? _this : vec;
-    const lg = (_this.length < vec.length) ? vec : _this;
+    const sm = (that.length < vec.length) ? that : vec;
+    const lg = (that.length < vec.length) ? vec : that;
     return parallel(sm, lg);
   };
   const scale = function (mag) {
-    return Type(_this.map(v => v * mag));
+    return Type(that.map(v => v * mag));
   };
   const midpoint = function (...args) {
     const vec = get_vector(args);
-    const sm = (_this.length < vec.length) ? _this.slice() : vec;
-    const lg = (_this.length < vec.length) ? vec : _this.slice();
+    const sm = (that.length < vec.length) ? that.slice() : vec;
+    const lg = (that.length < vec.length) ? vec : that.slice();
     for (let i = sm.length; i < lg.length; i += 1) { sm[i] = 0; }
     return Type(lg.map((_, i) => (sm[i] + lg[i]) * 0.5));
   };
   const bisect = function (...args) {
     const vec = get_vector(args);
-    return bisect_vectors(_this, vec).map(b => Type(b));
+    return bisect_vectors(that, vec).map(b => Type(b));
   };
 
   Object.defineProperty(proto, "normalize", { value: vecNormalize });
@@ -139,12 +146,8 @@ const VectorPrototype = function (subtype) {
   Object.defineProperty(proto, "scale", { value: scale });
   Object.defineProperty(proto, "midpoint", { value: midpoint });
   Object.defineProperty(proto, "bisect", { value: bisect });
-  Object.defineProperty(proto, "copy", {
-    value: function () { return Type(..._this); }
-  });
-  Object.defineProperty(proto, "magnitude", {
-    get: function () { return magnitude(_this); },
-  });
+  Object.defineProperty(proto, "copy", { value: () => Type(...that) });
+  Object.defineProperty(proto, "magnitude", { get: () => magnitude(that) });
   Object.defineProperty(proto, "bind", { value: bind });
   return proto;
 };

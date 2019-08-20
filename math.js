@@ -15,7 +15,7 @@
   };
   var normalize = function normalize(v) {
     var m = magnitude(v);
-    return v.map(function (c) {
+    return m === 0 ? v : v.map(function (c) {
       return c / m;
     });
   };
@@ -1469,16 +1469,13 @@
     var vectorToPoint = [0, 1].map(function (_, i) {
       return point[i] - linePoint[i];
     });
-    var pTo0 = [0, 1].map(function (_, i) {
-      return point[i] - linePoint[i];
-    });
     var dot$$1 = [0, 1].map(function (_, i) {
       return lineVec[i] * vectorToPoint[i];
     }).reduce(function (a, b) {
       return a + b;
     }, 0);
-    var distance$$1 = dot$$1 / magSquared;
-    var d = limiterFunc(distance$$1, epsilon);
+    var dist = dot$$1 / magSquared;
+    var d = limiterFunc(dist, epsilon);
     return [0, 1].map(function (_, i) {
       return linePoint[i] + lineVec[i] * d;
     });
@@ -1676,15 +1673,14 @@
   var VectorPrototype = function VectorPrototype(subtype) {
     var proto = [];
     var Type = subtype;
+    var that;
 
-    var _this;
-
-    var bind = function bind(that) {
-      _this = that;
+    var bind = function bind(theother) {
+      that = theother;
     };
 
     var vecNormalize = function vecNormalize() {
-      return Type(normalize(_this));
+      return Type(normalize(that));
     };
 
     var vecDot = function vecDot() {
@@ -1693,7 +1689,7 @@
       }
 
       var vec = get_vector(args);
-      return this.length > vec.length ? dot(vec, _this) : dot(_this, vec);
+      return this.length > vec.length ? dot(vec, that) : dot(that, vec);
     };
 
     var cross = function cross() {
@@ -1702,8 +1698,7 @@
       }
 
       var b = get_vector(args);
-
-      var a = _this.slice();
+      var a = that.slice();
 
       if (a[2] == null) {
         a[2] = 0;
@@ -1722,9 +1717,9 @@
       }
 
       var vec = get_vector(args);
-      var length = _this.length < vec.length ? _this.length : vec.length;
+      var length = that.length < vec.length ? that.length : vec.length;
       var sum = Array.from(Array(length)).map(function (_, i) {
-        return Math.pow(_this[i] - vec[i], 2);
+        return Math.pow(that[i] - vec[i], 2);
       }).reduce(function (prev, curr) {
         return prev + curr;
       }, 0);
@@ -1737,7 +1732,7 @@
       }
 
       var m = get_matrix2(args);
-      return Type(multiply_vector2_matrix2(_this, m));
+      return Type(multiply_vector2_matrix2(that, m));
     };
 
     var add = function add() {
@@ -1746,7 +1741,7 @@
       }
 
       var vec = get_vector(args);
-      return Type(_this.map(function (v, i) {
+      return Type(that.map(function (v, i) {
         return v + vec[i];
       }));
     };
@@ -1757,26 +1752,26 @@
       }
 
       var vec = get_vector(args);
-      return Type(_this.map(function (v, i) {
+      return Type(that.map(function (v, i) {
         return v - vec[i];
       }));
     };
 
     var rotateZ = function rotateZ(angle, origin) {
       var m = make_matrix2_rotation(angle, origin);
-      return Type(multiply_vector2_matrix2(_this, m));
+      return Type(multiply_vector2_matrix2(that, m));
     };
 
     var rotateZ90 = function rotateZ90() {
-      return Type(-_this[1], _this[0]);
+      return Type(-that[1], that[0]);
     };
 
     var rotateZ180 = function rotateZ180() {
-      return Type(-_this[0], -_this[1]);
+      return Type(-that[0], -that[1]);
     };
 
     var rotateZ270 = function rotateZ270() {
-      return Type(_this[1], -_this[0]);
+      return Type(that[1], -that[0]);
     };
 
     var reflect = function reflect() {
@@ -1786,15 +1781,15 @@
 
       var ref = get_line(args);
       var m = make_matrix2_reflection(ref.vector, ref.point);
-      return Type(multiply_vector2_matrix2(_this, m));
+      return Type(multiply_vector2_matrix2(that, m));
     };
 
     var lerp = function lerp(vector, pct) {
       var vec = get_vector(vector);
       var inv = 1.0 - pct;
-      var length = _this.length < vec.length ? _this.length : vec.length;
+      var length = that.length < vec.length ? that.length : vec.length;
       var components = Array.from(Array(length)).map(function (_, i) {
-        return _this[i] * pct + vec[i] * inv;
+        return that[i] * pct + vec[i] * inv;
       });
       return Type(components);
     };
@@ -1805,8 +1800,8 @@
       }
 
       var vec = get_vector(args);
-      var sm = _this.length < vec.length ? _this : vec;
-      var lg = _this.length < vec.length ? vec : _this;
+      var sm = that.length < vec.length ? that : vec;
+      var lg = that.length < vec.length ? vec : that;
       return equivalent(sm, lg);
     };
 
@@ -1816,13 +1811,13 @@
       }
 
       var vec = get_vector(args);
-      var sm = _this.length < vec.length ? _this : vec;
-      var lg = _this.length < vec.length ? vec : _this;
+      var sm = that.length < vec.length ? that : vec;
+      var lg = that.length < vec.length ? vec : that;
       return parallel(sm, lg);
     };
 
     var scale = function scale(mag) {
-      return Type(_this.map(function (v) {
+      return Type(that.map(function (v) {
         return v * mag;
       }));
     };
@@ -1833,8 +1828,8 @@
       }
 
       var vec = get_vector(args);
-      var sm = _this.length < vec.length ? _this.slice() : vec;
-      var lg = _this.length < vec.length ? vec : _this.slice();
+      var sm = that.length < vec.length ? that.slice() : vec;
+      var lg = that.length < vec.length ? vec : that.slice();
 
       for (var i = sm.length; i < lg.length; i += 1) {
         sm[i] = 0;
@@ -1851,7 +1846,7 @@
       }
 
       var vec = get_vector(args);
-      return bisect_vectors(_this, vec).map(function (b) {
+      return bisect_vectors(that, vec).map(function (b) {
         return Type(b);
       });
     };
@@ -1912,12 +1907,12 @@
     });
     Object.defineProperty(proto, "copy", {
       value: function value() {
-        return Type.apply(void 0, _toConsumableArray(_this));
+        return Type.apply(void 0, _toConsumableArray(that));
       }
     });
     Object.defineProperty(proto, "magnitude", {
       get: function get() {
-        return magnitude(_this);
+        return magnitude(that);
       }
     });
     Object.defineProperty(proto, "bind", {
@@ -2122,7 +2117,7 @@
 
     var isParallel = function isParallel(line, epsilon) {
       if (line.vector == null) {
-        throw "line isParallel(): please ensure object contains a vector";
+        throw new Error("isParallel() argument is missing a vector");
       }
 
       var this_is_smaller = this.vector.length < line.vector.length;
@@ -2959,11 +2954,9 @@
   };
 
   var Rectangle = function Rectangle() {
-    var _origin;
-
-    var _width;
-
-    var _height;
+    var origin;
+    var width;
+    var height;
 
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
@@ -2978,12 +2971,12 @@
     });
 
     if (numbers.length === 4) {
-      _origin = numbers.slice(0, 2);
+      origin = numbers.slice(0, 2);
 
       var _numbers = _slicedToArray(numbers, 4);
 
-      _width = _numbers[2];
-      _height = _numbers[3];
+      width = _numbers[2];
+      height = _numbers[3];
     }
 
     if (arrays.length === 1) {
@@ -2992,21 +2985,21 @@
 
     if (arrays.length === 2) {
       if (typeof arrays[0][0] === "number") {
-        _origin = arrays[0].slice();
-        _width = arrays[1][0];
-        _height = arrays[1][1];
+        origin = arrays[0].slice();
+        width = arrays[1][0];
+        height = arrays[1][1];
       }
     }
 
-    var points = [[_origin[0], _origin[1]], [_origin[0] + _width, _origin[1]], [_origin[0] + _width, _origin[1] + _height], [_origin[0], _origin[1] + _height]];
+    var points = [[origin[0], origin[1]], [origin[0] + width, origin[1]], [origin[0] + width, origin[1] + height], [origin[0], origin[1] + height]];
     var proto = Prototype$1.bind(this);
     var rect = Object.create(proto(Rectangle));
 
     var scale = function scale(magnitude, center_point) {
-      var center = center_point != null ? center_point : [_origin[0] + _width, _origin[1] + _height];
-      var x = _origin[0] + (center[0] - _origin[0]) * (1 - magnitude);
-      var y = _origin[1] + (center[1] - _origin[1]) * (1 - magnitude);
-      return Rectangle(x, y, _width * magnitude, _height * magnitude);
+      var center = center_point != null ? center_point : [origin[0] + width, origin[1] + height];
+      var x = origin[0] + (center[0] - origin[0]) * (1 - magnitude);
+      var y = origin[1] + (center[1] - origin[1]) * (1 - magnitude);
+      return Rectangle(x, y, width * magnitude, height * magnitude);
     };
 
     var rotate = function rotate() {
@@ -3025,22 +3018,22 @@
 
     Object.defineProperty(rect, "origin", {
       get: function get() {
-        return _origin;
+        return origin;
       }
     });
     Object.defineProperty(rect, "width", {
       get: function get() {
-        return _width;
+        return width;
       }
     });
     Object.defineProperty(rect, "height", {
       get: function get() {
-        return _height;
+        return height;
       }
     });
     Object.defineProperty(rect, "area", {
       get: function get() {
-        return _width * _height;
+        return width * height;
       }
     });
     Object.defineProperty(rect, "scale", {
@@ -3053,44 +3046,6 @@
       value: transform
     });
     return rect;
-  };
-
-  var alternating_sum = function alternating_sum() {
-    for (var _len = arguments.length, angles = new Array(_len), _key = 0; _key < _len; _key++) {
-      angles[_key] = arguments[_key];
-    }
-
-    return [0, 1].map(function (even_odd) {
-      return angles.filter(function (_, i) {
-        return i % 2 === even_odd;
-      }).reduce(function (a, b) {
-        return a + b;
-      }, 0);
-    });
-  };
-  var kawasaki_sector_score = function kawasaki_sector_score() {
-    return alternating_sum.apply(void 0, arguments).map(function (a) {
-      return a < 0 ? a + Math.PI * 2 : a;
-    }).map(function (s) {
-      return Math.PI - s;
-    });
-  };
-  var kawasaki_solutions_radians = function kawasaki_solutions_radians() {
-    for (var _len2 = arguments.length, vectors_radians = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      vectors_radians[_key2] = arguments[_key2];
-    }
-
-    return vectors_radians.map(function (v, i, ar) {
-      return counter_clockwise_angle2_radians(v, ar[(i + 1) % ar.length]);
-    }).map(function (_, i, arr) {
-      return arr.slice(i + 1, arr.length).concat(arr.slice(0, i));
-    }).map(function (opposite_sectors) {
-      return kawasaki_sector_score.apply(void 0, _toConsumableArray(opposite_sectors));
-    }).map(function (kawasakis, i) {
-      return vectors_radians[i] + kawasakis[0];
-    }).map(function (angle, i) {
-      return is_counter_clockwise_between(angle, vectors_radians[i], vectors_radians[(i + 1) % vectors_radians.length]) ? angle : undefined;
-    });
   };
 
   var Junction = function Junction() {

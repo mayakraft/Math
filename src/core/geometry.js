@@ -237,12 +237,12 @@ export const nearest_point_on_line = function (
 ) {
   const magSquared = (lineVec[0] ** 2) + (lineVec[1] ** 2);
   const vectorToPoint = [0, 1].map((_, i) => point[i] - linePoint[i]);
-  const pTo0 = [0, 1].map((_, i) => point[i] - linePoint[i]);
+  // const pTo0 = [0, 1].map((_, i) => point[i] - linePoint[i]);
   const dot = [0, 1].map((_, i) => lineVec[i] * vectorToPoint[i])
     .reduce((a, b) => a + b, 0);
-  const distance = dot / magSquared;
+  const dist = dot / magSquared;
   // limit depending on line, ray, segment
-  const d = limiterFunc(distance, epsilon);
+  const d = limiterFunc(dist, epsilon);
   return [0, 1].map((_, i) => linePoint[i] + lineVec[i] * d);
 };
 
@@ -254,7 +254,12 @@ export const split_polygon = function (poly, linePoint, lineVector) {
     return { type: "v", point: intersection ? v : null, at_index: i };
   }).filter(el => el.point != null);
   const edges_intersections = poly.map((v, i, arr) => {
-    const intersection = line_segment_exclusive(linePoint, lineVector, v, arr[(i + 1) % arr.length]);
+    const intersection = line_segment_exclusive(
+      linePoint,
+      lineVector,
+      v,
+      arr[(i + 1) % arr.length]
+    );
     return { type: "e", point: intersection, at_index: i };
   }).filter(el => el.point != null);
 
@@ -383,7 +388,7 @@ export const convex_hull = function (points, include_collinear = false, epsilon 
     // add point to hull, prepare to loop again
     hull.push(angles[0].node);
     // update walking direction with the angle to the new point
-    ang = Math.atan2( hull[h][1] - angles[0].node[1], hull[h][0] - angles[0].node[0]);
+    ang = Math.atan2(hull[h][1] - angles[0].node[1], hull[h][0] - angles[0].node[0]);
   } while (infiniteLoop < INFINITE_LOOP);
   return undefined;
 };

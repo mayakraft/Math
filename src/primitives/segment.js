@@ -45,9 +45,7 @@ const Segment = function (...args) {
   Object.defineProperty(segment, "clip_function", {
     value: limit_segment,
   });
-  // Object.defineProperty(segment, "points", {get: function (){ return segment; }});
 
-  // return Object.freeze(segment);
   return segment;
 };
 
