@@ -2,8 +2,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global.math = factory());
-}(this, (function () { 'use strict';
+  (global = global || self, global.math = factory());
+}(this, function () { 'use strict';
 
   var magnitude = function magnitude(v) {
     var sum = v.map(function (component) {
@@ -76,6 +76,7 @@
   };
 
   var algebra = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     magnitude: magnitude,
     normalize: normalize,
     dot: dot,
@@ -206,6 +207,7 @@
   };
 
   var matrixCore = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     multiply_vector2_matrix2: multiply_vector2_matrix2,
     multiply_line_matrix2: multiply_line_matrix2,
     multiply_matrices2: multiply_matrices2,
@@ -710,6 +712,7 @@
   };
 
   var equal = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     EPSILON: EPSILON,
     equivalent_numbers: equivalent_numbers,
     equivalent_vectors: equivalent_vectors,
@@ -880,6 +883,7 @@
   };
 
   var query = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     overlap_function: overlap_function,
     segment_segment_overlap: segment_segment_overlap,
     degenerate: degenerate,
@@ -1231,6 +1235,7 @@
   };
 
   var intersection = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     limit_line: limit_line,
     limit_ray: limit_ray,
     limit_segment: limit_segment,
@@ -1348,8 +1353,8 @@
     if (Math.abs(denominator) < EPSILON) {
       var solution = [midpoint2(pointA, pointB), [vectorA[0], vectorA[1]]];
       var array = [solution, solution];
-      var dot$$1 = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
-      delete (dot$$1 > 0 ? array[1] : array[0]);
+      var dot = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
+      delete (dot > 0 ? array[1] : array[0]);
       return array;
     }
 
@@ -1469,12 +1474,12 @@
     var vectorToPoint = [0, 1].map(function (_, i) {
       return point[i] - linePoint[i];
     });
-    var dot$$1 = [0, 1].map(function (_, i) {
+    var dot = [0, 1].map(function (_, i) {
       return lineVec[i] * vectorToPoint[i];
     }).reduce(function (a, b) {
       return a + b;
     }, 0);
-    var dist = dot$$1 / magSquared;
+    var dist = dot / magSquared;
     var d = limiterFunc(dist, epsilon);
     return [0, 1].map(function (_, i) {
       return linePoint[i] + lineVec[i] * d;
@@ -1618,8 +1623,8 @@
       angles = angles.filter(function (el) {
         return Math.abs(rightTurn.angle - el.angle) < epsilon;
       }).map(function (el) {
-        var distance$$1 = Math.sqrt(Math.pow(hull[h][0] - el.node[0], 2) + Math.pow(hull[h][1] - el.node[1], 2));
-        el.distance = distance$$1;
+        var distance = Math.sqrt(Math.pow(hull[h][0] - el.node[0], 2) + Math.pow(hull[h][1] - el.node[1], 2));
+        el.distance = distance;
         return el;
       }).sort(function (a, b) {
         return a.distance < b.distance ? 1 : a.distance > b.distance ? -1 : 0;
@@ -1647,6 +1652,7 @@
   };
 
   var geometry = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     clockwise_angle2_radians: clockwise_angle2_radians,
     counter_clockwise_angle2_radians: counter_clockwise_angle2_radians,
     clockwise_angle2: clockwise_angle2,
@@ -1951,6 +1957,10 @@
     return vector;
   };
 
+  Vector.withAngle = function (angle) {
+    return Vector(Math.cos(angle), Math.sin(angle));
+  };
+
   var Matrix2 = function Matrix2() {
     var matrix = [1, 0, 0, 1, 0, 0];
 
@@ -2123,12 +2133,11 @@
       var this_is_smaller = this.vector.length < line.vector.length;
       var sm = this_is_smaller ? this.vector : line.vector;
       var lg = this_is_smaller ? line.vector : this.vector;
-      return parallel(sm, lg, epsilon);
+      return parallel(sm, lg);
     };
 
     var isDegenerate = function isDegenerate() {
-      var epsilon = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : EPSILON;
-      return degenerate(this.vector, epsilon);
+      return degenerate(this.vector);
     };
 
     var reflection = function reflection() {
@@ -2692,7 +2701,7 @@
       });
     };
 
-    var scale = function scale(magnitude$$1) {
+    var scale = function scale(magnitude) {
       var center = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : centroid(this.points);
       var newPoints = this.points.map(function (p) {
         return [0, 1].map(function (_, i) {
@@ -2700,7 +2709,7 @@
         });
       }).map(function (vec) {
         return vec.map(function (_, i) {
-          return center[i] + vec[i] * magnitude$$1;
+          return center[i] + vec[i] * magnitude;
         });
       });
       return Type(newPoints);
@@ -3146,4 +3155,4 @@
 
   return math;
 
-})));
+}));
