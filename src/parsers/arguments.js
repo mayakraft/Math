@@ -5,6 +5,11 @@
  * in the first slot, it won't find the valid data in the second.
  */
 
+const countPlaces = function (num) {
+  const m = (`${num}`).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+  if (!m) { return 0; }
+  return Math.max(0, (m[1] ? m[1].length : 0) - (m[2] ? +m[2] : 0));
+};
 /**
  * clean floating point numbers
  * example: 15.0000000000000002 into 15
@@ -13,7 +18,11 @@
  * @args must be a number! do you own checking. this is for speed.
  */
 export const clean_number = function (num, places = 15) {
-  return parseFloat(num.toFixed(places));
+  const crop = parseFloat(num.toFixed(places));
+  if (countPlaces(crop) === Math.min(places, countPlaces(num))) {
+    return num;
+  }
+  return crop;
 };
 
 /**
@@ -100,6 +109,11 @@ export const get_matrix2 = function (...args) {
   }
   // m doesn't have a length
   return undefined;
+};
+
+
+export const get_matrix3 = function (...args) {
+  console.warn("get_matrix3 not implemented");
 };
 
 /**

@@ -22,7 +22,8 @@
  */
 
 import * as algebra from "./core/algebra";
-import * as matrixCore from "./core/matrix";
+import * as matrix2_core from "./core/matrix2";
+import * as matrix3_core from "./core/matrix3";
 import * as geometry from "./core/geometry";
 import * as query from "./core/query";
 import * as intersection from "./core/intersection";
@@ -45,7 +46,7 @@ import junction from "./primitives/junction";
 import sector from "./primitives/sector";
 
 const core = Object.create(null);
-Object.assign(core, algebra, matrixCore, geometry, query, equal);
+Object.assign(core, algebra, matrix2_core, matrix3_core, geometry, query, equal);
 // core.EPSILON = EPSILON;
 // don't copy over all arguments, only export what is needed
 core.clean_number = args.clean_number;

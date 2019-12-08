@@ -1,5 +1,5 @@
 import { average } from "../core/algebra";
-import { multiply_vector2_matrix2 } from "../core/matrix";
+import { multiply_matrix2_vector2 } from "../core/matrix2";
 import {
   get_two_vec2,
   get_matrix2,
@@ -23,7 +23,7 @@ const Segment = function (...args) {
   const transform = function (...innerArgs) {
     const mat = get_matrix2(innerArgs);
     const transformed_points = segment
-      .map(point => multiply_vector2_matrix2(point, mat));
+      .map(point => multiply_matrix2_vector2(mat, point));
     return Segment(transformed_points);
   };
   const vector = function () {

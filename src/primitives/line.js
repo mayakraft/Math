@@ -9,7 +9,7 @@ import {
   average
 } from "../core/algebra";
 
-import { multiply_line_matrix2 } from "../core/matrix";
+import { multiply_matrix2_line2 } from "../core/matrix2";
 import { limit_line } from "../core/intersection";
 import Vector from "./vector";
 import Prototype from "./prototypes/line";
@@ -19,7 +19,7 @@ const Line = function (...args) {
 
   const transform = function (...innerArgs) {
     const mat = get_matrix2(innerArgs);
-    const line = multiply_line_matrix2(origin, vector, mat);
+    const line = multiply_matrix2_line2(mat, origin, vector);
     return Line(line[0], line[1]);
   };
 
