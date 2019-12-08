@@ -15,4 +15,8 @@ const Vector = function (...args) {
   return vector;
 };
 
+Vector.withAngle = function (angle) {
+  return Vector(Math.cos(angle), Math.sin(angle));
+};
+
 export default Vector;

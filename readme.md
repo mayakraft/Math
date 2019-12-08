@@ -4,9 +4,11 @@
 
 this is the math engine for an [origami library](https://github.com/robbykraft/Origami). it has no dependencies, and it's small. you probably want a different math library if a search brought you here.
 
-## the reason
+## why
 
-i wrote this, instead of using another library, because origami math mostly deals with edge cases, like asking the intersection when two lines are parallel, or on top of a polygon's edge. or asking the intersection when an segment's endpoint lies collinear along a line, and should it be inclusive or exclusive. all the time managing a flexible epsilon.
+i wrote this specifically to handle the edge cases, for example in geometric boolean operations.
+
+turns out in origami math when asking questions like intersection or inclusion/exclusion there is a high rate of parameters that are collinear, parallel, on to top of one another, etc... i had to be very sure about the results, and be able to manage the epsilon for different scales.
 
 ## html
 

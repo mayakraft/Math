@@ -58,33 +58,33 @@ export default function (subtype, prototype) {
     return degenerate(this.vector, epsilon);
   };
   const reflection = function () {
-    return Matrix2.makeReflection(this.vector, this.point);
+    return Matrix2.makeReflection(this.vector, this.origin);
   };
 
   const nearestPoint = function (...args) {
     const point = get_vector(args);
-    return Vector(nearest_point_on_line(this.point, this.vector, point, this.clip_function));
+    return Vector(nearest_point_on_line(this.origin, this.vector, point, this.clip_function));
   };
   const intersect = function (other) {
-    return intersection_function(this.point, this.vector, other.point,
+    return intersection_function(this.origin, this.vector, other.origin,
       other.vector,
       ((t0, t1, epsilon = EPSILON) => this.compare_function(t0, epsilon)
         && other.compare_function(t1, epsilon)));
   };
   const intersectLine = function (...args) {
     const line = get_line(args);
-    return intersection_function(this.point, this.vector, line.point,
+    return intersection_function(this.origin, this.vector, line.origin,
       line.vector, compare_to_line.bind(this));
   };
   const intersectRay = function (...args) {
     const ray = get_ray(args);
-    return intersection_function(this.point, this.vector, ray.point, ray.vector,
+    return intersection_function(this.origin, this.vector, ray.origin, ray.vector,
       compare_to_ray.bind(this));
   };
   const intersectEdge = function (...args) {
     const edge = get_segment(args);
     const edgeVec = [edge[1][0] - edge[0][0], edge[1][1] - edge[0][1]];
-    return intersection_function(this.point, this.vector, edge[0], edgeVec,
+    return intersection_function(this.origin, this.vector, edge[0], edgeVec,
       compare_to_segment.bind(this));
   };
 

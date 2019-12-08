@@ -1,3 +1,10 @@
+//               __                                           _
+//   _________  / /_  ______ ___  ____     ____ ___  ____ _  (_)___  _____
+//  / ___/ __ \/ / / / / __ `__ \/ __ \   / __ `__ \/ __ `/ / / __ \/ ___/
+// / /__/ /_/ / / /_/ / / / / / / / / /  / / / / / / /_/ / / / /_/ / /
+// \___/\____/_/\__,_/_/ /_/ /_/_/ /_/  /_/ /_/ /_/\__,_/_/ /\____/_/
+//                                                     /___/
+
 /**
  * @param {number[]} vector, in array form
  * @param {number[]} matrix, in array form
@@ -13,12 +20,19 @@ export const multiply_vector2_matrix2 = function (vector, matrix) {
  * @param line in point-vector form, matrix
  * @returns transformed line in point-vector form
  */
-export const multiply_line_matrix2 = function (point, vector, matrix) {
-  const new_point = multiply_vector2_matrix2(point, matrix);
-  const vec_point = vector.map((_, i) => vector[i] + point[i]);
+export const multiply_line_matrix2 = function (origin, vector, matrix) {
+  const new_origin = multiply_vector2_matrix2(origin, matrix);
+  const vec_point = vector.map((_, i) => vector[i] + origin[i]);
   const new_vector = multiply_vector2_matrix2(vec_point, matrix)
-    .map((vec, i) => vec - new_point[i]);
-  return [new_point, new_vector];
+    .map((vec, i) => vec - new_origin[i]);
+  return {
+    0: new_origin,
+    1: new_vector,
+    origin: new_origin,
+    vector: new_vector,
+    o: new_origin,
+    v: new_vector
+  };
 };
 /**
  * @param two matrices

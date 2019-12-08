@@ -24,6 +24,7 @@ export const clockwise_angle2_radians = function (a, b) {
     : Math.PI * 2 - (b - a);
 };
 
+// @returns {number}
 export const counter_clockwise_angle2_radians = function (a, b) {
   // this is on average 50 to 100 times faster than counter_clockwise_angle2
   while (a < 0) { a += Math.PI * 2; }
@@ -45,6 +46,7 @@ export const clockwise_angle2 = function (a, b) {
   return angle;
 };
 
+// @returns {number}
 export const counter_clockwise_angle2 = function (a, b) {
   const dotProduct = a[0] * b[0] + a[1] * b[1];
   const determinant = a[0] * b[1] - a[1] * b[0];
@@ -54,11 +56,12 @@ export const counter_clockwise_angle2 = function (a, b) {
 };
 /**
  * given vectors, make a separate array of radially-sorted vector indices
- * @returns {number[]}, already c-cwise sorted would give [0,1,2,3,4]
  *
  * maybe there is such thing as an absolute radial origin (x axis?)
  * but this chooses the first element as the first element
  * and sort everything else counter-clockwise around it.
+ *
+ * @returns {number[]}, already c-cwise sorted would give [0,1,2,3,4]
  */
 export const counter_clockwise_vector_order = function (...vectors) {
   const vectors_radians = vectors.map(v => Math.atan2(v[1], v[0]));
@@ -91,6 +94,10 @@ export const interior_angles = function (...vectors) {
   return vectors
     .map((v, i, ar) => counter_clockwise_angle2(v, ar[(i + 1) % ar.length]));
 };
+
+const interior_angles_unsorted = function (...vectors) {
+};
+
 /**
  * This bisects 2 vectors into both smaller and larger outside
  * angle bisections [small, large]

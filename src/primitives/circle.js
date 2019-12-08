@@ -25,8 +25,8 @@ const Circle = function (...args) {
 
   const intersectionLine = function (...innerArgs) {
     const line = get_line(innerArgs);
-    const p2 = [line.point[0] + line.vector[0], line.point[1] + line.vector[1]];
-    const result = circle_line(origin, radius, line.point, p2);
+    const p2 = [line.origin[0] + line.vector[0], line.origin[1] + line.vector[1]];
+    const result = circle_line(origin, radius, line.origin, p2);
     return (result === undefined ? undefined : result.map(i => Vector(i)));
   };
 

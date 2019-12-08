@@ -36,7 +36,7 @@ const Segment = function (...args) {
   };
   const compare_function = (t0, ep) => t0 >= -ep && t0 <= 1 + ep;
 
-  Object.defineProperty(segment, "point", { get: () => segment[0] });
+  Object.defineProperty(segment, "origin", { get: () => segment[0] });
   Object.defineProperty(segment, "vector", { get: () => vector() });
   Object.defineProperty(segment, "midpoint", { value: midpoint });
   Object.defineProperty(segment, "length", { get: () => length() });
