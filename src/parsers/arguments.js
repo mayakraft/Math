@@ -6,10 +6,9 @@
  */
 
 const countPlaces = function (num) {
-  const match = (`${num}`).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-  if (!match) { return 0; }
-  return Math.max(0,
-    (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0));
+  const m = (`${num}`).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+  if (!m) { return 0; }
+  return Math.max(0, (m[1] ? m[1].length : 0) - (m[2] ? +m[2] : 0));
 };
 /**
  * clean floating point numbers

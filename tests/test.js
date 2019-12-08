@@ -43,6 +43,12 @@ testName("clean number");
 // this is the most decimal places javascript uses
 testEqual(true, math.core.clean_number(0.12345678912345678)
   === 0.12345678912345678);
+testEqual(true, math.core.clean_number(0.12345678912345678, 5)
+  === 0.12345678912345678);
+testEqual(true, math.core.clean_number(0.00000678912345678, 5)
+  === 0.00000678912345678);
+testEqual(true, math.core.clean_number(0.00000078912345678, 5)
+  === 0);
 testEqual(true, math.core.clean_number(0.00000000000000001)
   === 0);
 testEqual(true, math.core.clean_number(0.0000000000000001)
@@ -194,7 +200,14 @@ testEqual([1, 2, 3], math.vector(1, 2, 3).copy().copy());
  * matrices
  */
 
+// todo: test matrix3 methods (invert) with the translation component to make sure it carries over
 testName("matrices");
+testEqual(12, math.core.matrix3_determinant([1, 2, 3, 2, 4, 8, 7, 8, 9]));
+testEqual(10, math.core.matrix3_determinant([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
+testEqual([4, 5, -8, -5, -6, 9, -2, -2, 3, 0, 0, 0],
+  math.core.invert_matrix3([0, 1, -3, -3, -4, 4, -2, -2, 1, 0, 0, 0]));
+testEqual([0.2, -0.2, 0.2, 0.2, 0.3, -0.3, 0, 1, 0, 0, 0, 0],
+  math.core.invert_matrix3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
 testEqual([1, 2, 3, 4, 5, 6], math.matrix2(1, 2, 3, 4, 5, 6));
 testEqual([1, 0, 0, 1, 6, 7], math.matrix2.makeTranslation(6, 7));
 testEqual([3, 0, 0, 3, -2, 0], math.matrix2.makeScale(3, [1, 0]));

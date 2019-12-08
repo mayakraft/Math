@@ -56,8 +56,8 @@ export const multiply_matrix2_line2 = function (matrix, origin, vector) {
 // [ m1b * vx + m1d * vy ]
 
 /**
- * @param two matrices
- * @returns matrix
+ * @param {number[]} matrix, matrix, left/right order matches what you'd see on a page.
+ * @returns {number[]} matrix
  */
 export const multiply_matrices2 = function (m1, m2) {
   return [
@@ -69,13 +69,40 @@ export const multiply_matrices2 = function (m1, m2) {
     m1[1] * m2[4] + m1[3] * m2[5] + m1[5]
   ];
 };
-/** arguments should be comma-separated list of numbers, top-level */
+
+export const matrix2_determinant = function (m) {
+  return m[0] * m[3] - m[1] * m[2];
+};
+
+/**
+ * @param {number[]} matrix
+ * @returns {number[]} matrix
+ */
+export const invert_matrix2 = function (m) {
+  const det = matrix2_determinant(m);
+  if (Math.abs(det) < 1e-6 || isNaN(det) || !isFinite(m[4]) || !isFinite(m[5])) {
+    return undefined;
+  }
+  return [
+    m[3] / det,
+    -m[1] / det,
+    -m[2] / det,
+    m[0] / det,
+    (m[2] * m[5] - m[3] * m[4]) / det,
+    (m[1] * m[4] - m[0] * m[5]) / det
+  ];
+};
+
+/**
+ * @param {number} x, y
+ * @returns {number[]} matrix
+ */
 export const make_matrix2_translation = function (x, y) {
   return [1, 0, 0, 1, x, y];
 };
 /**
  * @param ratio of scale, optional origin homothetic center (0,0 default)
- * @returns matrix
+ * @returns {number[]} matrix
  */
 export const make_matrix2_scale = function (ratio, origin = [0, 0]) {
   return [
@@ -89,7 +116,7 @@ export const make_matrix2_scale = function (ratio, origin = [0, 0]) {
 };
 /**
  * @param angle of rotation, origin of transformation
- * @returns matrix
+ * @returns {number[]} matrix
  */
 export const make_matrix2_rotation = function (angle, origin = [0, 0]) {
   const a = Math.cos(angle);
@@ -126,24 +153,6 @@ export const make_matrix2_reflection = function (vector, origin) {
   const tx = origin_x + a * -origin_x + -origin_y * c;
   const ty = origin_y + b * -origin_x + -origin_y * d;
   return [a, b, c, d, tx, ty];
-};
-/**
- * @param matrix
- * @returns matrix
- */
-export const make_matrix2_inverse = function (m) {
-  const det = m[0] * m[3] - m[1] * m[2];
-  if (!det || isNaN(det) || !isFinite(m[4]) || !isFinite(m[5])) {
-    return undefined;
-  }
-  return [
-    m[3] / det,
-    -m[1] / det,
-    -m[2] / det,
-    m[0] / det,
-    (m[2] * m[5] - m[3] * m[4]) / det,
-    (m[1] * m[4] - m[0] * m[5]) / det
-  ];
 };
 
 //               __                                           _

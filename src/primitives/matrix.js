@@ -8,7 +8,7 @@ import {
 import {
   make_matrix2_rotation,
   make_matrix2_reflection,
-  make_matrix2_inverse,
+  invert_matrix2,
   multiply_matrices2,
   multiply_matrix2_vector2,
   make_matrix2_scale,
@@ -17,7 +17,7 @@ import {
   multiply_matrices3,
   multiply_matrix3_vector3,
   make_matrix3_scale,
-  make_matrix3_inverse,
+  invert_matrix3,
 } from "../core/matrix3";
 import Vector from "./vector";
 /**
@@ -31,7 +31,7 @@ const Matrix2 = function (...args) {
   }
 
   const inverse = function () {
-    return Matrix2(make_matrix2_inverse(matrix)
+    return Matrix2(invert_matrix2(matrix)
       .map(n => clean_number(n, 13)));
   };
   const multiply = function (...innerArgs) {
@@ -75,7 +75,7 @@ const Matrix = function (...args) {
   }
 
   const inverse = function () {
-    return Matrix(make_matrix3_inverse(matrix)
+    return Matrix(invert_matrix3(matrix)
       .map(n => clean_number(n, 13)));
   };
   const multiply = function (...innerArgs) {
