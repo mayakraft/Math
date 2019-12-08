@@ -126,9 +126,8 @@
     var b = Math.sin(angle);
     return [a, b, -b, a, origin[0], origin[1]];
   };
-  var make_matrix2_reflection = function make_matrix2_reflection(vector, origin) {
-    var origin_x = origin && origin[0] ? origin[0] : 0;
-    var origin_y = origin && origin[1] ? origin[1] : 0;
+  var make_matrix2_reflection = function make_matrix2_reflection(vector) {
+    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0];
     var angle = Math.atan2(vector[1], vector[0]);
     var cosAngle = Math.cos(angle);
     var sinAngle = Math.sin(angle);
@@ -138,8 +137,8 @@
     var b = cosAngle * -sin_Angle + sinAngle * cos_Angle;
     var c = sinAngle * cos_Angle + -cosAngle * sin_Angle;
     var d = sinAngle * -sin_Angle + -cosAngle * cos_Angle;
-    var tx = origin_x + a * -origin_x + -origin_y * c;
-    var ty = origin_y + b * -origin_x + -origin_y * d;
+    var tx = origin[0] + a * -origin[0] + -origin[1] * c;
+    var ty = origin[1] + b * -origin[0] + -origin[1] * d;
     return [a, b, c, d, tx, ty];
   };
 
@@ -192,9 +191,14 @@
     var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0, 0];
     return [scale, 0, 0, 0, scale, 0, 0, 0, scale, scale * -origin[0] + origin[0], scale * -origin[1] + origin[1], scale * -origin[2] + origin[2]];
   };
-  var make_matrix3_reflection2 = function make_matrix3_reflection2(vector, origin) {
-    var origin_x = origin && origin[0] ? origin[0] : 0;
-    var origin_y = origin && origin[1] ? origin[1] : 0;
+  var make_matrix3_rotation2 = function make_matrix3_rotation2(angle) {
+    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0];
+    var a = Math.cos(angle);
+    var b = Math.sin(angle);
+    return [a, b, 0, -b, a, 0, 0, 0, 0, origin[0], origin[1], 0];
+  };
+  var make_matrix3_reflection2 = function make_matrix3_reflection2(vector) {
+    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0];
     var angle = Math.atan2(vector[1], vector[0]);
     var cosAngle = Math.cos(angle);
     var sinAngle = Math.sin(angle);
@@ -204,8 +208,8 @@
     var b = cosAngle * -sin_Angle + sinAngle * cos_Angle;
     var c = sinAngle * cos_Angle + -cosAngle * sin_Angle;
     var d = sinAngle * -sin_Angle + -cosAngle * cos_Angle;
-    var tx = origin_x + a * -origin_x + -origin_y * c;
-    var ty = origin_y + b * -origin_x + -origin_y * d;
+    var tx = origin[0] + a * -origin[0] + -origin[1] * c;
+    var ty = origin[1] + b * -origin[0] + -origin[1] * d;
     return [a, b, 0, c, d, 0, 0, 0, 0, tx, ty, 0];
   };
 
@@ -218,6 +222,7 @@
     invert_matrix3: invert_matrix3,
     make_matrix3_translation: make_matrix3_translation,
     make_matrix3_scale: make_matrix3_scale,
+    make_matrix3_rotation2: make_matrix3_rotation2,
     make_matrix3_reflection2: make_matrix3_reflection2
   });
 
