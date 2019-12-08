@@ -208,6 +208,10 @@ testEqual([4, 5, -8, -5, -6, 9, -2, -2, 3, 0, 0, 0],
   math.core.invert_matrix3([0, 1, -3, -3, -4, 4, -2, -2, 1, 0, 0, 0]));
 testEqual([0.2, -0.2, 0.2, 0.2, 0.3, -0.3, 0, 1, 0, 0, 0, 0],
   math.core.invert_matrix3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
+const mat_3d_ref = math.core.make_matrix3_reflection2([1, -2], [12, 13]);
+testEqual(math.core.make_matrix2_reflection([1, -2], [12, 13]),
+  [mat_3d_ref[0], mat_3d_ref[1], mat_3d_ref[3], mat_3d_ref[4], mat_3d_ref[9], mat_3d_ref[10]]);
+// top level types
 testEqual([1, 2, 3, 4, 5, 6], math.matrix2(1, 2, 3, 4, 5, 6));
 testEqual([1, 0, 0, 1, 6, 7], math.matrix2.makeTranslation(6, 7));
 testEqual([3, 0, 0, 3, -2, 0], math.matrix2.makeScale(3, [1, 0]));

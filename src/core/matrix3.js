@@ -111,6 +111,51 @@ export const make_matrix3_scale = function (scale, origin = [0, 0, 0]) {
   ];
 };
 
+
+/**
+ * 2D operation, assuming everything is 0 in the z plane
+ * @returns matrix3
+ */
+export const make_matrix3_rotation2 = function (angle, origin = [0, 0]) {
+  const a = Math.cos(angle);
+  const b = Math.sin(angle);
+  return [
+    a,
+    b,
+    0,
+    -b,
+    a,
+    0,
+    0,
+    0,
+    0,
+    origin[0],
+    origin[1],
+    0
+  ];
+};
+
+/**
+ * 2D operation, assuming everything is 0 in the z plane
+ * @param line in vector-origin form
+ * @returns matrix3
+ */
+export const make_matrix3_reflection2 = function (vector, origin = [0, 0]) {
+  // the line of reflection passes through origin, runs along vector
+  const angle = Math.atan2(vector[1], vector[0]);
+  const cosAngle = Math.cos(angle);
+  const sinAngle = Math.sin(angle);
+  const cos_Angle = Math.cos(-angle);
+  const sin_Angle = Math.sin(-angle);
+  const a = cosAngle * cos_Angle + sinAngle * sin_Angle;
+  const b = cosAngle * -sin_Angle + sinAngle * cos_Angle;
+  const c = sinAngle * cos_Angle + -cosAngle * sin_Angle;
+  const d = sinAngle * -sin_Angle + -cosAngle * cos_Angle;
+  const tx = origin[0] + a * -origin[0] + -origin[1] * c;
+  const ty = origin[1] + b * -origin[0] + -origin[1] * d;
+  return [a, b, 0, c, d, 0, 0, 0, 0, tx, ty, 0];
+};
+
 //               __                                           _
 //   _________  / /_  ______ ___  ____     ____ ___  ____ _  (_)___  _____
 //  / ___/ __ \/ / / / / __ `__ \/ __ \   / __ `__ \/ __ `/ / / __ \/ ___/
