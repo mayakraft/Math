@@ -89,7 +89,7 @@ const VectorPrototype = function (subtype) {
   };
   const reflect = function (...args) {
     const ref = get_line(args);
-    const m = make_matrix2_reflection(ref.vector, ref.point);
+    const m = make_matrix2_reflection(ref.vector, ref.origin);
     return Type(multiply_vector2_matrix2(that, m));
   };
   const lerp = function (vector, pct) {

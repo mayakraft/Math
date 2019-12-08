@@ -164,10 +164,10 @@ export function get_line() {
   let params = Array.from(arguments);
   let numbers = params.filter((param) => !isNaN(param));
   let arrays = params.filter((param) => param.constructor === Array);
-  if (params.length === 0) { return { vector: [], point: [] }; }
+  if (params.length === 0) { return { vector: [], origin: [] }; }
   if (!isNaN(params[0]) && numbers.length >= 4) {
     return {
-      point: [params[0], params[1]],
+      origin: [params[0], params[1]],
       vector: [params[2], params[3]]
     };
   }
@@ -177,30 +177,30 @@ export function get_line() {
     }
     if (arrays.length === 2) {
       return {
-        point: [arrays[0][0], arrays[0][1]],
+        origin: [arrays[0][0], arrays[0][1]],
         vector: [arrays[1][0], arrays[1][1]]
       };
     }
     if (arrays.length === 4) {
       return {
-        point: [arrays[0], arrays[1]],
+        origin: [arrays[0], arrays[1]],
         vector: [arrays[2], arrays[3]]
       };
     }
   }
   if (params[0].constructor === Object) {
-    let vector = [], point = [];
+    let vector = [], origin = [];
     if (params[0].vector != null)         { vector = get_vector(params[0].vector); }
     else if (params[0].direction != null) { vector = get_vector(params[0].direction); }
-    if (params[0].point != null)       { point = get_vector(params[0].point); }
-    else if (params[0].origin != null) { point = get_vector(params[0].origin); }
-    return {point, vector};
+    if (params[0].point != null)       { origin = get_vector(params[0].point); }
+    else if (params[0].origin != null) { origin = get_vector(params[0].origin); }
+    return { origin, vector };
   }
-  return {point: [], vector: []};
+  return { origin: [], vector: [] };
 }
 
-export function get_ray() {
-  return get_line(...arguments);
+export function get_ray(...args) {
+  return get_line(...args);
 }
 
 export function get_two_vec2(...args) {

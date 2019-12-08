@@ -15,11 +15,11 @@ import Vector from "./vector";
 import Prototype from "./prototypes/line";
 
 const Line = function (...args) {
-  const { point, vector } = get_line(args);
+  const { origin, vector } = get_line(args);
 
   const transform = function (...innerArgs) {
     const mat = get_matrix2(innerArgs);
-    const line = multiply_line_matrix2(point, vector, mat);
+    const line = multiply_line_matrix2(origin, vector, mat);
     return Line(line[0], line[1]);
   };
 
@@ -30,7 +30,7 @@ const Line = function (...args) {
   Object.defineProperty(line, "compare_function", { value: compare_function });
   Object.defineProperty(line, "clip_function", { value: limit_line });
 
-  Object.defineProperty(line, "point", { get: () => Vector(point) });
+  Object.defineProperty(line, "origin", { get: () => Vector(origin) });
   Object.defineProperty(line, "vector", { get: () => Vector(vector) });
   Object.defineProperty(line, "length", { get: () => Infinity });
   Object.defineProperty(line, "transform", { value: transform });
@@ -43,7 +43,7 @@ const Line = function (...args) {
 Line.fromPoints = function (...args) {
   const points = get_two_vec2(args);
   return Line({
-    point: points[0],
+    origin: points[0],
     vector: normalize([
       points[1][0] - points[0][0],
       points[1][1] - points[0][1],
@@ -58,7 +58,7 @@ Line.perpendicularBisector = function (...args) {
     points[1][1] - points[0][1],
   ]);
   return Line({
-    point: average(points[0], points[1]),
+    origin: average(points[0], points[1]),
     vector: [vec[1], -vec[0]],
     // vector: cross3(vec, [0,0,1])
   });

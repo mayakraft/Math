@@ -74,10 +74,10 @@ export const line_line = function (aPt, aVec, bPt, bVec, epsilon) {
 export const line_ray = function (linePt, lineVec, rayPt, rayVec, epsilon) {
   return intersection_function(linePt, lineVec, rayPt, rayVec, line_ray_comp, epsilon);
 };
-export const line_segment = function (point, vec, segment0, segment1, epsilon) {
+export const line_segment = function (origin, vec, segment0, segment1, epsilon) {
   const segmentVec = [segment1[0] - segment0[0], segment1[1] - segment0[1]];
   return intersection_function(
-    point, vec,
+    origin, vec,
     segment0, segmentVec,
     line_segment_comp, epsilon
   );
@@ -115,10 +115,10 @@ export const line_ray_exclusive = function (linePt, lineVec, rayPt, rayVec, epsi
     line_ray_comp_exclusive, epsilon
   );
 };
-export const line_segment_exclusive = function (point, vec, segment0, segment1, epsilon) {
+export const line_segment_exclusive = function (origin, vec, segment0, segment1, epsilon) {
   const segmentVec = [segment1[0] - segment0[0], segment1[1] - segment0[1]];
   return intersection_function(
-    point, vec,
+    origin, vec,
     segment0, segmentVec,
     line_segment_comp_exclusive, epsilon
   );

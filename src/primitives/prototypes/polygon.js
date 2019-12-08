@@ -84,17 +84,17 @@ export default function (subtype) {
   };
   const clipLine = function (...args) {
     const line = get_line(args);
-    const e = convex_poly_line(this.points, line.point, line.vector);
+    const e = convex_poly_line(this.points, line.origin, line.vector);
     return e === undefined ? undefined : Segment(e);
   };
   const clipRay = function (...args) {
     const line = get_line(args);
-    const e = convex_poly_ray(this.points, line.point, line.vector);
+    const e = convex_poly_ray(this.points, line.origin, line.vector);
     return e === undefined ? undefined : Segment(e);
   };
   const split = function (...args) {
     const line = get_line(args);
-    return split_polygon(this.points, line.point, line.vector)
+    return split_polygon(this.points, line.origin, line.vector)
       .map(poly => Type(poly));
   };
   const scale = function (magnitude, center = centroid(this.points)) {
