@@ -8,7 +8,7 @@ import {
   normalize,
 } from "../core/algebra";
 
-import { multiply_vector2_matrix2 } from "../core/matrix";
+import { multiply_matrix2_vector2 } from "../core/matrix2";
 import { limit_ray } from "../core/intersection";
 
 import Vector from "./vector";
@@ -20,8 +20,8 @@ const Ray = function (...args) {
   const transform = function (...innerArgs) {
     const mat = get_matrix2(innerArgs);
     const vec_translated = vector.map((vec, i) => vec + origin[i]);
-    const new_origin = multiply_vector2_matrix2(origin, mat);
-    const new_vector = multiply_vector2_matrix2(vec_translated, mat)
+    const new_origin = multiply_matrix2_vector2(mat, origin);
+    const new_vector = multiply_matrix2_vector2(mat, vec_translated)
       .map((vec, i) => vec - new_origin[i]);
     return Ray(new_origin, new_vector);
   };

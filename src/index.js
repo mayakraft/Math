@@ -22,7 +22,7 @@
  */
 
 import * as algebra from "./core/algebra";
-import * as matrixCore from "./core/matrix";
+import * as matrixCore from "./core/matrix2";
 import * as geometry from "./core/geometry";
 import * as query from "./core/query";
 import * as intersection from "./core/intersection";

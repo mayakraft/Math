@@ -1,7 +1,7 @@
 import {
   get_vector,
   get_matrix2,
-  get_matrix4,
+  get_matrix3,
   clean_number,
 } from "../parsers/arguments";
 
@@ -10,14 +10,15 @@ import {
   make_matrix2_reflection,
   make_matrix2_inverse,
   multiply_matrices2,
-  multiply_vector2_matrix2,
+  multiply_matrix2_vector2,
   make_matrix2_scale,
-  multiply_matrices4,
-  multiply_vector4_matrix4,
-  make_matrix4_scale,
-  make_matrix4_inverse,
-} from "../core/matrix";
-
+} from "../core/matrix2";
+import {
+  multiply_matrices3,
+  multiply_matrix3_vector3,
+  make_matrix3_scale,
+  make_matrix3_inverse,
+} from "../core/matrix3";
 import Vector from "./vector";
 /**
  * 2D Matrix (2x3) with translation component in x,y
@@ -40,7 +41,7 @@ const Matrix2 = function (...args) {
   };
   const transform = function (...innerArgs) {
     const v = get_vector(innerArgs);
-    return Vector(multiply_vector2_matrix2(v, matrix)
+    return Vector(multiply_matrix2_vector2(matrix, v)
       .map(n => clean_number(n, 13)));
   };
 
@@ -64,27 +65,27 @@ Matrix2.makeReflection = ((vector, origin) => Matrix2(
 
 
 /**
- * 2D Matrix (2x3) with translation component in x,y
+ * 3D Matrix (3x4) with translation component in x,y,z
  */
 const Matrix = function (...args) {
-  const matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-  const argsMatrix = get_matrix4(args);
+  const matrix = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
+  const argsMatrix = get_matrix3(args);
   if (argsMatrix !== undefined) {
     argsMatrix.forEach((n, i) => { matrix[i] = n; });
   }
 
   const inverse = function () {
-    return Matrix(make_matrix4_inverse(matrix)
+    return Matrix(make_matrix3_inverse(matrix)
       .map(n => clean_number(n, 13)));
   };
   const multiply = function (...innerArgs) {
-    const m2 = get_matrix4(innerArgs);
-    return Matrix(multiply_matrices4(matrix, m2)
+    const m2 = get_matrix3(innerArgs);
+    return Matrix(multiply_matrices3(matrix, m2)
       .map(n => clean_number(n, 13)));
   };
   const transform = function (...innerArgs) {
     const v = get_vector(innerArgs);
-    return Vector(multiply_vector4_matrix4(v, matrix)
+    return Vector(multiply_matrix3_vector3(v, matrix)
       .map(n => clean_number(n, 13)));
   };
 
@@ -99,7 +100,7 @@ const Matrix = function (...args) {
 Matrix.makeIdentity = () => Matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 // todo, is the translation in the right place?
 Matrix.makeTranslation = (tx, ty, tz) => Matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1);
-Matrix.makeScale = (...args) => Matrix(...make_matrix4_scale(...args));
+Matrix.makeScale = (...args) => Matrix(...make_matrix3_scale(...args));
 // Matrix.makeRotation = ((angle, origin) => Matrix(
 //   make_matrix4_rotation(angle, origin).map(n => clean_number(n, 13))
 // ));

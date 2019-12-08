@@ -16,10 +16,10 @@ import {
 } from "../../core/algebra";
 
 import {
-  multiply_vector2_matrix2,
+  multiply_matrix2_vector2,
   make_matrix2_rotation,
   make_matrix2_reflection,
-} from "../../core/matrix";
+} from "../../core/matrix2";
 
 // couple thoughts on design:
 //
@@ -63,7 +63,7 @@ const VectorPrototype = function (subtype) {
   };
   const transform = function (...args) {
     const m = get_matrix2(args);
-    return Type(multiply_vector2_matrix2(that, m));
+    return Type(multiply_matrix2_vector2(m, that));
   };
   const add = function (...args) {
     const vec = get_vector(args);
@@ -76,7 +76,7 @@ const VectorPrototype = function (subtype) {
   // these are implicitly 2D functions, and will convert the vector into 2D
   const rotateZ = function (angle, origin) {
     const m = make_matrix2_rotation(angle, origin);
-    return Type(multiply_vector2_matrix2(that, m));
+    return Type(multiply_matrix2_vector2(m, that));
   };
   const rotateZ90 = function () {
     return Type(-that[1], that[0]);
@@ -90,7 +90,7 @@ const VectorPrototype = function (subtype) {
   const reflect = function (...args) {
     const ref = get_line(args);
     const m = make_matrix2_reflection(ref.vector, ref.origin);
-    return Type(multiply_vector2_matrix2(that, m));
+    return Type(multiply_matrix2_vector2(m, that));
   };
   const lerp = function (vector, pct) {
     const vec = get_vector(vector);

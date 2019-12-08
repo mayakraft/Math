@@ -89,53 +89,30 @@
     midpoint2: midpoint2
   });
 
-  var multiply_vector2_matrix2 = function multiply_vector2_matrix2(vector, matrix) {
-    return [vector[0] * matrix[0] + vector[1] * matrix[2] + matrix[4], vector[0] * matrix[1] + vector[1] * matrix[3] + matrix[5]];
+  var multiply_matrix2_vector2 = function multiply_matrix2_vector2(matrix, vector) {
+    return [matrix[0] * vector[0] + matrix[2] * vector[1] + matrix[4], matrix[1] * vector[0] + matrix[3] * vector[1] + matrix[5]];
   };
-  var multiply_line_matrix2 = function multiply_line_matrix2(origin, vector, matrix) {
-    var new_origin = multiply_vector2_matrix2(origin, matrix);
-    var vec_point = vector.map(function (_, i) {
-      return vector[i] + origin[i];
-    });
-    var new_vector = multiply_vector2_matrix2(vec_point, matrix).map(function (vec, i) {
-      return vec - new_origin[i];
-    });
+  var multiply_matrix2_line2 = function multiply_matrix2_line2(matrix, origin, vector) {
     return {
-      0: new_origin,
-      1: new_vector,
-      origin: new_origin,
-      vector: new_vector,
-      o: new_origin,
-      v: new_vector
+      origin: [matrix[0] * origin[0] + matrix[2] * origin[1] + matrix[4], matrix[1] * origin[0] + matrix[3] * origin[1] + matrix[5]],
+      vector: [matrix[0] * vector[0] + matrix[2] * vector[1], matrix[1] * vector[0] + matrix[3] * vector[1]]
     };
   };
   var multiply_matrices2 = function multiply_matrices2(m1, m2) {
-    var a = m1[0] * m2[0] + m1[2] * m2[1];
-    var c = m1[0] * m2[2] + m1[2] * m2[3];
-    var tx = m1[0] * m2[4] + m1[2] * m2[5] + m1[4];
-    var b = m1[1] * m2[0] + m1[3] * m2[1];
-    var d = m1[1] * m2[2] + m1[3] * m2[3];
-    var ty = m1[1] * m2[4] + m1[3] * m2[5] + m1[5];
-    return [a, b, c, d, tx, ty];
+    return [m1[0] * m2[0] + m1[2] * m2[1], m1[1] * m2[0] + m1[3] * m2[1], m1[0] * m2[2] + m1[2] * m2[3], m1[1] * m2[2] + m1[3] * m2[3], m1[0] * m2[4] + m1[2] * m2[5] + m1[4], m1[1] * m2[4] + m1[3] * m2[5] + m1[5]];
   };
   var make_matrix2_translation = function make_matrix2_translation(x, y) {
     return [1, 0, 0, 1, x, y];
   };
   var make_matrix2_scale = function make_matrix2_scale(ratio) {
     var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0];
-    var tx = ratio * -origin[0] + origin[0];
-    var ty = ratio * -origin[1] + origin[1];
-    return [ratio, 0, 0, ratio, tx, ty];
+    return [ratio, 0, 0, ratio, ratio * -origin[0] + origin[0], ratio * -origin[1] + origin[1]];
   };
   var make_matrix2_rotation = function make_matrix2_rotation(angle) {
     var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0];
     var a = Math.cos(angle);
     var b = Math.sin(angle);
-    var c = -b;
-    var d = a;
-    var tx = origin[0];
-    var ty = origin[1];
-    return [a, b, c, d, tx, ty];
+    return [a, b, -b, a, origin[0], origin[1]];
   };
   var make_matrix2_reflection = function make_matrix2_reflection(vector, origin) {
     var origin_x = origin && origin[0] ? origin[0] : 0;
@@ -162,72 +139,17 @@
 
     return [m[3] / det, -m[1] / det, -m[2] / det, m[0] / det, (m[2] * m[5] - m[3] * m[4]) / det, (m[1] * m[4] - m[0] * m[5]) / det];
   };
-  var multiply_vector4_matrix4 = function multiply_vector4_matrix4(v, m) {
-    var result = [];
-    result[0] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3] * v[3];
-    result[1] = m[4] * v[0] + m[5] * v[1] + m[6] * v[2] + m[7] * v[3];
-    result[2] = m[8] * v[0] + m[9] * v[1] + m[10] * v[2] + m[11] * v[3];
-    result[3] = m[12] * v[0] + m[13] * v[1] + m[14] * v[2] + m[15] * v[3];
-    return result;
-  };
-  var make_matrix4_scale = function make_matrix4_scale(ratio) {
-    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0, 0];
-    var tx = ratio * -origin[0] + origin[0];
-    var ty = ratio * -origin[1] + origin[1];
-    var tz = ratio * -origin[2] + origin[2];
-    return [ratio, 0, 0, 0, 0, ratio, 0, 0, 0, 0, ratio, 0, tx, ty, tz, 1];
-  };
-  var make_matrix4_inverse = function make_matrix4_inverse(m) {
-    var inv = [];
-    inv[0] = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
-    inv[4] = -m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] - m[8] * m[7] * m[14] - m[12] * m[6] * m[11] + m[12] * m[7] * m[10];
-    inv[8] = m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] + m[8] * m[7] * m[13] + m[12] * m[5] * m[11] - m[12] * m[7] * m[9];
-    inv[12] = -m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] - m[8] * m[6] * m[13] - m[12] * m[5] * m[10] + m[12] * m[6] * m[9];
-    inv[1] = -m[1] * m[10] * m[15] + m[1] * m[11] * m[14] + m[9] * m[2] * m[15] - m[9] * m[3] * m[14] - m[13] * m[2] * m[11] + m[13] * m[3] * m[10];
-    inv[5] = m[0] * m[10] * m[15] - m[0] * m[11] * m[14] - m[8] * m[2] * m[15] + m[8] * m[3] * m[14] + m[12] * m[2] * m[11] - m[12] * m[3] * m[10];
-    inv[9] = -m[0] * m[9] * m[15] + m[0] * m[11] * m[13] + m[8] * m[1] * m[15] - m[8] * m[3] * m[13] - m[12] * m[1] * m[11] + m[12] * m[3] * m[9];
-    inv[13] = m[0] * m[9] * m[14] - m[0] * m[10] * m[13] - m[8] * m[1] * m[14] + m[8] * m[2] * m[13] + m[12] * m[1] * m[10] - m[12] * m[2] * m[9];
-    inv[2] = m[1] * m[6] * m[15] - m[1] * m[7] * m[14] - m[5] * m[2] * m[15] + m[5] * m[3] * m[14] + m[13] * m[2] * m[7] - m[13] * m[3] * m[6];
-    inv[6] = -m[0] * m[6] * m[15] + m[0] * m[7] * m[14] + m[4] * m[2] * m[15] - m[4] * m[3] * m[14] - m[12] * m[2] * m[7] + m[12] * m[3] * m[6];
-    inv[10] = m[0] * m[5] * m[15] - m[0] * m[7] * m[13] - m[4] * m[1] * m[15] + m[4] * m[3] * m[13] + m[12] * m[1] * m[7] - m[12] * m[3] * m[5];
-    inv[14] = -m[0] * m[5] * m[14] + m[0] * m[6] * m[13] + m[4] * m[1] * m[14] - m[4] * m[2] * m[13] - m[12] * m[1] * m[6] + m[12] * m[2] * m[5];
-    inv[3] = -m[1] * m[6] * m[11] + m[1] * m[7] * m[10] + m[5] * m[2] * m[11] - m[5] * m[3] * m[10] - m[9] * m[2] * m[7] + m[9] * m[3] * m[6];
-    inv[7] = m[0] * m[6] * m[11] - m[0] * m[7] * m[10] - m[4] * m[2] * m[11] + m[4] * m[3] * m[10] + m[8] * m[2] * m[7] - m[8] * m[3] * m[6];
-    inv[11] = -m[0] * m[5] * m[11] + m[0] * m[7] * m[9] + m[4] * m[1] * m[11] - m[4] * m[3] * m[9] - m[8] * m[1] * m[7] + m[8] * m[3] * m[5];
-    inv[15] = m[0] * m[5] * m[10] - m[0] * m[6] * m[9] - m[4] * m[1] * m[10] + m[4] * m[2] * m[9] + m[8] * m[1] * m[6] - m[8] * m[2] * m[5];
-    var det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
-
-    if (det < 1e-6 && det > -1e-6) {
-      return undefined;
-    }
-
-    var inverseDeterminant = 1.0 / det;
-    return inv.map(function (n) {
-      return n * inverseDeterminant;
-    });
-  };
-  var transpose_matrix4 = function transpose_matrix4(m) {
-    return [m[0], m[4], m[8], m[12], m[1], m[5], m[9], m[13], m[2], m[6], m[10], m[14], m[3], m[7], m[11], m[15]];
-  };
-  var multiply_matrices4 = function multiply_matrices4(a, b) {
-    return [a[0] * b[0] + a[1] * b[4] + a[2] * b[8] + a[3] * b[12], a[0] * b[1] + a[1] * b[5] + a[2] * b[9] + a[3] * b[13], a[0] * b[2] + a[1] * b[6] + a[2] * b[10] + a[3] * b[14], a[0] * b[3] + a[1] * b[7] + a[2] * b[11] + a[3] * b[15], a[4] * b[0] + a[5] * b[4] + a[6] * b[8] + a[7] * b[12], a[4] * b[1] + a[5] * b[5] + a[6] * b[9] + a[7] * b[13], a[4] * b[2] + a[5] * b[6] + a[6] * b[10] + a[7] * b[14], a[4] * b[3] + a[5] * b[7] + a[6] * b[11] + a[7] * b[15], a[8] * b[0] + a[9] * b[4] + a[10] * b[8] + a[11] * b[12], a[8] * b[1] + a[9] * b[5] + a[10] * b[9] + a[11] * b[13], a[8] * b[2] + a[9] * b[6] + a[10] * b[10] + a[11] * b[14], a[8] * b[3] + a[9] * b[7] + a[10] * b[11] + a[11] * b[15], a[12] * b[0] + a[13] * b[4] + a[14] * b[8] + a[15] * b[12], a[12] * b[1] + a[13] * b[5] + a[14] * b[9] + a[15] * b[13], a[12] * b[2] + a[13] * b[6] + a[14] * b[10] + a[15] * b[14], a[12] * b[3] + a[13] * b[7] + a[14] * b[11] + a[15] * b[15]];
-  };
 
   var matrixCore = /*#__PURE__*/Object.freeze({
     __proto__: null,
-    multiply_vector2_matrix2: multiply_vector2_matrix2,
-    multiply_line_matrix2: multiply_line_matrix2,
+    multiply_matrix2_vector2: multiply_matrix2_vector2,
+    multiply_matrix2_line2: multiply_matrix2_line2,
     multiply_matrices2: multiply_matrices2,
     make_matrix2_translation: make_matrix2_translation,
     make_matrix2_scale: make_matrix2_scale,
     make_matrix2_rotation: make_matrix2_rotation,
     make_matrix2_reflection: make_matrix2_reflection,
-    make_matrix2_inverse: make_matrix2_inverse,
-    multiply_vector4_matrix4: multiply_vector4_matrix4,
-    make_matrix4_scale: make_matrix4_scale,
-    make_matrix4_inverse: make_matrix4_inverse,
-    transpose_matrix4: transpose_matrix4,
-    multiply_matrices4: multiply_matrices4
+    make_matrix2_inverse: make_matrix2_inverse
   });
 
   function _typeof(obj) {
@@ -306,9 +228,25 @@
     throw new TypeError("Invalid attempt to destructure non-iterable instance");
   }
 
+  var decimalPlaces = function decimalPlaces(num) {
+    var match = "".concat(num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+
+    if (!match) {
+      return 0;
+    }
+
+    return Math.max(0, (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0));
+  };
+
   var clean_number = function clean_number(num) {
     var places = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 15;
-    return parseFloat(num.toFixed(places));
+    var crop = parseFloat(num.toFixed(places));
+
+    if (decimalPlaces(crop) === Math.min(places, decimalPlaces(num))) {
+      return num;
+    }
+
+    return crop;
   };
   var is_number = function is_number(n) {
     return n != null && !isNaN(n);
@@ -396,7 +334,6 @@
     });
   };
   var identity2 = [1, 0, 0, 1, 0, 0];
-  var identity4 = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
   var get_matrix2 = function get_matrix2() {
     for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
       args[_key5] = arguments[_key5];
@@ -424,44 +361,8 @@
 
     return undefined;
   };
-  var get_matrix4 = function get_matrix4() {
-    for (var _len6 = arguments.length, args = new Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
-      args[_key6] = arguments[_key6];
-    }
-
-    var m = get_vector(args);
-
-    if (m === undefined) {
-      return undefined;
-    }
-
-    if (m.length === 16) {
-      return m;
-    }
-
-    if (m.length === 9) {
-      return [m[0], m[1], m[2], 0, m[3], m[4], m[5], 0, m[6], m[7], m[8], 0, 0, 0, 0, 1];
-    }
-
-    if (m.length === 6) {
-      return [m[0], m[1], 0, 0, m[2], m[3], 0, 0, 0, 0, 1, 0, m[4], m[5], 0, 1];
-    }
-
-    if (m.length === 4) {
-      return [m[0], m[1], 0, 0, m[2], m[3], 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-    }
-
-    if (m.length > 16) {
-      return [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]];
-    }
-
-    if (m.length < 16) {
-      return identity4.map(function (n, i) {
-        return m[i] || n;
-      });
-    }
-
-    return undefined;
+  var get_matrix3 = function get_matrix3() {
+    console.warn("get_matrix3 not implemented");
   };
   function get_segment() {
     for (var _len7 = arguments.length, args = new Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
@@ -1750,7 +1651,7 @@
       }
 
       var m = get_matrix2(args);
-      return Type(multiply_vector2_matrix2(that, m));
+      return Type(multiply_matrix2_vector2(m, that));
     };
 
     var add = function add() {
@@ -1777,7 +1678,7 @@
 
     var rotateZ = function rotateZ(angle, origin) {
       var m = make_matrix2_rotation(angle, origin);
-      return Type(multiply_vector2_matrix2(that, m));
+      return Type(multiply_matrix2_vector2(m, that));
     };
 
     var rotateZ90 = function rotateZ90() {
@@ -1799,7 +1700,7 @@
 
       var ref = get_line(args);
       var m = make_matrix2_reflection(ref.vector, ref.origin);
-      return Type(multiply_vector2_matrix2(that, m));
+      return Type(multiply_matrix2_vector2(m, that));
     };
 
     var lerp = function lerp(vector, pct) {
@@ -1973,6 +1874,18 @@
     return Vector(Math.cos(angle), Math.sin(angle));
   };
 
+  var multiply_matrix3_vector3 = function multiply_matrix3_vector3(m, vector) {
+    return [m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2] + m[9], m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2] + m[10], m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2] + m[11]];
+  };
+  var multiply_matrices3 = function multiply_matrices3(m1, m2) {
+    return [m1[0] * m2[0] + m1[3] * m2[1] + m1[6] * m2[2], m1[1] * m2[0] + m1[4] * m2[1] + m1[7] * m2[2], m1[2] * m2[0] + m1[5] * m2[1] + m1[8] * m2[2], m1[0] * m2[3] + m1[3] * m2[4] + m1[6] * m2[5], m1[1] * m2[3] + m1[4] * m2[4] + m1[7] * m2[5], m1[2] * m2[3] + m1[5] * m2[4] + m1[8] * m2[5], m1[0] * m2[6] + m1[3] * m2[7] + m1[6] * m2[8], m1[1] * m2[6] + m1[4] * m2[7] + m1[7] * m2[8], m1[2] * m2[6] + m1[5] * m2[7] + m1[8] * m2[8], m1[0] * m2[9] + m1[3] * m2[10] + m1[6] * m2[11] + m1[9], m1[1] * m2[9] + m1[4] * m2[10] + m1[7] * m2[11] + m1[10], m1[2] * m2[9] + m1[5] * m2[10] + m1[8] * m2[11] + m1[11]];
+  };
+  var make_matrix3_scale = function make_matrix3_scale(scale) {
+    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0, 0];
+    return [scale, 0, 0, 0, scale, 0, 0, 0, scale, scale * -origin[0] + origin[0], scale * -origin[1] + origin[1], scale * -origin[2] + origin[2]];
+  };
+  var make_matrix3_inverse = function make_matrix3_inverse(m) {};
+
   var Matrix2 = function Matrix2() {
     var matrix = [1, 0, 0, 1, 0, 0];
 
@@ -2011,7 +1924,7 @@
       }
 
       var v = get_vector(innerArgs);
-      return Vector(multiply_vector2_matrix2(v, matrix).map(function (n) {
+      return Vector(multiply_matrix2_vector2(matrix, v).map(function (n) {
         return clean_number(n, 13);
       }));
     };
@@ -2053,13 +1966,13 @@
   };
 
   var Matrix = function Matrix() {
-    var matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+    var matrix = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
 
     for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
       args[_key4] = arguments[_key4];
     }
 
-    var argsMatrix = get_matrix4(args);
+    var argsMatrix = get_matrix3();
 
     if (argsMatrix !== undefined) {
       argsMatrix.forEach(function (n, i) {
@@ -2068,7 +1981,7 @@
     }
 
     var inverse = function inverse() {
-      return Matrix(make_matrix4_inverse(matrix).map(function (n) {
+      return Matrix(make_matrix3_inverse().map(function (n) {
         return clean_number(n, 13);
       }));
     };
@@ -2078,8 +1991,8 @@
         innerArgs[_key5] = arguments[_key5];
       }
 
-      var m2 = get_matrix4(innerArgs);
-      return Matrix(multiply_matrices4(matrix, m2).map(function (n) {
+      var m2 = get_matrix3();
+      return Matrix(multiply_matrices3(matrix, m2).map(function (n) {
         return clean_number(n, 13);
       }));
     };
@@ -2090,7 +2003,7 @@
       }
 
       var v = get_vector(innerArgs);
-      return Vector(multiply_vector4_matrix4(v, matrix).map(function (n) {
+      return Vector(multiply_matrix3_vector3(v, matrix).map(function (n) {
         return clean_number(n, 13);
       }));
     };
@@ -2116,7 +2029,7 @@
   };
 
   Matrix.makeScale = function () {
-    return Matrix.apply(void 0, _toConsumableArray(make_matrix4_scale.apply(void 0, arguments)));
+    return Matrix.apply(void 0, _toConsumableArray(make_matrix3_scale.apply(void 0, arguments)));
   };
 
   function Prototype (subtype, prototype) {
@@ -2244,7 +2157,7 @@
       }
 
       var mat = get_matrix2(innerArgs);
-      var line = multiply_line_matrix2(origin, vector, mat);
+      var line = multiply_matrix2_line2(mat, origin, vector);
       return Line(line[0], line[1]);
     };
 
@@ -2325,8 +2238,8 @@
       var vec_translated = vector.map(function (vec, i) {
         return vec + origin[i];
       });
-      var new_origin = multiply_vector2_matrix2(origin, mat);
-      var new_vector = multiply_vector2_matrix2(vec_translated, mat).map(function (vec, i) {
+      var new_origin = multiply_matrix2_vector2(mat, origin);
+      var new_vector = multiply_matrix2_vector2(mat, vec_translated).map(function (vec, i) {
         return vec - new_origin[i];
       });
       return Ray(new_origin, new_vector);
@@ -2412,7 +2325,7 @@
 
       var mat = get_matrix2(innerArgs);
       var transformed_points = segment.map(function (point) {
-        return multiply_vector2_matrix2(point, mat);
+        return multiply_matrix2_vector2(mat, point);
       });
       return Segment(transformed_points);
     };
@@ -2759,7 +2672,7 @@
 
       var m = get_matrix2(args);
       var newPoints = this.points.map(function (p) {
-        return Vector(multiply_vector2_matrix2(p, m));
+        return Vector(multiply_matrix2_vector2(m, p));
       });
       return Type(newPoints);
     };

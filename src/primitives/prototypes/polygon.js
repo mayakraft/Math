@@ -25,7 +25,7 @@ import {
   distance2
 } from "../../core/algebra";
 
-import { multiply_vector2_matrix2 } from "../../core/matrix";
+import { multiply_matrix2_vector2 } from "../../core/matrix2";
 
 import Vector from "../vector";
 import Segment from "../segment";
@@ -125,7 +125,7 @@ export default function (subtype) {
   const transform = function (...args) {
     const m = get_matrix2(args);
     const newPoints = this.points
-      .map(p => Vector(multiply_vector2_matrix2(p, m)));
+      .map(p => Vector(multiply_matrix2_vector2(m, p)));
     return Type(newPoints);
   };
 

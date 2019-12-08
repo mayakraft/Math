@@ -37,6 +37,26 @@ const testEqual = function (...args) {
 };
 
 /**
+ * number cleaning
+ */
+testName("clean number");
+// this is the most decimal places javascript uses
+testEqual(true, math.core.clean_number(0.12345678912345678)
+  === 0.12345678912345678);
+testEqual(true, math.core.clean_number(0.00000000000000001)
+  === 0);
+testEqual(true, math.core.clean_number(0.0000000000000001)
+  === 0);
+testEqual(true, math.core.clean_number(0.000000000000001)
+  === 0.000000000000001);
+testEqual(true, math.core.clean_number(0.00000000001, 9)
+  === 0);
+testEqual(true, math.core.clean_number(0.0000000001, 9)
+  === 0);
+testEqual(true, math.core.clean_number(0.000000001, 9)
+  === 0.000000001);
+
+/**
  * inputs and argument inference
  */
 testName("semi-flatten input");
