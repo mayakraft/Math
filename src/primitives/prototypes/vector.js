@@ -17,7 +17,7 @@ import {
 
 import {
   multiply_matrix2_vector2,
-  make_matrix2_rotation,
+  make_matrix2_rotate,
   make_matrix2_reflection,
 } from "../../core/matrix2";
 
@@ -75,7 +75,7 @@ const VectorPrototype = function (subtype) {
   };
   // these are implicitly 2D functions, and will convert the vector into 2D
   const rotateZ = function (angle, origin) {
-    const m = make_matrix2_rotation(angle, origin);
+    const m = make_matrix2_rotate(angle, origin);
     return Type(multiply_matrix2_vector2(m, that));
   };
   const rotateZ90 = function () {

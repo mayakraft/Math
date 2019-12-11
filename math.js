@@ -113,18 +113,18 @@
 
     return [m[3] / det, -m[1] / det, -m[2] / det, m[0] / det, (m[2] * m[5] - m[3] * m[4]) / det, (m[1] * m[4] - m[0] * m[5]) / det];
   };
-  var make_matrix2_translation = function make_matrix2_translation(x, y) {
+  var make_matrix2_translate = function make_matrix2_translate(x, y) {
     return [1, 0, 0, 1, x, y];
   };
   var make_matrix2_scale = function make_matrix2_scale(ratio) {
     var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0];
     return [ratio, 0, 0, ratio, ratio * -origin[0] + origin[0], ratio * -origin[1] + origin[1]];
   };
-  var make_matrix2_rotation = function make_matrix2_rotation(angle) {
+  var make_matrix2_rotate = function make_matrix2_rotate(angle) {
     var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0];
-    var a = Math.cos(angle);
-    var b = Math.sin(angle);
-    return [a, b, -b, a, origin[0], origin[1]];
+    var cos = Math.cos(angle);
+    var sin = Math.sin(angle);
+    return [cos, sin, -sin, cos, origin[0], origin[1]];
   };
   var make_matrix2_reflection = function make_matrix2_reflection(vector) {
     var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0];
@@ -149,81 +149,10 @@
     multiply_matrices2: multiply_matrices2,
     matrix2_determinant: matrix2_determinant,
     invert_matrix2: invert_matrix2,
-    make_matrix2_translation: make_matrix2_translation,
+    make_matrix2_translate: make_matrix2_translate,
     make_matrix2_scale: make_matrix2_scale,
-    make_matrix2_rotation: make_matrix2_rotation,
+    make_matrix2_rotate: make_matrix2_rotate,
     make_matrix2_reflection: make_matrix2_reflection
-  });
-
-  var multiply_matrix3_vector3 = function multiply_matrix3_vector3(m, vector) {
-    return [m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2] + m[9], m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2] + m[10], m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2] + m[11]];
-  };
-  var multiply_matrix3_line3 = function multiply_matrix3_line3(m, origin, vector) {
-    return {
-      origin: [m[0] * origin[0] + m[3] * origin[1] + m[6] * origin[2] + m[9], m[1] * origin[0] + m[4] * origin[1] + m[7] * origin[2] + m[10], m[2] * origin[0] + m[5] * origin[1] + m[8] * origin[2] + m[11]],
-      vector: [m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2], m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2], m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2]]
-    };
-  };
-  var multiply_matrices3 = function multiply_matrices3(m1, m2) {
-    return [m1[0] * m2[0] + m1[3] * m2[1] + m1[6] * m2[2], m1[1] * m2[0] + m1[4] * m2[1] + m1[7] * m2[2], m1[2] * m2[0] + m1[5] * m2[1] + m1[8] * m2[2], m1[0] * m2[3] + m1[3] * m2[4] + m1[6] * m2[5], m1[1] * m2[3] + m1[4] * m2[4] + m1[7] * m2[5], m1[2] * m2[3] + m1[5] * m2[4] + m1[8] * m2[5], m1[0] * m2[6] + m1[3] * m2[7] + m1[6] * m2[8], m1[1] * m2[6] + m1[4] * m2[7] + m1[7] * m2[8], m1[2] * m2[6] + m1[5] * m2[7] + m1[8] * m2[8], m1[0] * m2[9] + m1[3] * m2[10] + m1[6] * m2[11] + m1[9], m1[1] * m2[9] + m1[4] * m2[10] + m1[7] * m2[11] + m1[10], m1[2] * m2[9] + m1[5] * m2[10] + m1[8] * m2[11] + m1[11]];
-  };
-  var matrix3_determinant = function matrix3_determinant(m) {
-    return m[0] * m[4] * m[8] - m[0] * m[7] * m[5] - m[3] * m[1] * m[8] + m[3] * m[7] * m[2] + m[6] * m[1] * m[5] - m[6] * m[4] * m[2];
-  };
-  var invert_matrix3 = function invert_matrix3(m) {
-    var det = matrix3_determinant(m);
-
-    if (Math.abs(det) < 1e-6 || isNaN(det) || !isFinite(m[9]) || !isFinite(m[10]) || !isFinite(m[11])) {
-      return undefined;
-    }
-
-    var inv = [m[4] * m[8] - m[7] * m[5], -m[1] * m[8] + m[7] * m[2], m[1] * m[5] - m[4] * m[2], -m[3] * m[8] + m[6] * m[5], m[0] * m[8] - m[6] * m[2], -m[0] * m[5] + m[3] * m[2], m[3] * m[7] - m[6] * m[4], -m[0] * m[7] + m[6] * m[1], m[0] * m[4] - m[3] * m[1], -m[3] * m[7] * m[11] + m[3] * m[8] * m[10] + m[6] * m[4] * m[11] - m[6] * m[5] * m[10] - m[9] * m[4] * m[8] + m[9] * m[5] * m[7], m[0] * m[7] * m[11] - m[0] * m[8] * m[10] - m[6] * m[1] * m[11] + m[6] * m[2] * m[10] + m[9] * m[1] * m[8] - m[9] * m[2] * m[7], -m[0] * m[4] * m[11] + m[0] * m[5] * m[10] + m[3] * m[1] * m[11] - m[3] * m[2] * m[10] - m[9] * m[1] * m[5] + m[9] * m[2] * m[4]];
-    var invDet = 1.0 / det;
-    return inv.map(function (n) {
-      return n * invDet;
-    });
-  };
-  var make_matrix3_translation = function make_matrix3_translation(x, y, z) {
-    return [1, 0, 0, 0, 1, 0, 0, 0, 1, x, y, z];
-  };
-
-  var make_matrix3_scale = function make_matrix3_scale(scale) {
-    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0, 0];
-    return [scale, 0, 0, 0, scale, 0, 0, 0, scale, scale * -origin[0] + origin[0], scale * -origin[1] + origin[1], scale * -origin[2] + origin[2]];
-  };
-  var make_matrix3_rotation2 = function make_matrix3_rotation2(angle) {
-    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0];
-    var a = Math.cos(angle);
-    var b = Math.sin(angle);
-    return [a, b, 0, -b, a, 0, 0, 0, 0, origin[0], origin[1], 0];
-  };
-  var make_matrix3_reflection2 = function make_matrix3_reflection2(vector) {
-    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0];
-    var angle = Math.atan2(vector[1], vector[0]);
-    var cosAngle = Math.cos(angle);
-    var sinAngle = Math.sin(angle);
-    var cos_Angle = Math.cos(-angle);
-    var sin_Angle = Math.sin(-angle);
-    var a = cosAngle * cos_Angle + sinAngle * sin_Angle;
-    var b = cosAngle * -sin_Angle + sinAngle * cos_Angle;
-    var c = sinAngle * cos_Angle + -cosAngle * sin_Angle;
-    var d = sinAngle * -sin_Angle + -cosAngle * cos_Angle;
-    var tx = origin[0] + a * -origin[0] + -origin[1] * c;
-    var ty = origin[1] + b * -origin[0] + -origin[1] * d;
-    return [a, b, 0, c, d, 0, 0, 0, 0, tx, ty, 0];
-  };
-
-  var matrix3_core = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    multiply_matrix3_vector3: multiply_matrix3_vector3,
-    multiply_matrix3_line3: multiply_matrix3_line3,
-    multiply_matrices3: multiply_matrices3,
-    matrix3_determinant: matrix3_determinant,
-    invert_matrix3: invert_matrix3,
-    make_matrix3_translation: make_matrix3_translation,
-    make_matrix3_scale: make_matrix3_scale,
-    make_matrix3_rotation2: make_matrix3_rotation2,
-    make_matrix3_reflection2: make_matrix3_reflection2
   });
 
   function _typeof(obj) {
@@ -301,6 +230,121 @@
   function _nonIterableRest() {
     throw new TypeError("Invalid attempt to destructure non-iterable instance");
   }
+
+  var multiply_matrix3_vector3 = function multiply_matrix3_vector3(m, vector) {
+    return [m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2] + m[9], m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2] + m[10], m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2] + m[11]];
+  };
+  var multiply_matrix3_line3 = function multiply_matrix3_line3(m, origin, vector) {
+    return {
+      origin: [m[0] * origin[0] + m[3] * origin[1] + m[6] * origin[2] + m[9], m[1] * origin[0] + m[4] * origin[1] + m[7] * origin[2] + m[10], m[2] * origin[0] + m[5] * origin[1] + m[8] * origin[2] + m[11]],
+      vector: [m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2], m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2], m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2]]
+    };
+  };
+  var multiply_matrices3 = function multiply_matrices3(m1, m2) {
+    return [m1[0] * m2[0] + m1[3] * m2[1] + m1[6] * m2[2], m1[1] * m2[0] + m1[4] * m2[1] + m1[7] * m2[2], m1[2] * m2[0] + m1[5] * m2[1] + m1[8] * m2[2], m1[0] * m2[3] + m1[3] * m2[4] + m1[6] * m2[5], m1[1] * m2[3] + m1[4] * m2[4] + m1[7] * m2[5], m1[2] * m2[3] + m1[5] * m2[4] + m1[8] * m2[5], m1[0] * m2[6] + m1[3] * m2[7] + m1[6] * m2[8], m1[1] * m2[6] + m1[4] * m2[7] + m1[7] * m2[8], m1[2] * m2[6] + m1[5] * m2[7] + m1[8] * m2[8], m1[0] * m2[9] + m1[3] * m2[10] + m1[6] * m2[11] + m1[9], m1[1] * m2[9] + m1[4] * m2[10] + m1[7] * m2[11] + m1[10], m1[2] * m2[9] + m1[5] * m2[10] + m1[8] * m2[11] + m1[11]];
+  };
+  var matrix3_determinant = function matrix3_determinant(m) {
+    return m[0] * m[4] * m[8] - m[0] * m[7] * m[5] - m[3] * m[1] * m[8] + m[3] * m[7] * m[2] + m[6] * m[1] * m[5] - m[6] * m[4] * m[2];
+  };
+  var invert_matrix3 = function invert_matrix3(m) {
+    var det = matrix3_determinant(m);
+
+    if (Math.abs(det) < 1e-6 || isNaN(det) || !isFinite(m[9]) || !isFinite(m[10]) || !isFinite(m[11])) {
+      return undefined;
+    }
+
+    var inv = [m[4] * m[8] - m[7] * m[5], -m[1] * m[8] + m[7] * m[2], m[1] * m[5] - m[4] * m[2], -m[3] * m[8] + m[6] * m[5], m[0] * m[8] - m[6] * m[2], -m[0] * m[5] + m[3] * m[2], m[3] * m[7] - m[6] * m[4], -m[0] * m[7] + m[6] * m[1], m[0] * m[4] - m[3] * m[1], -m[3] * m[7] * m[11] + m[3] * m[8] * m[10] + m[6] * m[4] * m[11] - m[6] * m[5] * m[10] - m[9] * m[4] * m[8] + m[9] * m[5] * m[7], m[0] * m[7] * m[11] - m[0] * m[8] * m[10] - m[6] * m[1] * m[11] + m[6] * m[2] * m[10] + m[9] * m[1] * m[8] - m[9] * m[2] * m[7], -m[0] * m[4] * m[11] + m[0] * m[5] * m[10] + m[3] * m[1] * m[11] - m[3] * m[2] * m[10] - m[9] * m[1] * m[5] + m[9] * m[2] * m[4]];
+    var invDet = 1.0 / det;
+    return inv.map(function (n) {
+      return n * invDet;
+    });
+  };
+  var make_matrix3_translate = function make_matrix3_translate() {
+    var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var z = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    return [1, 0, 0, 0, 1, 0, 0, 0, 1, x, y, z];
+  };
+  var make_matrix3_rotateX = function make_matrix3_rotateX(angle) {
+    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0, 0];
+    var cos = Math.cos(angle);
+    var sin = Math.sin(angle);
+    return [1, 0, 0, 0, cos, sin, 0, -sin, cos, origin[0] || 0, origin[1] || 0, origin[2] || 0];
+  };
+  var make_matrix3_rotateY = function make_matrix3_rotateY(angle) {
+    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0, 0];
+    var cos = Math.cos(angle);
+    var sin = Math.sin(angle);
+    return [cos, 0, -sin, 0, 1, 0, sin, 0, cos, origin[0] || 0, origin[1] || 0, origin[2] || 0];
+  };
+  var make_matrix3_rotateZ = function make_matrix3_rotateZ(angle) {
+    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0, 0];
+    var cos = Math.cos(angle);
+    var sin = Math.sin(angle);
+    return [cos, sin, 0, -sin, cos, 0, 0, 0, 1, origin[0] || 0, origin[1] || 0, origin[2] || 0];
+  };
+  var make_matrix3_rotate = function make_matrix3_rotate(angle) {
+    var vector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0, 1];
+    var origin = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [0, 0, 0];
+    var vec = normalize(vector);
+    var pos = Array.from(Array(3)).map(function (n, i) {
+      return origin[i] || 0;
+    });
+
+    var _vec = _slicedToArray(vec, 3),
+        a = _vec[0],
+        b = _vec[1],
+        c = _vec[2];
+
+    var cos = Math.cos(angle);
+    var sin = Math.sin(angle);
+    var d = Math.sqrt(vec[1] * vec[1] + vec[2] * vec[2]);
+    var b_d = Math.abs(d) < 1e-6 ? 0 : b / d;
+    var c_d = Math.abs(d) < 1e-6 ? 1 : c / d;
+    var t = [1, 0, 0, 0, 1, 0, 0, 0, 1, pos[0], pos[1], pos[2]];
+    var t_inv = [1, 0, 0, 0, 1, 0, 0, 0, 1, -pos[0], -pos[1], -pos[2]];
+    var rx = [1, 0, 0, 0, c_d, b_d, 0, -b_d, c_d, 0, 0, 0];
+    var rx_inv = [1, 0, 0, 0, c_d, -b_d, 0, b_d, c_d, 0, 0, 0];
+    var ry = [d, 0, a, 0, 1, 0, -a, 0, d, 0, 0, 0];
+    var ry_inv = [d, 0, -a, 0, 1, 0, a, 0, d, 0, 0, 0];
+    var rz = [cos, sin, 0, -sin, cos, 0, 0, 0, 1, 0, 0, 0];
+    return multiply_matrices3(t_inv, multiply_matrices3(rx_inv, multiply_matrices3(ry_inv, multiply_matrices3(rz, multiply_matrices3(ry, multiply_matrices3(rx, t))))));
+  };
+  var make_matrix3_scale = function make_matrix3_scale(scale) {
+    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0, 0];
+    return [scale, 0, 0, 0, scale, 0, 0, 0, scale, scale * -origin[0] + origin[0], scale * -origin[1] + origin[1], scale * -origin[2] + origin[2]];
+  };
+  var make_matrix3_reflectionZ = function make_matrix3_reflectionZ(vector) {
+    var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [0, 0];
+    var angle = Math.atan2(vector[1], vector[0]);
+    var cosAngle = Math.cos(angle);
+    var sinAngle = Math.sin(angle);
+    var cos_Angle = Math.cos(-angle);
+    var sin_Angle = Math.sin(-angle);
+    var a = cosAngle * cos_Angle + sinAngle * sin_Angle;
+    var b = cosAngle * -sin_Angle + sinAngle * cos_Angle;
+    var c = sinAngle * cos_Angle + -cosAngle * sin_Angle;
+    var d = sinAngle * -sin_Angle + -cosAngle * cos_Angle;
+    var tx = origin[0] + a * -origin[0] + -origin[1] * c;
+    var ty = origin[1] + b * -origin[0] + -origin[1] * d;
+    return [a, b, 0, c, d, 0, 0, 0, 0, tx, ty, 0];
+  };
+
+  var matrix3_core = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    multiply_matrix3_vector3: multiply_matrix3_vector3,
+    multiply_matrix3_line3: multiply_matrix3_line3,
+    multiply_matrices3: multiply_matrices3,
+    matrix3_determinant: matrix3_determinant,
+    invert_matrix3: invert_matrix3,
+    make_matrix3_translate: make_matrix3_translate,
+    make_matrix3_rotateX: make_matrix3_rotateX,
+    make_matrix3_rotateY: make_matrix3_rotateY,
+    make_matrix3_rotateZ: make_matrix3_rotateZ,
+    make_matrix3_rotate: make_matrix3_rotate,
+    make_matrix3_scale: make_matrix3_scale,
+    make_matrix3_reflectionZ: make_matrix3_reflectionZ
+  });
 
   var countPlaces = function countPlaces(num) {
     var m = "".concat(num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
@@ -1751,7 +1795,7 @@
     };
 
     var rotateZ = function rotateZ(angle, origin) {
-      var m = make_matrix2_rotation(angle, origin);
+      var m = make_matrix2_rotate(angle, origin);
       return Type(multiply_matrix2_vector2(m, that));
     };
 
@@ -2016,7 +2060,7 @@
   };
 
   Matrix2.makeRotation = function (angle, origin) {
-    return Matrix2(make_matrix2_rotation(angle, origin).map(function (n) {
+    return Matrix2(make_matrix2_rotate(angle, origin).map(function (n) {
       return clean_number(n, 13);
     }));
   };

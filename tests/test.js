@@ -208,9 +208,37 @@ testEqual([4, 5, -8, -5, -6, 9, -2, -2, 3, 0, 0, 0],
   math.core.invert_matrix3([0, 1, -3, -3, -4, 4, -2, -2, 1, 0, 0, 0]));
 testEqual([0.2, -0.2, 0.2, 0.2, 0.3, -0.3, 0, 1, 0, 0, 0, 0],
   math.core.invert_matrix3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
-const mat_3d_ref = math.core.make_matrix3_reflection2([1, -2], [12, 13]);
+const mat_3d_ref = math.core.make_matrix3_reflectionZ([1, -2], [12, 13]);
 testEqual(math.core.make_matrix2_reflection([1, -2], [12, 13]),
   [mat_3d_ref[0], mat_3d_ref[1], mat_3d_ref[3], mat_3d_ref[4], mat_3d_ref[9], mat_3d_ref[10]]);
+// rotate 360 degrees about an arbitrary axis and origin
+testEqual([1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+  math.core.make_matrix3_rotate(Math.PI * 2,
+    [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5],
+    [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]));
+
+testEqual(math.core.make_matrix3_rotateX(Math.PI / 6),
+  math.core.make_matrix3_rotate(Math.PI / 6, [1, 0, 0]));
+testEqual(math.core.make_matrix3_rotateY(Math.PI / 6),
+  math.core.make_matrix3_rotate(Math.PI / 6, [0, 1, 0]));
+testEqual(math.core.make_matrix3_rotateZ(Math.PI / 6),
+  math.core.make_matrix3_rotate(Math.PI / 6, [0, 0, 1]));
+// source wikipedia https://en.wikipedia.org/wiki/Rotation_matrix#Examples
+testEqual([
+  0.35612209405955486, -0.8018106071106572, 0.47987165414043453,
+  0.47987165414043464, 0.5975763087872217, 0.6423595182829954,
+  -0.8018106071106572, 0.0015183876574496047, 0.5975763087872216,
+  0, 0, 0
+], math.core.make_matrix3_rotate(-74 / 180 * Math.PI, [-1 / 3, 2 / 3, 2 / 3]));
+
+testEqual([1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0],
+  math.core.make_matrix3_rotate(Math.PI / 6, [1, 0, 0]));
+
+// source wolfram alpha
+testEqual([-682, 3737, -5545, 2154, -549, -1951, 953, -3256, 4401, 0, 0, 0],
+  math.core.multiply_matrices3([5, -52, 85, 15, -9, -2, 32, 2, -50, 0, 0, 0],
+    [-77, 25, -21, 3, 53, 42, 63, 2, 19, 0, 0, 0]));
+
 // top level types
 testEqual([1, 2, 3, 4, 5, 6], math.matrix2(1, 2, 3, 4, 5, 6));
 testEqual([1, 0, 0, 1, 6, 7], math.matrix2.makeTranslation(6, 7));

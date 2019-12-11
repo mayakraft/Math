@@ -6,7 +6,7 @@ import {
 } from "../parsers/arguments";
 
 import {
-  make_matrix2_rotation,
+  make_matrix2_rotate,
   make_matrix2_reflection,
   invert_matrix2,
   multiply_matrices2,
@@ -57,7 +57,7 @@ Matrix2.makeIdentity = () => Matrix2(1, 0, 0, 1, 0, 0);
 Matrix2.makeTranslation = (tx, ty) => Matrix2(1, 0, 0, 1, tx, ty);
 Matrix2.makeScale = (...args) => Matrix2(...make_matrix2_scale(...args));
 Matrix2.makeRotation = ((angle, origin) => Matrix2(
-  make_matrix2_rotation(angle, origin).map(n => clean_number(n, 13))
+  make_matrix2_rotate(angle, origin).map(n => clean_number(n, 13))
 ));
 Matrix2.makeReflection = ((vector, origin) => Matrix2(
   make_matrix2_reflection(vector, origin).map(n => clean_number(n, 13))
