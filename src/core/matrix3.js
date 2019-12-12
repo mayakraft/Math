@@ -1,4 +1,11 @@
 /**
+ * 3x4 matrix methods. the fourth column is a translation vector
+ * these methods depend on arrays of 12 items, 3x3 matrices won't work.
+ */
+
+import { normalize } from "./algebra";
+
+/**
  * @param {number[]} vector, in array form
  * @param {number[]} matrix, in array form
  * @returns {number[]} vector, the input vector transformed by the matrix
@@ -86,12 +93,48 @@ export const invert_matrix3 = function (m) {
   return inv.map(n => n * invDet);
 };
 
-export const make_matrix3_translation = function (x, y, z) {
+export const make_matrix3_translate = function (x = 0, y = 0, z = 0) {
   return [1, 0, 0, 0, 1, 0, 0, 0, 1, x, y, z];
 };
+export const make_matrix3_rotateX = function (angle, origin = [0, 0, 0]) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  return [1, 0, 0, 0, cos, sin, 0, -sin, cos, origin[0] || 0, origin[1] || 0, origin[2] || 0];
+};
+export const make_matrix3_rotateY = function (angle, origin = [0, 0, 0]) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  return [cos, 0, -sin, 0, 1, 0, sin, 0, cos, origin[0] || 0, origin[1] || 0, origin[2] || 0];
+};
+export const make_matrix3_rotateZ = function (angle, origin = [0, 0, 0]) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  return [cos, sin, 0, -sin, cos, 0, 0, 0, 1, origin[0] || 0, origin[1] || 0, origin[2] || 0];
+};
 
-// todo: how do we structure the arguments here? plane normal? axis of rotation?
-const make_matrix3_rotation = function (angle, origin = [0, 0, 0]) {
+export const make_matrix3_rotate = function (angle, vector = [0, 0, 1], origin = [0, 0, 0]) {
+  // normalize inputs
+  const vec = normalize(vector);
+  const pos = Array.from(Array(3)).map((n, i) => origin[i] || 0);
+  const [a, b, c] = vec;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const d = Math.sqrt((vec[1] * vec[1]) + (vec[2] * vec[2]));
+  const b_d = Math.abs(d) < 1e-6 ? 0 : b / d;
+  const c_d = Math.abs(d) < 1e-6 ? 1 : c / d;
+  const t     = [1, 0, 0, 0, 1, 0, 0, 0, 1, pos[0], pos[1], pos[2]];
+  const t_inv = [1, 0, 0, 0, 1, 0, 0, 0, 1, -pos[0], -pos[1], -pos[2]];
+  const rx     = [1, 0, 0, 0, c_d, b_d, 0, -b_d, c_d, 0, 0, 0];
+  const rx_inv = [1, 0, 0, 0, c_d, -b_d, 0, b_d, c_d, 0, 0, 0];
+  const ry     = [d, 0, a, 0, 1, 0, -a, 0, d, 0, 0, 0];
+  const ry_inv = [d, 0, -a, 0, 1, 0, a, 0, d, 0, 0, 0];
+  const rz     = [cos, sin, 0, -sin, cos, 0, 0, 0, 1, 0, 0, 0];
+  return multiply_matrices3(t_inv,
+    multiply_matrices3(rx_inv,
+      multiply_matrices3(ry_inv,
+        multiply_matrices3(rz,
+          multiply_matrices3(ry,
+            multiply_matrices3(rx, t))))));
 };
 
 export const make_matrix3_scale = function (scale, origin = [0, 0, 0]) {
@@ -111,36 +154,12 @@ export const make_matrix3_scale = function (scale, origin = [0, 0, 0]) {
   ];
 };
 
-
-/**
- * 2D operation, assuming everything is 0 in the z plane
- * @returns matrix3
- */
-export const make_matrix3_rotation2 = function (angle, origin = [0, 0]) {
-  const a = Math.cos(angle);
-  const b = Math.sin(angle);
-  return [
-    a,
-    b,
-    0,
-    -b,
-    a,
-    0,
-    0,
-    0,
-    0,
-    origin[0],
-    origin[1],
-    0
-  ];
-};
-
 /**
  * 2D operation, assuming everything is 0 in the z plane
  * @param line in vector-origin form
  * @returns matrix3
  */
-export const make_matrix3_reflection2 = function (vector, origin = [0, 0]) {
+export const make_matrix3_reflectionZ = function (vector, origin = [0, 0]) {
   // the line of reflection passes through origin, runs along vector
   const angle = Math.atan2(vector[1], vector[0]);
   const cosAngle = Math.cos(angle);

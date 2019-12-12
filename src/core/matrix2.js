@@ -25,36 +25,6 @@ export const multiply_matrix2_line2 = function (matrix, origin, vector) {
     ]
   };
 };
-// const new_origin = multiply_matrix2_vector2(matrix, origin);
-// const vec_translated = vector.map((_, i) => vector[i] + origin[i]);
-// const new_vector = multiply_matrix2_vector2(matrix, vec_translated)
-//   .map((vec, i) => vec - new_origin[i]);
-//
-// multiply_matrix2_vector2(matrix, origin)
-// [ m1a m1c m1x ] [ ox ]
-// [ m1b m1d m1y ] [ oy ]
-// result (new_origin)
-// [ ox * m1a + oy * m1c + m1x ]
-// [ ox * m1b + oy * m1d + m1y ]
-// multiply_matrix2_vector2(matrix, vector + origin)
-// [ m1a m1c m1x ] [ ox + vx ]
-// [ m1b m1d m1y ] [ oy + vy ]
-// result (vec_translated)
-// [ (ox+vx) * m1a + (oy+vy) * m1c + m1x ]
-// [ (ox+vx) * m1b + (oy+vy) * m1d + m1y ]
-// vec_translated - new_origin
-// [ (ox+vx) * m1a + (oy+vy) * m1c + m1x ] - [ ox * m1a + oy * m1c + m1x ]
-// [ (ox+vx) * m1b + (oy+vy) * m1d + m1y ]   [ ox * m1b + oy * m1d + m1y ]
-// result
-// [ (ox+vx) * m1a - ox * m1a + (oy+vy) * m1c - oy * m1c + m1x - m1x ]
-// [ (ox+vx) * m1b - ox * m1b + (oy+vy) * m1d - oy * m1d + m1y - m1y ]
-//
-// [ m1a * ((ox+vx) - ox) + m1c * ((oy+vy) - oy) ]
-// [ m1b * ((ox+vx) - ox) + m1d * ((oy+vy) - oy) ]
-//
-// [ m1a * vx + m1c * vy ]
-// [ m1b * vx + m1d * vy ]
-
 /**
  * @param {number[]} matrix, matrix, left/right order matches what you'd see on a page.
  * @returns {number[]} matrix
@@ -97,7 +67,7 @@ export const invert_matrix2 = function (m) {
  * @param {number} x, y
  * @returns {number[]} matrix
  */
-export const make_matrix2_translation = function (x, y) {
+export const make_matrix2_translate = function (x, y) {
   return [1, 0, 0, 1, x, y];
 };
 /**
@@ -118,14 +88,14 @@ export const make_matrix2_scale = function (ratio, origin = [0, 0]) {
  * @param angle of rotation, origin of transformation
  * @returns {number[]} matrix
  */
-export const make_matrix2_rotation = function (angle, origin = [0, 0]) {
-  const a = Math.cos(angle);
-  const b = Math.sin(angle);
+export const make_matrix2_rotate = function (angle, origin = [0, 0]) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
   return [
-    a,
-    b,
-    -b,
-    a,
+    cos,
+    sin,
+    -sin,
+    cos,
     origin[0],
     origin[1]
   ];
