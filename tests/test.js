@@ -201,7 +201,7 @@ testEqual([1, 2, 3], math.vector(1, 2, 3).copy().copy());
  */
 
 // todo: test matrix3 methods (invert) with the translation component to make sure it carries over
-testName("matrices");
+testName("matrix core");
 testEqual(12, math.core.matrix3_determinant([1, 2, 3, 2, 4, 8, 7, 8, 9]));
 testEqual(10, math.core.matrix3_determinant([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
 testEqual([4, 5, -8, -5, -6, 9, -2, -2, 3, 0, 0, 0],
@@ -239,6 +239,10 @@ testEqual([-682, 3737, -5545, 2154, -549, -1951, 953, -3256, 4401, 0, 0, 0],
   math.core.multiply_matrices3([5, -52, 85, 15, -9, -2, 32, 2, -50, 0, 0, 0],
     [-77, 25, -21, 3, 53, 42, 63, 2, 19, 0, 0, 0]));
 
+testName("matrices");
+const ident = math.matrix();
+testEqual(ident.rotateX(Math.PI / 2).translate(40, 20, 10),
+  [1, 0, 0, 0, 0, 1, 0, -1, 0, 40, -10, 20]);
 // top level types
 testEqual([1, 2, 3, 4, 5, 6], math.matrix2(1, 2, 3, 4, 5, 6));
 testEqual([1, 0, 0, 1, 6, 7], math.matrix2.makeTranslation(6, 7));

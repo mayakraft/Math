@@ -92,7 +92,7 @@ export const get_vector_of_vectors = function (...args) {
 };
 
 const identity2 = [1, 0, 0, 1, 0, 0];
-const identity4 = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+const identity3 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
 
 /**
  * a matrix2 is a 2x3 matrix, 2x2 with a column to represent translation
@@ -110,55 +110,53 @@ export const get_matrix2 = function (...args) {
   // m doesn't have a length
   return undefined;
 };
-
-
-export const get_matrix3 = function (...args) {
-  console.warn("get_matrix3 not implemented");
-};
-
 /**
- * a matrix4 is a 4x4 matrix, 3x3 orientation with a column for translation
+ * a matrix3 is a 4x3 matrix, 3x3 orientation with a column for translation
  *
- * @returns {number[]} array of 6 numbers, or undefined if bad inputs
+ * @returns {number[]} array of 12 numbers, or undefined if bad inputs
 */
-export const get_matrix4 = function (...args) {
+export const get_matrix3 = function (...args) {
   const m = get_vector(args);
   if (m === undefined) { return undefined; }
-  if (m.length === 16) { return m; }
-  if (m.length === 9) {
-    return [
-      m[0], m[1], m[2], 0,
-      m[3], m[4], m[5], 0,
-      m[6], m[7], m[8], 0,
-      0, 0, 0, 1
-    ];
-  }
-  if (m.length === 6) {
-    return [
-      m[0], m[1], 0, 0,
-      m[2], m[3], 0, 0,
-      0, 0, 1, 0,
-      m[4], m[5], 0, 1 // todo is translation in the right spot?
-    ];
-  }
-  if (m.length === 4) {
-    return [
+  switch (m.length) {
+    case 4: return [
       m[0], m[1], 0, 0,
       m[2], m[3], 0, 0,
       0, 0, 1, 0,
       0, 0, 0, 1
     ];
+    case 6: return [
+      m[0], m[1], 0,
+      m[2], m[3], 0,
+      0, 0, 1,
+      m[4], m[5], 0
+    ];
+    case 9: return [
+      m[0], m[1], m[2],
+      m[3], m[4], m[5],
+      m[6], m[7], m[8],
+      0, 0, 0
+    ];
+    case 12: return m;
+    // convert a 4x4 (openGL type) matrix into 3x4
+    case 16: return [
+      m[0], m[1], m[2],
+      m[4], m[5], m[6],
+      m[8], m[9], m[10],
+      m[12], m[13], m[14]
+    ];
+    default: break;
   }
-  if (m.length > 16) {
+  if (m.length > 12) {
     return [
-      m[0], m[1], m[2], m[3],
-      m[4], m[5], m[6], m[7],
-      m[8], m[9], m[10], m[11],
-      m[12], m[13], m[14], m[15]
+      m[0], m[1], m[2],
+      m[4], m[5], m[6],
+      m[8], m[9], m[10],
+      m[12], m[13], m[14]
     ];
   }
-  if (m.length < 16) {
-    return identity4.map((n, i) => m[i] || n);
+  if (m.length < 12) {
+    return identity3.map((n, i) => m[i] || n);
   }
   // m doesn't have a length
   return undefined;

@@ -452,6 +452,7 @@
     });
   };
   var identity2 = [1, 0, 0, 1, 0, 0];
+  var identity3 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
   var get_matrix2 = function get_matrix2() {
     for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
       args[_key5] = arguments[_key5];
@@ -480,7 +481,47 @@
     return undefined;
   };
   var get_matrix3 = function get_matrix3() {
-    console.warn("get_matrix3 not implemented");
+    for (var _len6 = arguments.length, args = new Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+      args[_key6] = arguments[_key6];
+    }
+
+    var m = get_vector(args);
+
+    if (m === undefined) {
+      return undefined;
+    }
+
+    switch (m.length) {
+      case 4:
+        return [m[0], m[1], 0, 0, m[2], m[3], 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
+      case 6:
+        return [m[0], m[1], 0, m[2], m[3], 0, 0, 0, 1, m[4], m[5], 0];
+
+      case 9:
+        return [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], 0, 0, 0];
+
+      case 12:
+        return m;
+
+      case 16:
+        return [m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10], m[12], m[13], m[14]];
+
+      default:
+        break;
+    }
+
+    if (m.length > 12) {
+      return [m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10], m[12], m[13], m[14]];
+    }
+
+    if (m.length < 12) {
+      return identity3.map(function (n, i) {
+        return m[i] || n;
+      });
+    }
+
+    return undefined;
   };
   function get_segment() {
     for (var _len7 = arguments.length, args = new Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
@@ -2007,19 +2048,50 @@
       });
     }
 
+    var multiply = function multiply() {
+      for (var _len2 = arguments.length, innerArgs = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        innerArgs[_key2] = arguments[_key2];
+      }
+
+      return Matrix2(multiply_matrices2(matrix, get_matrix2(innerArgs)).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
+    var determinant = function determinant() {
+      return clean_number(matrix2_determinant(matrix));
+    };
+
     var inverse = function inverse() {
       return Matrix2(invert_matrix2(matrix).map(function (n) {
         return clean_number(n, 13);
       }));
     };
 
-    var multiply = function multiply() {
-      for (var _len2 = arguments.length, innerArgs = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        innerArgs[_key2] = arguments[_key2];
-      }
+    var translate = function translate(x, y) {
+      var transform = make_matrix2_translate(x, y);
+      return Matrix2(multiply_matrices2(matrix, transform).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
 
-      var m2 = get_matrix2(innerArgs);
-      return Matrix2(multiply_matrices2(matrix, m2).map(function (n) {
+    var scale = function scale() {
+      var transform = make_matrix2_scale.apply(void 0, arguments);
+      return Matrix2(multiply_matrices2(matrix, transform).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
+    var rotate = function rotate() {
+      var transform = make_matrix2_rotate.apply(void 0, arguments);
+      return Matrix2(multiply_matrices2(matrix, transform).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
+    var reflect = function reflect() {
+      var transform = make_matrix2_reflection.apply(void 0, arguments);
+      return Matrix2(multiply_matrices2(matrix, transform).map(function (n) {
         return clean_number(n, 13);
       }));
     };
@@ -2035,14 +2107,47 @@
       }));
     };
 
-    Object.defineProperty(matrix, "inverse", {
-      value: inverse
-    });
+    var transformVector = function transformVector(vector) {
+      return Matrix2(multiply_matrix2_vector2(matrix, vector).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
+    var transformLine = function transformLine(origin, vector) {
+      return Matrix2(multiply_matrix2_line2(matrix, origin, vector).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
     Object.defineProperty(matrix, "multiply", {
       value: multiply
     });
+    Object.defineProperty(matrix, "determinant", {
+      value: determinant
+    });
+    Object.defineProperty(matrix, "inverse", {
+      value: inverse
+    });
+    Object.defineProperty(matrix, "translate", {
+      value: translate
+    });
+    Object.defineProperty(matrix, "scale", {
+      value: scale
+    });
+    Object.defineProperty(matrix, "rotate", {
+      value: rotate
+    });
+    Object.defineProperty(matrix, "reflect", {
+      value: reflect
+    });
     Object.defineProperty(matrix, "transform", {
       value: transform
+    });
+    Object.defineProperty(matrix, "transformVector", {
+      value: transformVector
+    });
+    Object.defineProperty(matrix, "transformLine", {
+      value: transformLine
     });
     return Object.freeze(matrix);
   };
@@ -2051,16 +2156,18 @@
     return Matrix2(1, 0, 0, 1, 0, 0);
   };
 
-  Matrix2.makeTranslation = function (tx, ty) {
-    return Matrix2(1, 0, 0, 1, tx, ty);
+  Matrix2.makeTranslation = function (x, y) {
+    return Matrix2(make_matrix2_translate(x, y));
   };
 
-  Matrix2.makeScale = function () {
-    return Matrix2.apply(void 0, _toConsumableArray(make_matrix2_scale.apply(void 0, arguments)));
+  Matrix2.makeRotation = function (angle_radians, origin) {
+    return Matrix2(make_matrix2_rotate(angle_radians, origin).map(function (n) {
+      return clean_number(n, 13);
+    }));
   };
 
-  Matrix2.makeRotation = function (angle, origin) {
-    return Matrix2(make_matrix2_rotate(angle, origin).map(function (n) {
+  Matrix2.makeScale = function (amount, origin) {
+    return Matrix2(make_matrix2_scale(amount, origin).map(function (n) {
       return clean_number(n, 13);
     }));
   };
@@ -2078,7 +2185,7 @@
       args[_key4] = arguments[_key4];
     }
 
-    var argsMatrix = get_matrix3();
+    var argsMatrix = get_matrix3(args);
 
     if (argsMatrix !== undefined) {
       argsMatrix.forEach(function (n, i) {
@@ -2086,19 +2193,71 @@
       });
     }
 
+    var multiply = function multiply() {
+      for (var _len5 = arguments.length, innerArgs = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        innerArgs[_key5] = arguments[_key5];
+      }
+
+      return Matrix(multiply_matrices3(matrix, get_matrix3(innerArgs)).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
+    var determinant = function determinant() {
+      return clean_number(matrix3_determinant(matrix), 13);
+    };
+
     var inverse = function inverse() {
       return Matrix(invert_matrix3(matrix).map(function (n) {
         return clean_number(n, 13);
       }));
     };
 
-    var multiply = function multiply() {
-      for (var _len5 = arguments.length, innerArgs = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-        innerArgs[_key5] = arguments[_key5];
-      }
+    var translate = function translate(x, y, z) {
+      var transform = make_matrix3_translate(x, y, z);
+      return Matrix(multiply_matrices3(matrix, transform).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
 
-      var m2 = get_matrix3();
-      return Matrix(multiply_matrices3(matrix, m2).map(function (n) {
+    var rotateX = function rotateX(angle_radians) {
+      var transform = make_matrix3_rotateX(angle_radians);
+      return Matrix(multiply_matrices3(matrix, transform).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
+    var rotateY = function rotateY(angle_radians) {
+      var transform = make_matrix3_rotateY(angle_radians);
+      return Matrix(multiply_matrices3(matrix, transform).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
+    var rotateZ = function rotateZ(angle_radians) {
+      var transform = make_matrix3_rotateZ(angle_radians);
+      return Matrix(multiply_matrices3(matrix, transform).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
+    var rotate = function rotate(angle_radians, vector, origin) {
+      var transform = make_matrix3_rotate(angle_radians, vector, origin);
+      return Matrix(multiply_matrices3(matrix, transform).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
+    var scale = function scale(amount) {
+      var transform = make_matrix3_scale(amount);
+      return Matrix(multiply_matrices3(matrix, transform).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
+    var reflectZ = function reflectZ(vector, origin) {
+      var transform = make_matrix3_reflectionZ(vector, origin);
+      return Matrix(multiply_matrices3(matrix, transform).map(function (n) {
         return clean_number(n, 13);
       }));
     };
@@ -2114,28 +2273,102 @@
       }));
     };
 
-    Object.defineProperty(matrix, "inverse", {
-      value: inverse
-    });
+    var transformVector = function transformVector(vector) {
+      return Matrix(multiply_matrix3_vector3(matrix, vector).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
+    var transformLine = function transformLine(origin, vector) {
+      return Matrix(multiply_matrix3_line3(matrix, origin, vector).map(function (n) {
+        return clean_number(n, 13);
+      }));
+    };
+
     Object.defineProperty(matrix, "multiply", {
       value: multiply
     });
+    Object.defineProperty(matrix, "determinant", {
+      value: determinant
+    });
+    Object.defineProperty(matrix, "inverse", {
+      value: inverse
+    });
+    Object.defineProperty(matrix, "translate", {
+      value: translate
+    });
+    Object.defineProperty(matrix, "rotateX", {
+      value: rotateX
+    });
+    Object.defineProperty(matrix, "rotateY", {
+      value: rotateY
+    });
+    Object.defineProperty(matrix, "rotateZ", {
+      value: rotateZ
+    });
+    Object.defineProperty(matrix, "rotate", {
+      value: rotate
+    });
+    Object.defineProperty(matrix, "scale", {
+      value: scale
+    });
+    Object.defineProperty(matrix, "reflectZ", {
+      value: reflectZ
+    });
     Object.defineProperty(matrix, "transform", {
       value: transform
+    });
+    Object.defineProperty(matrix, "transformVector", {
+      value: transformVector
+    });
+    Object.defineProperty(matrix, "transformLine", {
+      value: transformLine
     });
     return Object.freeze(matrix);
   };
 
   Matrix.makeIdentity = function () {
-    return Matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    return Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0);
   };
 
-  Matrix.makeTranslation = function (tx, ty, tz) {
-    return Matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1);
+  Matrix.makeTranslation = function (x, y, z) {
+    return Matrix(make_matrix3_translate(x, y, z));
   };
 
-  Matrix.makeScale = function () {
-    return Matrix.apply(void 0, _toConsumableArray(make_matrix3_scale.apply(void 0, arguments)));
+  Matrix.makeRotationX = function (angle_radians) {
+    return Matrix(make_matrix3_rotateX(angle_radians).map(function (n) {
+      return clean_number(n, 13);
+    }));
+  };
+
+  Matrix.makeRotationY = function (angle_radians) {
+    return Matrix(make_matrix3_rotateY(angle_radians).map(function (n) {
+      return clean_number(n, 13);
+    }));
+  };
+
+  Matrix.makeRotationZ = function (angle_radians) {
+    return Matrix(make_matrix3_rotateZ(angle_radians).map(function (n) {
+      return clean_number(n, 13);
+    }));
+  };
+
+  Matrix.makeRotation = function (angle_radians, vector, origin) {
+    return Matrix(make_matrix3_rotate(angle_radians, vector, origin).map(function (n) {
+      return clean_number(n, 13);
+    }));
+  };
+
+  Matrix.makeScale = function (amount, origin) {
+    return Matrix(make_matrix3_scale(amount, origin).map(function (n) {
+      return clean_number(n, 13);
+    }));
+  };
+
+  Matrix.makeReflectionZ = function (vector, origin) {
+    return Matrix(make_matrix3_reflectionZ(vector, origin).map(function (n) {
+      return clean_number(n, 13);
+    }));
   };
 
   function Prototype (subtype, prototype) {

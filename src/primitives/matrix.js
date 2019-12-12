@@ -6,18 +6,29 @@ import {
 } from "../parsers/arguments";
 
 import {
+  multiply_matrix2_vector2,
+  multiply_matrix2_line2,
+  multiply_matrices2,
+  matrix2_determinant,
+  invert_matrix2,
+  make_matrix2_translate,
+  make_matrix2_scale,
   make_matrix2_rotate,
   make_matrix2_reflection,
-  invert_matrix2,
-  multiply_matrices2,
-  multiply_matrix2_vector2,
-  make_matrix2_scale,
 } from "../core/matrix2";
 import {
-  multiply_matrices3,
   multiply_matrix3_vector3,
-  make_matrix3_scale,
+  multiply_matrix3_line3,
+  multiply_matrices3,
+  matrix3_determinant,
   invert_matrix3,
+  make_matrix3_translate,
+  make_matrix3_rotateX,
+  make_matrix3_rotateY,
+  make_matrix3_rotateZ,
+  make_matrix3_rotate,
+  make_matrix3_scale,
+  make_matrix3_reflectionZ
 } from "../core/matrix3";
 import Vector from "./vector";
 /**
@@ -30,13 +41,35 @@ const Matrix2 = function (...args) {
     argsMatrix.forEach((n, i) => { matrix[i] = n; });
   }
 
+  const multiply = function (...innerArgs) {
+    return Matrix2(multiply_matrices2(matrix, get_matrix2(innerArgs))
+      .map(n => clean_number(n, 13)));
+  };
+  const determinant = function () {
+    return clean_number(matrix2_determinant(matrix));
+  };
   const inverse = function () {
     return Matrix2(invert_matrix2(matrix)
       .map(n => clean_number(n, 13)));
   };
-  const multiply = function (...innerArgs) {
-    const m2 = get_matrix2(innerArgs);
-    return Matrix2(multiply_matrices2(matrix, m2)
+  const translate = function (x, y) {
+    const transform = make_matrix2_translate(x, y);
+    return Matrix2(multiply_matrices2(matrix, transform)
+      .map(n => clean_number(n, 13)));
+  };
+  const scale = function (...innerArgs) {
+    const transform = make_matrix2_scale(...innerArgs);
+    return Matrix2(multiply_matrices2(matrix, transform)
+      .map(n => clean_number(n, 13)));
+  };
+  const rotate = function (...innerArgs) {
+    const transform = make_matrix2_rotate(...innerArgs);
+    return Matrix2(multiply_matrices2(matrix, transform)
+      .map(n => clean_number(n, 13)));
+  };
+  const reflect = function (...innerArgs) {
+    const transform = make_matrix2_reflection(...innerArgs);
+    return Matrix2(multiply_matrices2(matrix, transform)
       .map(n => clean_number(n, 13)));
   };
   const transform = function (...innerArgs) {
@@ -44,28 +77,51 @@ const Matrix2 = function (...args) {
     return Vector(multiply_matrix2_vector2(matrix, v)
       .map(n => clean_number(n, 13)));
   };
+  const transformVector = function (vector) {
+    return Matrix2(multiply_matrix2_vector2(matrix, vector)
+      .map(n => clean_number(n, 13)));
+  };
+  const transformLine = function (origin, vector) {
+    return Matrix2(multiply_matrix2_line2(matrix, origin, vector)
+      .map(n => clean_number(n, 13)));
+  };
 
-  Object.defineProperty(matrix, "inverse", { value: inverse });
   Object.defineProperty(matrix, "multiply", { value: multiply });
+  Object.defineProperty(matrix, "determinant", { value: determinant });
+  Object.defineProperty(matrix, "inverse", { value: inverse });
+  Object.defineProperty(matrix, "translate", { value: translate });
+  Object.defineProperty(matrix, "scale", { value: scale });
+  Object.defineProperty(matrix, "rotate", { value: rotate });
+  Object.defineProperty(matrix, "reflect", { value: reflect });
   Object.defineProperty(matrix, "transform", { value: transform });
-
+  Object.defineProperty(matrix, "transformVector", { value: transformVector });
+  Object.defineProperty(matrix, "transformLine", { value: transformLine });
   return Object.freeze(matrix);
 };
 
 // static methods
 Matrix2.makeIdentity = () => Matrix2(1, 0, 0, 1, 0, 0);
-Matrix2.makeTranslation = (tx, ty) => Matrix2(1, 0, 0, 1, tx, ty);
-Matrix2.makeScale = (...args) => Matrix2(...make_matrix2_scale(...args));
-Matrix2.makeRotation = ((angle, origin) => Matrix2(
-  make_matrix2_rotate(angle, origin).map(n => clean_number(n, 13))
-));
-Matrix2.makeReflection = ((vector, origin) => Matrix2(
+Matrix2.makeTranslation = (x, y) => Matrix2(
+  make_matrix2_translate(x, y)
+);
+Matrix2.makeRotation = (angle_radians, origin) => Matrix2(
+  make_matrix2_rotate(angle_radians, origin).map(n => clean_number(n, 13))
+);
+Matrix2.makeScale = (amount, origin) => Matrix2(
+  make_matrix2_scale(amount, origin).map(n => clean_number(n, 13))
+);
+Matrix2.makeReflection = (vector, origin) => Matrix2(
   make_matrix2_reflection(vector, origin).map(n => clean_number(n, 13))
-));
-
+);
 
 /**
- * 3D Matrix (3x4) with translation component in x,y,z
+ * 3D Matrix (3x4) with translation component in x,y,z. column-major order
+ *
+ *   x y z translation
+ *   | | | |           indices
+ * [ 1 0 0 0 ]   x   [ 0 3 6 9 ]
+ * [ 0 1 0 0 ]   y   [ 1 4 7 10]
+ * [ 0 0 1 0 ]   z   [ 2 5 8 11]
  */
 const Matrix = function (...args) {
   const matrix = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
@@ -74,13 +130,52 @@ const Matrix = function (...args) {
     argsMatrix.forEach((n, i) => { matrix[i] = n; });
   }
 
+  // todo: is this right, on the right hand side?
+  const multiply = function (...innerArgs) {
+    return Matrix(multiply_matrices3(matrix, get_matrix3(innerArgs))
+      .map(n => clean_number(n, 13)));
+  };
+  const determinant = function () {
+    return clean_number(matrix3_determinant(matrix), 13);
+  };
   const inverse = function () {
     return Matrix(invert_matrix3(matrix)
       .map(n => clean_number(n, 13)));
   };
-  const multiply = function (...innerArgs) {
-    const m2 = get_matrix3(innerArgs);
-    return Matrix(multiply_matrices3(matrix, m2)
+  // todo: is this the right order (matrix, transform)?
+  const translate = function (x, y, z) {
+    const transform = make_matrix3_translate(x, y, z);
+    return Matrix(multiply_matrices3(matrix, transform)
+      .map(n => clean_number(n, 13)));
+  };
+  const rotateX = function (angle_radians) {
+    const transform = make_matrix3_rotateX(angle_radians);
+    return Matrix(multiply_matrices3(matrix, transform)
+      .map(n => clean_number(n, 13)));
+  };
+  const rotateY = function (angle_radians) {
+    const transform = make_matrix3_rotateY(angle_radians);
+    return Matrix(multiply_matrices3(matrix, transform)
+      .map(n => clean_number(n, 13)));
+  };
+  const rotateZ = function (angle_radians) {
+    const transform = make_matrix3_rotateZ(angle_radians);
+    return Matrix(multiply_matrices3(matrix, transform)
+      .map(n => clean_number(n, 13)));
+  };
+  const rotate = function (angle_radians, vector, origin) {
+    const transform = make_matrix3_rotate(angle_radians, vector, origin);
+    return Matrix(multiply_matrices3(matrix, transform)
+      .map(n => clean_number(n, 13)));
+  };
+  const scale = function (amount) {
+    const transform = make_matrix3_scale(amount);
+    return Matrix(multiply_matrices3(matrix, transform)
+      .map(n => clean_number(n, 13)));
+  };
+  const reflectZ = function (vector, origin) {
+    const transform = make_matrix3_reflectionZ(vector, origin);
+    return Matrix(multiply_matrices3(matrix, transform)
       .map(n => clean_number(n, 13)));
   };
   const transform = function (...innerArgs) {
@@ -88,25 +183,56 @@ const Matrix = function (...args) {
     return Vector(multiply_matrix3_vector3(v, matrix)
       .map(n => clean_number(n, 13)));
   };
+  const transformVector = function (vector) {
+    return Matrix(multiply_matrix3_vector3(matrix, vector)
+      .map(n => clean_number(n, 13)));
+  };
+  const transformLine = function (origin, vector) {
+    return Matrix(multiply_matrix3_line3(matrix, origin, vector)
+      .map(n => clean_number(n, 13)));
+  };
 
-  Object.defineProperty(matrix, "inverse", { value: inverse });
   Object.defineProperty(matrix, "multiply", { value: multiply });
+  Object.defineProperty(matrix, "determinant", { value: determinant });
+  Object.defineProperty(matrix, "inverse", { value: inverse });
+  Object.defineProperty(matrix, "translate", { value: translate });
+  Object.defineProperty(matrix, "rotateX", { value: rotateX });
+  Object.defineProperty(matrix, "rotateY", { value: rotateY });
+  Object.defineProperty(matrix, "rotateZ", { value: rotateZ });
+  Object.defineProperty(matrix, "rotate", { value: rotate });
+  Object.defineProperty(matrix, "scale", { value: scale });
+  Object.defineProperty(matrix, "reflectZ", { value: reflectZ });
   Object.defineProperty(matrix, "transform", { value: transform });
+  Object.defineProperty(matrix, "transformVector", { value: transformVector });
+  Object.defineProperty(matrix, "transformLine", { value: transformLine });
 
   return Object.freeze(matrix);
 };
 
 // static methods
-Matrix.makeIdentity = () => Matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-// todo, is the translation in the right place?
-Matrix.makeTranslation = (tx, ty, tz) => Matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1);
-Matrix.makeScale = (...args) => Matrix(...make_matrix3_scale(...args));
-// Matrix.makeRotation = ((angle, origin) => Matrix(
-//   make_matrix4_rotation(angle, origin).map(n => clean_number(n, 13))
-// ));
-// Matrix.makeReflection = ((vector, origin) => Matrix(
-//   make_matrix4_reflection(vector, origin).map(n => clean_number(n, 13))
-// ));
+Matrix.makeIdentity = () => Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0);
+// todo: is this the right order (matrix, transform)?
+Matrix.makeTranslation = (x, y, z) => Matrix(
+  make_matrix3_translate(x, y, z)
+);
+Matrix.makeRotationX = angle_radians => Matrix(
+  make_matrix3_rotateX(angle_radians).map(n => clean_number(n, 13))
+);
+Matrix.makeRotationY = angle_radians => Matrix(
+  make_matrix3_rotateY(angle_radians).map(n => clean_number(n, 13))
+);
+Matrix.makeRotationZ = angle_radians => Matrix(
+  make_matrix3_rotateZ(angle_radians).map(n => clean_number(n, 13))
+);
+Matrix.makeRotation = (angle_radians, vector, origin) => Matrix(
+  make_matrix3_rotate(angle_radians, vector, origin).map(n => clean_number(n, 13))
+);
+Matrix.makeScale = (amount, origin) => Matrix(
+  make_matrix3_scale(amount, origin).map(n => clean_number(n, 13))
+);
+Matrix.makeReflectionZ = (vector, origin) => Matrix(
+  make_matrix3_reflectionZ(vector, origin).map(n => clean_number(n, 13))
+);
 
 export {
   Matrix2,
