@@ -12,7 +12,10 @@ import {
 
 import { EPSILON } from "../../core/equal";
 import { intersection_function } from "../../core/intersection";
-import { nearest_point_on_line } from "../../core/geometry";
+import {
+  nearest_point_on_line,
+  bisect_lines2
+} from "../../core/geometry";
 import Vector from "../vector";
 import { Matrix2 } from "../matrix";
 
@@ -81,11 +84,24 @@ export default function (subtype, prototype) {
     return intersection_function(this.origin, this.vector, ray.origin, ray.vector,
       compare_to_ray.bind(this));
   };
-  const intersectEdge = function (...args) {
+  const intersectSegment = function (...args) {
     const edge = get_segment(args);
     const edgeVec = [edge[1][0] - edge[0][0], edge[1][1] - edge[0][1]];
     return intersection_function(this.origin, this.vector, edge[0], edgeVec,
       compare_to_segment.bind(this));
+  };
+  const bisectLine = function (...args) {
+    const line = get_line(args);
+    return bisect_lines2(this.origin, this.vector, line.origin, line.vector);
+  };
+  const bisectRay = function (...args) {
+    const ray = get_ray(args);
+    return bisect_lines2(this.origin, this.vector, ray.origin, ray.vector);
+  };
+  const bisectSegment = function (...args) {
+    const s = get_segment(args);
+    const vector = [s[1][0] - s[0][0], s[1][1] - s[0][1]];
+    return bisect_lines2(this.origin, this.vector, s[0], vector);
   };
 
   // const collinear = function (point){}
@@ -97,7 +113,10 @@ export default function (subtype, prototype) {
   Object.defineProperty(proto, "intersect", { value: intersect });
   Object.defineProperty(proto, "intersectLine", { value: intersectLine });
   Object.defineProperty(proto, "intersectRay", { value: intersectRay });
-  Object.defineProperty(proto, "intersectEdge", { value: intersectEdge });
+  Object.defineProperty(proto, "intersectSegment", { value: intersectSegment });
+  Object.defineProperty(proto, "bisectLine", { value: bisectLine });
+  Object.defineProperty(proto, "bisectRay", { value: bisectRay });
+  Object.defineProperty(proto, "bisectSegment", { value: bisectSegment });
   // Object.defineProperty(proto, "compare_function", {value: compare_function});
   // Object.defineProperty(proto, "clip_function", {value: clip_function});
 

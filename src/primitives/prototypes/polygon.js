@@ -50,12 +50,20 @@ export default function (subtype) {
     return enclosing_rectangle(this.points);
   };
   const sectors = function () {
-    return this.points
-      .map((p, i, a) => [
-        a[(i + a.length - 1) % a.length],
-        a[i],
-        a[(i + 1) % a.length]])
-      .map(points => Sector(points[1], points[2], points[0]));
+    // return this.points
+    //   .map((p, i, a) => [
+    //     a[(i + a.length - 1) % a.length],
+    //     a[i],
+    //     a[(i + 1) % a.length]])
+    //   .map(points => Sector(points[1], points[2], points[0]));
+    return this.points.map((p, i, arr) => {
+      const prev = (i + arr.length - 1) % arr.length;
+      const next = (i + 1) % arr.length;
+      const center = p;
+      const a = arr[prev].map((n, j) => n - center[j]);
+      const b = arr[next].map((n, j) => n - center[j]);
+      return Sector(b, a, center);
+    });
   };
   const contains = function (...args) {
     return point_in_poly(get_vector(args), this.points);
@@ -148,7 +156,7 @@ export default function (subtype) {
     get: function () { return this.sides; },
   });
   Object.defineProperty(proto, "sectors", {
-    get: function () { return sectors(); },
+    get: function () { return sectors.call(this); },
   });
   Object.defineProperty(proto, "signedArea", { value: area });
 

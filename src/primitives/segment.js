@@ -13,11 +13,12 @@ import Vector from "./vector";
 const Segment = function (...args) {
   const inputs = get_two_vec2(args);
   const proto = Prototype.bind(this);
-  const segment = Object.create(proto(Segment, []));
 
   const vecPts = (inputs.length > 0 ? inputs.map(p => Vector(p)) : undefined);
   if (vecPts === undefined) { return undefined; }
-  vecPts.forEach((p, i) => { segment[i] = p; });
+  const segment = Object.create(proto(Segment, vecPts));
+  // vecPts.forEach((p, i) => { segment[i] = p; });
+
   // todo: that created a segment with 0 length. even if it contains elements
 
   const transform = function (...innerArgs) {
@@ -30,7 +31,9 @@ const Segment = function (...args) {
     return Vector(segment[1][0] - segment[0][0], segment[1][1] - segment[0][1]);
   };
   const midpoint = () => Vector(average(segment[0], segment[1]));
-  const length = function () {
+  // overwriting "length" is causing problems due to Array inheritance.
+  // renaming from "length" to "magnitude"
+  const magnitude = function () {
     return Math.sqrt(((segment[1][0] - segment[0][0]) ** 2)
                    + ((segment[1][1] - segment[0][1]) ** 2));
   };
@@ -39,7 +42,7 @@ const Segment = function (...args) {
   Object.defineProperty(segment, "origin", { get: () => segment[0] });
   Object.defineProperty(segment, "vector", { get: () => vector() });
   Object.defineProperty(segment, "midpoint", { value: midpoint });
-  Object.defineProperty(segment, "length", { get: () => length() });
+  Object.defineProperty(segment, "magnitude", { get: () => magnitude() });
   Object.defineProperty(segment, "transform", { value: transform });
   Object.defineProperty(segment, "compare_function", { value: compare_function });
   Object.defineProperty(segment, "clip_function", {
