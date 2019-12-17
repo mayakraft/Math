@@ -125,7 +125,7 @@ export const bisect_lines2 = function (pointA, vectorA, pointB, vectorB) {
     const solution = [midpoint2(pointA, pointB), [vectorA[0], vectorA[1]]];
     const array = [solution, solution];
     const dot = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
-    delete (dot > 0 ? array[1] : array[0]);
+    delete array[(dot > 0 ? 1 : 0)];
     return array;
   }
   // const vectorC = [pointB[0] - pointA[0], pointB[1] - pointA[1]];

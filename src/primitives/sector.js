@@ -7,6 +7,8 @@ import {
   subsect
 } from "../core/geometry";
 
+import Vector from "./vector";
+
 // in progress: thinking that "center" isn't necessary, should we remove?
 // import Ray from "./ray";
 
@@ -19,13 +21,13 @@ const Sector = function (vectorA, vectorB, center = [0, 0]) {
     const interior_angle = counter_clockwise_angle2(vectors[0], vectors[1]);
     const vectors_radians = vectors.map(el => Math.atan2(el[1], el[0]));
     const bisected = vectors_radians[0] + interior_angle * 0.5;
-    return [Math.cos(bisected), Math.sin(bisected)];
+    return Vector(Math.cos(bisected), Math.sin(bisected));
   };
 
   // const subsect = function(divisions:number):Ray[]{
   const subsect_sector = function (divisions) {
     return subsect(divisions, vectors[0], vectors[1])
-      .map(vec => [vec[0], vec[1]]);
+      .map(vec => Vector(vec[0], vec[1]));
   };
 
   /** a sector contains a vector if it lies between the two vectors in counter-clockwise order */

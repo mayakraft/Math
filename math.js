@@ -1426,7 +1426,7 @@
       var solution = [midpoint2(pointA, pointB), [vectorA[0], vectorA[1]]];
       var array = [solution, solution];
       var dot = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
-      delete (dot > 0 ? array[1] : array[0]);
+      delete array[dot > 0 ? 1 : 0];
       return array;
     }
 
@@ -2444,7 +2444,7 @@
       return intersection_function(this.origin, this.vector, ray.origin, ray.vector, compare_to_ray.bind(this));
     };
 
-    var intersectEdge = function intersectEdge() {
+    var intersectSegment = function intersectSegment() {
       for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
         args[_key4] = arguments[_key4];
       }
@@ -2452,6 +2452,34 @@
       var edge = get_segment(args);
       var edgeVec = [edge[1][0] - edge[0][0], edge[1][1] - edge[0][1]];
       return intersection_function(this.origin, this.vector, edge[0], edgeVec, compare_to_segment.bind(this));
+    };
+
+    var bisectLine = function bisectLine() {
+      for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
+      }
+
+      var line = get_line(args);
+      return bisect_lines2(this.origin, this.vector, line.origin, line.vector);
+    };
+
+    var bisectRay = function bisectRay() {
+      for (var _len6 = arguments.length, args = new Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+        args[_key6] = arguments[_key6];
+      }
+
+      var ray = get_ray(args);
+      return bisect_lines2(this.origin, this.vector, ray.origin, ray.vector);
+    };
+
+    var bisectSegment = function bisectSegment() {
+      for (var _len7 = arguments.length, args = new Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+        args[_key7] = arguments[_key7];
+      }
+
+      var s = get_segment(args);
+      var vector = [s[1][0] - s[0][0], s[1][1] - s[0][1]];
+      return bisect_lines2(this.origin, this.vector, s[0], vector);
     };
 
     Object.defineProperty(proto, "isParallel", {
@@ -2475,8 +2503,17 @@
     Object.defineProperty(proto, "intersectRay", {
       value: intersectRay
     });
-    Object.defineProperty(proto, "intersectEdge", {
-      value: intersectEdge
+    Object.defineProperty(proto, "intersectSegment", {
+      value: intersectSegment
+    });
+    Object.defineProperty(proto, "bisectLine", {
+      value: bisectLine
+    });
+    Object.defineProperty(proto, "bisectRay", {
+      value: bisectRay
+    });
+    Object.defineProperty(proto, "bisectSegment", {
+      value: bisectSegment
     });
     return Object.freeze(proto);
   }
@@ -2644,7 +2681,6 @@
 
     var inputs = get_two_vec2(args);
     var proto = Prototype.bind(this);
-    var segment = Object.create(proto(Segment, []));
     var vecPts = inputs.length > 0 ? inputs.map(function (p) {
       return Vector(p);
     }) : undefined;
@@ -2653,9 +2689,7 @@
       return undefined;
     }
 
-    vecPts.forEach(function (p, i) {
-      segment[i] = p;
-    });
+    var segment = Object.create(proto(Segment, vecPts));
 
     var transform = function transform() {
       for (var _len2 = arguments.length, innerArgs = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
@@ -2677,7 +2711,7 @@
       return Vector(average(segment[0], segment[1]));
     };
 
-    var length = function length() {
+    var magnitude = function magnitude() {
       return Math.sqrt(Math.pow(segment[1][0] - segment[0][0], 2) + Math.pow(segment[1][1] - segment[0][1], 2));
     };
 
@@ -2698,9 +2732,9 @@
     Object.defineProperty(segment, "midpoint", {
       value: midpoint
     });
-    Object.defineProperty(segment, "length", {
+    Object.defineProperty(segment, "magnitude", {
       get: function get() {
-        return length();
+        return magnitude();
       }
     });
     Object.defineProperty(segment, "transform", {
@@ -2807,12 +2841,12 @@
         return Math.atan2(el[1], el[0]);
       });
       var bisected = vectors_radians[0] + interior_angle * 0.5;
-      return [Math.cos(bisected), Math.sin(bisected)];
+      return Vector(Math.cos(bisected), Math.sin(bisected));
     };
 
     var subsect_sector = function subsect_sector(divisions) {
       return subsect(divisions, vectors[0], vectors[1]).map(function (vec) {
-        return [vec[0], vec[1]];
+        return Vector(vec[0], vec[1]);
       });
     };
 
@@ -2880,10 +2914,17 @@
     };
 
     var sectors = function sectors() {
-      return this.points.map(function (p, i, a) {
-        return [a[(i + a.length - 1) % a.length], a[i], a[(i + 1) % a.length]];
-      }).map(function (points) {
-        return Sector(points[1], points[2], points[0]);
+      return this.points.map(function (p, i, arr) {
+        var prev = (i + arr.length - 1) % arr.length;
+        var next = (i + 1) % arr.length;
+        var center = p;
+        var a = arr[prev].map(function (n, j) {
+          return n - center[j];
+        });
+        var b = arr[next].map(function (n, j) {
+          return n - center[j];
+        });
+        return Sector(b, a, center);
       });
     };
 
@@ -3065,7 +3106,7 @@
     });
     Object.defineProperty(proto, "sectors", {
       get: function get() {
-        return sectors();
+        return sectors.call(this);
       }
     });
     Object.defineProperty(proto, "signedArea", {
