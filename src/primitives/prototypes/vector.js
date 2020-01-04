@@ -87,6 +87,9 @@ const VectorPrototype = function (subtype) {
   const rotateZ270 = function () {
     return Type(that[1], -that[0]);
   };
+  const flip = function () {
+    return Type(...that.map(n => -n));
+  };
   const reflect = function (...args) {
     const ref = get_line(args);
     const m = make_matrix2_reflection(ref.vector, ref.origin);
@@ -139,6 +142,7 @@ const VectorPrototype = function (subtype) {
   Object.defineProperty(proto, "rotateZ90", { value: rotateZ90 });
   Object.defineProperty(proto, "rotateZ180", { value: rotateZ180 });
   Object.defineProperty(proto, "rotateZ270", { value: rotateZ270 });
+  Object.defineProperty(proto, "flip", { value: flip });
   Object.defineProperty(proto, "reflect", { value: reflect });
   Object.defineProperty(proto, "lerp", { value: lerp });
   Object.defineProperty(proto, "isEquivalent", { value: isEquivalent });

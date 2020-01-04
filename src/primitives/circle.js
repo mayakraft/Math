@@ -42,6 +42,9 @@ const Circle = function (...args) {
     return (result === undefined ? undefined : result.map(i => Vector(i)));
   };
 
+  // const tangentThroughPoint
+  // give us two tangent lines that intersect a point (outside the circle)
+
   // return Object.freeze( {
   return {
     intersectionLine,

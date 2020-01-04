@@ -13,18 +13,20 @@ import Vector from "./vector";
 const Segment = function (...args) {
   const inputs = get_two_vec2(args);
   const proto = Prototype.bind(this);
-
   const vecPts = (inputs.length > 0 ? inputs.map(p => Vector(p)) : undefined);
   if (vecPts === undefined) { return undefined; }
   const segment = Object.create(proto(Segment, vecPts));
-  // vecPts.forEach((p, i) => { segment[i] = p; });
-
-  // todo: that created a segment with 0 length. even if it contains elements
 
   const transform = function (...innerArgs) {
     const mat = get_matrix2(innerArgs);
     const transformed_points = segment
       .map(point => multiply_matrix2_vector2(mat, point));
+    return Segment(transformed_points);
+  };
+  const scale = function (magnitude) {
+    const mid = average(segment[0], segment[1]);
+    const transformed_points = segment
+      .map(p => p.lerp(mid, magnitude));
     return Segment(transformed_points);
   };
   const vector = function () {
@@ -44,6 +46,7 @@ const Segment = function (...args) {
   Object.defineProperty(segment, "midpoint", { value: midpoint });
   Object.defineProperty(segment, "magnitude", { get: () => magnitude() });
   Object.defineProperty(segment, "transform", { value: transform });
+  Object.defineProperty(segment, "scale", { value: scale });
   Object.defineProperty(segment, "compare_function", { value: compare_function });
   Object.defineProperty(segment, "clip_function", {
     value: limit_segment,
