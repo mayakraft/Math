@@ -700,11 +700,7 @@
     });
   };
   var equivalent_vectors = function equivalent_vectors() {
-    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      args[_key2] = arguments[_key2];
-    }
-
-    var list = get_vector_of_vectors(args);
+    var list = get_vector_of_vectors.apply(void 0, arguments);
 
     if (list.length === 0) {
       return false;
@@ -731,8 +727,8 @@
     }, true);
   };
   var equivalent = function equivalent() {
-    for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-      args[_key3] = arguments[_key3];
+    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
     }
 
     var list = semi_flatten_input(args);
@@ -764,12 +760,17 @@
           return a === b;
         });
 
+      case "string":
+        return array_similarity_test(list, function (a, b) {
+          return a === b;
+        });
+
       case "object":
         if (list[0].constructor === Array) {
-          return equivalent_vectors(list);
+          return equivalent_vectors.apply(void 0, _toConsumableArray(list));
         }
 
-        console.warn("comparing array of objects for equivalency by slow stringify and no-epsilon");
+        console.warn("comparing array of objects for equivalency by slow JSON.stringify with no epsilon check");
         return array_similarity_test(list, function (a, b) {
           return JSON.stringify(a) === JSON.stringify(b);
         });
@@ -1852,6 +1853,12 @@
       return Type(that[1], -that[0]);
     };
 
+    var flip = function flip() {
+      return Type.apply(void 0, _toConsumableArray(that.map(function (n) {
+        return -n;
+      })));
+    };
+
     var reflect = function reflect() {
       for (var _len7 = arguments.length, args = new Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
         args[_key7] = arguments[_key7];
@@ -1961,6 +1968,9 @@
     });
     Object.defineProperty(proto, "rotateZ270", {
       value: rotateZ270
+    });
+    Object.defineProperty(proto, "flip", {
+      value: flip
     });
     Object.defineProperty(proto, "reflect", {
       value: reflect
@@ -2703,6 +2713,14 @@
       return Segment(transformed_points);
     };
 
+    var scale = function scale(magnitude) {
+      var mid = average(segment[0], segment[1]);
+      var transformed_points = segment.map(function (p) {
+        return p.lerp(mid, magnitude);
+      });
+      return Segment(transformed_points);
+    };
+
     var vector = function vector() {
       return Vector(segment[1][0] - segment[0][0], segment[1][1] - segment[0][1]);
     };
@@ -2739,6 +2757,9 @@
     });
     Object.defineProperty(segment, "transform", {
       value: transform
+    });
+    Object.defineProperty(segment, "scale", {
+      value: scale
     });
     Object.defineProperty(segment, "compare_function", {
       value: compare_function

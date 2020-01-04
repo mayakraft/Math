@@ -1,4 +1,8 @@
 /**
+ * this is *filled* with heuristic methods, methods that make assumptions,
+ * methods that take in user-input and infer a best match.
+ */
+/**
  * one way to improve these input finders is to search in all indices
  * of the arguments list, right now it assumes THIS is the only thing
  * you're passing in. in the case that it isn't and there's an object
