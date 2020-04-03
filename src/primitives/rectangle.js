@@ -1,5 +1,8 @@
 import ConvexPolygon from "./convexPolygon";
 import Prototype from "./prototypes/polygon";
+import Vector from "./vector";
+import { get_vector_of_vectors } from "../parsers/arguments";
+import { enclosing_rectangle } from "../core/geometry";
 
 /**
  * this Rectangle type is aligned to the axes for speedy calculation.
@@ -18,13 +21,13 @@ const Rectangle = function (...args) {
   const numbers = params.filter(param => !isNaN(param));
   let arrays = params.filter(param => param.constructor === Array);
   if (numbers.length === 4) {
-    origin = numbers.slice(0, 2);
+    origin = Vector(numbers.slice(0, 2));
     [, , width, height] = numbers;
   }
   if (arrays.length === 1) { arrays = arrays[0]; }
   if (arrays.length === 2) {
     if (typeof arrays[0][0] === "number") {
-      origin = arrays[0].slice();
+      origin = Vector(arrays[0].slice());
       width = arrays[1][0];
       height = arrays[1][1];
     }
@@ -57,6 +60,7 @@ const Rectangle = function (...args) {
     return ConvexPolygon(points).transform(innerArgs);
   };
 
+  Object.defineProperty(rect, "points", { get: () => points });
   Object.defineProperty(rect, "origin", { get: () => origin });
   Object.defineProperty(rect, "width", { get: () => width });
   Object.defineProperty(rect, "height", { get: () => height });
@@ -68,5 +72,12 @@ const Rectangle = function (...args) {
   // return Object.freeze(rect);
   return rect;
 };
+
+Rectangle.fromPoints = function (...args) {
+  const points = get_vector_of_vectors(args);
+  const rect = enclosing_rectangle(points);
+  return Rectangle(rect);
+};
+
 
 export default Rectangle;

@@ -1,8 +1,10 @@
 import {
   get_line,
   get_ray,
-  get_two_vec2,
+  get_vector_of_vectors,
 } from "../parsers/arguments";
+
+import { distance2 } from "../core/algebra";
 
 import {
   circle_line,
@@ -16,17 +18,20 @@ const Circle = function (...args) {
   let origin;
   let radius;
 
-  const params = Array.from(args);
-  const numbers = params.filter(param => !isNaN(param));
+  // const params = Array.from(args);
+  const numbers = args.filter(param => !isNaN(param));
+  const vectors = get_vector_of_vectors(args);
   if (numbers.length === 3) {
     origin = Vector(numbers[0], numbers[1]);
     [, , radius] = numbers;
+  } else if (vectors.length === 2) {
+    radius = distance2(...vectors);
+    origin = Vector(...vectors[0]);
   }
 
   const intersectionLine = function (...innerArgs) {
     const line = get_line(innerArgs);
-    const p2 = [line.origin[0] + line.vector[0], line.origin[1] + line.vector[1]];
-    const result = circle_line(origin, radius, line.origin, p2);
+    const result = circle_line(origin, radius, line.origin, line.vector);
     return (result === undefined ? undefined : result.map(i => Vector(i)));
   };
 
@@ -37,9 +42,14 @@ const Circle = function (...args) {
   };
 
   const intersectionSegment = function (...innerArgs) {
-    const segment = get_two_vec2(innerArgs);
+    const segment = get_vector_of_vectors(innerArgs);
     const result = circle_segment(origin, radius, segment[0], segment[1]);
     return (result === undefined ? undefined : result.map(i => Vector(i)));
+  };
+
+  const intersectionCircle = function (...innerArgs) {
+    const circle = get_circle(innerArgs);
+    
   };
 
   // const tangentThroughPoint
@@ -51,10 +61,15 @@ const Circle = function (...args) {
     intersectionRay,
     intersectionSegment,
     get origin() { return origin; },
+    get x() { return origin[0]; },
+    get y() { return origin[1]; },
     get radius() { return radius; },
     set origin(innerArgs) { origin = Vector(innerArgs); },
     set radius(newRadius) { radius = newRadius; },
   };
 };
+
+// Circle.fromPoints = () => {
+// };
 
 export default Circle;

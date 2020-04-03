@@ -107,8 +107,8 @@ Matrix2.makeTranslation = (x, y) => Matrix2(
 Matrix2.makeRotation = (angle_radians, origin) => Matrix2(
   make_matrix2_rotate(angle_radians, origin).map(n => clean_number(n, 13))
 );
-Matrix2.makeScale = (amount, origin) => Matrix2(
-  make_matrix2_scale(amount, origin).map(n => clean_number(n, 13))
+Matrix2.makeScale = (x, y, origin) => Matrix2(
+  make_matrix2_scale(x, y, origin).map(n => clean_number(n, 13))
 );
 Matrix2.makeReflection = (vector, origin) => Matrix2(
   make_matrix2_reflection(vector, origin).map(n => clean_number(n, 13))

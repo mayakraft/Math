@@ -1,4 +1,5 @@
 import { EPSILON } from "./equal";
+import { normalize, magnitude } from "./algebra";
 import {
   point_in_convex_poly,
   point_in_convex_poly_exclusive
@@ -161,76 +162,142 @@ export const segment_segment_exclusive = function (a0, a1, b0, b1, epsilon) {
 /*
  * returns an array of array of numbers
  */
-export const circle_line = function (center, radius, p0, p1, epsilon = EPSILON) {
-  // move the origin to the center of the circle
-  const x1 = p0[0] - center[0];
-  const y1 = p0[1] - center[1];
-  const x2 = p1[0] - center[0];
-  const y2 = p1[1] - center[1];
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const det = x1 * y2 - x2 * y1;
-  const det_sq = det * det;
-  const r_sq = radius * radius;
-  const dr_sq = Math.abs(dx * dx + dy * dy);
-  const delta = r_sq * dr_sq - det_sq;
-  // no solution
-  if (delta < -epsilon) { return undefined; }
-  // shorthand things
-  const suffix = Math.sqrt(r_sq * dr_sq - det_sq);
-  function sgn(x) { return (x < -epsilon) ? -1 : 1; }
-  const solutionA = [
-    center[0] + (det * dy + sgn(dy) * dx * suffix) / dr_sq,
-    center[1] + (-det * dx + Math.abs(dy) * suffix) / dr_sq,
-  ];
-  if (delta > epsilon) {
-    // two solutions
-    const solutionB = [
-      center[0] + (det * dy - sgn(dy) * dx * suffix) / dr_sq,
-      center[1] + (-det * dx - Math.abs(dy) * suffix) / dr_sq,
-    ];
-    return [solutionA, solutionB];
-  }
-  // else, delta == 0, line is tangent, one solution
-  return [solutionA];
+export const circle_line = function (center, radius, lpt, lvec, epsilon = EPSILON) {
+  const magSq = lvec[0] ** 2 + lvec[1] ** 2;
+  const mag = Math.sqrt(magSq);
+  const norm = mag === 0 ? lvec : lvec.map(c => c / mag);
+  // const norm = normalize(lvec);
+  const rot90 = [-norm[1], norm[0]];
+  const bvec = [lpt[0] - center[0], lpt[1] - center[1]];
+  const det = bvec[0] * norm[1] - norm[0] * bvec[1];
+  if (Math.abs(det) > radius + epsilon) { return undefined; }
+  const side = Math.sqrt((radius ** 2) - (det ** 2));
+  const f = (s, i) => center[i] - rot90[i] * det + norm[i] * s;
+  return Math.abs(radius - Math.abs(det)) < epsilon
+    ? [side].map((s) => [s,s].map(f)) // tangent to circle
+    : [-side, side].map((s) => [s,s].map(f));
 };
 
-export const circle_ray = function (center, radius, p0, p1) {
-  throw "circle_ray has not been written yet";
+export const circle_ray = function (center, radius, lpt, lvec, epsilon = EPSILON) {
+  const magSq = lvec[0] ** 2 + lvec[1] ** 2;
+  const mag = Math.sqrt(magSq);
+  const norm = mag === 0 ? lvec : lvec.map(c => c / mag);
+  // const norm = normalize(lvec);
+  const rot90 = [-norm[1], norm[0]];
+  const bvec = [lpt[0] - center[0], lpt[1] - center[1]];
+  const det = bvec[0] * norm[1] - norm[0] * bvec[1];
+  if (Math.abs(det) > radius + epsilon) { return undefined; }
+  const side = Math.sqrt((radius ** 2) - (det ** 2));
+  const f = (s, i) => center[i] - rot90[i] * det + norm[i] * s;
+  const result = Math.abs(radius - Math.abs(det)) < epsilon
+    ? [side].map((s) => [s,s].map(f)) // tangent to circle
+    : [-side, side].map((s) => [s,s].map(f));
+  const ts = result.map(res => res.map((n, i) => n - lpt[i]))
+    .map(v => v[0] * lvec[0] + lvec[1] * v[1])
+    .map(d => d / magSq);
+  return result.filter((_,i) => ts[i] > -epsilon);
+  // // const dets = resultVecs.map(v => v[0] * lvec[1] - lvec[0] * v[1]);
+  // const vecDet = lpt[1] * lvec[0] - lpt[0] * lvec[1];
+  // const resultDets = resultVecs.map(v => v[0] * lpt[1] - lpt[0] * v[1]);
+  // // console.log(resultDets.map((d, i) => d / vecDet / ));
 };
 
-export const circle_segment = function (center, radius, p0, p1) {
-  const r_squared = radius ** 2;
-  const x1 = p0[0] - center[0];
-  const y1 = p0[1] - center[1];
-  const x2 = p1[0] - center[0];
-  const y2 = p1[1] - center[1];
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const dr_squared = dx * dx + dy * dy;
-  const D = x1 * y2 - x2 * y1;
-  function sgn(x) { if (x < 0) { return -1; } return 1; }
-  const x_1 = (D * dy + sgn(dy) * dx * Math.sqrt(r_squared * dr_squared - D * D)) / (dr_squared);
-  const x_2 = (D * dy - sgn(dy) * dx * Math.sqrt(r_squared * dr_squared - D * D)) / (dr_squared);
-  const y_1 = (-D * dx + Math.abs(dy) * Math.sqrt(r_squared * dr_squared - D * D)) / (dr_squared);
-  const y_2 = (-D * dx - Math.abs(dy) * Math.sqrt(r_squared * dr_squared - D * D)) / (dr_squared);
-  const x1_NaN = isNaN(x_1);
-  const x2_NaN = isNaN(x_2);
-  if (!x1_NaN && !x2_NaN) {
-    return [
-      [x_1 + center[0], y_1 + center[1]],
-      [x_2 + center[0], y_2 + center[1]],
-    ];
-  }
-  if (x1_NaN && x2_NaN) { return undefined; }
-  if (!x1_NaN) {
-    return [[x_1 + center[0], y_1 + center[1]]];
-  }
-  if (!x2_NaN) {
-    return [[x_2 + center[0], y_2 + center[1]]];
-  }
-  return undefined;
+export const circle_segment = function (center, radius, p1, p2, epsilon = EPSILON) {
+  const lpt = p1;
+  const lvec = [p2[0] - p1[0], p2[1] - p1[1]];
+  const magSq = lvec[0] ** 2 + lvec[1] ** 2;
+  const mag = Math.sqrt(magSq);
+  const norm = mag === 0 ? lvec : lvec.map(c => c / mag);
+  // const norm = normalize(lvec);
+  const rot90 = [-norm[1], norm[0]];
+  const bvec = [lpt[0] - center[0], lpt[1] - center[1]];
+  const det = bvec[0] * norm[1] - norm[0] * bvec[1];
+  if (Math.abs(det) > radius + epsilon) { return undefined; }
+  const side = Math.sqrt((radius ** 2) - (det ** 2));
+  const f = (s, i) => center[i] - rot90[i] * det + norm[i] * s;
+  const result = Math.abs(radius - Math.abs(det)) < epsilon
+    ? [side].map((s) => [s,s].map(f)) // tangent to circle
+    : [-side, side].map((s) => [s,s].map(f));
+  const ts = result.map(res => res.map((n, i) => n - lpt[i]))
+    .map(v => v[0] * lvec[0] + lvec[1] * v[1])
+    .map(d => d / magSq);
+  return result.filter((_,i) => ts[i] > -epsilon && ts[i] < 1 + epsilon);
 };
+
+
+/*
+ * returns an array of array of numbers
+ */
+// export const circle_line_old = function (center, radius, p0, p1, epsilon = EPSILON) {
+//   // move the origin to the center of the circle
+//   const x1 = p0[0] - center[0];
+//   const y1 = p0[1] - center[1];
+//   const x2 = p1[0] - center[0];
+//   const y2 = p1[1] - center[1];
+//   const dx = x2 - x1;
+//   const dy = y2 - y1;
+//   const det = x1 * y2 - x2 * y1;
+//   const det_sq = det * det;
+//   const r_sq = radius * radius;
+//   const dr_sq = Math.abs(dx * dx + dy * dy);
+//   const delta = r_sq * dr_sq - det_sq;
+//   // no solution
+//   if (delta < -epsilon) { return undefined; }
+//   // shorthand things
+//   const suffix = Math.sqrt(r_sq * dr_sq - det_sq);
+//   function sgn(x) { return (x < -epsilon) ? -1 : 1; }
+//   const solutionA = [
+//     center[0] + (det * dy + sgn(dy) * dx * suffix) / dr_sq,
+//     center[1] + (-det * dx + Math.abs(dy) * suffix) / dr_sq,
+//   ];
+//   if (delta > epsilon) {
+//     // two solutions
+//     const solutionB = [
+//       center[0] + (det * dy - sgn(dy) * dx * suffix) / dr_sq,
+//       center[1] + (-det * dx - Math.abs(dy) * suffix) / dr_sq,
+//     ];
+//     return [solutionA, solutionB];
+//   }
+//   // else, delta == 0, line is tangent, one solution
+//   return [solutionA];
+// };
+
+// export const circle_ray = function (center, radius, p0, p1) {
+//   throw "circle_ray has not been written yet";
+// };
+
+// export const circle_segment = function (center, radius, p0, p1) {
+//   const r_squared = radius ** 2;
+//   const x1 = p0[0] - center[0];
+//   const y1 = p0[1] - center[1];
+//   const x2 = p1[0] - center[0];
+//   const y2 = p1[1] - center[1];
+//   const dx = x2 - x1;
+//   const dy = y2 - y1;
+//   const dr_squared = dx * dx + dy * dy;
+//   const D = x1 * y2 - x2 * y1;
+//   function sgn(x) { if (x < 0) { return -1; } return 1; }
+//   const x_1 = (D * dy + sgn(dy) * dx * Math.sqrt(r_squared * dr_squared - D * D)) / (dr_squared);
+//   const x_2 = (D * dy - sgn(dy) * dx * Math.sqrt(r_squared * dr_squared - D * D)) / (dr_squared);
+//   const y_1 = (-D * dx + Math.abs(dy) * Math.sqrt(r_squared * dr_squared - D * D)) / (dr_squared);
+//   const y_2 = (-D * dx - Math.abs(dy) * Math.sqrt(r_squared * dr_squared - D * D)) / (dr_squared);
+//   const x1_NaN = isNaN(x_1);
+//   const x2_NaN = isNaN(x_2);
+//   if (!x1_NaN && !x2_NaN) {
+//     return [
+//       [x_1 + center[0], y_1 + center[1]],
+//       [x_2 + center[0], y_2 + center[1]],
+//     ];
+//   }
+//   if (x1_NaN && x2_NaN) { return undefined; }
+//   if (!x1_NaN) {
+//     return [[x_1 + center[0], y_1 + center[1]]];
+//   }
+//   if (!x2_NaN) {
+//     return [[x_2 + center[0], y_2 + center[1]]];
+//   }
+//   return undefined;
+// };
 
 
 /*

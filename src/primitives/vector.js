@@ -1,7 +1,7 @@
 import { get_vector } from "../parsers/arguments";
 import Prototype from "./prototypes/vector";
 
-/** n-dimensional vector, but some operations meant only for 2D */
+/** n-dimensional vector, with some 2D-specific operations */
 const Vector = function (...args) {
   const proto = Prototype(Vector);
   const vector = Object.create(proto);

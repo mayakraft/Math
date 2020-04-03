@@ -1,7 +1,7 @@
 import { average } from "../core/algebra";
 import { multiply_matrix2_vector2 } from "../core/matrix2";
 import {
-  get_two_vec2,
+  get_vector_of_vectors,
   get_matrix2,
 } from "../parsers/arguments";
 
@@ -11,7 +11,7 @@ import Prototype from "./prototypes/line";
 import Vector from "./vector";
 
 const Segment = function (...args) {
-  const inputs = get_two_vec2(args);
+  const inputs = get_vector_of_vectors(args);
   const proto = Prototype.bind(this);
   const vecPts = (inputs.length > 0 ? inputs.map(p => Vector(p)) : undefined);
   if (vecPts === undefined) { return undefined; }

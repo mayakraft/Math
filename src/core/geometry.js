@@ -154,6 +154,26 @@ export const subsect = function (divisions, vectorA, vectorB) {
   return subsect_radians(divisions, angleA, angleB)
     .map(rad => [Math.cos(rad), Math.sin(rad)]);
 };
+/**
+ * subsect the angle between two lines, can handle parallel lines
+ */
+// export const subsectLines = function (divisions, pointA, vectorA, pointB, vectorB) {
+//   const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
+//   if (Math.abs(denominator) < EPSILON) { /* parallel */
+//     const solution = [midpoint2(pointA, pointB), [vectorA[0], vectorA[1]]];
+//     const array = [solution, solution];
+//     const dot = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
+//     delete array[(dot > 0 ? 1 : 0)];
+//     return array;
+//   }
+//   const numerator = (pointB[0] - pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1] - pointA[1]);
+//   const t = numerator / denominator;
+//   const x = pointA[0] + vectorA[0] * t;
+//   const y = pointA[1] + vectorA[1] * t;
+//   const bisects = bisect_vectors(vectorA, vectorB);
+//   bisects[1] = [bisects[1][1], -bisects[1][0]];
+//   return bisects.map(el => [[x, y], el]);
+// };
 /** Calculates the signed area of a polygon. This requires the polygon be non-intersecting.
  * @returns {number} the area of the polygon
  * @example

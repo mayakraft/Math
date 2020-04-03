@@ -74,14 +74,14 @@ export const make_matrix2_translate = function (x, y) {
  * @param ratio of scale, optional origin homothetic center (0,0 default)
  * @returns {number[]} matrix
  */
-export const make_matrix2_scale = function (ratio, origin = [0, 0]) {
+export const make_matrix2_scale = function (x, y, origin = [0, 0]) {
   return [
-    ratio,
+    x,
     0,
     0,
-    ratio,
-    ratio * -origin[0] + origin[0],
-    ratio * -origin[1] + origin[1]
+    y,
+    x * -origin[0] + origin[0],
+    y * -origin[1] + origin[1]
   ];
 };
 /**

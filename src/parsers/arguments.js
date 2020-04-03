@@ -22,6 +22,7 @@ const countPlaces = function (num) {
  * @args must be a number! do you own checking. this is for speed.
  */
 export const clean_number = function (num, places = 15) {
+  if (typeof num !== "number") { return num; }
   const crop = parseFloat(num.toFixed(places));
   if (countPlaces(crop) === Math.min(places, countPlaces(num))) {
     return num;
@@ -208,8 +209,8 @@ export function get_line() {
     let vector = [], origin = [];
     if (params[0].vector != null)         { vector = get_vector(params[0].vector); }
     else if (params[0].direction != null) { vector = get_vector(params[0].direction); }
-    if (params[0].point != null)       { origin = get_vector(params[0].point); }
-    else if (params[0].origin != null) { origin = get_vector(params[0].origin); }
+    if (params[0].origin != null)         { origin = get_vector(params[0].origin); }
+    else if (params[0].point != null)     { origin = get_vector(params[0].point); }
     return { origin, vector };
   }
   return { origin: [], vector: [] };

@@ -50,20 +50,24 @@ Object.assign(core, algebra, matrix2_core, matrix3_core, geometry, query, equal)
 // core.EPSILON = EPSILON;
 // don't copy over all arguments, only export what is needed
 core.clean_number = args.clean_number;
-core.is_number = args.is_number;
-core.is_vector = args.is_vector;
-core.is_iterable = args.is_iterable;
 core.flatten_input = args.flatten_input;
 core.semi_flatten_input = args.semi_flatten_input;
-core.get_vector = args.get_vector;
-core.get_vector_of_vectors = args.get_vector_of_vectors;
-core.get_matrix2 = args.get_matrix2;
-core.get_segment = args.get_segment;
-core.get_line = args.get_line;
-core.get_ray = args.get_ray;
-core.get_two_vec2 = args.get_two_vec2;
-core.get_array_of_vec = args.get_array_of_vec;
-core.get_array_of_vec2 = args.get_array_of_vec2;
+Object.keys(args).filter(key => /^is_/g.test(key))
+  .forEach(key => { core[key] = args[key]; });
+Object.keys(args).filter(key => /^get_/g.test(key))
+  .forEach(key => { core[key] = args[key]; });
+// core.is_number = args.is_number;
+// core.is_vector = args.is_vector;
+// core.is_iterable = args.is_iterable;
+// core.get_vector = args.get_vector;
+// core.get_vector_of_vectors = args.get_vector_of_vectors;
+// core.get_matrix2 = args.get_matrix2;
+// core.get_segment = args.get_segment;
+// core.get_line = args.get_line;
+// core.get_ray = args.get_ray;
+// core.get_two_vec2 = args.get_two_vec2;
+// core.get_array_of_vec = args.get_array_of_vec;
+// core.get_array_of_vec2 = args.get_array_of_vec2;
 
 core.intersection = intersection;
 Object.freeze(core);

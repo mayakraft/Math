@@ -1,7 +1,7 @@
 import {
   get_line,
   get_matrix2,
-  get_two_vec2,
+  get_vector_of_vectors,
 } from "../parsers/arguments";
 
 import {
@@ -47,7 +47,7 @@ const Ray = function (...args) {
 
 // static methods
 Ray.fromPoints = function (...args) {
-  const points = get_two_vec2(args);
+  const points = get_vector_of_vectors(args);
   return Ray({
     origin: points[0],
     vector: normalize([

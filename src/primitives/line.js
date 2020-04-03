@@ -1,7 +1,7 @@
 import {
   get_line,
   get_matrix2,
-  get_two_vec2,
+  get_vector_of_vectors,
 } from "../parsers/arguments";
 
 import {
@@ -30,8 +30,10 @@ const Line = function (...args) {
   Object.defineProperty(line, "compare_function", { value: compare_function });
   Object.defineProperty(line, "clip_function", { value: limit_line });
 
-  Object.defineProperty(line, "origin", { get: () => Vector(origin) });
-  Object.defineProperty(line, "vector", { get: () => Vector(vector) });
+  // Object.defineProperty(line, "origin", { get: () => Vector(origin) });
+  // Object.defineProperty(line, "vector", { get: () => Vector(vector) });
+  line.origin = Vector(origin);
+  line.vector = Vector(vector);
   Object.defineProperty(line, "length", { get: () => Infinity });
   Object.defineProperty(line, "transform", { value: transform });
 
@@ -41,18 +43,18 @@ const Line = function (...args) {
 
 // static methods
 Line.fromPoints = function (...args) {
-  const points = get_two_vec2(args);
+  const points = get_vector_of_vectors(args);
   return Line({
     origin: points[0],
-    vector: normalize([
+    vector: [
       points[1][0] - points[0][0],
       points[1][1] - points[0][1],
-    ]),
+    ],
   });
 };
 
 Line.perpendicularBisector = function (...args) {
-  const points = get_two_vec2(args);
+  const points = get_vector_of_vectors(args);
   const vec = normalize([
     points[1][0] - points[0][0],
     points[1][1] - points[0][1],
