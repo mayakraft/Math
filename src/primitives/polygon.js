@@ -5,7 +5,7 @@ import {
   convex_hull,
 } from "../core/geometry";
 
-import Vector from "./vector";
+import Vector from "./vector/index";
 import Segment from "./segment";
 
 import Prototype from "./prototypes/polygon";

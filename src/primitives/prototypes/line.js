@@ -18,7 +18,7 @@ import {
   nearest_point_on_line,
   bisect_lines2
 } from "../../core/geometry";
-import Vector from "../vector";
+import Vector from "../vector/index";
 import { Matrix2 } from "../matrix";
 
 // warning do not define object methods as arrow functions in here

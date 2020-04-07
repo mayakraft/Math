@@ -30,7 +30,7 @@ import * as intersection from "./core/intersection";
 import * as equal from "./core/equal";
 import * as args from "./parsers/arguments";
 
-import vector from "./primitives/vector";
+import vector from "./primitives/vector/index";
 import {
   Matrix2 as matrix2,
   Matrix as matrix

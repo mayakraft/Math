@@ -1336,142 +1336,134 @@
     convex_hull: convex_hull
   });
 
-  const VectorPrototype = function (subtype) {
-    const proto = [];
-    const Type = subtype;
-    let that;
-    const bind = function (theother) {
-      that = theother;
-    };
-    const vecNormalize = function () {
-      return Type(normalize(that));
-    };
-    const vecDot = function (...args) {
-      const vec = get_vector(args);
-      return this.length > vec.length
-        ? dot(vec, that)
-        : dot(that, vec);
-    };
-    const cross = function (...args) {
-      const b = get_vector(args);
-      const a = that.slice();
-      if (a[2] == null) { a[2] = 0; }
-      if (b[2] == null) { b[2] = 0; }
-      return Type(cross3(a, b));
-    };
-    const distanceTo = function (...args) {
-      const vec = get_vector(args);
-      const length = (that.length < vec.length) ? that.length : vec.length;
-      const sum = Array.from(Array(length))
-        .map((_, i) => (that[i] - vec[i]) ** 2)
-        .reduce((prev, curr) => prev + curr, 0);
-      return Math.sqrt(sum);
-    };
-    const transform = function (...args) {
-      const m = get_matrix2(args);
-      return Type(multiply_matrix2_vector2(m, that));
-    };
-    const add = function (...args) {
-      const vec = get_vector(args);
-      return Type(that.map((v, i) => v + vec[i]));
-    };
-    const subtract = function (...args) {
-      const vec = get_vector(args);
-      return Type(that.map((v, i) => v - vec[i]));
-    };
-    const rotateZ = function (angle, origin) {
-      const m = make_matrix2_rotate(angle, origin);
-      return Type(multiply_matrix2_vector2(m, that));
-    };
-    const rotateZ90 = function () {
-      return Type(-that[1], that[0]);
-    };
-    const rotateZ180 = function () {
-      return Type(-that[0], -that[1]);
-    };
-    const rotateZ270 = function () {
-      return Type(that[1], -that[0]);
-    };
-    const flip = function () {
-      return Type(...that.map(n => -n));
-    };
-    const reflect = function (...args) {
-      const ref = get_line(args);
-      const m = make_matrix2_reflection(ref.vector, ref.origin);
-      return Type(multiply_matrix2_vector2(m, that));
-    };
-    const lerp = function (vector, pct) {
-      const vec = get_vector(vector);
-      const inv = 1.0 - pct;
-      const length = (that.length < vec.length) ? that.length : vec.length;
-      const components = Array.from(Array(length))
-        .map((_, i) => that[i] * pct + vec[i] * inv);
-      return Type(components);
-    };
-    const isEquivalent = function (...args) {
-      const vec = get_vector(args);
-      const sm = (that.length < vec.length) ? that : vec;
-      const lg = (that.length < vec.length) ? vec : that;
-      return equivalent(sm, lg);
-    };
-    const isParallel = function (...args) {
-      const vec = get_vector(args);
-      const sm = (that.length < vec.length) ? that : vec;
-      const lg = (that.length < vec.length) ? vec : that;
-      return parallel(sm, lg);
-    };
-    const scale = function (mag) {
-      return Type(that.map(v => v * mag));
-    };
-    const midpoint = function (...args) {
-      const vec = get_vector(args);
-      const sm = (that.length < vec.length) ? that.slice() : vec;
-      const lg = (that.length < vec.length) ? vec : that.slice();
-      for (let i = sm.length; i < lg.length; i += 1) { sm[i] = 0; }
-      return Type(lg.map((_, i) => (sm[i] + lg[i]) * 0.5));
-    };
-    const bisect = function (...args) {
-      const vec = get_vector(args);
-      return bisect_vectors(that, vec).map(b => Type(b));
-    };
-    Object.defineProperty(proto, "normalize", { value: vecNormalize });
-    Object.defineProperty(proto, "dot", { value: vecDot });
-    Object.defineProperty(proto, "cross", { value: cross });
-    Object.defineProperty(proto, "distanceTo", { value: distanceTo });
-    Object.defineProperty(proto, "transform", { value: transform });
-    Object.defineProperty(proto, "add", { value: add });
-    Object.defineProperty(proto, "subtract", { value: subtract });
-    Object.defineProperty(proto, "rotateZ", { value: rotateZ });
-    Object.defineProperty(proto, "rotateZ90", { value: rotateZ90 });
-    Object.defineProperty(proto, "rotateZ180", { value: rotateZ180 });
-    Object.defineProperty(proto, "rotateZ270", { value: rotateZ270 });
-    Object.defineProperty(proto, "flip", { value: flip });
-    Object.defineProperty(proto, "reflect", { value: reflect });
-    Object.defineProperty(proto, "lerp", { value: lerp });
-    Object.defineProperty(proto, "isEquivalent", { value: isEquivalent });
-    Object.defineProperty(proto, "isParallel", { value: isParallel });
-    Object.defineProperty(proto, "scale", { value: scale });
-    Object.defineProperty(proto, "midpoint", { value: midpoint });
-    Object.defineProperty(proto, "bisect", { value: bisect });
-    Object.defineProperty(proto, "copy", { value: () => Type(...that) });
-    Object.defineProperty(proto, "magnitude", { get: () => magnitude(that) });
-    Object.defineProperty(proto, "bind", { value: bind });
-    return proto;
+  const Args = function () {
+    get_vector(arguments).forEach(n => this.push(n));
   };
 
-  const Vector = function (...args) {
-    const proto = VectorPrototype(Vector);
-    const vector = Object.create(proto);
-    proto.bind(vector);
-    get_vector(args).forEach(v => vector.push(v));
-    Object.defineProperty(vector, "x", { get: () => vector[0] });
-    Object.defineProperty(vector, "y", { get: () => vector[1] });
-    Object.defineProperty(vector, "z", { get: () => vector[2] });
-    return vector;
+  const M = {};
+  const table = {
+    preserve: {
+      isEquivalent: function () {
+        const vec = get_vector(arguments);
+        const sm = (this.length < vec.length) ? this : vec;
+        const lg = (this.length < vec.length) ? vec : this;
+        return equivalent(sm, lg);
+      },
+      isParallel: function () {
+        const vec = get_vector(arguments);
+        const sm = (this.length < vec.length) ? this : vec;
+        const lg = (this.length < vec.length) ? vec : this;
+        return parallel(sm, lg);
+      },
+      dot: function () {
+        const v = get_vector(arguments);
+        return this.length > v.length
+          ? dot(v, this)
+          : dot(this, v);
+      },
+      distanceTo: function () {
+        const v = get_vector(arguments);
+        const length = (this.length < v.length) ? this.length : v.length;
+        const sum = Array.from(Array(length))
+          .map((_, i) => (this[i] - v[i]) ** 2)
+          .reduce((a, b) => a + b, 0);
+        return Math.sqrt(sum);
+      },
+      bisect: function () {
+        const vec = get_vector(arguments);
+        return bisect_vectors(this, vec).map(b => M.constructor(b));
+      },
+    },
+    vector: {
+      copy: function () { return [...this]; },
+      normalize: function () { return normalize(this); },
+      scale: function (mag) { return this.map(v => v * mag); },
+      cross: function () {
+        const b = get_vector(arguments);
+        const a = this.slice();
+        if (a[2] == null) { a[2] = 0; }
+        if (b[2] == null) { b[2] = 0; }
+        return cross3(a, b);
+      },
+      transform: function () {
+        return multiply_matrix2_vector2(get_matrix2(arguments), this);
+      },
+      add: function () {
+        const vec = get_vector(arguments);
+        return this.map((v, i) => v + vec[i]);
+      },
+      subtract: function () {
+        const vec = get_vector(arguments);
+        return this.map((v, i) => v - vec[i]);
+      },
+      rotateZ: function (angle, origin) {
+        return multiply_matrix2_vector2(make_matrix2_rotate(angle, origin), this);
+      },
+      rotateZ90: function () {
+        return [-this[1], this[0]];
+      },
+      rotateZ180: function () {
+        return [-this[0], -this[1]];
+      },
+      rotateZ270: function () {
+        return [this[1], -this[0]];
+      },
+      flip: function () { return this.map(n => -n); },
+      reflect: function () {
+        const ref = get_line(arguments);
+        const m = make_matrix2_reflection(ref.vector, ref.origin);
+        return multiply_matrix2_vector2(m, this);
+      },
+      lerp: function (vector, pct) {
+        const vec = get_vector(vector);
+        const inv = 1.0 - pct;
+        const length = (this.length < vec.length) ? this.length : vec.length;
+        return Array.from(Array(length))
+          .map((_, i) => this[i] * pct + vec[i] * inv);
+      },
+      midpoint: function () {
+        const vec = get_vector(arguments);
+        const sm = (this.length < vec.length) ? this.slice() : vec;
+        const lg = (this.length < vec.length) ? vec : this.slice();
+        for (let i = sm.length; i < lg.length; i += 1) { sm[i] = 0; }
+        return lg.map((_, i) => (sm[i] + lg[i]) * 0.5);
+      },
+    }
   };
-  Vector.withAngle = function (angle) {
-    return Vector(Math.cos(angle), Math.sin(angle));
+  Object.keys(table.preserve).forEach(key => {
+    M[key] = table.preserve[key];
+  });
+  Object.keys(table.vector).forEach(key => {
+    M[key] = function () {
+      return M.constructor(...table.vector[key].apply(this, arguments));
+    };
+  });
+
+  const getters = {
+    x: function () { return this[0]; },
+    y: function () { return this[1]; },
+    z: function () { return this[2]; },
+    magnitude: function () { return magnitude(this); },
   };
+
+  const vector = function () {
+    const v = Object.create(vector.prototype);
+    Args.apply(v, arguments);
+    Object.keys(getters).forEach(key => Object.defineProperty(v, key, {
+      get: getters[key].bind(v)
+    }));
+    Object.keys(M).forEach(key => Object.defineProperty(v, key, {
+      value: M[key].bind(v)
+    }));
+    return Object.freeze(v);
+  };
+  vector.prototype = Object.create(Array.prototype);
+  vector.prototype.constructor = vector;
+  M.constructor = vector;
+  vector.fromAngle = function (angle) {
+    return vector(Math.cos(angle), Math.sin(angle));
+  };
+  Object.freeze(vector);
 
   const Matrix2 = function (...args) {
     const matrix = [1, 0, 0, 1, 0, 0];
@@ -1512,7 +1504,7 @@
     };
     const transform = function (...innerArgs) {
       const v = get_vector(innerArgs);
-      return Vector(multiply_matrix2_vector2(matrix, v)
+      return vector(multiply_matrix2_vector2(matrix, v)
         .map(n => clean_number(n, 13)));
     };
     const transformVector = function (vector) {
@@ -1602,7 +1594,7 @@
     };
     const transform = function (...innerArgs) {
       const v = get_vector(innerArgs);
-      return Vector(multiply_matrix3_vector3(v, matrix)
+      return vector(multiply_matrix3_vector3(v, matrix)
         .map(n => clean_number(n, 13)));
     };
     const transformVector = function (vector) {
@@ -1717,7 +1709,7 @@
     };
     const nearestPoint = function (...args) {
       const point = get_vector(args);
-      return Vector(nearest_point_on_line(this.origin, this.vector, point, this.clip_function));
+      return vector(nearest_point_on_line(this.origin, this.vector, point, this.clip_function));
     };
     const intersect$1 = function (other) {
       return intersect(this, other);
@@ -1766,10 +1758,10 @@
   }
 
   const Line = function (...args) {
-    const { origin, vector } = get_line(args);
+    const { origin, vector: vector$1 } = get_line(args);
     const transform = function (...innerArgs) {
       const mat = get_matrix2(innerArgs);
-      const line = multiply_matrix2_line2(mat, origin, vector);
+      const line = multiply_matrix2_line2(mat, origin, vector$1);
       return Line(line[0], line[1]);
     };
     const proto = Prototype.bind(this);
@@ -1777,8 +1769,8 @@
     const compare_function = function () { return true; };
     Object.defineProperty(line, "compare_function", { value: compare_function });
     Object.defineProperty(line, "clip_function", { value: limit_line });
-    line.origin = Vector(origin);
-    line.vector = Vector(vector);
+    line.origin = vector(origin);
+    line.vector = vector(vector$1);
     Object.defineProperty(line, "length", { get: () => Infinity });
     Object.defineProperty(line, "transform", { value: transform });
     return line;
@@ -1806,23 +1798,23 @@
   };
 
   const Ray = function (...args) {
-    const { origin, vector } = get_line(args);
+    const { origin, vector: vector$1 } = get_line(args);
     const transform = function (...innerArgs) {
       const mat = get_matrix2(innerArgs);
-      const vec_translated = vector.map((vec, i) => vec + origin[i]);
+      const vec_translated = vector$1.map((vec, i) => vec + origin[i]);
       const new_origin = multiply_matrix2_vector2(mat, origin);
       const new_vector = multiply_matrix2_vector2(mat, vec_translated)
         .map((vec, i) => vec - new_origin[i]);
       return Ray(new_origin, new_vector);
     };
     const rotate180 = function () {
-      return Ray(origin[0], origin[1], -vector[0], -vector[1]);
+      return Ray(origin[0], origin[1], -vector$1[0], -vector$1[1]);
     };
     const proto = Prototype.bind(this);
     const ray = Object.create(proto(Ray));
     const compare_function = function (t0, ep) { return t0 >= -ep; };
-    Object.defineProperty(ray, "origin", { get: () => Vector(origin) });
-    Object.defineProperty(ray, "vector", { get: () => Vector(vector) });
+    Object.defineProperty(ray, "origin", { get: () => vector(origin) });
+    Object.defineProperty(ray, "vector", { get: () => vector(vector$1) });
     Object.defineProperty(ray, "length", { get: () => Infinity });
     Object.defineProperty(ray, "transform", { value: transform });
     Object.defineProperty(ray, "rotate180", { value: rotate180 });
@@ -1844,7 +1836,7 @@
   const Segment = function (...args) {
     const inputs = get_vector_of_vectors(args);
     const proto = Prototype.bind(this);
-    const vecPts = (inputs.length > 0 ? inputs.map(p => Vector(p)) : undefined);
+    const vecPts = (inputs.length > 0 ? inputs.map(p => vector(p)) : undefined);
     if (vecPts === undefined) { return undefined; }
     const segment = Object.create(proto(Segment, vecPts));
     const transform = function (...innerArgs) {
@@ -1859,17 +1851,17 @@
         .map(p => p.lerp(mid, magnitude));
       return Segment(transformed_points);
     };
-    const vector = function () {
-      return Vector(segment[1][0] - segment[0][0], segment[1][1] - segment[0][1]);
+    const vector$1 = function () {
+      return vector(segment[1][0] - segment[0][0], segment[1][1] - segment[0][1]);
     };
-    const midpoint = () => Vector(average(segment[0], segment[1]));
+    const midpoint = () => vector(average(segment[0], segment[1]));
     const magnitude = function () {
       return Math.sqrt(((segment[1][0] - segment[0][0]) ** 2)
                      + ((segment[1][1] - segment[0][1]) ** 2));
     };
     const compare_function = (t0, ep) => t0 >= -ep && t0 <= 1 + ep;
     Object.defineProperty(segment, "origin", { get: () => segment[0] });
-    Object.defineProperty(segment, "vector", { get: () => vector() });
+    Object.defineProperty(segment, "vector", { get: () => vector$1() });
     Object.defineProperty(segment, "midpoint", { value: midpoint });
     Object.defineProperty(segment, "magnitude", { get: () => magnitude() });
     Object.defineProperty(segment, "transform", { value: transform });
@@ -1887,26 +1879,26 @@
     const numbers = args.filter(param => !isNaN(param));
     const vectors = get_vector_of_vectors(args);
     if (numbers.length === 3) {
-      origin = Vector(numbers[0], numbers[1]);
+      origin = vector(numbers[0], numbers[1]);
       [, , radius] = numbers;
     } else if (vectors.length === 2) {
       radius = distance2(...vectors);
-      origin = Vector(...vectors[0]);
+      origin = vector(...vectors[0]);
     }
     const intersectionLine = function (...innerArgs) {
       const line = get_line(innerArgs);
       const result = circle_line(origin, radius, line.origin, line.vector);
-      return (result === undefined ? undefined : result.map(i => Vector(i)));
+      return (result === undefined ? undefined : result.map(i => vector(i)));
     };
     const intersectionRay = function (...innerArgs) {
       const ray = get_ray(innerArgs);
       const result = circle_ray(origin, radius, ray.origin, ray.vector);
-      return (result === undefined ? undefined : result.map(i => Vector(i)));
+      return (result === undefined ? undefined : result.map(i => vector(i)));
     };
     const intersectionSegment = function (...innerArgs) {
       const segment = get_vector_of_vectors(innerArgs);
       const result = circle_segment(origin, radius, segment[0], segment[1]);
-      return (result === undefined ? undefined : result.map(i => Vector(i)));
+      return (result === undefined ? undefined : result.map(i => vector(i)));
     };
     const circle = {
       intersectionLine,
@@ -1929,11 +1921,11 @@
       const interior_angle = counter_clockwise_angle2(vectors[0], vectors[1]);
       const vectors_radians = vectors.map(el => Math.atan2(el[1], el[0]));
       const bisected = vectors_radians[0] + interior_angle * 0.5;
-      return Vector(Math.cos(bisected), Math.sin(bisected));
+      return vector(Math.cos(bisected), Math.sin(bisected));
     };
     const subsect_sector = function (divisions) {
       return subsect(divisions, vectors[0], vectors[1])
-        .map(vec => Vector(vec[0], vec[1]));
+        .map(vec => vector(vec[0], vec[1]));
     };
     const contains = function (...args) {
       const point = get_vector(args).map((n, i) => n + center[i]);
@@ -2041,7 +2033,7 @@
     const transform = function (...args) {
       const m = get_matrix2(args);
       const newPoints = this.points
-        .map(p => Vector(multiply_matrix2_vector2(m, p)));
+        .map(p => vector(multiply_matrix2_vector2(m, p)));
       return Type(newPoints);
     };
     Object.defineProperty(proto, "area", { value: area });
@@ -2069,7 +2061,7 @@
   }
 
   const Polygon = function (...args) {
-    const points = get_vector_of_vectors(args).map(p => Vector(p));
+    const points = get_vector_of_vectors(args).map(p => vector(p));
     if (points === undefined) { return undefined; }
     const sides = points
       .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
@@ -2090,7 +2082,7 @@
   };
 
   const ConvexPolygon = function (...args) {
-    const points = get_array_of_vec(args).map(p => Vector(p));
+    const points = get_array_of_vec(args).map(p => vector(p));
     if (points === undefined) { return undefined; }
     const sides = points
       .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
@@ -2149,13 +2141,13 @@
     const numbers = params.filter(param => !isNaN(param));
     let arrays = params.filter(param => param.constructor === Array);
     if (numbers.length === 4) {
-      origin = Vector(numbers.slice(0, 2));
+      origin = vector(numbers.slice(0, 2));
       [, , width, height] = numbers;
     }
     if (arrays.length === 1) { arrays = arrays[0]; }
     if (arrays.length === 2) {
       if (typeof arrays[0][0] === "number") {
-        origin = Vector(arrays[0].slice());
+        origin = vector(arrays[0].slice());
         width = arrays[1][0];
         height = arrays[1][1];
       }
@@ -2242,7 +2234,7 @@
   core.intersection = intersection;
   Object.freeze(core);
   const math = {
-    vector: Vector,
+    vector,
     matrix2: Matrix2,
     matrix: Matrix,
     line: Line,

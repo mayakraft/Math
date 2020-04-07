@@ -13,7 +13,7 @@ import {
   circle_segment,
 } from "../core/intersection";
 
-import Vector from "./vector";
+import Vector from "./vector/index";
 
 import Intersect from "../methods/intersect";
 

@@ -1,6 +1,6 @@
 import ConvexPolygon from "./convexPolygon";
 import Prototype from "./prototypes/polygon";
-import Vector from "./vector";
+import Vector from "./vector/index";
 import { get_vector_of_vectors } from "../parsers/arguments";
 import { enclosing_rectangle } from "../core/geometry";
 
