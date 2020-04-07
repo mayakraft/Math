@@ -34,6 +34,9 @@ export const equivalent_vectors = function (...args) {
   }
   const dimension = list[0].length;
   const dim_array = Array.from(Array(dimension));
+  for (var i = 1; i < list.length; i += 1) {
+    if (typeof list[i - 1] !== typeof list[i]) { return false; }
+  }
   return Array
     .from(Array(list.length - 1))
     .map((element, i) => dim_array

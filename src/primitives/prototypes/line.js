@@ -5,6 +5,8 @@ import {
   get_segment,
 } from "../../parsers/arguments";
 
+import Intersect from "../../methods/intersect";
+
 import {
   parallel,
   degenerate,
@@ -69,11 +71,14 @@ export default function (subtype, prototype) {
     return Vector(nearest_point_on_line(this.origin, this.vector, point, this.clip_function));
   };
   const intersect = function (other) {
-    return intersection_function(this.origin, this.vector, other.origin,
-      other.vector,
-      ((t0, t1, epsilon = EPSILON) => this.compare_function(t0, epsilon)
-        && other.compare_function(t1, epsilon)));
+    return Intersect(this, other);
   };
+  // const intersect = function (other) {
+  //   return intersection_function(this.origin, this.vector, other.origin,
+  //     other.vector,
+  //     ((t0, t1, epsilon = EPSILON) => this.compare_function(t0, epsilon)
+  //       && other.compare_function(t1, epsilon)));
+  // };
   const intersectLine = function (...args) {
     const line = get_line(args);
     return intersection_function(this.origin, this.vector, line.origin,

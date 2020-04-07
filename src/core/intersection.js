@@ -159,6 +159,42 @@ export const segment_segment_exclusive = function (a0, a1, b0, b1, epsilon) {
  * solutions: points
  */
 
+const acossafe = function (x) {
+  if (x >= 1.0) return 0;
+  if (x <= -1.0) return Math.PI;
+  return Math.acos(x);
+};
+const rotatePoint = function (fp, pt, a) {
+  const x = pt[0] - fp[0];
+  const y = pt[1] - fp[1];
+  const xRot = x * Math.cos(a) + y * Math.sin(a);
+  const yRot = y * Math.cos(a) - x * Math.sin(a);
+  return [fp[0] + xRot, fp[1] + yRot];
+};
+export const circle_circle = function (center, radius, center2, radius2, epsilon = EPSILON) {
+  const r = (radius < radius2) ? radius : radius2;
+  const R = (radius < radius2) ? radius2 : radius;
+  const smCenter = (radius < radius2) ? center : center2;
+  const bgCenter = (radius < radius2) ? center2 : center;
+  const vec = [smCenter[0] - bgCenter[0], smCenter[1] - bgCenter[1]];
+  const d = Math.sqrt((vec[0] ** 2) + (vec[1] ** 2));
+  // infinite solutions
+  if (d < epsilon && Math.abs(R - r) < epsilon) { return undefined; }  
+  // no intersection (same center, different size)
+  else if (d < epsilon) { return undefined; }
+  const point = vec.map((v, i) => v / d * R + bgCenter[i]);
+  // kissing circles
+  if (Math.abs((R + r) - d) < epsilon
+    || Math.abs(R - (r + d)) < epsilon) { return [point]; }
+  // circles are contained
+  if ((d + r) < R || (R + r < d)) { return undefined; }
+  
+  const angle = acossafe((r * r - d * d - R * R) / (-2.0 * d * R));
+  const pt1 = rotatePoint(bgCenter, point, +angle);
+  const pt2 = rotatePoint(bgCenter, point, -angle);
+  return [pt1, pt2];
+};
+
 /*
  * returns an array of array of numbers
  */
@@ -314,6 +350,11 @@ export const circle_segment = function (center, radius, p1, p2, epsilon = EPSILO
 // equivalency test for 2d-vectors
 const quick_equivalent_2 = function (a, b) {
   return Math.abs(a[0] - b[0]) < EPSILON && Math.abs(a[1] - b[1]) < EPSILON;
+};
+
+
+export const convex_poly_circle = function (poly, center, radius) {
+  return [];
 };
 
 /** clip an infinite line in a polygon, returns a segment or undefined if no intersection */

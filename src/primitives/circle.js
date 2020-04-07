@@ -1,4 +1,5 @@
 import {
+  Typeof,
   get_line,
   get_ray,
   get_vector_of_vectors,
@@ -13,6 +14,8 @@ import {
 } from "../core/intersection";
 
 import Vector from "./vector";
+
+import Intersect from "../methods/intersect";
 
 const Circle = function (...args) {
   let origin;
@@ -37,7 +40,7 @@ const Circle = function (...args) {
 
   const intersectionRay = function (...innerArgs) {
     const ray = get_ray(innerArgs);
-    const result = circle_ray(origin, radius, ray[0], ray[1]);
+    const result = circle_ray(origin, radius, ray.origin, ray.vector);
     return (result === undefined ? undefined : result.map(i => Vector(i)));
   };
 
@@ -49,14 +52,9 @@ const Circle = function (...args) {
 
   const intersectionCircle = function (...innerArgs) {
     const circle = get_circle(innerArgs);
-    
   };
 
-  // const tangentThroughPoint
-  // give us two tangent lines that intersect a point (outside the circle)
-
-  // return Object.freeze( {
-  return {
+  const circle = {
     intersectionLine,
     intersectionRay,
     intersectionSegment,
@@ -64,9 +62,19 @@ const Circle = function (...args) {
     get x() { return origin[0]; },
     get y() { return origin[1]; },
     get radius() { return radius; },
-    set origin(innerArgs) { origin = Vector(innerArgs); },
-    set radius(newRadius) { radius = newRadius; },
+    // set origin(innerArgs) { origin = Vector(innerArgs); },
+    // set radius(newRadius) { radius = newRadius; },
   };
+
+  circle.intersect = function (object) {
+    return Intersect(circle, object);
+  };
+
+  // const tangentThroughPoint
+  // give us two tangent lines that intersect a point (outside the circle)
+
+  // return Object.freeze( {
+  return circle;
 };
 
 // Circle.fromPoints = () => {
