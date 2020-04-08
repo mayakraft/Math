@@ -2877,95 +2877,76 @@
     return segment;
   };
 
-  var Circle = function Circle() {
-    var origin;
-    var radius;
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    var numbers = args.filter(function (param) {
+  var Args$1 = function Args() {
+    var numbers = Array.from(arguments).filter(function (param) {
       return !isNaN(param);
     });
-    var vectors = get_vector_of_vectors(args);
+    var vectors = get_vector_of_vectors(arguments);
 
     if (numbers.length === 3) {
-      origin = vector(numbers[0], numbers[1]);
+      this.origin = vector(numbers[0], numbers[1]);
 
       var _numbers = _slicedToArray(numbers, 3);
 
-      radius = _numbers[2];
+      this.radius = _numbers[2];
     } else if (vectors.length === 2) {
-      radius = distance2.apply(void 0, _toConsumableArray(vectors));
-      origin = vector.apply(void 0, _toConsumableArray(vectors[0]));
+      this.radius = distance2.apply(void 0, _toConsumableArray(vectors));
+      this.origin = vector.apply(void 0, _toConsumableArray(vectors[0]));
     }
+  };
 
-    var intersectionLine = function intersectionLine() {
-      for (var _len2 = arguments.length, innerArgs = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        innerArgs[_key2] = arguments[_key2];
-      }
-
-      var line = get_line(innerArgs);
+  var M$1 = {
+    intersectionLine: function intersectionLine() {
+      var line = get_line(arguments);
       var result = circle_line(origin, radius, line.origin, line.vector);
       return result === undefined ? undefined : result.map(function (i) {
         return vector(i);
       });
-    };
-
-    var intersectionRay = function intersectionRay() {
-      for (var _len3 = arguments.length, innerArgs = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-        innerArgs[_key3] = arguments[_key3];
-      }
-
-      var ray = get_ray(innerArgs);
+    },
+    intersectionRay: function intersectionRay() {
+      var ray = get_ray(arguments);
       var result = circle_ray(origin, radius, ray.origin, ray.vector);
       return result === undefined ? undefined : result.map(function (i) {
         return vector(i);
       });
-    };
-
-    var intersectionSegment = function intersectionSegment() {
-      for (var _len4 = arguments.length, innerArgs = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-        innerArgs[_key4] = arguments[_key4];
-      }
-
-      var segment = get_vector_of_vectors(innerArgs);
+    },
+    intersectionSegment: function intersectionSegment() {
+      var segment = get_vector_of_vectors(arguments);
       var result = circle_segment(origin, radius, segment[0], segment[1]);
       return result === undefined ? undefined : result.map(function (i) {
         return vector(i);
       });
-    };
-
-    var circle = {
-      intersectionLine: intersectionLine,
-      intersectionRay: intersectionRay,
-      intersectionSegment: intersectionSegment,
-
-      get origin() {
-        return origin;
-      },
-
-      get x() {
-        return origin[0];
-      },
-
-      get y() {
-        return origin[1];
-      },
-
-      get radius() {
-        return radius;
-      }
-
-    };
-
-    circle.intersect = function (object) {
+    },
+    intersectionCircle: function intersectionCircle() {},
+    intersect: function intersect$1(object) {
       return intersect(circle, object);
-    };
-
-    return circle;
+    }
   };
+
+  var circle$1 = function circle() {
+    var c = Object.create(circle.prototype);
+    Args$1.apply(c, arguments);
+    Object.keys(M$1).forEach(function (key) {
+      return Object.defineProperty(c, key, {
+        value: M$1[key].bind(c)
+      });
+    });
+    return Object.freeze(c);
+  };
+
+  circle$1.prototype = Object.create(Array.prototype);
+  circle$1.prototype.constructor = circle$1;
+
+  circle$1.fromAngle = function (angle) {
+    return circle$1(Math.cos(angle), Math.sin(angle));
+  };
+
+  circle$1.fromPoints = function () {
+    var points = get_vector_of_vectors(innerArgs);
+    return circle$1(points, distance2(points[0], points[1]));
+  };
+
+  Object.freeze(circle$1);
 
   var Sector = function Sector(vectorA, vectorB) {
     var center = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [0, 0];
@@ -3598,7 +3579,7 @@
     line: Line,
     ray: Ray,
     segment: Segment,
-    circle: Circle,
+    circle: circle$1,
     polygon: Polygon,
     convexPolygon: ConvexPolygon,
     rectangle: Rectangle,

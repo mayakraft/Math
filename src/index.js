@@ -38,7 +38,7 @@ import {
 import line from "./primitives/line";
 import ray from "./primitives/ray";
 import segment from "./primitives/segment";
-import circle from "./primitives/circle";
+import circle from "./primitives/circle/index";
 import polygon from "./primitives/polygon";
 import convexPolygon from "./primitives/convexPolygon";
 import rectangle from "./primitives/rectangle";
