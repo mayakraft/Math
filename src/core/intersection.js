@@ -179,7 +179,7 @@ export const circle_circle = function (center, radius, center2, radius2, epsilon
   const vec = [smCenter[0] - bgCenter[0], smCenter[1] - bgCenter[1]];
   const d = Math.sqrt((vec[0] ** 2) + (vec[1] ** 2));
   // infinite solutions
-  if (d < epsilon && Math.abs(R - r) < epsilon) { return undefined; }  
+  if (d < epsilon && Math.abs(R - r) < epsilon) { return undefined; }
   // no intersection (same center, different size)
   else if (d < epsilon) { return undefined; }
   const point = vec.map((v, i) => v / d * R + bgCenter[i]);

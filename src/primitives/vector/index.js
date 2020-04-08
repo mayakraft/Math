@@ -9,7 +9,8 @@ const vector = function () {
   Args.apply(v, arguments);
   // bind properties
   Object.keys(Getters).forEach(key => Object.defineProperty(v, key, {
-    get: Getters[key].bind(v)
+    get: Getters[key].bind(v),
+    enumerable: true
   }));
   Object.keys(Methods).forEach(key => Object.defineProperty(v, key, {
     value: Methods[key].bind(v)
@@ -18,10 +19,13 @@ const vector = function () {
   return Object.freeze(v);
 };
 
+// make this present in the prototype chain so "instanceof" works
+// vector is a special case, Array.
 vector.prototype = Object.create(Array.prototype);
 vector.prototype.constructor = vector;
 
-Methods.constructor = vector; // pass a pointer to this object up the chain
+// pass a pointer to this object up the chain
+Methods.constructor = vector;
 
 // static methods
 vector.fromAngle = function (angle) {

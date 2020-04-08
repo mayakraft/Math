@@ -86,15 +86,9 @@ const table = {
     rotateZ: function (angle, origin) {
       return multiply_matrix2_vector2(make_matrix2_rotate(angle, origin), this);
     },
-    rotateZ90: function () {
-      return [-this[1], this[0]];
-    },
-    rotateZ180: function () {
-      return [-this[0], -this[1]];
-    },
-    rotateZ270: function () {
-      return [this[1], -this[0]];
-    },
+    rotateZ90: function () { return [-this[1], this[0]]; },
+    rotateZ180: function () { return [-this[0], -this[1]]; },
+    rotateZ270: function () { return [this[1], -this[0]]; },
     flip: function () { return this.map(n => -n); },
     reflect: function () {
       const ref = get_line(arguments);
