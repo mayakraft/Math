@@ -1,9 +1,7 @@
 
 const getters = {
-  // origin: function () { return origin; },
-  // x: function () { return origin[0]; },
-  // y: function () { return origin[1]; },
-  // radius: function () { return radius; },
+  x: function () { return this.origin[0]; },
+  y: function () { return this.origin[1]; },
 };
 
 export default getters;

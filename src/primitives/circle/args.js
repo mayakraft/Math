@@ -3,8 +3,9 @@ import vector from "../vector/index";
 import { distance2 } from "../../core/algebra";
 
 const Args = function () {
-  const numbers = Array.from(arguments).filter(param => !isNaN(param));
-  const vectors = get_vector_of_vectors(arguments);
+  const arr = Array.from(arguments);
+  const numbers = arr.filter(param => !isNaN(param));
+  const vectors = get_vector_of_vectors(arr);
   if (numbers.length === 3) {
     this.origin = vector(numbers[0], numbers[1]);
     [, , this.radius] = numbers;

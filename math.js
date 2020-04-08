@@ -2878,10 +2878,11 @@
   };
 
   var Args$1 = function Args() {
-    var numbers = Array.from(arguments).filter(function (param) {
+    var arr = Array.from(arguments);
+    var numbers = arr.filter(function (param) {
       return !isNaN(param);
     });
-    var vectors = get_vector_of_vectors(arguments);
+    var vectors = get_vector_of_vectors(arr);
 
     if (numbers.length === 3) {
       this.origin = vector(numbers[0], numbers[1]);
@@ -2923,9 +2924,31 @@
     }
   };
 
+  var getters$1 = {
+    x: function x() {
+      return this.origin[0];
+    },
+    y: function y() {
+      return this.origin[1];
+    }
+  };
+
+  var Static = function Static(circle) {
+    circle.fromPoints = function () {
+      var points = get_vector_of_vectors(innerArgs);
+      return circle(points, distance2(points[0], points[1]));
+    };
+  };
+
   var circle$1 = function circle() {
     var c = Object.create(circle.prototype);
     Args$1.apply(c, arguments);
+    Object.keys(getters$1).forEach(function (key) {
+      return Object.defineProperty(c, key, {
+        get: getters$1[key].bind(c),
+        enumerable: true
+      });
+    });
     Object.keys(M$1).forEach(function (key) {
       return Object.defineProperty(c, key, {
         value: M$1[key].bind(c)
@@ -2936,16 +2959,7 @@
 
   circle$1.prototype = Object.create(Array.prototype);
   circle$1.prototype.constructor = circle$1;
-
-  circle$1.fromAngle = function (angle) {
-    return circle$1(Math.cos(angle), Math.sin(angle));
-  };
-
-  circle$1.fromPoints = function () {
-    var points = get_vector_of_vectors(innerArgs);
-    return circle$1(points, distance2(points[0], points[1]));
-  };
-
+  Static(circle$1);
   Object.freeze(circle$1);
 
   var Sector = function Sector(vectorA, vectorB) {
