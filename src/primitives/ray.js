@@ -11,7 +11,7 @@ import {
 import { multiply_matrix2_vector2 } from "../core/matrix2";
 import { limit_ray } from "../core/intersection";
 
-import Vector from "./vector";
+import Vector from "./vector/index";
 import Prototype from "./prototypes/line";
 
 const Ray = function (...args) {

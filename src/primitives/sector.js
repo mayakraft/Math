@@ -7,7 +7,7 @@ import {
   subsect
 } from "../core/geometry";
 
-import Vector from "./vector";
+import Vector from "./vector/index";
 
 // in progress: thinking that "center" isn't necessary, should we remove?
 // import Ray from "./ray";

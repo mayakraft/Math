@@ -9,6 +9,19 @@
  * in the first slot, it won't find the valid data in the second.
  */
 
+export const Typeof = function (obj) {
+  if (typeof obj === "object") {
+    if (obj.radius != null) { return "circle"; }
+    if (obj.width != null) { return "rectangle"; }
+    if (obj.x != null) { return "vector" }
+    // line ray segment
+    if (obj.rotate180 != null) { return "ray"; }
+    if (obj[0] != null && obj[0].length && obj[0].x != null) { return "segment"; }
+    if (obj.vector != null && obj.origin != null) { return "line"; }
+  }
+  return undefined;
+};
+
 const countPlaces = function (num) {
   const m = (`${num}`).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
   if (!m) { return 0; }
@@ -65,7 +78,9 @@ export const flatten_input = function (...args) {
  */
 export const semi_flatten_input = function (...args) {
   let list = args;
-  while (list.length === 1 && list[0].length) { [list] = list; }
+  while (list.length === 1 && typeof list[0] === "object" && list[0].length) {
+    [list] = list;
+  }
   return list;
 };
 

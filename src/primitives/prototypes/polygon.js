@@ -27,7 +27,7 @@ import {
 
 import { multiply_matrix2_vector2 } from "../../core/matrix2";
 
-import Vector from "../vector";
+import Vector from "../vector/index";
 import Segment from "../segment";
 import Sector from "../sector";
 

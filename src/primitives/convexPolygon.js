@@ -13,7 +13,7 @@ import {
 } from "../parsers/arguments";
 
 import Segment from "./segment";
-import Vector from "./vector";
+import Vector from "./vector/index";
 import Prototype from "./prototypes/polygon";
 
 const ConvexPolygon = function (...args) {

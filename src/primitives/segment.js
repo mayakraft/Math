@@ -8,7 +8,7 @@ import {
 import { limit_segment } from "../core/intersection";
 
 import Prototype from "./prototypes/line";
-import Vector from "./vector";
+import Vector from "./vector/index";
 
 const Segment = function (...args) {
   const inputs = get_vector_of_vectors(args);

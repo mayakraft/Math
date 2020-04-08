@@ -11,7 +11,7 @@ import {
 
 import { multiply_matrix2_line2 } from "../core/matrix2";
 import { limit_line } from "../core/intersection";
-import Vector from "./vector";
+import Vector from "./vector/index";
 import Prototype from "./prototypes/line";
 
 const Line = function (...args) {

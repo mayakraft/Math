@@ -4,7 +4,7 @@
   "description": "origami math. geometry and linear algebra",
   "main": "math.js",
   "scripts": {
-    "test": "node tests/test.js"
+    "test": "jest"
   },
   "author": "Robby Kraft",
   "license": "MIT",
@@ -18,17 +18,18 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "@babel/core": "^7.7.7",
-    "@babel/polyfill": "^7.8.0",
-    "@babel/preset-env": "^7.7.7",
+    "@babel/core": "^7.9.0",
+    "@babel/polyfill": "^7.8.7",
+    "@babel/preset-env": "^7.9.5",
     "babel-preset-minify": "^0.5.1",
-    "core-js": "^3.2.1",
-    "eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-plugin-import": "^2.19.1",
-    "rollup": "^1.29.0",
-    "rollup-plugin-babel": "^4.3.3",
-    "rollup-plugin-babel-minify": "^9.1.0",
-    "rollup-plugin-cleanup": "^3.1.1"
+    "core-js": "^3.6.4",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
+    "jest": "^25.2.7",
+    "rollup": "^2.3.4",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-cleanup": "^3.1.1",
+    "rollup-plugin-terser": "^5.3.0"
   }
 }

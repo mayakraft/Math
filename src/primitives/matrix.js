@@ -30,7 +30,7 @@ import {
   make_matrix3_scale,
   make_matrix3_reflectionZ
 } from "../core/matrix3";
-import Vector from "./vector";
+import Vector from "./vector/index";
 /**
  * 2D Matrix (2x3) with translation component in x,y
  */
