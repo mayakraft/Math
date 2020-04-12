@@ -15,9 +15,11 @@ import {
 import { EPSILON } from "../../core/equal";
 import { intersection_function } from "../../core/intersection";
 import {
-  nearest_point_on_line,
   bisect_lines2
 } from "../../core/geometry";
+import {
+  nearest_point_on_line,
+} from "../../core/nearest";
 import Vector from "../vector/index";
 import { Matrix2 } from "../matrix";
 

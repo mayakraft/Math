@@ -5,8 +5,6 @@ import { clean_number } from "../parsers/arguments";
 import {
   normalize,
   midpoint2,
-  distance,
-  distance2
 } from "./algebra";
 
 /** There are 2 interior angles between 2 absolute angle measurements, from A to B return the clock
@@ -14,7 +12,7 @@ wise one
  * @param {number} angle in radians, angle PI/2 is along the +Y axis
  * @returns {number} clockwise interior angle (from a to b) in radians
  */
-export const clockwise_angle2_radians = function (a, b) {
+export const clockwise_angle2_radians = (a, b) => {
   // this is on average 50 to 100 times faster than clockwise_angle2
   while (a < 0) { a += Math.PI * 2; }
   while (b < 0) { b += Math.PI * 2; }
@@ -25,7 +23,7 @@ export const clockwise_angle2_radians = function (a, b) {
 };
 
 // @returns {number}
-export const counter_clockwise_angle2_radians = function (a, b) {
+export const counter_clockwise_angle2_radians = (a, b) => {
   // this is on average 50 to 100 times faster than counter_clockwise_angle2
   while (a < 0) { a += Math.PI * 2; }
   while (b < 0) { b += Math.PI * 2; }
@@ -38,7 +36,7 @@ export const counter_clockwise_angle2_radians = function (a, b) {
  * @param {[number, number]} vector
  * @returns {number} clockwise angle (from a to b) in radians
  */
-export const clockwise_angle2 = function (a, b) {
+export const clockwise_angle2 = (a, b) => {
   const dotProduct = b[0] * a[0] + b[1] * a[1];
   const determinant = b[0] * a[1] - b[1] * a[0];
   let angle = Math.atan2(determinant, dotProduct);
@@ -47,7 +45,7 @@ export const clockwise_angle2 = function (a, b) {
 };
 
 // @returns {number}
-export const counter_clockwise_angle2 = function (a, b) {
+export const counter_clockwise_angle2 = (a, b) => {
   const dotProduct = a[0] * b[0] + a[1] * b[1];
   const determinant = a[0] * b[1] - a[1] * b[0];
   let angle = Math.atan2(determinant, dotProduct);
@@ -63,7 +61,7 @@ export const counter_clockwise_angle2 = function (a, b) {
  *
  * @returns {number[]}, already c-cwise sorted would give [0,1,2,3,4]
  */
-export const counter_clockwise_vector_order = function (...vectors) {
+export const counter_clockwise_vector_order = (...vectors) => {
   const vectors_radians = vectors.map(v => Math.atan2(v[1], v[0]));
   const counter_clockwise = Array.from(Array(vectors_radians.length))
     .map((_, i) => i)
@@ -77,7 +75,7 @@ export const counter_clockwise_vector_order = function (...vectors) {
  * @param {[number, number]} vector
  * @returns {[number, number]} 2 angle measurements between vectors
  */
-export const interior_angles2 = function (a, b) {
+export const interior_angles2 = (a, b) => {
   const interior1 = counter_clockwise_angle2(a, b);
   const interior2 = Math.PI * 2 - interior1;
   // return (interior1 < interior2)
@@ -90,10 +88,8 @@ export const interior_angles2 = function (a, b) {
  * angle between each consecutive vector. if you need them to add up to 360deg,
  * you'll need to pre-sort your vectors with counter_clockwise_vector_order
  */
-export const interior_angles = function (...vectors) {
-  return vectors
-    .map((v, i, ar) => counter_clockwise_angle2(v, ar[(i + 1) % ar.length]));
-};
+export const interior_angles = (...vecs) => vecs
+  .map((v, i, ar) => counter_clockwise_angle2(v, ar[(i + 1) % ar.length]));
 
 const interior_angles_unsorted = function (...vectors) {
 };
@@ -104,7 +100,7 @@ const interior_angles_unsorted = function (...vectors) {
  * @param {[number, number]} vector
  * @returns {[[number, number],[number, number]]} 2 vectors, the smaller first
  */
-export const bisect_vectors = function (a, b) {
+export const bisect_vectors = (a, b) => {
   const aV = normalize(a);
   const bV = normalize(b);
   const sum = aV.map((_, i) => aV[i] + bV[i]);
@@ -119,7 +115,7 @@ export const bisect_vectors = function (a, b) {
  *
  * second entry is 90 degrees counter clockwise from first entry
  */
-export const bisect_lines2 = function (pointA, vectorA, pointB, vectorB) {
+export const bisect_lines2 = (pointA, vectorA, pointB, vectorB) => {
   const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
   if (Math.abs(denominator) < EPSILON) { /* parallel */
     const solution = [midpoint2(pointA, pointB), [vectorA[0], vectorA[1]]];
@@ -140,7 +136,7 @@ export const bisect_lines2 = function (pointA, vectorA, pointB, vectorB) {
 /**
  * subsect the angle between two vectors already converted to radians
  */
-export const subsect_radians = function (divisions, angleA, angleB) {
+export const subsect_radians = (divisions, angleA, angleB) => {
   const angle = counter_clockwise_angle2(angleA, angleB) / divisions;
   return Array.from(Array(divisions - 1))
     .map((_, i) => angleA + angle * i);
@@ -148,7 +144,7 @@ export const subsect_radians = function (divisions, angleA, angleB) {
 /**
  * subsect the angle between two vectors (counter-clockwise from A to B)
  */
-export const subsect = function (divisions, vectorA, vectorB) {
+export const subsect = (divisions, vectorA, vectorB) => {
   const angleA = Math.atan2(vectorA[1], vectorA[0]);
   const angleB = Math.atan2(vectorB[1], vectorB[0]);
   return subsect_radians(divisions, angleA, angleB)
@@ -179,18 +175,18 @@ export const subsect = function (divisions, vectorA, vectorB) {
  * @example
  * var area = polygon.signedArea()
  */
-export const signed_area = function (points) {
-  return 0.5 * points.map((el, i, arr) => {
+export const signed_area = points => 0.5 * points
+  .map((el, i, arr) => {
     const next = arr[(i + 1) % arr.length];
     return el[0] * next[1] - next[0] * el[1];
   }).reduce((a, b) => a + b, 0);
-};
+
 /** Calculates the centroid or the center of mass of the polygon.
  * @returns {XY} the location of the centroid
  * @example
  * var centroid = polygon.centroid()
  */
-export const centroid = function (points) {
+export const centroid = (points) => {
   const sixthArea = 1 / (6 * signed_area(points));
   return points.map((el, i, arr) => {
     const next = arr[(i + 1) % arr.length];
@@ -203,7 +199,7 @@ export const centroid = function (points) {
  * works in any n-dimension (enclosing cube, hypercube..)
  * @returns array of arrays: [[x, y], [width, height]]
  */
-export const enclosing_rectangle = function (points) {
+export const enclosing_rectangle = (points) => {
   const l = points[0].length;
   const mins = Array.from(Array(l)).map(() => Infinity);
   const maxs = Array.from(Array(l)).map(() => -Infinity);
@@ -219,7 +215,7 @@ export const enclosing_rectangle = function (points) {
  * the radius parameter measures from the center to the midpoint of the edge
  * todo: also possible to parameterize the radius as the center to the points
  */
-export const make_regular_polygon = function (sides, x = 0, y = 0, radius = 1) {
+export const make_regular_polygon = (sides, x = 0, y = 0, radius = 1) => {
   const halfwedge = 2 * Math.PI / sides * 0.5;
   const r = radius / Math.cos(halfwedge);
   return Array.from(Array(Math.floor(sides))).map((_, i) => {
@@ -230,50 +226,7 @@ export const make_regular_polygon = function (sides, x = 0, y = 0, radius = 1) {
   });
 };
 
-const smallest_comparison_search = function (obj, array, compare_func) {
-  const objs = array.map((o, i) => ({ o, i, d: compare_func(obj, o) }));
-  let index;
-  let smallest_value = Infinity;
-  for (let i = 0; i < objs.length; i += 1) {
-    if (objs[i].d < smallest_value) {
-      index = i;
-      smallest_value = objs[i].d;
-    }
-  }
-  return index;
-};
-/**
- * find the one point in array_of_points closest to point.
- */
-export const nearest_point2 = function (point, array_of_points) {
-  // todo speed up with partitioning
-  const index = smallest_comparison_search(point, array_of_points, distance2);
-  return index === undefined ? undefined : array_of_points[index];
-};
-/**
- * find the one point in array_of_points closest to point.
- */
-export const nearest_point = function (point, array_of_points) {
-  // todo speed up with partitioning
-  const index = smallest_comparison_search(point, array_of_points, distance);
-  return index === undefined ? undefined : array_of_points[index];
-};
-
-export const nearest_point_on_line = function (
-  linePoint, lineVec, point, limiterFunc, epsilon = EPSILON
-) {
-  const magSquared = (lineVec[0] ** 2) + (lineVec[1] ** 2);
-  const vectorToPoint = [0, 1].map((_, i) => point[i] - linePoint[i]);
-  // const pTo0 = [0, 1].map((_, i) => point[i] - linePoint[i]);
-  const dot = [0, 1].map((_, i) => lineVec[i] * vectorToPoint[i])
-    .reduce((a, b) => a + b, 0);
-  const dist = dot / magSquared;
-  // limit depending on line, ray, segment
-  const d = limiterFunc(dist, epsilon);
-  return [0, 1].map((_, i) => linePoint[i] + lineVec[i] * d);
-};
-
-export const split_polygon = function (poly, linePoint, lineVector) {
+export const split_polygon = (poly, linePoint, lineVector) => {
   //    point: intersection [x,y] point or null if no intersection
   // at_index: where in the polygon this occurs
   const vertices_intersections = poly.map((v, i) => {
@@ -299,7 +252,7 @@ export const split_polygon = function (poly, linePoint, lineVector) {
   return poly;
 };
 
-export const split_convex_polygon = function (poly, linePoint, lineVector) {
+export const split_convex_polygon = (poly, linePoint, lineVector) => {
   // todo: should this return undefined if no intersection?
   //       or the original poly?
 
@@ -359,7 +312,7 @@ export const split_convex_polygon = function (poly, linePoint, lineVector) {
   return [poly.slice()];
 };
 
-export const convex_hull = function (points, include_collinear = false, epsilon = EPSILON) {
+export const convex_hull = (points, include_collinear = false, epsilon = EPSILON) => {
   // # points in the convex hull before escaping function
   let INFINITE_LOOP = 10000;
   // sort points by y. if ys are equivalent, sort by x

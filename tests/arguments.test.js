@@ -36,46 +36,59 @@ test("clean number", () => {
 /**
  * inputs and argument inference
  */
-test("semi-flatten input", () => {
-  testEqual([{ x: 5, y: 3 }], math.core.semi_flatten_input({ x: 5, y: 3 }));
-  testEqual([{ x: 5, y: 3 }], math.core.semi_flatten_input([[[{ x: 5, y: 3 }]]]));
-  testEqual([5, 3], math.core.semi_flatten_input([[[5, 3]]]));
-  testEqual([[5], [3]], math.core.semi_flatten_input([[[5], [3]]]));
-  testEqual([[[5]], [[3]]], math.core.semi_flatten_input([[[5]], [[3]]]));
-  testEqual([[[[5]]], [[[3]]]], math.core.semi_flatten_input([[[5]]], [[[3]]]));
-  testEqual(true, undefined === math.core.get_vector(undefined, undefined));
+// test("semi-flatten input", () => {
+//   testEqual([{ x: 5, y: 3 }], math.core.semi_flatten_arrays({ x: 5, y: 3 }));
+//   testEqual([{ x: 5, y: 3 }], math.core.semi_flatten_arrays([[[{ x: 5, y: 3 }]]]));
+//   testEqual([5, 3], math.core.semi_flatten_arrays([[[5, 3]]]));
+//   testEqual([[5], [3]], math.core.semi_flatten_arrays([[[5], [3]]]));
+//   testEqual([[[5]], [[3]]], math.core.semi_flatten_arrays([[[5]], [[3]]]));
+//   testEqual([[[[5]]], [[[3]]]], math.core.semi_flatten_arrays([[[5]]], [[[3]]]));
+//   testEqual(true, undefined === math.core.get_vector(undefined, undefined));
+// });
+
+
+test("new semi-flatten arrays", () => {
+  testEqual([[0,1,2], [2,3,4]], flatten_arrays([0,1,2], [2,3,4]));
+  testEqual([[0,1,2], [2,3,4]], flatten_arrays([[0,1,2]], [[2,3,4]]));
+  testEqual([[0,1,2], [2,3,4]], flatten_arrays([[[0,1,2]], [[2,3,4]]]));
+  testEqual([[0,1,2], [2,3,4]], flatten_arrays([[[[0,1,2]], [[2,3,4]]]]));
+  testEqual([[[0],[1],[2]], [2,3,4]], flatten_arrays([[[[0],[1],[2]]], [[2,3,4]]]));
+  testEqual([[[0],[1],[2]], [2,3,4]], flatten_arrays([[[[[[0]]],[[[1]]],[2]]], [[2,3,4]]]));
 });
+
 
 test("flatten input", () => {
-  testEqual([1], math.core.flatten_input([[[1]], []]));
-  testEqual([1, 2, 3, 4], math.core.flatten_input([[[1, 2, 3, 4]]]));
-  testEqual([1, 2, 3, 4], math.core.flatten_input(1, 2, 3, 4));
+  testEqual([1], math.core.flatten_arrays([[[1]], []]));
+  testEqual([1, 2, 3, 4], math.core.flatten_arrays([[[1, 2, 3, 4]]]));
+  testEqual([1, 2, 3, 4], math.core.flatten_arrays(1, 2, 3, 4));
   testEqual([1, 2, 3, 4, 2, 4],
-    math.core.flatten_input([1, 2, 3, 4], [2, 4]));
+    math.core.flatten_arrays([1, 2, 3, 4], [2, 4]));
   testEqual([1, 2, 3, 4, 6, 7, 6],
-    math.core.flatten_input([1, 2, 3, 4], [6, 7], 6));
+    math.core.flatten_arrays([1, 2, 3, 4], [6, 7], 6));
   testEqual([1, 2, 3, 4, 6, 7, 6, 2, 4, 5],
-    math.core.flatten_input([1, 2, 3, 4], [6, 7], 6, 2, 4, 5));
-  testEqual([{ x: 5, y: 3 }], math.core.flatten_input({ x: 5, y: 3 }));
-  testEqual([{ x: 5, y: 3 }], math.core.flatten_input([[{ x: 5, y: 3 }]]));
+    math.core.flatten_arrays([1, 2, 3, 4], [6, 7], 6, 2, 4, 5));
+  testEqual([{ x: 5, y: 3 }], math.core.flatten_arrays({ x: 5, y: 3 }));
+  testEqual([{ x: 5, y: 3 }], math.core.flatten_arrays([[{ x: 5, y: 3 }]]));
   testEqual([1, 2, 3, 4, 5, 6],
-    math.core.flatten_input([[[1], [2, 3]]], 4, [5, 6]));
+    math.core.flatten_arrays([[[1], [2, 3]]], 4, [5, 6]));
+  testEqual([undefined, undefined], math.core.flatten_arrays([[[undefined,[[undefined]]]]]));
+
 });
 
-test("semi-flatten input", () => {
-  testEqual([1, 2, 3, 4], math.core.get_vector([[[1, 2, 3, 4]]]));
-  testEqual([1, 2, 3, 4], math.core.get_vector(1, 2, 3, 4));
-  testEqual([1, 2, 3, 4, 2, 4], math.core.get_vector([1, 2, 3, 4], [2, 4]));
-  testEqual([1, 2, 3, 4, 6, 7, 6], math.core.get_vector([1, 2, 3, 4], [6, 7], 6));
-  testEqual([1, 2, 3, 4, 6, 7, 6, 2, 4, 5], math.core.get_vector([1, 2, 3, 4], [6, 7], 6, 2, 4, 5));
-  testEqual([5, 3], math.core.get_vector({ x: 5, y: 3 }));
-  testEqual([5, 3], math.core.get_vector([[[{ x: 5, y: 3 }]]]));
-  testEqual([5, 3], math.core.get_vector([[[5, 3]]]));
-  testEqual([5, 3], math.core.get_vector([[[5], [3]]]));
-  testEqual([5, 3], math.core.get_vector([[[5]], [[3]]]));
-  testEqual([5, 3], math.core.get_vector([[[5]]], [[[3]]]));
-  testEqual([5, 3], math.core.get_vector([[[5]]], 3));
-});
+// test("semi-flatten input", () => {
+//   testEqual([1, 2, 3, 4], math.core.get_vector([[[1, 2, 3, 4]]]));
+//   testEqual([1, 2, 3, 4], math.core.get_vector(1, 2, 3, 4));
+//   testEqual([1, 2, 3, 4, 2, 4], math.core.get_vector([1, 2, 3, 4], [2, 4]));
+//   testEqual([1, 2, 3, 4, 6, 7, 6], math.core.get_vector([1, 2, 3, 4], [6, 7], 6));
+//   testEqual([1, 2, 3, 4, 6, 7, 6, 2, 4, 5], math.core.get_vector([1, 2, 3, 4], [6, 7], 6, 2, 4, 5));
+//   testEqual([5, 3], math.core.get_vector({ x: 5, y: 3 }));
+//   testEqual([5, 3], math.core.get_vector([[[{ x: 5, y: 3 }]]]));
+//   testEqual([5, 3], math.core.get_vector([[[5, 3]]]));
+//   testEqual([5, 3], math.core.get_vector([[[5], [3]]]));
+//   testEqual([5, 3], math.core.get_vector([[[5]], [[3]]]));
+//   testEqual([5, 3], math.core.get_vector([[[5]]], [[[3]]]));
+//   testEqual([5, 3], math.core.get_vector([[[5]]], 3));
+// });
 
 test("get vector of vectors", () => {
   testEqual([[1, 2], [3, 4]],

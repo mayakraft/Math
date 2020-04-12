@@ -9,7 +9,7 @@ import {
   multiply_matrix2_vector2,
   multiply_matrix2_line2,
   multiply_matrices2,
-  matrix2_determinant,
+  determinant2,
   invert_matrix2,
   make_matrix2_translate,
   make_matrix2_scale,
@@ -20,7 +20,7 @@ import {
   multiply_matrix3_vector3,
   multiply_matrix3_line3,
   multiply_matrices3,
-  matrix3_determinant,
+  determinant3,
   invert_matrix3,
   make_matrix3_translate,
   make_matrix3_rotateX,
@@ -46,7 +46,7 @@ const Matrix2 = function (...args) {
       .map(n => clean_number(n, 13)));
   };
   const determinant = function () {
-    return clean_number(matrix2_determinant(matrix));
+    return clean_number(determinant2(matrix));
   };
   const inverse = function () {
     return Matrix2(invert_matrix2(matrix)
@@ -136,7 +136,7 @@ const Matrix = function (...args) {
       .map(n => clean_number(n, 13)));
   };
   const determinant = function () {
-    return clean_number(matrix3_determinant(matrix), 13);
+    return clean_number(determinant3(matrix), 13);
   };
   const inverse = function () {
     return Matrix(invert_matrix3(matrix)

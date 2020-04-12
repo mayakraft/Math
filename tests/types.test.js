@@ -1,11 +1,8 @@
 const math = require("../math");
 
-const testEqual = function (...args) {
-  expect(math.core.equivalent(...args)).toBe(true);
-};
-
-
-
-test("intersections", () => {
-
+test("types", () => {
+  let v = math.vector(1,2,3).normalize();
+  expect(typeof v).toBe("object");
+  expect(v instanceof math.vector).toBe(true);
+  expect(v.constructor === math.vector).toBe(true);
 });

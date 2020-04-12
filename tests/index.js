@@ -66,28 +66,28 @@ testEqual(true, math.core.clean_number(0.000000001, 9)
  * inputs and argument inference
  */
 testName("semi-flatten input");
-testEqual([{ x: 5, y: 3 }], math.core.semi_flatten_input({ x: 5, y: 3 }));
-testEqual([{ x: 5, y: 3 }], math.core.semi_flatten_input([[[{ x: 5, y: 3 }]]]));
-testEqual([5, 3], math.core.semi_flatten_input([[[5, 3]]]));
-testEqual([[5], [3]], math.core.semi_flatten_input([[[5], [3]]]));
-testEqual([[[5]], [[3]]], math.core.semi_flatten_input([[[5]], [[3]]]));
-testEqual([[[[5]]], [[[3]]]], math.core.semi_flatten_input([[[5]]], [[[3]]]));
+testEqual([{ x: 5, y: 3 }], math.core.semi_flatten_arrays({ x: 5, y: 3 }));
+testEqual([{ x: 5, y: 3 }], math.core.semi_flatten_arrays([[[{ x: 5, y: 3 }]]]));
+testEqual([5, 3], math.core.semi_flatten_arrays([[[5, 3]]]));
+testEqual([[5], [3]], math.core.semi_flatten_arrays([[[5], [3]]]));
+testEqual([[[5]], [[3]]], math.core.semi_flatten_arrays([[[5]], [[3]]]));
+testEqual([[[[5]]], [[[3]]]], math.core.semi_flatten_arrays([[[5]]], [[[3]]]));
 testEqual(true, undefined === math.core.get_vector(undefined, undefined));
 
 testName("flatten input");
-testEqual([1], math.core.flatten_input([[[1]], []]));
-testEqual([1, 2, 3, 4], math.core.flatten_input([[[1, 2, 3, 4]]]));
-testEqual([1, 2, 3, 4], math.core.flatten_input(1, 2, 3, 4));
+testEqual([1], math.core.flatten_arrays([[[1]], []]));
+testEqual([1, 2, 3, 4], math.core.flatten_arrays([[[1, 2, 3, 4]]]));
+testEqual([1, 2, 3, 4], math.core.flatten_arrays(1, 2, 3, 4));
 testEqual([1, 2, 3, 4, 2, 4],
-  math.core.flatten_input([1, 2, 3, 4], [2, 4]));
+  math.core.flatten_arrays([1, 2, 3, 4], [2, 4]));
 testEqual([1, 2, 3, 4, 6, 7, 6],
-  math.core.flatten_input([1, 2, 3, 4], [6, 7], 6));
+  math.core.flatten_arrays([1, 2, 3, 4], [6, 7], 6));
 testEqual([1, 2, 3, 4, 6, 7, 6, 2, 4, 5],
-  math.core.flatten_input([1, 2, 3, 4], [6, 7], 6, 2, 4, 5));
-testEqual([{ x: 5, y: 3 }], math.core.flatten_input({ x: 5, y: 3 }));
-testEqual([{ x: 5, y: 3 }], math.core.flatten_input([[{ x: 5, y: 3 }]]));
+  math.core.flatten_arrays([1, 2, 3, 4], [6, 7], 6, 2, 4, 5));
+testEqual([{ x: 5, y: 3 }], math.core.flatten_arrays({ x: 5, y: 3 }));
+testEqual([{ x: 5, y: 3 }], math.core.flatten_arrays([[{ x: 5, y: 3 }]]));
 testEqual([1, 2, 3, 4, 5, 6],
-  math.core.flatten_input([[[1], [2, 3]]], 4, [5, 6]));
+  math.core.flatten_arrays([[[1], [2, 3]]], 4, [5, 6]));
 
 testName("get vector");
 testEqual([1, 2, 3, 4], math.core.get_vector([[[1, 2, 3, 4]]]));
@@ -210,8 +210,8 @@ testEqual([1, 2, 3], math.vector(1, 2, 3).copy().copy());
 
 // todo: test matrix3 methods (invert) with the translation component to make sure it carries over
 testName("matrix core");
-testEqual(12, math.core.matrix3_determinant([1, 2, 3, 2, 4, 8, 7, 8, 9]));
-testEqual(10, math.core.matrix3_determinant([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
+testEqual(12, math.core.determinant3([1, 2, 3, 2, 4, 8, 7, 8, 9]));
+testEqual(10, math.core.determinant3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
 testEqual([4, 5, -8, -5, -6, 9, -2, -2, 3, 0, 0, 0],
   math.core.invert_matrix3([0, 1, -3, -3, -4, 4, -2, -2, 1, 0, 0, 0]));
 testEqual([0.2, -0.2, 0.2, 0.2, 0.3, -0.3, 0, 1, 0, 0, 0, 0],

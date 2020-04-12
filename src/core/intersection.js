@@ -1,9 +1,14 @@
 import { EPSILON } from "./equal";
-import { normalize, magnitude } from "./algebra";
+import {
+  normalize,
+  magnitude,
+} from "./algebra";
 import {
   point_in_convex_poly,
   point_in_convex_poly_exclusive
 } from "./query";
+
+export const determ2 = (a, b) => a[0] * b[1] - b[0] * a[1];
 
 /*
 ██╗      ██╗ ███╗   ██╗ ███████╗ ███████╗
@@ -54,13 +59,12 @@ export const limit_segment = (dist) => {
  * requires a compFunction to describe valid bounds checking
  * line always returns true, ray is true for t > 0, segment must be between 0 < t < 1
 */
-export const intersection_function = function (aPt, aVec, bPt, bVec, compFunc, epsilon = EPSILON) {
-  function det(a, b) { return a[0] * b[1] - b[0] * a[1]; }
-  const denominator0 = det(aVec, bVec);
+export const intersection_function = (aPt, aVec, bPt, bVec, compFunc, epsilon = EPSILON) => {
+  const denominator0 = determ2(aVec, bVec);
   if (Math.abs(denominator0) < epsilon) { return undefined; } /* parallel */
   const denominator1 = -denominator0;
-  const numerator0 = det([bPt[0] - aPt[0], bPt[1] - aPt[1]], bVec);
-  const numerator1 = det([aPt[0] - bPt[0], aPt[1] - bPt[1]], aVec);
+  const numerator0 = determ2([bPt[0] - aPt[0], bPt[1] - aPt[1]], bVec);
+  const numerator1 = determ2([aPt[0] - bPt[0], aPt[1] - bPt[1]], aVec);
   const t0 = numerator0 / denominator0;
   const t1 = numerator1 / denominator1;
   if (compFunc(t0, t1, epsilon)) {

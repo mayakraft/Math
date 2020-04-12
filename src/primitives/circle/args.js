@@ -2,7 +2,7 @@ import { get_vector_of_vectors } from "../../parsers/arguments";
 import vector from "../vector/index";
 import { distance2 } from "../../core/algebra";
 
-const Args = function () {
+const CircleArgs = function () {
   const arr = Array.from(arguments);
   const numbers = arr.filter(param => !isNaN(param));
   const vectors = get_vector_of_vectors(arr);
@@ -15,4 +15,4 @@ const Args = function () {
   }
 };
 
-export default Args;
+export default CircleArgs;

@@ -9,6 +9,7 @@ import {
 } from "../../parsers/arguments";
 
 import {
+  magnitude,
   normalize,
   dot,
   cross3,
@@ -21,20 +22,21 @@ import {
 } from "../../core/matrix2";
 
 
-const M = {};
-// M.constructor = () => {};
-// M.constructor will be set later to be vector()
+const methods = {};
+// methods.constructor = () => {};
+// methods.constructor will be set later to be vector()
 
 
 const table = {
   preserve: { // don't transform the return type. preserve it
-    isEquivalent: function () {
-      // rect bounding box for now, much cheaper than radius calculation
-      const vec = get_vector(arguments);
-      const sm = (this.length < vec.length) ? this : vec;
-      const lg = (this.length < vec.length) ? vec : this;
-      return equivalent(sm, lg);
-    },
+    magnitude: function () { return magnitude(this); },
+    // isEquivalent: function () {
+    //   // rect bounding box for now, much cheaper than radius calculation
+    //   const vec = get_vector(arguments);
+    //   const sm = (this.length < vec.length) ? this : vec;
+    //   const lg = (this.length < vec.length) ? vec : this;
+    //   return equivalent(sm, lg);
+    // },
     isParallel: function () {
       const vec = get_vector(arguments);
       const sm = (this.length < vec.length) ? this : vec;
@@ -57,7 +59,7 @@ const table = {
     },
     bisect: function () {
       const vec = get_vector(arguments);
-      return bisect_vectors(this, vec).map(b => M.constructor(b));
+      return bisect_vectors(this, vec).map(b => methods.constructor(b));
     },
   },
   vector: { // return type
@@ -71,9 +73,9 @@ const table = {
       if (b[2] == null) { b[2] = 0; }
       return cross3(a, b);
     },
-    transform: function () {
-      return multiply_matrix2_vector2(get_matrix2(arguments), this);
-    },
+    // transform: function () {
+    //   return multiply_matrix2_vector2(get_matrix2(arguments), this);
+    // },
     add: function () {
       const vec = get_vector(arguments);
       return this.map((v, i) => v + vec[i]);
@@ -83,18 +85,18 @@ const table = {
       return this.map((v, i) => v - vec[i]);
     },
     // these are implicitly 2D functions, and will convert the vector into 2D
-    rotateZ: function (angle, origin) {
-      return multiply_matrix2_vector2(make_matrix2_rotate(angle, origin), this);
-    },
+    // rotateZ: function (angle, origin) {
+    //   return multiply_matrix2_vector2(make_matrix2_rotate(angle, origin), this);
+    // },
     rotateZ90: function () { return [-this[1], this[0]]; },
     rotateZ180: function () { return [-this[0], -this[1]]; },
     rotateZ270: function () { return [this[1], -this[0]]; },
     flip: function () { return this.map(n => -n); },
-    reflect: function () {
-      const ref = get_line(arguments);
-      const m = make_matrix2_reflection(ref.vector, ref.origin);
-      return multiply_matrix2_vector2(m, this);
-    },
+    // reflect: function () {
+    //   const ref = get_line(arguments);
+    //   const m = make_matrix2_reflection(ref.vector, ref.origin);
+    //   return multiply_matrix2_vector2(m, this);
+    // },
     lerp: function (vector, pct) {
       const vec = get_vector(vector);
       const inv = 1.0 - pct;
@@ -113,13 +115,13 @@ const table = {
 };
 
 Object.keys(table.preserve).forEach(key => {
-  M[key] = table.preserve[key];
+  methods[key] = table.preserve[key];
 });
 
 Object.keys(table.vector).forEach(key => {
-  M[key] = function () {
-    return M.constructor(...table.vector[key].apply(this, arguments));
+  methods[key] = function () {
+    return methods.constructor(...table.vector[key].apply(this, arguments));
   }
 });
 
-export default M;
+export default methods;

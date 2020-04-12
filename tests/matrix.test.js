@@ -12,8 +12,8 @@ const sqrt05 = Math.sqrt(0.5);
 
 // todo: test matrix3 methods (invert) with the translation component to make sure it carries over
 test("matrix core", () => {
-  testEqual(12, math.core.matrix3_determinant([1, 2, 3, 2, 4, 8, 7, 8, 9]));
-  testEqual(10, math.core.matrix3_determinant([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
+  testEqual(12, math.core.determinant3([1, 2, 3, 2, 4, 8, 7, 8, 9]));
+  testEqual(10, math.core.determinant3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
   testEqual([4, 5, -8, -5, -6, 9, -2, -2, 3, 0, 0, 0],
     math.core.invert_matrix3([0, 1, -3, -3, -4, 4, -2, -2, 1, 0, 0, 0]));
   testEqual([0.2, -0.2, 0.2, 0.2, 0.3, -0.3, 0, 1, 0, 0, 0, 0],

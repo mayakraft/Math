@@ -1,21 +1,20 @@
 import {
-  semi_flatten_input,
+  semi_flatten_arrays,
   get_vector_of_vectors
 } from "../parsers/arguments";
 
 export const EPSILON = 1e-6;
 
-const array_similarity_test = function (list, compFunc) {
-  return Array
-    .from(Array(list.length - 1))
-    .map((_, i) => compFunc(list[0], list[i + 1]))
-    .reduce((a, b) => a && b, true);
-};
+const array_similarity_test = (list, compFunc) => Array
+  .from(Array(list.length - 1))
+  .map((_, i) => compFunc(list[0], list[i + 1]))
+  .reduce((a, b) => a && b, true);
+
 /**
  * @param {...number} a sequence of numbers
  * @returns boolean
  */
-export const equivalent_numbers = function (...args) {
+export const equivalent_numbers = (...args) => {
   if (args.length === 0) { return false; }
   if (args.length === 1 && args[0] !== undefined) {
     return equivalent_numbers(...args[0]);
@@ -26,7 +25,7 @@ export const equivalent_numbers = function (...args) {
  * @param {...number[]} compare n number of vectors, requires a consistent dimension
  * @returns boolean
  */
-export const equivalent_vectors = function (...args) {
+export const equivalent_vectors = (...args) => {
   const list = get_vector_of_vectors(...args);
   if (list.length === 0) { return false; }
   if (list.length === 1 && list[0] !== undefined) {
@@ -50,7 +49,7 @@ export const equivalent_vectors = function (...args) {
 };
 
 // export const equivalent_arrays = function (...args) {
-//   const list = semi_flatten_input(args);
+//   const list = semi_flatten_arrays(args);
 //   if (list.length === 0) { return false; }
 //   if (list.length === 1 && list[0] !== undefined) {
 //     return equivalent_vectors(...list[0]);
@@ -92,14 +91,14 @@ export const equivalent_vectors = function (...args) {
  *   3. arrays of numbers (vectors)
  * @returns boolean
  */
-export const equivalent = function (...args) {
-  let list = semi_flatten_input(args);
+export const equivalent = (...args) => {
+  let list = semi_flatten_arrays(args);
   if (list.length < 1) { return false; }
   const typeofList = typeof list[0];
   // array contains undefined, cannot compare
   if (typeofList === "undefined") { return false; }
   if (list[0].constructor === Array) {
-    list = list.map(el => semi_flatten_input(el));
+    list = list.map(el => semi_flatten_arrays(el));
   }
   switch (typeofList) {
     case "number":

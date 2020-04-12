@@ -1,14 +1,16 @@
+
+
 /**
  * this is *filled* with heuristic methods, methods that make assumptions,
  * methods that take in user-input and infer a best match.
  */
+
 /**
  * one way to improve these input finders is to search in all indices
  * of the arguments list, right now it assumes THIS is the only thing
  * you're passing in. in the case that it isn't and there's an object
  * in the first slot, it won't find the valid data in the second.
  */
-
 export const Typeof = function (obj) {
   if (typeof obj === "object") {
     if (obj.radius != null) { return "circle"; }
@@ -27,6 +29,7 @@ const countPlaces = function (num) {
   if (!m) { return 0; }
   return Math.max(0, (m[1] ? m[1].length : 0) - (m[2] ? +m[2] : 0));
 };
+
 /**
  * clean floating point numbers
  * example: 15.0000000000000002 into 15
@@ -55,33 +58,39 @@ export const is_iterable = obj => obj != null
  * totally flatten, recursive
  * @returns an array, always.
  */
-export const flatten_input = function (...args) {
+export const flatten_arrays = function (...args) {
   switch (args.length) {
     case undefined:
     case 0: return args;
     // only if its an array (is iterable) and NOT a string
     case 1: return is_iterable(args[0]) && typeof args[0] !== "string"
-      ? flatten_input(...args[0])
+      ? flatten_arrays(...args[0])
       : [args[0]];
     default:
-      return Array.from(args)
-        .map(a => (is_iterable(a)
-          ? [...flatten_input(a)]
-          : a))
-        .reduce((a, b) => a.concat(b), []);
+      return args.map(a => (is_iterable(a)
+        ? [...flatten_arrays(a)]
+        : a))
+      .reduce((a, b) => a.concat(b), []);
   }
 };
 
 /**
- * flatten only until the point of comma separated entities. iterative
+ * flatten only until the point of comma separated entities. recursive
  * @returns always an array
  */
-export const semi_flatten_input = function (...args) {
-  let list = args;
-  while (list.length === 1 && typeof list[0] === "object" && list[0].length) {
-    [list] = list;
+export const semi_flatten_arrays = function (...args) {
+  switch (args.length) {
+    case undefined:
+    case 0: return args;
+    // only if its an array (is iterable) and NOT a string
+    case 1: return is_iterable(args[0]) && typeof args[0] !== "string"
+      ? semi_flatten_arrays(...args[0])
+      : [args[0]];
+    default:
+      return args.map(a => (is_iterable(a)
+        ? [...semi_flatten_arrays(a)]
+        : a));
   }
-  return list;
 };
 
 /**
@@ -90,12 +99,15 @@ export const semi_flatten_input = function (...args) {
  *
  * @returns (number[]) vector in array form, or empty array for bad inputs
 */
-export const get_vector = function (...args) {
-  let list = flatten_input(args).filter(a => a !== undefined);
-  if (list === undefined) { return undefined; }
-  if (list.length === 0) { return undefined; }
-  if (!isNaN(list[0].x)) {
-    list = ["x", "y", "z"].map(c => list[0][c]).filter(a => a !== undefined);
+export const get_vector = function () {
+  let list = flatten_arrays(arguments);//.filter(a => a !== undefined);
+  if (list.length > 0
+    && typeof list[0] === "object"
+    && list[0] !== null
+    && !isNaN(list[0].x)) {
+    list = ["x", "y", "z"]
+      .map(c => list[0][c])
+      .filter(a => a !== undefined);
   }
   return list.filter(n => typeof n === "number");
 };
@@ -106,8 +118,8 @@ export const get_vector = function (...args) {
  *
  * @returns (number[]) vector in array form, or empty array for bad inputs
 */
-export const get_vector_of_vectors = function (...args) {
-  return semi_flatten_input(args)
+export const get_vector_of_vectors = function () {
+  return semi_flatten_arrays(arguments)
     .map(el => get_vector(el));
 };
 
@@ -119,8 +131,8 @@ const identity3 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
  *
  * @returns {number[]} array of 6 numbers, or undefined if bad inputs
 */
-export const get_matrix2 = function (...args) {
-  const m = get_vector(args);
+export const get_matrix2 = function () {
+  const m = get_vector(arguments);
   if (m === undefined) { return undefined; }
   if (m.length === 6) { return m; }
   if (m.length > 6) { return [m[0], m[1], m[2], m[3], m[4], m[5]]; }
