@@ -55,42 +55,33 @@ export const is_iterable = obj => obj != null
   && typeof obj[Symbol.iterator] === "function";
 
 /**
- * totally flatten, recursive
- * @returns an array, always.
+ * flatten only until the point of comma separated entities. recursive
+ * @returns always an array
  */
-export const flatten_arrays = function (...args) {
-  switch (args.length) {
+export const semi_flatten_arrays = function () {
+  switch (arguments.length) {
     case undefined:
-    case 0: return args;
+    case 0: return arguments;
     // only if its an array (is iterable) and NOT a string
-    case 1: return is_iterable(args[0]) && typeof args[0] !== "string"
-      ? flatten_arrays(...args[0])
-      : [args[0]];
+    case 1: return is_iterable(arguments[0]) && typeof arguments[0] !== "string"
+      ? semi_flatten_arrays(...arguments[0])
+      : [arguments[0]];
     default:
-      return args.map(a => (is_iterable(a)
-        ? [...flatten_arrays(a)]
-        : a))
-      .reduce((a, b) => a.concat(b), []);
+      return Array.from(arguments).map(a => (is_iterable(a)
+        ? [...semi_flatten_arrays(a)]
+        : a));
   }
 };
 
 /**
- * flatten only until the point of comma separated entities. recursive
- * @returns always an array
+ * totally flatten, recursive
+ * @returns an array, always.
  */
-export const semi_flatten_arrays = function (...args) {
-  switch (args.length) {
-    case undefined:
-    case 0: return args;
-    // only if its an array (is iterable) and NOT a string
-    case 1: return is_iterable(args[0]) && typeof args[0] !== "string"
-      ? semi_flatten_arrays(...args[0])
-      : [args[0]];
-    default:
-      return args.map(a => (is_iterable(a)
-        ? [...semi_flatten_arrays(a)]
-        : a));
-  }
+export const flatten_arrays = function () {
+  const arr = semi_flatten_arrays(arguments);
+  return arr.length > 1
+    ? arr.reduce((a, b) => a.concat(b), [])
+    : arr;
 };
 
 /**

@@ -16,7 +16,7 @@ import vector from "../vector/index";
 import Intersect from "../../methods/intersect";
 
 
-const M = {
+const CircleMethods = {
   // intersectionLine: function () {
   //   const line = get_line(arguments);
   //   const result = circle_line(this.origin, this.radius, line.origin, line.vector);
@@ -43,4 +43,4 @@ const M = {
 // const tangentThroughPoint
 // give us two tangent lines that intersect a point (outside the circle)
 
-export default M;
+export default CircleMethods;

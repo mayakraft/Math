@@ -1,14 +1,16 @@
 import Vector from "./vector/index";
+import Circle from "./circle/index";
 
-const Definitions = Object.assign({}, Vector);
-
-// we need:
-// - Super: what should be the prototype of the prototype (default Object)
+// Each primitive should be defined with these key/values:
+// - Super: what should be the prototype of the prototype (default: Object.prototype)
 //   example: Array.prototype
 // - Getters
 // - Methods
-// - args
-// - static
+// - Args
+// - Static
+// upper-case because static and super are keywords
+
+const Definitions = Object.assign({}, Vector, Circle);
 
 const create = function (primitiveName, args) {
   const a = Object.create(Definitions[primitiveName].proto.prototype);
@@ -17,7 +19,7 @@ const create = function (primitiveName, args) {
 };
 
 // these have to be typed out longform like this
-// this function name is what appears as the object type name
+// this function name is what appears as the object type name in use
 const vector = function () { return create("vector", arguments); };
 const circle = function () { return create("circle", arguments); };
 const rect = function () { return create("rect", arguments); };

@@ -5,21 +5,27 @@ import {
 
 export const EPSILON = 1e-6;
 
+const fEqual = (a, b) => a === b;
+const fEpsilonEqual = (a, b) => Math.abs(a - b) < EPSILON;
+
 const array_similarity_test = (list, compFunc) => Array
   .from(Array(list.length - 1))
   .map((_, i) => compFunc(list[0], list[i + 1]))
   .reduce((a, b) => a && b, true);
 
+export const equivalent_arrays_of_numbers = function () {
+  
+};
 /**
  * @param {...number} a sequence of numbers
  * @returns boolean
  */
-export const equivalent_numbers = (...args) => {
-  if (args.length === 0) { return false; }
-  if (args.length === 1 && args[0] !== undefined) {
-    return equivalent_numbers(...args[0]);
+export const equivalent_numbers = function () {
+  if (arguments.length === 0) { return false; }
+  if (arguments.length === 1 && arguments[0] !== undefined) {
+    return equivalent_numbers(...arguments[0]);
   }
-  return array_similarity_test(args, (a, b) => Math.abs(a - b) < EPSILON);
+  return array_similarity_test(arguments, fEpsilonEqual);
 };
 /**
  * @param {...number[]} compare n number of vectors, requires a consistent dimension
@@ -97,16 +103,12 @@ export const equivalent = (...args) => {
   const typeofList = typeof list[0];
   // array contains undefined, cannot compare
   if (typeofList === "undefined") { return false; }
-  if (list[0].constructor === Array) {
-    list = list.map(el => semi_flatten_arrays(el));
-  }
   switch (typeofList) {
     case "number":
-      return array_similarity_test(list, (a, b) => Math.abs(a - b) < EPSILON);
+      return array_similarity_test(list, fEpsilonEqual);
     case "boolean":
-      return array_similarity_test(list, (a, b) => a === b);
     case "string":
-      return array_similarity_test(list, (a, b) => a === b);
+      return array_similarity_test(list, fEqual);
     case "object":
       if (list[0].constructor === Array) { return equivalent_vectors(...list); }
       console.warn("comparing array of objects for equivalency by slow JSON.stringify with no epsilon check");

@@ -8,7 +8,7 @@ const CircleArgs = function () {
   const vectors = get_vector_of_vectors(arr);
   if (numbers.length === 3) {
     this.origin = vector(numbers[0], numbers[1]);
-    [, , this.radius] = numbers;
+    this.radius = numbers[2];
   } else if (vectors.length === 2) {
     this.radius = distance2(...vectors);
     this.origin = vector(...vectors[0]);

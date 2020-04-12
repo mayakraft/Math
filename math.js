@@ -57,26 +57,26 @@
   var is_iterable = function is_iterable(obj) {
     return obj != null && typeof obj[Symbol.iterator] === "function";
   };
-  var flatten_arrays = function flatten_arrays() {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    switch (args.length) {
+  var semi_flatten_arrays = function semi_flatten_arrays() {
+    switch (arguments.length) {
       case undefined:
       case 0:
-        return args;
+        return arguments;
 
       case 1:
-        return is_iterable(args[0]) && typeof args[0] !== "string" ? flatten_arrays.apply(void 0, _toConsumableArray(args[0])) : [args[0]];
+        return is_iterable(arguments[0]) && typeof arguments[0] !== "string" ? semi_flatten_arrays.apply(void 0, _toConsumableArray(arguments[0])) : [arguments[0]];
 
       default:
-        return args.map(function (a) {
-          return is_iterable(a) ? _toConsumableArray(flatten_arrays(a)) : a;
-        }).reduce(function (a, b) {
-          return a.concat(b);
-        }, []);
+        return Array.from(arguments).map(function (a) {
+          return is_iterable(a) ? _toConsumableArray(semi_flatten_arrays(a)) : a;
+        });
     }
+  };
+  var flatten_arrays = function flatten_arrays() {
+    var arr = semi_flatten_arrays(arguments);
+    return arr.length > 1 ? arr.reduce(function (a, b) {
+      return a.concat(b);
+    }, []) : arr;
   };
   var get_vector = function get_vector() {
     var list = flatten_arrays(arguments);
@@ -91,6 +91,19 @@
 
     return list.filter(function (n) {
       return typeof n === "number";
+    });
+  };
+  var get_vector_of_vectors = function get_vector_of_vectors() {
+    return semi_flatten_arrays(arguments).map(function (el) {
+      return get_vector(el);
+    });
+  };
+
+  var VectorArgs = function VectorArgs() {
+    var _this = this;
+
+    get_vector(arguments).forEach(function (n) {
+      return _this.push(n);
     });
   };
 
@@ -119,6 +132,11 @@
   var cross3 = function cross3(a, b) {
     return [a[1] * b[2] - a[2] * b[1], a[0] * b[2] - a[2] * b[0], a[0] * b[1] - a[1] * b[0]];
   };
+  var distance2 = function distance2(a, b) {
+    var p = a[0] - b[0];
+    var q = a[1] - b[1];
+    return Math.sqrt(p * p + q * q);
+  };
 
   var parallel = function parallel(a, b) {
     return 1 - Math.abs(dot(normalize(a), normalize(b))) < EPSILON;
@@ -137,38 +155,58 @@
     return [vecA, normalize(vecB)];
   };
 
-  var methods = {};
+  var lengthSort = function lengthSort(a, b) {
+    return [a, b].sort(function (a, b) {
+      return a.length - b.length;
+    });
+  };
+
+  var resize = function resize(d, a) {
+    return Array(d).fill(0).map(function (z, i) {
+      return a[i] ? a[i] : z;
+    });
+  };
+
+  var makeSameD = function makeSameD(a, b) {
+    var lengths = [a.length - b.length, b.length - a.length];
+    var vecs = lengthSort(a, b);
+    vecs[0] = vecs[1].map(function (_, i) {
+      return vecs[0][i] || 0;
+    });
+    return vecs;
+  };
+
+  var VectorMethods = {};
   var table = {
     preserve: {
       magnitude: function magnitude$1() {
         return magnitude(this);
       },
+      isEquivalent: function isEquivalent() {
+        var vecs = makeSameD(this, get_vector(arguments));
+        return vecs[0].map(function (_, i) {
+          return Math.abs(vecs[0][i] - vecs[1][i]) < EPSILON;
+        }).reduce(function (a, b) {
+          return a && b;
+        }, true);
+      },
       isParallel: function isParallel() {
-        var vec = get_vector(arguments);
-        var sm = this.length < vec.length ? this : vec;
-        var lg = this.length < vec.length ? vec : this;
-        return parallel(sm, lg);
+        return parallel.apply(void 0, _toConsumableArray(makeSameD(this, get_vector(arguments))));
       },
       dot: function dot$1() {
-        var v = get_vector(arguments);
-        return this.length > v.length ? dot(v, this) : dot(this, v);
+        return dot.apply(void 0, _toConsumableArray(lengthSort(this, get_vector(arguments))));
       },
       distanceTo: function distanceTo() {
-        var _this = this;
-
-        var v = get_vector(arguments);
-        var length = this.length < v.length ? this.length : v.length;
-        var sum = Array.from(Array(length)).map(function (_, i) {
-          return Math.pow(_this[i] - v[i], 2);
+        var vecs = makeSameD(this, get_vector(arguments));
+        return Math.sqrt(vecs.map(function (_, i) {
+          return Math.pow(vecs[0][i] - vecs[1][i], 2);
         }).reduce(function (a, b) {
           return a + b;
-        }, 0);
-        return Math.sqrt(sum);
+        }, 0));
       },
       bisect: function bisect() {
-        var vec = get_vector(arguments);
-        return bisect_vectors(this, vec).map(function (b) {
-          return methods.constructor(b);
+        return bisect_vectors(this, get_vector(arguments)).map(function (b) {
+          return VectorMethods.constructor(b);
         });
       }
     },
@@ -185,29 +223,20 @@
         });
       },
       cross: function cross() {
-        var b = get_vector(arguments);
-        var a = this.slice();
-
-        if (a[2] == null) {
-          a[2] = 0;
-        }
-
-        if (b[2] == null) {
-          b[2] = 0;
-        }
-
-        return cross3(a, b);
+        return cross3(resize(3, this), resize(3, get_vector(arguments)));
       },
       add: function add() {
-        var vec = get_vector(arguments);
-        return this.map(function (v, i) {
-          return v + vec[i];
+        var _this = this;
+
+        return resize(this.length, get_vector(arguments)).map(function (n, i) {
+          return _this[i] + n;
         });
       },
       subtract: function subtract() {
-        var vec = get_vector(arguments);
-        return this.map(function (v, i) {
-          return v - vec[i];
+        var _this2 = this;
+
+        return resize(this.length, get_vector(arguments)).map(function (n, i) {
+          return _this2[i] - n;
         });
       },
       rotateZ90: function rotateZ90() {
@@ -225,38 +254,41 @@
         });
       },
       lerp: function lerp(vector, pct) {
-        var _this2 = this;
+        var _this3 = this;
 
-        var vec = get_vector(vector);
         var inv = 1.0 - pct;
-        var length = this.length < vec.length ? this.length : vec.length;
-        return Array.from(Array(length)).map(function (_, i) {
-          return _this2[i] * pct + vec[i] * inv;
+        return resize(this.length, get_vector(vector)).map(function (n, i) {
+          return _this3[i] * inv + n * pct;
         });
       },
       midpoint: function midpoint() {
-        var vec = get_vector(arguments);
-        var sm = this.length < vec.length ? this.slice() : vec;
-        var lg = this.length < vec.length ? vec : this.slice();
-
-        for (var i = sm.length; i < lg.length; i += 1) {
-          sm[i] = 0;
-        }
-
-        return lg.map(function (_, i) {
-          return (sm[i] + lg[i]) * 0.5;
+        var vecs = makeSameD(this, get_vector(arguments));
+        return vecs[0].map(function (_, i) {
+          return (vecs[0][i] + vecs[1][i]) / 2;
         });
       }
     }
   };
   Object.keys(table.preserve).forEach(function (key) {
-    methods[key] = table.preserve[key];
+    VectorMethods[key] = table.preserve[key];
   });
   Object.keys(table.vector).forEach(function (key) {
-    methods[key] = function () {
-      return methods.constructor.apply(methods, _toConsumableArray(table.vector[key].apply(this, arguments)));
+    VectorMethods[key] = function () {
+      return VectorMethods.constructor.apply(VectorMethods, _toConsumableArray(table.vector[key].apply(this, arguments)));
     };
   });
+
+  var VectorGetters = {
+    x: function x() {
+      return this[0];
+    },
+    y: function y() {
+      return this[1];
+    },
+    z: function z() {
+      return this[2];
+    }
+  };
 
   var VectorStatic = function VectorStatic(proto) {
     proto.fromAngle = function (angle) {
@@ -267,14 +299,57 @@
   var Vector = {
     vector: {
       Super: Array.prototype,
-      Args: Args,
-      Getters: Getters,
-      Methods: Methods,
+      Args: VectorArgs,
+      Getters: VectorGetters,
+      Methods: VectorMethods,
       Static: VectorStatic
     }
   };
 
-  var Definitions = Object.assign({}, Vector);
+  var CircleArgs = function CircleArgs() {
+    var arr = Array.from(arguments);
+    var numbers = arr.filter(function (param) {
+      return !isNaN(param);
+    });
+    var vectors = get_vector_of_vectors(arr);
+
+    if (numbers.length === 3) {
+      this.origin = Vector(numbers[0], numbers[1]);
+      this.radius = numbers[2];
+    } else if (vectors.length === 2) {
+      this.radius = distance2.apply(void 0, _toConsumableArray(vectors));
+      this.origin = Vector.apply(void 0, _toConsumableArray(vectors[0]));
+    }
+  };
+
+  var CircleMethods = {};
+
+  var CircleGetters = {
+    x: function x() {
+      return this.origin[0];
+    },
+    y: function y() {
+      return this.origin[1];
+    }
+  };
+
+  var CircleStatic = function CircleStatic(circle) {
+    circle.fromPoints = function () {
+      var points = get_vector_of_vectors(innerArgs);
+      return circle(points, distance2(points[0], points[1]));
+    };
+  };
+
+  var Circle = {
+    circle: {
+      Args: CircleArgs,
+      Getters: CircleGetters,
+      Methods: CircleMethods,
+      Static: CircleStatic
+    }
+  };
+
+  var Definitions = Object.assign({}, Vector, Circle);
 
   var create = function create(primitiveName, args) {
     var a = Object.create(Definitions[primitiveName].proto.prototype);
