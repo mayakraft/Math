@@ -1,69 +1,92 @@
+import Constructors from "./constructors";
 import Vector from "./vector/index";
 import Circle from "./circle/index";
+import Rect from "./rect/index";
+import Polygon from "./polygon/index";
+import Line from "./lines/line";
 
-// Each primitive should be defined with these key/values:
-// - Super: what should be the prototype of the prototype (default: Object.prototype)
-//   example: Array.prototype
-// - Getters
-// - Methods
-// - Args
-// - Static
-// upper-case because static and super are keywords
+// import PolygonPrototype from "./prototypes/polygon";
 
-const Definitions = Object.assign({}, Vector, Circle);
+// Each primitive is defined by these key/values:
+// {
+//   P: proto- the prototype of the prototype (default: Object.prototype)
+//   G: getters- will become Object.defineProperty(___, ___, { get: })
+//   M: methods- will become Object.defineProperty(___, ___, { value: })
+//   A: args- parse user-arguments, set properties on "this"
+//   S: static- static methods added to the constructor
+// }
+// keys are one letter to shrink minified compile size
 
 const create = function (primitiveName, args) {
-  const a = Object.create(Definitions[primitiveName].proto.prototype);
-  Definitions[primitiveName].Args.apply(a, args);
+  const a = Object.create(Definitions[primitiveName].proto);
+  Definitions[primitiveName].A.apply(a, args);
   return Object.freeze(a);
 };
+
+const Definitions = Object.assign({},
+  Vector,
+  Circle,
+  Rect,
+  Polygon,
+  Line,
+);
 
 // these have to be typed out longform like this
 // this function name is what appears as the object type name in use
 const vector = function () { return create("vector", arguments); };
 const circle = function () { return create("circle", arguments); };
 const rect = function () { return create("rect", arguments); };
+const polygon = function () { return create("polygon", arguments); };
+const line = function () { return create("line", arguments); };
 
-const Primitives = {
+Object.assign(Constructors, {
   vector,
   circle,
-  rect
-};
+  rect,
+  polygon,
+  line,
+});
 
 // build prototypes
 Object.keys(Definitions).forEach(primitiveName => {
   // create the prototype
   const Proto = {};
-  Proto.prototype = Object
-    .create(Definitions[primitiveName].Super || Object.prototype);
+  Proto.prototype = Definitions[primitiveName].P != null
+    ? Object.create(Definitions[primitiveName].P)
+    : Object.create(Object.prototype);
   Proto.prototype.constructor = Proto;
 
   // getters
-  Object.keys(Definitions[primitiveName].Getters)
+  Object.keys(Definitions[primitiveName].G)
     .forEach(key => Object.defineProperty(Proto.prototype, key, {
-      get: Definitions[primitiveName].Getters[key],
+      get: Definitions[primitiveName].G[key],
       enumerable: true
     }));
 
   // methods
-  Object.keys(Definitions[primitiveName].Methods)
+  Object.keys(Definitions[primitiveName].M)
     .forEach(key => Object.defineProperty(Proto.prototype, key, {
-      value: Definitions[primitiveName].Methods[key],
+      value: Definitions[primitiveName].M[key],
     }));
-  Definitions[primitiveName].proto = Proto;
+
+  // store the prototype on the Definition, to be called during instantiation
+  Definitions[primitiveName].proto = Proto.prototype;
 
   // static methods
-  Definitions[primitiveName].Static(Primitives[primitiveName]);
+  // applied to the constructor not the prototype
+  Object.keys(Definitions[primitiveName].S)
+    .forEach(key => Object.defineProperty(Constructors[primitiveName], key, {
+      value: Definitions[primitiveName].S[key],
+    }));
 
   // make this present in the prototype chain so "instanceof" works
-  Primitives[primitiveName].prototype = Definitions[primitiveName].proto.prototype;
-  Primitives[primitiveName].prototype.constructor = Primitives[primitiveName];
+  Constructors[primitiveName].prototype = Definitions[primitiveName].proto;
+  Constructors[primitiveName].prototype.constructor = Constructors[primitiveName];
 
   // done with prototype
-  Object.freeze(Definitions[primitiveName].proto.prototype);
-
-  // pass a pointer to this object up the chain
-  Definitions[primitiveName].Methods.constructor = Primitives[primitiveName];
+  Object.freeze(Definitions[primitiveName].proto);
 });
 
-export default Primitives;
+console.log(Definitions);
+
+export default Constructors;

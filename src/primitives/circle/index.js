@@ -1,14 +1,8 @@
-import Args from "./args";
-import Methods from "./methods";
-import Getters from "./getters";
-import Static from "./static";
+import A from "./args";
+import G from "./getters";
+import M from "./methods";
+import S from "./static";
 
 export default {
-  circle: {
-    // Super: Object.prototype,
-    Args,
-    Getters,
-    Methods,
-    Static,
-  }
+  circle: { A, G, M, S }
 };

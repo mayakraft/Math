@@ -24,6 +24,32 @@ export const Typeof = function (obj) {
   return undefined;
 };
 
+
+/**
+ * sort two vectors by their lengths, returning the shorter one first
+ *
+ */
+export const lengthSort = (a, b) => [a, b].sort((a, b) => a.length - b.length);
+
+/**
+ * force a vector into N-dimensions by adding 0s if they don't exist.
+ */
+export const resize = (d, v) => Array(d).fill(0).map((z, i) => v[i] ? v[i] : z);
+
+/**
+ * this makes the two vectors match in dimension.
+ * the smaller array will be filled with 0s to match the length of the larger
+ */
+export const resizeUp = (a, b) => {
+  const size = a.length > b.length ? a.length : b.length;
+  return [a, b].map(v => resize(size, v));
+};
+
+export const resizeDown = (a, b) => {
+  const size = a.length > b.length ? b.length : a.length;
+  return [a, b].map(v => resize(size, v));
+};
+
 const countPlaces = function (num) {
   const m = (`${num}`).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
   if (!m) { return 0; }
@@ -196,6 +222,12 @@ export function get_segment(...args) {
  * @returns ({ point:[], vector:[] })
 */
 export function get_line() {
+  if (arguments.length === 4) {
+    return {
+        origin: [arguments[0], arguments[1]],
+        vector: [arguments[2], arguments[3]]
+      };
+  }
   let params = Array.from(arguments);
   let numbers = params.filter((param) => !isNaN(param));
   let arrays = params.filter((param) => param.constructor === Array);

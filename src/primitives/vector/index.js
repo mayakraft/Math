@@ -1,15 +1,15 @@
 /** n-dimensional vector, with some 3D and 2D-specific operations */
-import Args from "./args";
-import Methods from "./methods";
-import Getters from "./getters";
-import Static from "./static";
+import A from "./args";
+import G from "./getters";
+import M from "./methods";
+import S from "./static";
 
 export default {
   vector: {
-    Super: Array.prototype,  // vector is a special case, it's an Array
-    Args,
-    Getters,
-    Methods,
-    Static,
+    P: Array.prototype,  // vector is a special case, it's an Array
+    A,
+    G,
+    M,
+    S,
   }
 };

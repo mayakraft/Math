@@ -1,9 +1,12 @@
+import Constructors from "../constructors";
 // import { equivalent } from "../../core/equal";
 import { EPSILON } from "../../core/equal";
 import { parallel } from "../../core/query";
 import { bisect_vectors } from "../../core/geometry";
 
 import {
+  resize,
+  resizeUp,
   get_vector,
   get_matrix2,
   get_line,
@@ -22,49 +25,22 @@ import {
   make_matrix2_reflection,
 } from "../../core/matrix2";
 
-/**
- * sort two vectors by their lengths, returning the shorter one first
- *
- */
-const lengthSort = (a, b) => [a, b].sort((a, b) => a.length - b.length);
-
-/**
- * force a point into N-dimensions by adding 0s if they don't exist.
- */
-const resize = (d, a) => Array(d).fill(0).map((z, i) => a[i] ? a[i] : z);
-
-/**
- * this makes the two vectors match in dimension.
- * the smaller array will be filled with 0s to match the length of the larger
- */
-const makeSameD = (a, b) => {
-  const lengths = [a.length - b.length, b.length - a.length];
-  const vecs = lengthSort(a, b);
-  vecs[0] = vecs[1].map((_, i) => vecs[0][i] || 0);
-  return vecs;
-};
-
-// the default export
-const VectorMethods = {};
-// VectorMethods.constructor = () => {};
-// VectorMethods.constructor will be set later to be vector()
-
 const table = {
   preserve: { // don't transform the return type. preserve it
     magnitude: function () { return magnitude(this); },
     isEquivalent: function () {
-      const vecs = makeSameD(this, get_vector(arguments));
+      const vecs = resizeUp(this, get_vector(arguments));
       return vecs[0].map((_, i) => Math.abs(vecs[0][i] - vecs[1][i]) < EPSILON)
         .reduce((a, b) => a && b, true);
     },
     isParallel: function () {
-      return parallel(...makeSameD(this, get_vector(arguments)));
+      return parallel(...resizeUp(this, get_vector(arguments)));
     },
     dot: function () {
       return dot(...lengthSort(this, get_vector(arguments)));
     },
     distanceTo: function () {
-      const vecs = makeSameD(this, get_vector(arguments));
+      const vecs = resizeUp(this, get_vector(arguments));
       return Math.sqrt(vecs
         .map((_, i) => (vecs[0][i] - vecs[1][i]) ** 2)
         .reduce((a, b) => a + b, 0)
@@ -72,7 +48,7 @@ const table = {
     },
     bisect: function () {
       return bisect_vectors(this, get_vector(arguments))
-        .map(b => VectorMethods.constructor(b));
+        .map(b => Constructors.vector(b));
     },
   },
   vector: { // return type
@@ -112,20 +88,22 @@ const table = {
         .map((n, i) => this[i] * inv + n * pct);
     },
     midpoint: function () {
-      const vecs = makeSameD(this, get_vector(arguments));
+      const vecs = resizeUp(this, get_vector(arguments));
       return vecs[0].map((_, i) => (vecs[0][i] + vecs[1][i]) / 2);
     },
   }
 };
 
+// the default export
+const VectorMethods = {};
+
 Object.keys(table.preserve).forEach(key => {
   VectorMethods[key] = table.preserve[key];
 });
 
-// VectorMethods.constructor is a pointer to creating a vector() type
 Object.keys(table.vector).forEach(key => {
   VectorMethods[key] = function () {
-    return VectorMethods.constructor(...table.vector[key].apply(this, arguments));
+    return Constructors.vector(...table.vector[key].apply(this, arguments));
   }
 });
 

@@ -200,9 +200,8 @@ export const centroid = (points) => {
  * @returns array of arrays: [[x, y], [width, height]]
  */
 export const enclosing_rectangle = (points) => {
-  const l = points[0].length;
-  const mins = Array.from(Array(l)).map(() => Infinity);
-  const maxs = Array.from(Array(l)).map(() => -Infinity);
+  const mins = Array(points[0].length).fill(Infinity);
+  const maxs = Array(points[0].length).fill(-Infinity);
   points.forEach(point => point
     .forEach((c, i) => {
       if (c < mins[i]) { mins[i] = c; }
