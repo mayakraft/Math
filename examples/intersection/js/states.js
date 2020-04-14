@@ -34,7 +34,10 @@ const states = {
     math: math.circle,
   },
   "perpendicular-bisector": {
-    svg: SVG.g,
+    svg: (...pts) => {
+      const p = infinityBox.clipLine(math.line.perpendicularBisector(...pts));
+      return SVG.line(p.points);
+    },
     math: math.line.perpendicularBisector,
   },
   bisect: {

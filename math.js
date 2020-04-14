@@ -1338,7 +1338,7 @@
         },
         perpendicularBisector: function perpendicularBisector() {
           var points = get_vector_of_vectors(arguments);
-          var vec = normalize([points[1][0] - points[0][0], points[1][1] - points[0][1]]);
+          var vec = [points[1][0] - points[0][0], points[1][1] - points[0][1]];
           return Constructors.line({
             origin: average(points[0], points[1]),
             vector: [vec[1], -vec[0]]
