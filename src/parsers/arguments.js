@@ -1,4 +1,4 @@
-
+import Constructors from "../primitives/constructors";
 
 /**
  * this is *filled* with heuristic methods, methods that make assumptions,
@@ -117,6 +117,7 @@ export const flatten_arrays = function () {
  * @returns (number[]) vector in array form, or empty array for bad inputs
 */
 export const get_vector = function () {
+  if (arguments[0] instanceof Constructors.vector) { return arguments[0]; }
   let list = flatten_arrays(arguments);//.filter(a => a !== undefined);
   if (list.length > 0
     && typeof list[0] === "object"
@@ -215,6 +216,7 @@ export const get_matrix3 = function (...args) {
  * @returns [[2,3],[10,11]]
 */
 export function get_segment() {
+  if (arguments[0] instanceof Constructors.segment) { return arguments[0]; }
   if (arguments.length === 4) {
     return [
       [arguments[0], arguments[1]],
@@ -228,6 +230,7 @@ export function get_segment() {
  * @returns ({ point:[], vector:[] })
 */
 export function get_line() {
+  if (arguments[0] instanceof Constructors.line) { return arguments[0]; }
   if (arguments.length === 4) {
     return {
         origin: [arguments[0], arguments[1]],
@@ -273,6 +276,7 @@ export function get_line() {
 }
 
 export function get_ray(...args) {
+  if (arguments[0] instanceof Constructors.ray) { return arguments[0]; }
   return get_line(...args);
 }
 

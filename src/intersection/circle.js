@@ -23,11 +23,11 @@ const rotatePoint = function (fp, pt, a) {
   const yRot = y * Math.cos(a) - x * Math.sin(a);
   return [fp[0] + xRot, fp[1] + yRot];
 };
-export const circle_circle = function (center, radius, center2, radius2, epsilon = EPSILON) {
-  const r = (radius < radius2) ? radius : radius2;
-  const R = (radius < radius2) ? radius2 : radius;
-  const smCenter = (radius < radius2) ? center : center2;
-  const bgCenter = (radius < radius2) ? center2 : center;
+export const circle_circle = function (c1, c2, epsilon = EPSILON) {
+  const r = (c1.radius < c2.radius) ? c1.radius : c2.radius;
+  const R = (c1.radius < c2.radius) ? c2.radius : c1.radius;
+  const smCenter = (c1.radius < c2.radius) ? c1.origin : c2.origin;
+  const bgCenter = (c1.radius < c2.radius) ? c2.origin : c1.origin;
   const vec = [smCenter[0] - bgCenter[0], smCenter[1] - bgCenter[1]];
   const d = Math.sqrt((vec[0] ** 2) + (vec[1] ** 2));
   // infinite solutions

@@ -8,6 +8,7 @@ import {
 } from "../../parsers/arguments";
 
 import Intersection from "../../intersection/index";
+import * as Intersect from "../../intersection/polygon";
 
 import { point_in_poly } from "../../core/query";
 
@@ -103,18 +104,18 @@ Polygon.prototype.enclosingRectangle = function () {
 // todo: need non-convex clipping functions returns an array of edges
 Polygon.prototype.clipSegment = function (...args) {
   const edge = get_segment(args);
-  const e = convex_poly_segment(this.points, edge[0], edge[1]);
-  return e === undefined ? undefined : Segment(e);
+  const e = Intersect.convex_poly_segment(this.points, edge[0], edge[1]);
+  return e === undefined ? undefined : Constructors.segment(e);
 };
 Polygon.prototype.clipLine = function (...args) {
   const line = get_line(args);
-  const e = convex_poly_line(this.points, line.origin, line.vector);
-  return e === undefined ? undefined : Segment(e);
+  const e = Intersect.convex_poly_line(this.points, line.origin, line.vector);
+  return e === undefined ? undefined : Constructors.segment(e);
 };
 Polygon.prototype.clipRay = function (...args) {
   const line = get_line(args);
-  const e = convex_poly_ray(this.points, line.origin, line.vector);
-  return e === undefined ? undefined : Segment(e);
+  const e = Intersect.convex_poly_ray(this.points, line.origin, line.vector);
+  return e === undefined ? undefined : Constructors.segment(e);
 };
 Polygon.prototype.split = function (...args) {
   const line = get_line(args);
