@@ -5,15 +5,9 @@ import {
   get_vector_of_vectors,
 } from "../../parsers/arguments";
 
-import {
-  circle_line,
-  circle_ray,
-  circle_segment,
-} from "../../core/intersection";
-
 import vector from "../vector/index";
 
-import Intersect from "../../methods/intersect";
+import Intersect from "../../intersection/index";
 
 
 const CircleMethods = {
@@ -35,9 +29,9 @@ const CircleMethods = {
   // intersectionCircle: function () {
   //   // const circle = get_circle(arguments);
   // },
-  // intersect: function (object) {
-  //   return Intersect(this, object);
-  // },
+  intersect: function (object) {
+    return Intersect(this, object);
+  },
 };
 
 // const tangentThroughPoint

@@ -7,11 +7,7 @@ import {
   get_segment,
 } from "../../parsers/arguments";
 
-import {
-  convex_poly_segment,
-  convex_poly_line,
-  convex_poly_ray,
-} from "../../core/intersection";
+import Intersection from "../../intersection/index";
 
 import { point_in_poly } from "../../core/query";
 
@@ -68,7 +64,7 @@ Polygon.prototype.translate = function () {
 Polygon.prototype.transform = function () {
   const m = get_matrix2(arguments);
   const newPoints = this.points
-    // .map(p => Vector(multiply_matrix2_vector2(m, p)));
+  // .map(p => Vector(multiply_matrix2_vector2(m, p)));
     .map(p => multiply_matrix2_vector2(m, p));
   return Constructors.polygon(newPoints);
 };
@@ -126,7 +122,6 @@ Polygon.prototype.split = function (...args) {
     .map(poly => Constructors.polygon(poly));
 };
 
-
 // Object.defineProperty(proto, "edges", {
 //   get: function () { return this.sides; },
 // });
@@ -134,6 +129,4 @@ Polygon.prototype.split = function (...args) {
 //   get: function () { return sectors.call(this); },
 // });
 
-
 export default Polygon;
-

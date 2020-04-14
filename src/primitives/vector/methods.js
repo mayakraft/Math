@@ -37,7 +37,7 @@ const table = {
       return parallel(...resizeUp(this, get_vector(arguments)));
     },
     dot: function () {
-      return dot(...lengthSort(this, get_vector(arguments)));
+      return dot(...resizeUp(this, get_vector(arguments)));
     },
     distanceTo: function () {
       const vecs = resizeUp(this, get_vector(arguments));

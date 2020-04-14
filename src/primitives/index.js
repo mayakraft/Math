@@ -4,6 +4,8 @@ import Circle from "./circle/index";
 import Rect from "./rect/index";
 import Polygon from "./polygon/index";
 import Line from "./lines/line";
+import Ray from "./lines/ray";
+import Segment from "./lines/segment";
 
 // import PolygonPrototype from "./prototypes/polygon";
 
@@ -29,6 +31,8 @@ const Definitions = Object.assign({},
   Rect,
   Polygon,
   Line,
+  Ray,
+  Segment,
 );
 
 // these have to be typed out longform like this
@@ -38,6 +42,8 @@ const circle = function () { return create("circle", arguments); };
 const rect = function () { return create("rect", arguments); };
 const polygon = function () { return create("polygon", arguments); };
 const line = function () { return create("line", arguments); };
+const ray = function () { return create("ray", arguments); };
+const segment = function () { return create("segment", arguments); };
 
 Object.assign(Constructors, {
   vector,
@@ -45,6 +51,8 @@ Object.assign(Constructors, {
   rect,
   polygon,
   line,
+  ray,
+  segment,
 });
 
 // build prototypes
@@ -69,9 +77,6 @@ Object.keys(Definitions).forEach(primitiveName => {
       value: Definitions[primitiveName].M[key],
     }));
 
-  // store the prototype on the Definition, to be called during instantiation
-  Definitions[primitiveName].proto = Proto.prototype;
-
   // static methods
   // applied to the constructor not the prototype
   Object.keys(Definitions[primitiveName].S)
@@ -80,13 +85,15 @@ Object.keys(Definitions).forEach(primitiveName => {
     }));
 
   // make this present in the prototype chain so "instanceof" works
-  Constructors[primitiveName].prototype = Definitions[primitiveName].proto;
+  Constructors[primitiveName].prototype = Proto.prototype;
   Constructors[primitiveName].prototype.constructor = Constructors[primitiveName];
 
   // done with prototype
-  Object.freeze(Definitions[primitiveName].proto);
+  Object.freeze(Proto.prototype);
+  // store the prototype on the Definition, to be called during instantiation
+  Definitions[primitiveName].proto = Proto.prototype;
 });
 
-console.log(Definitions);
+// console.log(Definitions);
 
 export default Constructors;

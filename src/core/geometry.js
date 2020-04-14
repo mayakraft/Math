@@ -1,11 +1,16 @@
 import { EPSILON } from "./equal";
 import { point_on_line } from "./query";
-import { line_segment_exclusive } from "./intersection";
 import { clean_number } from "../parsers/arguments";
 import {
   normalize,
   midpoint2,
 } from "./algebra";
+
+import {
+  intersect,
+  exclude_l_s,
+} from "../intersection/lines";
+
 
 /** There are 2 interior angles between 2 absolute angle measurements, from A to B return the clock
 wise one
@@ -225,6 +230,12 @@ export const make_regular_polygon = (sides, x = 0, y = 0, radius = 1) => {
   });
 };
 
+
+const line_segment_exclusive = function (linePoint, lineVector, segmentA, segmentB) {
+  const pt = segmentA;
+  const vec = [segmentB[0] - segmentA[0], segmentB[1] - segmentA[1]];
+  return intersect(linePoint, lineVector, pt, vec, exclude_l_s);
+};
 export const split_polygon = (poly, linePoint, lineVector) => {
   //    point: intersection [x,y] point or null if no intersection
   // at_index: where in the polygon this occurs

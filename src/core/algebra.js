@@ -44,11 +44,11 @@ export const dot = (v, u) => v
  * @param {...number[]} sequence of vectors
  * @returns {number[]} on vector, the midpoint
  */
-export const average = (...args) => {
-  const dimension = (args.length > 0) ? args[0].length : 0;
+export const average = function () {
+  const dimension = (arguments.length > 0) ? arguments[0].length : 0;
   const sum = Array(dimension).fill(0);
-  args.forEach(vec => sum.forEach((_, i) => { sum[i] += vec[i] || 0; }));
-  return sum.map(n => n / args.length);
+  Array.from(arguments).forEach(vec => sum.forEach((_, i) => { sum[i] += vec[i] || 0; }));
+  return sum.map(n => n / arguments.length);
 };
 /**
  * @param {number[]} two vectors

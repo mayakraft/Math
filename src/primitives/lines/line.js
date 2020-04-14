@@ -11,9 +11,11 @@ import {
 } from "../../core/algebra";
 
 import { multiply_matrix2_line2 } from "../../core/matrix2";
-import { limit_line } from "../../core/intersection";
 
 import LinePrototype from "../prototypes/line";
+
+// distance is between 0 and 1, representing the vector between start and end. cap accordingly
+const limit_line = dist => dist;
 
 export default {
   line: {
@@ -30,14 +32,13 @@ export default {
     },
 
     M: {
-      area: function () { return this.width * this.height },
       transform: function () {
         const mat = get_matrix2(arguments);
         const line = multiply_matrix2_line2(mat, this.origin, this.vector);
-        return Line(line[0], line[1]);
+        return Constructors.line(line[0], line[1]);
       },
-      compare_function: () => true,
-      clip_function: limit_line,
+      clip_function: dist => dist,
+      // compare_function: () => true,
     },
 
     S: {
