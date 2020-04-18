@@ -4,6 +4,97 @@ const testEqual = function (...args) {
   expect(math.core.equivalent(...args)).toBe(true);
 };
 
+// from the prototype
+// test("isParallel", () => {
+//   const l = math.line(0,1,2,3);
+//   expect(l.isParallel()).toBe(true);
+// });
+// test("isDegenerate", () => {
+//   const l = math.line(0,1,2,3);
+//   expect(l.isDegenerate()).toBe(true);
+// });
+// test("reflection", () => {
+//   const l = math.line(0,1,2,3);
+//   expect(l.reflection()).toBe(true);
+// });
+// test("nearestPoint", () => {
+//   const l = math.line(0,1,2,3);
+//   expect(l.nearestPoint()).toBe(true);
+// });
+// test("intersect", () => {
+//   const l = math.line(0,1,2,3);
+//   expect(l.intersect()).toBe(true);
+// });
+// test("bisectLine", () => {
+//   const l = math.line(0,1,2,3);
+//   expect(l.bisectLine()).toBe(true);
+// });
+// test("bisectRay", () => {
+//   const l = math.line(0,1,2,3);
+//   expect(l.bisectRay()).toBe(true);
+// });
+// test("bisectSegment", () => {
+//   const l = math.line(0,1,2,3);
+//   expect(l.bisectSegment()).toBe(true);
+// });
+
+// // line
+// test("transform", () => {
+//   const l = math.line(0,1,2,3);
+//   expect(l.transform()).toBe(true);
+// });
+// test("fromPoints", () => {
+//   const l = math.line(0,1,2,3);
+//   expect(l.fromPoints()).toBe(true);
+// });
+// test("perpendicularBisector", () => {
+//   const l = math.line(0,1,2,3);
+//   expect(l.perpendicularBisector()).toBe(true);
+// });
+
+// // ray
+// test("transform", () => {
+//   const r = math.ray(0,1,2,3);
+//   expect(r.transform()).toBe(true);
+// });
+// test("rotate180", () => {
+//   const r = math.ray(0,1,2,3);
+//   expect(r.rotate180()).toBe(true);
+// });
+// test("fromPoints", () => {
+//   const r = math.ray(0,1,2,3);
+//   expect(r.fromPoints()).toBe(true);
+// });
+
+// // segment
+// test("0", () => {
+//   const s = math.segment(0,1,2,3);
+//   expect(s[0]()).toBe(true);
+// });
+// test("1", () => {
+//   const s = math.segment(0,1,2,3);
+//   expect(s[1]()).toBe(true);
+// });
+// test("length", () => {
+//   const s = math.segment(0,1,2,3);
+//   expect(s.length()).toBe(true);
+// });
+// test("clip_function", () => {
+//   const s = math.segment(0,1,2,3);
+//   expect(s.clip_function()).toBe(true);
+// });
+// test("transform", () => {
+//   const s = math.segment(0,1,2,3);
+//   expect(s.transform()).toBe(true);
+// });
+// test("scale", () => {
+//   const s = math.segment(0,1,2,3);
+//   expect(s.scale()).toBe(true);
+// });
+// test("midpoint", () => {
+//   const s = math.segment(0,1,2,3);
+//   expect(s.midpoint()).toBe(true);
+// });
 
 /**
  * lines, rays, segments

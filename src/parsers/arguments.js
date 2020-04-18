@@ -1,14 +1,16 @@
+import Constructors from "../primitives/constructors";
+
 /**
  * this is *filled* with heuristic methods, methods that make assumptions,
  * methods that take in user-input and infer a best match.
  */
+
 /**
  * one way to improve these input finders is to search in all indices
  * of the arguments list, right now it assumes THIS is the only thing
  * you're passing in. in the case that it isn't and there's an object
  * in the first slot, it won't find the valid data in the second.
  */
-
 export const Typeof = function (obj) {
   if (typeof obj === "object") {
     if (obj.radius != null) { return "circle"; }
@@ -22,11 +24,46 @@ export const Typeof = function (obj) {
   return undefined;
 };
 
+/**
+ * @returns ({ point:[], vector:[] })
+*/
+const vector_origin_form = (vector, origin) => ({
+  vector: vector || [],
+  origin: origin || []
+});
+
+
+/**
+ * sort two vectors by their lengths, returning the shorter one first
+ *
+ */
+export const lengthSort = (a, b) => [a, b].sort((a, b) => a.length - b.length);
+
+/**
+ * force a vector into N-dimensions by adding 0s if they don't exist.
+ */
+export const resize = (d, v) => Array(d).fill(0).map((z, i) => v[i] ? v[i] : z);
+
+/**
+ * this makes the two vectors match in dimension.
+ * the smaller array will be filled with 0s to match the length of the larger
+ */
+export const resizeUp = (a, b) => {
+  const size = a.length > b.length ? a.length : b.length;
+  return [a, b].map(v => resize(size, v));
+};
+
+export const resizeDown = (a, b) => {
+  const size = a.length > b.length ? b.length : a.length;
+  return [a, b].map(v => resize(size, v));
+};
+
 const countPlaces = function (num) {
   const m = (`${num}`).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
   if (!m) { return 0; }
   return Math.max(0, (m[1] ? m[1].length : 0) - (m[2] ? +m[2] : 0));
 };
+
 /**
  * clean floating point numbers
  * example: 15.0000000000000002 into 15
@@ -52,36 +89,33 @@ export const is_iterable = obj => obj != null
   && typeof obj[Symbol.iterator] === "function";
 
 /**
- * totally flatten, recursive
- * @returns an array, always.
+ * flatten only until the point of comma separated entities. recursive
+ * @returns always an array
  */
-export const flatten_input = function (...args) {
-  switch (args.length) {
+export const semi_flatten_arrays = function () {
+  switch (arguments.length) {
     case undefined:
-    case 0: return args;
+    case 0: return Array.from(arguments);
     // only if its an array (is iterable) and NOT a string
-    case 1: return is_iterable(args[0]) && typeof args[0] !== "string"
-      ? flatten_input(...args[0])
-      : [args[0]];
+    case 1: return is_iterable(arguments[0]) && typeof arguments[0] !== "string"
+      ? semi_flatten_arrays(...arguments[0])
+      : [arguments[0]];
     default:
-      return Array.from(args)
-        .map(a => (is_iterable(a)
-          ? [...flatten_input(a)]
-          : a))
-        .reduce((a, b) => a.concat(b), []);
+      return Array.from(arguments).map(a => (is_iterable(a)
+        ? [...semi_flatten_arrays(a)]
+        : a));
   }
 };
 
 /**
- * flatten only until the point of comma separated entities. iterative
- * @returns always an array
+ * totally flatten, recursive
+ * @returns an array, always.
  */
-export const semi_flatten_input = function (...args) {
-  let list = args;
-  while (list.length === 1 && typeof list[0] === "object" && list[0].length) {
-    [list] = list;
-  }
-  return list;
+export const flatten_arrays = function () {
+  const arr = semi_flatten_arrays(arguments);
+  return arr.length > 1
+    ? arr.reduce((a, b) => a.concat(b), [])
+    : arr;
 };
 
 /**
@@ -90,42 +124,103 @@ export const semi_flatten_input = function (...args) {
  *
  * @returns (number[]) vector in array form, or empty array for bad inputs
 */
-export const get_vector = function (...args) {
-  let list = flatten_input(args).filter(a => a !== undefined);
-  if (list === undefined) { return undefined; }
-  if (list.length === 0) { return undefined; }
-  if (!isNaN(list[0].x)) {
-    list = ["x", "y", "z"].map(c => list[0][c]).filter(a => a !== undefined);
+export const get_vector = function () {
+  // todo, incorporate constructors.vector check to all indices. and below
+  if (arguments[0] instanceof Constructors.vector) { return arguments[0]; }
+  let list = flatten_arrays(arguments);//.filter(a => a !== undefined);
+  if (list.length > 0
+    && typeof list[0] === "object"
+    && list[0] !== null
+    && !isNaN(list[0].x)) {
+    list = ["x", "y", "z"]
+      .map(c => list[0][c])
+      .filter(a => a !== undefined);
   }
   return list.filter(n => typeof n === "number");
 };
 
+/**
+ * @returns [[2,3],[10,11]]
+*/
+export function get_segment() {
+  if (arguments[0] instanceof Constructors.segment) { return arguments[0]; }
+  if (arguments.length === 4) {
+    return [
+      [arguments[0], arguments[1]],
+      [arguments[2], arguments[3]]
+    ];
+  }
+  return get_vector_of_vectors(arguments);
+}
+
+// this works for rays to interchangably except for that it will not
+// typecast a line into a ray, it will stay a ray type.
+export function get_line() {
+  if (arguments.length === 0) { return vector_origin_form([], []); }
+  if (arguments[0] instanceof Constructors.line
+    || arguments[0] instanceof Constructors.ray
+    || arguments[0] instanceof Constructors.segment) { return arguments[0]; }
+  if (arguments[0].constructor === Object) {
+    return vector_origin_form(arguments[0].vector || [], arguments[0].origin || []);
+  }
+  const args = semi_flatten_arrays(arguments);
+  return typeof args[0] === "number"
+    ? vector_origin_form(get_vector(args))
+    : vector_origin_form(...args.map(a => get_vector(a)));
+};
 /**
  * search function arguments for a an array of vectors. a vector of vectors
  * can handle object-vector representation {x:, y:}
  *
  * @returns (number[]) vector in array form, or empty array for bad inputs
 */
-export const get_vector_of_vectors = function (...args) {
-  return semi_flatten_input(args)
+export const get_vector_of_vectors = function () {
+  return semi_flatten_arrays(arguments)
     .map(el => get_vector(el));
 };
 
-const identity2 = [1, 0, 0, 1, 0, 0];
-const identity3 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
+const identity2x2 = [1, 0, 0, 1];
+const identity2x3 = [1, 0, 0, 1, 0, 0];
+const identity3x3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+const identity3x4 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
+
+const maps_3x4 = [
+  [0, 1, 3, 4, 9, 10],
+  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+  [0, 1, 2, undefined, 3, 4, 5, undefined, 6, 7, 8, undefined, 9, 10, 11]
+];
+[11, 7, 3].forEach(i => delete maps_3x4[2][i]);
+
+const matrix_map_3x4 = len => {
+  const i = len < 8
+    ? 0
+    : (len < 13
+      ? 1
+      : 2);
+  return maps_3x4[i];
+};
+
+export const get_matrix_3x4 = function () {
+  const mat = flatten_arrays(arguments);
+  const matrix = [...identity3x4];
+  matrix_map_3x4(mat.length)
+    .filter((_, i) => mat[i] != null)
+    .forEach((n, i) => { matrix[n] = mat[i]; })
+  return matrix;
+};
 
 /**
  * a matrix2 is a 2x3 matrix, 2x2 with a column to represent translation
  *
  * @returns {number[]} array of 6 numbers, or undefined if bad inputs
 */
-export const get_matrix2 = function (...args) {
-  const m = get_vector(args);
+export const get_matrix2 = function () {
+  const m = get_vector(arguments);
   if (m === undefined) { return undefined; }
   if (m.length === 6) { return m; }
   if (m.length > 6) { return [m[0], m[1], m[2], m[3], m[4], m[5]]; }
   if (m.length < 6) {
-    return identity2.map((n, i) => m[i] || n);
+    return identity2x3.map((n, i) => m[i] || n);
   }
   // m doesn't have a length
   return undefined;
@@ -176,64 +271,11 @@ export const get_matrix3 = function (...args) {
     ];
   }
   if (m.length < 12) {
-    return identity3.map((n, i) => m[i] || n);
+    return identity3x4.map((n, i) => m[i] || n);
   }
   // m doesn't have a length
   return undefined;
 };
-
-/**
- * @returns [[2,3],[10,11]]
-*/
-export function get_segment(...args) {
-  return get_vector_of_vectors(args);
-}
-
-/**
- * @returns ({ point:[], vector:[] })
-*/
-export function get_line() {
-  let params = Array.from(arguments);
-  let numbers = params.filter((param) => !isNaN(param));
-  let arrays = params.filter((param) => param.constructor === Array);
-  if (params.length === 0) { return { vector: [], origin: [] }; }
-  if (!isNaN(params[0]) && numbers.length >= 4) {
-    return {
-      origin: [params[0], params[1]],
-      vector: [params[2], params[3]]
-    };
-  }
-  if (arrays.length > 0) {
-    if (arrays.length === 1) {
-      return get_line(...arrays[0]);
-    }
-    if (arrays.length === 2) {
-      return {
-        origin: [arrays[0][0], arrays[0][1]],
-        vector: [arrays[1][0], arrays[1][1]]
-      };
-    }
-    if (arrays.length === 4) {
-      return {
-        origin: [arrays[0], arrays[1]],
-        vector: [arrays[2], arrays[3]]
-      };
-    }
-  }
-  if (params[0].constructor === Object) {
-    let vector = [], origin = [];
-    if (params[0].vector != null)         { vector = get_vector(params[0].vector); }
-    else if (params[0].direction != null) { vector = get_vector(params[0].direction); }
-    if (params[0].origin != null)         { origin = get_vector(params[0].origin); }
-    else if (params[0].point != null)     { origin = get_vector(params[0].point); }
-    return { origin, vector };
-  }
-  return { origin: [], vector: [] };
-}
-
-export function get_ray(...args) {
-  return get_line(...args);
-}
 
 export function get_two_vec2(...args) {
   if (args.length === 0) { return undefined; }

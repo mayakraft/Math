@@ -1,12 +1,13 @@
+import Constructors from "../constructors";
 import { get_vector_of_vectors } from "../../parsers/arguments";
 import { distance2 } from "../../core/algebra";
 
-const Static = function (circle) {
+const CircleStatic = {
   // static methods
-  circle.fromPoints = function () {
+  fromPoints: function () {
     const points = get_vector_of_vectors(innerArgs);
-    return circle(points, distance2(points[0], points[1]));
-  };
+    return Constructors.circle(points, distance2(points[0], points[1]));
+  },
 };
 
-export default Static;
+export default CircleStatic;

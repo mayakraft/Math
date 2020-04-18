@@ -41,7 +41,7 @@ const ConvexPolygon = function (...args) {
 
   const split = function (...innerArgs) {
     const line = get_line(innerArgs);
-    return split_convex_polygon(points, line.origin, line.vector)
+    return split_convex_polygon(points, line.vector, line.origin)
       .map(poly => ConvexPolygon(poly));
   };
 

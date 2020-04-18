@@ -10,64 +10,57 @@ import { normalize } from "./algebra";
  * @param {number[]} matrix, in array form
  * @returns {number[]} vector, the input vector transformed by the matrix
  */
-export const multiply_matrix3_vector3 = function (m, vector) {
-  return [
-    m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2] + m[9],
-    m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2] + m[10],
-    m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2] + m[11]
-  ];
-};
+export const multiply_matrix3_vector3 = (m, vector) => [
+  m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2] + m[9],
+  m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2] + m[10],
+  m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2] + m[11]
+];
 /**
  * @param line in point-vector form, matrix
  * @returns transformed line in point-vector form
  */
-export const multiply_matrix3_line3 = function (m, origin, vector) {
-  return {
-    origin: [
-      m[0] * origin[0] + m[3] * origin[1] + m[6] * origin[2] + m[9],
-      m[1] * origin[0] + m[4] * origin[1] + m[7] * origin[2] + m[10],
-      m[2] * origin[0] + m[5] * origin[1] + m[8] * origin[2] + m[11]
-    ],
-    vector: [
-      m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2],
-      m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2],
-      m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2]
-    ]
-  };
-};
+export const multiply_matrix3_line3 = (m, vector, origin) => ({
+  vector: [
+    m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2],
+    m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2],
+    m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2]
+  ],
+  origin: [
+    m[0] * origin[0] + m[3] * origin[1] + m[6] * origin[2] + m[9],
+    m[1] * origin[0] + m[4] * origin[1] + m[7] * origin[2] + m[10],
+    m[2] * origin[0] + m[5] * origin[1] + m[8] * origin[2] + m[11]
+  ],
+});
 
-export const multiply_matrices3 = function (m1, m2) {
-  return [
-    m1[0] * m2[0] + m1[3] * m2[1] + m1[6] * m2[2],
-    m1[1] * m2[0] + m1[4] * m2[1] + m1[7] * m2[2],
-    m1[2] * m2[0] + m1[5] * m2[1] + m1[8] * m2[2],
-    m1[0] * m2[3] + m1[3] * m2[4] + m1[6] * m2[5],
-    m1[1] * m2[3] + m1[4] * m2[4] + m1[7] * m2[5],
-    m1[2] * m2[3] + m1[5] * m2[4] + m1[8] * m2[5],
-    m1[0] * m2[6] + m1[3] * m2[7] + m1[6] * m2[8],
-    m1[1] * m2[6] + m1[4] * m2[7] + m1[7] * m2[8],
-    m1[2] * m2[6] + m1[5] * m2[7] + m1[8] * m2[8],
-    m1[0] * m2[9] + m1[3] * m2[10] + m1[6] * m2[11] + m1[9],
-    m1[1] * m2[9] + m1[4] * m2[10] + m1[7] * m2[11] + m1[10],
-    m1[2] * m2[9] + m1[5] * m2[10] + m1[8] * m2[11] + m1[11]
-  ];
-};
+export const multiply_matrices3 = (m1, m2) => [
+  m1[0] * m2[0] + m1[3] * m2[1] + m1[6] * m2[2],
+  m1[1] * m2[0] + m1[4] * m2[1] + m1[7] * m2[2],
+  m1[2] * m2[0] + m1[5] * m2[1] + m1[8] * m2[2],
+  m1[0] * m2[3] + m1[3] * m2[4] + m1[6] * m2[5],
+  m1[1] * m2[3] + m1[4] * m2[4] + m1[7] * m2[5],
+  m1[2] * m2[3] + m1[5] * m2[4] + m1[8] * m2[5],
+  m1[0] * m2[6] + m1[3] * m2[7] + m1[6] * m2[8],
+  m1[1] * m2[6] + m1[4] * m2[7] + m1[7] * m2[8],
+  m1[2] * m2[6] + m1[5] * m2[7] + m1[8] * m2[8],
+  m1[0] * m2[9] + m1[3] * m2[10] + m1[6] * m2[11] + m1[9],
+  m1[1] * m2[9] + m1[4] * m2[10] + m1[7] * m2[11] + m1[10],
+  m1[2] * m2[9] + m1[5] * m2[10] + m1[8] * m2[11] + m1[11]
+];
 
-export const matrix3_determinant = function (m) {
-  return m[0] * m[4] * m[8]
-    - m[0] * m[7] * m[5]
-    - m[3] * m[1] * m[8]
-    + m[3] * m[7] * m[2]
-    + m[6] * m[1] * m[5]
-    - m[6] * m[4] * m[2];
-};
-
+export const determinant3 = m => (
+    m[0] * m[4] * m[8]
+  - m[0] * m[7] * m[5]
+  - m[3] * m[1] * m[8]
+  + m[3] * m[7] * m[2]
+  + m[6] * m[1] * m[5]
+  - m[6] * m[4] * m[2]
+);
 /**
  * @param matrix
  * @returns matrix
  */
-export const invert_matrix3 = function (m) {
-  const det = matrix3_determinant(m);
+export const invert_matrix3 = (m) => {
+  const det = determinant3(m);
   if (Math.abs(det) < 1e-6 || isNaN(det)
     || !isFinite(m[9]) || !isFinite(m[10]) || !isFinite(m[11])) {
     return undefined;
@@ -93,26 +86,41 @@ export const invert_matrix3 = function (m) {
   return inv.map(n => n * invDet);
 };
 
-export const make_matrix3_translate = function (x = 0, y = 0, z = 0) {
-  return [1, 0, 0, 0, 1, 0, 0, 0, 1, x, y, z];
-};
-export const make_matrix3_rotateX = function (angle, origin = [0, 0, 0]) {
+export const make_matrix3_translate = (x = 0, y = 0, z = 0) => [
+  1, 0, 0, 0, 1, 0, 0, 0, 1, x, y, z
+];
+export const make_matrix3_rotateX = (angle, origin = [0, 0, 0]) => {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
-  return [1, 0, 0, 0, cos, sin, 0, -sin, cos, origin[0] || 0, origin[1] || 0, origin[2] || 0];
+  return [
+    1, 0, 0,
+    0, cos, sin,
+    0, -sin, cos,
+    origin[0] || 0, origin[1] || 0, origin[2] || 0
+  ];
 };
-export const make_matrix3_rotateY = function (angle, origin = [0, 0, 0]) {
+export const make_matrix3_rotateY = (angle, origin = [0, 0, 0]) => {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
-  return [cos, 0, -sin, 0, 1, 0, sin, 0, cos, origin[0] || 0, origin[1] || 0, origin[2] || 0];
+  return [
+    cos, 0, -sin,
+    0, 1, 0,
+    sin, 0, cos,
+    origin[0] || 0, origin[1] || 0, origin[2] || 0
+  ];
 };
-export const make_matrix3_rotateZ = function (angle, origin = [0, 0, 0]) {
+export const make_matrix3_rotateZ = (angle, origin = [0, 0, 0]) => {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
-  return [cos, sin, 0, -sin, cos, 0, 0, 0, 1, origin[0] || 0, origin[1] || 0, origin[2] || 0];
+  return [
+    cos, sin, 0,
+    -sin, cos, 0,
+    0, 0, 1,
+    origin[0] || 0, origin[1] || 0, origin[2] || 0
+  ];
 };
 
-export const make_matrix3_rotate = function (angle, vector = [0, 0, 1], origin = [0, 0, 0]) {
+export const make_matrix3_rotate = (angle, vector = [0, 0, 1], origin = [0, 0, 0]) => {
   // normalize inputs
   const vec = normalize(vector);
   const pos = Array.from(Array(3)).map((n, i) => origin[i] || 0);
@@ -137,29 +145,27 @@ export const make_matrix3_rotate = function (angle, vector = [0, 0, 1], origin =
             multiply_matrices3(rx, t))))));
 };
 
-export const make_matrix3_scale = function (scale, origin = [0, 0, 0]) {
-  return [
-    scale,
-    0,
-    0,
-    0,
-    scale,
-    0,
-    0,
-    0,
-    scale,
-    scale * -origin[0] + origin[0],
-    scale * -origin[1] + origin[1],
-    scale * -origin[2] + origin[2]
-  ];
-};
+export const make_matrix3_scale = (scale, origin = [0, 0, 0]) => [
+  scale,
+  0,
+  0,
+  0,
+  scale,
+  0,
+  0,
+  0,
+  scale,
+  scale * -origin[0] + origin[0],
+  scale * -origin[1] + origin[1],
+  scale * -origin[2] + origin[2]
+];
 
 /**
  * 2D operation, assuming everything is 0 in the z plane
  * @param line in vector-origin form
  * @returns matrix3
  */
-export const make_matrix3_reflectionZ = function (vector, origin = [0, 0]) {
+export const make_matrix3_reflectionZ = (vector, origin = [0, 0]) => {
   // the line of reflection passes through origin, runs along vector
   const angle = Math.atan2(vector[1], vector[0]);
   const cosAngle = Math.cos(angle);
@@ -175,6 +181,15 @@ export const make_matrix3_reflectionZ = function (vector, origin = [0, 0]) {
   return [a, b, 0, c, d, 0, 0, 0, 0, tx, ty, 0];
 };
 
+/**
+ * 2D operation, assuming everything is 0 in the z plane
+ * @param line in vector-origin form
+ * @returns matrix3
+ */
+export const make_matrix3_reflection = (vector, origin = [0, 0, 0]) => {
+  // the line of reflection passes through origin, runs along vector
+  return [];
+};
 //               __                                           _
 //   _________  / /_  ______ ___  ____     ____ ___  ____ _  (_)___  _____
 //  / ___/ __ \/ / / / / __ `__ \/ __ \   / __ `__ \/ __ `/ / / __ \/ ___/
