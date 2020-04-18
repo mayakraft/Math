@@ -1,4 +1,5 @@
 import { EPSILON } from "../core/equal";
+import { cross2 } from "../core/algebra";
 
 /*
 ██╗      ██╗ ███╗   ██╗ ███████╗ ███████╗
@@ -35,22 +36,20 @@ export const exclude_r_s = (t0, t1) => t0 > EPSILON && t1 > EPSILON && t1 < 1 - 
 export const exclude_s_s = (t0, t1) => t0 > EPSILON && t0 < 1 - EPSILON && t1 > EPSILON
   && t1 < 1 - EPSILON;
 
-export const determ2 = (a, b) => a[0] * b[1] - b[0] * a[1];
-
 /**
  * the generalized vector intersection function
  * requires a compFunction to describe valid bounds checking
  * line always returns true, ray is true for t > 0, segment must be between 0 < t < 1
 */
 export const intersect = (a, b, compFunc, epsilon = EPSILON) => {
-  const denominator0 = determ2(a.vector, b.vector);
+  const denominator0 = cross2(a.vector, b.vector);
   if (Math.abs(denominator0) < epsilon) { return undefined; } /* parallel */
   const denominator1 = -denominator0;
-  const numerator0 = determ2([
+  const numerator0 = cross2([
     b.origin[0] - a.origin[0],
     b.origin[1] - a.origin[1]],
     b.vector);
-  const numerator1 = determ2([
+  const numerator1 = cross2([
     a.origin[0] - b.origin[0],
     a.origin[1] - b.origin[1]],
     a.vector);

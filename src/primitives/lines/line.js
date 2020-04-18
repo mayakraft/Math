@@ -7,7 +7,9 @@ import {
 
 import {
   normalize,
-  average
+  average,
+  subtract,
+  rotate90,
 } from "../../core/algebra";
 
 import { multiply_matrix2_line2 } from "../../core/matrix2";
@@ -23,8 +25,8 @@ export default {
 
     A: function () {
       const l = get_line(...arguments);
-      this.origin = Constructors.vector(l.origin);
       this.vector = Constructors.vector(l.vector);
+      this.origin = Constructors.vector(l.origin);
     },
 
     G: {
@@ -33,9 +35,10 @@ export default {
 
     M: {
       transform: function () {
-        const mat = get_matrix2(arguments);
-        const line = multiply_matrix2_line2(mat, this.origin, this.vector);
-        return Constructors.line(line[0], line[1]);
+        return Constructors.line(
+          multiply_matrix2_line2(
+            get_matrix2(arguments),
+            this.vector, this.origin));
       },
       clip_function: dist => dist,
       // compare_function: () => true,
@@ -45,22 +48,15 @@ export default {
       fromPoints: function () {
         const points = get_vector_of_vectors(arguments);
         return Constructors.line({
+          vector: subtract(points[1], points[0]),
           origin: points[0],
-          vector: [
-            points[1][0] - points[0][0],
-            points[1][1] - points[0][1],
-          ],
         });
       },
       perpendicularBisector: function () {
         const points = get_vector_of_vectors(arguments);
-        const vec = [
-          points[1][0] - points[0][0],
-          points[1][1] - points[0][1],
-        ];
         return Constructors.line({
+          vector: rotate90(subtract(points[1], points[0])),
           origin: average(points[0], points[1]),
-          vector: [vec[1], -vec[0]],
         });
       },
     }

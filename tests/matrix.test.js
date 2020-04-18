@@ -51,32 +51,32 @@ test("matrix core", () => {
 });
 
 
-test("matrices", () => {
-  const ident = math.matrix();
-  testEqual(ident.rotateX(Math.PI / 2).translate(40, 20, 10),
-    [1, 0, 0, 0, 0, 1, 0, -1, 0, 40, -10, 20]);
-  // top level types
-  testEqual([1, 2, 3, 4, 5, 6], math.matrix2(1, 2, 3, 4, 5, 6));
-  testEqual([1, 0, 0, 1, 6, 7], math.matrix2.makeTranslation(6, 7));
-  testEqual([3, 0, 0, 3, -2, 0], math.matrix2.makeScale(3, 3, [1, 0]));
-  testEqual([0, 1, 1, -0, -8, 8], math.matrix2.makeReflection([1, 1], [-5, 3]));
-  testEqual(
-    [sqrt05, sqrt05, -sqrt05, sqrt05, 1, 1],
-    math.matrix2.makeRotation(Math.PI / 4, [1, 1])
-  );
-  testEqual(
-    [sqrt05, -sqrt05, sqrt05, sqrt05, -sqrt05, sqrt05],
-    math.matrix2(sqrt05, sqrt05, -sqrt05, sqrt05, 1, 0).inverse()
-  );
-  testEqual(
-    [Math.sqrt(4.5), sqrt05, -sqrt05, Math.sqrt(4.5), Math.sqrt(4.5), sqrt05],
-    math.matrix2(sqrt05, -sqrt05, sqrt05, sqrt05, 0, 0)
-      .multiply(math.matrix2(1, 2, -2, 1, 1, 2))
-  );
-  testEqual([0, 3], math.matrix2(2, 1, -1, 2, -1, 0).transform(1, 1));
-  testEqual([-2, 3], math.matrix2.makeScale(3, 3, [1, 0]).transform([0, 1]));
-  testEqual([-1, 2], math.matrix2.makeScale(3, 3, [0.5, 0.5]).transform([0, 1]));
-  testEqual([1, 1], math.matrix2.makeScale(0.5, 0.5, [1, 1]).transform([1, 1]));
-  testEqual([0.75, 0.75], math.matrix2.makeScale(0.5, 0.5, [0.5, 0.5]).transform([1, 1]));
-});
+// test("matrices", () => {
+//   const ident = math.matrix();
+//   testEqual(ident.rotateX(Math.PI / 2).translate(40, 20, 10),
+//     [1, 0, 0, 0, 0, 1, 0, -1, 0, 40, -10, 20]);
+//   // top level types
+//   testEqual([1, 2, 3, 4, 5, 6], math.matrix2(1, 2, 3, 4, 5, 6));
+//   testEqual([1, 0, 0, 1, 6, 7], math.matrix2.makeTranslation(6, 7));
+//   testEqual([3, 0, 0, 3, -2, 0], math.matrix2.makeScale(3, 3, [1, 0]));
+//   testEqual([0, 1, 1, -0, -8, 8], math.matrix2.makeReflection([1, 1], [-5, 3]));
+//   testEqual(
+//     [sqrt05, sqrt05, -sqrt05, sqrt05, 1, 1],
+//     math.matrix2.makeRotation(Math.PI / 4, [1, 1])
+//   );
+//   testEqual(
+//     [sqrt05, -sqrt05, sqrt05, sqrt05, -sqrt05, sqrt05],
+//     math.matrix2(sqrt05, sqrt05, -sqrt05, sqrt05, 1, 0).inverse()
+//   );
+//   testEqual(
+//     [Math.sqrt(4.5), sqrt05, -sqrt05, Math.sqrt(4.5), Math.sqrt(4.5), sqrt05],
+//     math.matrix2(sqrt05, -sqrt05, sqrt05, sqrt05, 0, 0)
+//       .multiply(math.matrix2(1, 2, -2, 1, 1, 2))
+//   );
+//   testEqual([0, 3], math.matrix2(2, 1, -1, 2, -1, 0).transform(1, 1));
+//   testEqual([-2, 3], math.matrix2.makeScale(3, 3, [1, 0]).transform([0, 1]));
+//   testEqual([-1, 2], math.matrix2.makeScale(3, 3, [0.5, 0.5]).transform([0, 1]));
+//   testEqual([1, 1], math.matrix2.makeScale(0.5, 0.5, [1, 1]).transform([1, 1]));
+//   testEqual([0.75, 0.75], math.matrix2.makeScale(0.5, 0.5, [0.5, 0.5]).transform([1, 1]));
+// });
 

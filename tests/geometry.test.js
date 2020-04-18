@@ -37,19 +37,19 @@ test("counter-clockwise vector sorting", () => {
   );
 });
 
-test("sectors", () => {
-  testEqual(Math.PI / 2, math.sector.fromVectors([1, 0], [0, 1]).angle);
-  testEqual(true, math.sector.fromVectors([1, 0], [0, 1]).contains([1, 1]));
-  testEqual(false, math.sector.fromVectors([1, 0], [0, 1]).contains([-1, 1]));
-  testEqual(false, math.sector.fromVectors([1, 0], [0, 1]).contains([-1, -1]));
-  testEqual(false, math.sector.fromVectors([1, 0], [0, 1]).contains([1, -1]));
-});
+// test("sectors", () => {
+//   testEqual(Math.PI / 2, math.sector.fromVectors([1, 0], [0, 1]).angle);
+//   testEqual(true, math.sector.fromVectors([1, 0], [0, 1]).contains([1, 1]));
+//   testEqual(false, math.sector.fromVectors([1, 0], [0, 1]).contains([-1, 1]));
+//   testEqual(false, math.sector.fromVectors([1, 0], [0, 1]).contains([-1, -1]));
+//   testEqual(false, math.sector.fromVectors([1, 0], [0, 1]).contains([1, -1]));
+// });
 
-test("junctions", () => {
-  testEqual([[1, 1], [1, -1], [-1, 1], [-1, -1]],
-    math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).vectors);
-  testEqual([0, 2, 3, 1],
-    math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).vectorOrder);
-  testEqual([Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
-    math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).angles());
-});
+// test("junctions", () => {
+//   testEqual([[1, 1], [1, -1], [-1, 1], [-1, -1]],
+//     math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).vectors);
+//   testEqual([0, 2, 3, 1],
+//     math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).vectorOrder);
+//   testEqual([Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
+//     math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).angles());
+// });

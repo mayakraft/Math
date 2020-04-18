@@ -8,47 +8,24 @@
                    |___/
  */
 
-// import vector from "./primitives/index";
-// import circle from "./primitives/circle/index";
+import * as algebra from "./core/algebra";
+import * as equal from "./core/equal";
+import * as geometry from "./core/geometry";
+import * as interpolation from "./core/interpolation";
+import * as matrix2 from "./core/matrix2";
+import * as matrix3 from "./core/matrix3";
+import * as nearest from "./core/nearest";
+import * as origami from "./core/origami";
+import * as query from "./core/query";
+import * as Arguments from "./parsers/arguments";
 
-// const math = {
-//   vector,
-//   circle,
-// };
-
-// import { nearest_point } from "./core/nearest";
-// import {
-//   magnitude,
-//   normalize,
-//   dot,
-//   average,
-//   midpoint,
-//   cross2,
-//   cross3,
-//   distance2,
-//   distance3,
-//   distance,
-// } from "./core/algebra";
+import Intersection from "./intersection/index";
+import * as IntersectionCircle from "./intersection/circle";
+import * as IntersectionLines from "./intersection/lines";
+import * as IntersectionPolygon from "./intersection/polygon";
 
 import primitives from "./primitives/index";
 const math = primitives;
-
-// math.core = {
-//   nearest_point,
-//   magnitude,
-//   normalize,
-//   dot,
-//   average,
-//   midpoint,
-//   cross2,
-//   cross3,
-//   distance2,
-//   distance3,
-//   distance,
-// };
-
-export default math;
-
 
 /*
  * the logic is under ".core", the primitives are under the top level.
@@ -64,60 +41,22 @@ export default math;
  * the top level has properties like x, y, z.
  */
 
-// import * as algebra from "./core/algebra";
-// import * as matrix2_core from "./core/matrix2";
-// import * as matrix3_core from "./core/matrix3";
-// import * as geometry from "./core/geometry";
-// import * as nearest from "./core/nearest";
-// import * as query from "./core/query";
-// import * as intersection from "./core/intersection";
-// import * as equal from "./core/equal";
-// import * as args from "./parsers/arguments";
+math.core = Object.assign({}, 
+  algebra,
+  equal,
+  geometry,
+  interpolation,
+  matrix2,
+  matrix3,
+  nearest,
+  origami,
+  query,
+  Arguments,
+);
 
-// import vector from "./primitives/vector/index";
-// import {
-//   Matrix2 as matrix2,
-//   Matrix as matrix
-// } from "./primitives/matrix";
-// import line from "./primitives/line";
-// import ray from "./primitives/ray";
-// import segment from "./primitives/segment";
-// import circle from "./primitives/circle/index";
-// import polygon from "./primitives/polygon";
-// import convexPolygon from "./primitives/convexPolygon";
-// import rectangle from "./primitives/rectangle";
-// import junction from "./primitives/junction";
-// import sector from "./primitives/sector";
+math.intersection = Intersection;
+math.intersection.circle = IntersectionCircle;
+math.intersection.lines = IntersectionLines;
+math.intersection.polygon = IntersectionPolygon;
 
-// const core = Object.create(null);
-// Object.assign(core, algebra, matrix2_core, matrix3_core, geometry, nearest, query, equal);
-// // core.EPSILON = EPSILON;
-// // don't copy over all arguments, only export what is needed
-// core.clean_number = args.clean_number;
-// core.flatten_arrays = args.flatten_arrays;
-// core.semi_flatten_arrays = args.semi_flatten_arrays;
-// Object.keys(args).filter(key => /^is_/g.test(key))
-//   .forEach(key => { core[key] = args[key]; });
-// Object.keys(args).filter(key => /^get_/g.test(key))
-//   .forEach(key => { core[key] = args[key]; });
-
-// core.intersection = intersection;
-// Object.freeze(core);
-
-// const math = {
-//   vector,
-//   matrix2,
-//   matrix,
-//   line,
-//   ray,
-//   segment,
-//   circle,
-//   polygon,
-//   convexPolygon,
-//   rectangle,
-//   junction,
-//   sector,
-//   core,
-// };
-
-// export default math;
+export default math;

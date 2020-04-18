@@ -1,7 +1,6 @@
 import {
   Typeof,
   get_line,
-  get_ray,
   get_vector_of_vectors,
 } from "../../parsers/arguments";
 

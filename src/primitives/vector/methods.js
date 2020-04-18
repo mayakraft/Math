@@ -23,6 +23,9 @@ import {
   dot,
   cross3,
   distance,
+  flip,
+  rotate90,
+  rotate270,
 } from "../../core/algebra";
 
 import {
@@ -54,6 +57,9 @@ const table = {
     copy: function () { return [...this]; },
     normalize: function () { return normalize(this); },
     scale: function () { return scale(this, arguments[0]); },
+    flip: function () { return flip(this); },
+    rotate90: function () { return rotate90(this); },
+    rotate270: function () { return rotate270(this); },
     cross: function () {
       return cross3(resize(3, this), resize(3, get_vector(arguments)))
     },
@@ -70,10 +76,6 @@ const table = {
     rotateZ: function (angle, origin) {
       return multiply_matrix3_vector3(get_matrix_3x4(make_matrix2_rotate(angle, origin)), this);
     },
-    rotateZ90: function () { return [-this[1], this[0]]; },
-    rotateZ180: function () { return [-this[0], -this[1]]; },
-    rotateZ270: function () { return [this[1], -this[0]]; },
-    flip: function () { return this.map(n => -n); },
     lerp: function (vector, pct) {
       return lerp(this, resize(this.length, get_vector(vector)), pct);
     },

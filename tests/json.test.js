@@ -7,5 +7,5 @@ test("vector", () => {
 
 test("circle", () => {
   const c = JSON.stringify(math.circle(1,2,3));
-  expect(c).toBe('"{"origin":{"0":1,"1":2,"length":2},"radius":3}"');
+  expect(c).toBe('{"origin":{"0":1,"1":2,"length":2},"radius":3}');
 });

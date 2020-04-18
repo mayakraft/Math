@@ -24,6 +24,14 @@ export const Typeof = function (obj) {
   return undefined;
 };
 
+/**
+ * @returns ({ point:[], vector:[] })
+*/
+const vector_origin_form = (vector, origin) => ({
+  vector: vector || [],
+  origin: origin || []
+});
+
 
 /**
  * sort two vectors by their lengths, returning the shorter one first
@@ -132,6 +140,35 @@ export const get_vector = function () {
 };
 
 /**
+ * @returns [[2,3],[10,11]]
+*/
+export function get_segment() {
+  if (arguments[0] instanceof Constructors.segment) { return arguments[0]; }
+  if (arguments.length === 4) {
+    return [
+      [arguments[0], arguments[1]],
+      [arguments[2], arguments[3]]
+    ];
+  }
+  return get_vector_of_vectors(arguments);
+}
+
+// this works for rays to interchangably except for that it will not
+// typecast a line into a ray, it will stay a ray type.
+export function get_line() {
+  if (arguments.length === 0) { return vector_origin_form([], []); }
+  if (arguments[0] instanceof Constructors.line
+    || arguments[0] instanceof Constructors.ray
+    || arguments[0] instanceof Constructors.segment) { return arguments[0]; }
+  if (arguments[0].constructor === Object) {
+    return vector_origin_form(arguments[0].vector || [], arguments[0].origin || []);
+  }
+  const args = semi_flatten_arrays(arguments);
+  return typeof args[0] === "number"
+    ? vector_origin_form(get_vector(args))
+    : vector_origin_form(...args.map(a => get_vector(a)));
+};
+/**
  * search function arguments for a an array of vectors. a vector of vectors
  * can handle object-vector representation {x:, y:}
  *
@@ -239,74 +276,6 @@ export const get_matrix3 = function (...args) {
   // m doesn't have a length
   return undefined;
 };
-
-/**
- * @returns [[2,3],[10,11]]
-*/
-export function get_segment() {
-  if (arguments[0] instanceof Constructors.segment) { return arguments[0]; }
-  if (arguments.length === 4) {
-    return [
-      [arguments[0], arguments[1]],
-      [arguments[2], arguments[3]]
-    ];
-  }
-  return get_vector_of_vectors(arguments);
-}
-
-/**
- * @returns ({ point:[], vector:[] })
-*/
-export function get_line() {
-  if (arguments[0] instanceof Constructors.line) { return arguments[0]; }
-  if (arguments.length === 4) {
-    return {
-        origin: [arguments[0], arguments[1]],
-        vector: [arguments[2], arguments[3]]
-      };
-  }
-  let params = Array.from(arguments);
-  let numbers = params.filter((param) => !isNaN(param));
-  let arrays = params.filter((param) => param.constructor === Array);
-  if (params.length === 0) { return { vector: [], origin: [] }; }
-  if (!isNaN(params[0]) && numbers.length >= 4) {
-    return {
-      origin: [params[0], params[1]],
-      vector: [params[2], params[3]]
-    };
-  }
-  if (arrays.length > 0) {
-    if (arrays.length === 1) {
-      return get_line(...arrays[0]);
-    }
-    if (arrays.length === 2) {
-      return {
-        origin: [arrays[0][0], arrays[0][1]],
-        vector: [arrays[1][0], arrays[1][1]]
-      };
-    }
-    if (arrays.length === 4) {
-      return {
-        origin: [arrays[0], arrays[1]],
-        vector: [arrays[2], arrays[3]]
-      };
-    }
-  }
-  if (params[0].constructor === Object) {
-    let vector = [], origin = [];
-    if (params[0].vector != null)         { vector = get_vector(params[0].vector); }
-    else if (params[0].direction != null) { vector = get_vector(params[0].direction); }
-    if (params[0].origin != null)         { origin = get_vector(params[0].origin); }
-    else if (params[0].point != null)     { origin = get_vector(params[0].point); }
-    return { origin, vector };
-  }
-  return { origin: [], vector: [] };
-}
-
-export function get_ray(...args) {
-  if (arguments[0] instanceof Constructors.ray) { return arguments[0]; }
-  return get_line(...args);
-}
 
 export function get_two_vec2(...args) {
   if (args.length === 0) { return undefined; }

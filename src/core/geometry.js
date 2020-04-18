@@ -6,6 +6,7 @@ import {
   normalize,
   midpoint,
   add,
+  rotate90,
 } from "./algebra";
 
 import {
@@ -121,10 +122,10 @@ export const bisect_vectors = (a, b) => {
  *
  * second entry is 90 degrees counter clockwise from first entry
  */
-export const bisect_lines2 = (pointA, vectorA, pointB, vectorB) => {
+export const bisect_lines2 = (vectorA, pointA, vectorB, pointB) => {
   const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
   if (Math.abs(denominator) < EPSILON) { /* parallel */
-    const solution = [midpoint(pointA, pointB), [vectorA[0], vectorA[1]]];
+    const solution = [[vectorA[0], vectorA[1]], midpoint(pointA, pointB)];
     const array = [solution, solution];
     const dot = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
     delete array[(dot > 0 ? 1 : 0)];
@@ -133,11 +134,13 @@ export const bisect_lines2 = (pointA, vectorA, pointB, vectorB) => {
   // const vectorC = [pointB[0] - pointA[0], pointB[1] - pointA[1]];
   const numerator = (pointB[0] - pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1] - pointA[1]);
   const t = numerator / denominator;
-  const x = pointA[0] + vectorA[0] * t;
-  const y = pointA[1] + vectorA[1] * t;
-  const bisects = bisect_vectors(vectorA, vectorB);
-  bisects[1] = [-bisects[0][1], bisects[0][0]];
-  return bisects.map(el => [[x, y], el]);
+  const origin = [
+    pointA[0] + vectorA[0] * t,
+    pointA[1] + vectorA[1] * t,
+  ];
+  const bisects = [bisect_vectors(vectorA, vectorB)];
+  bisects[1] = rotate90(bisects[0]);
+  return bisects.map(vector => ({ vector, origin }));
 };
 /**
  * subsect the angle between two vectors already converted to radians
@@ -231,13 +234,12 @@ export const make_regular_polygon = (sides, x = 0, y = 0, radius = 1) => {
   });
 };
 
-
-const line_segment_exclusive = function (linePoint, lineVector, segmentA, segmentB) {
+const line_segment_exclusive = function (lineVector, linePoint, segmentA, segmentB) {
   const pt = segmentA;
   const vec = [segmentB[0] - segmentA[0], segmentB[1] - segmentA[1]];
   return intersect(linePoint, lineVector, pt, vec, exclude_l_s);
 };
-export const split_polygon = (poly, linePoint, lineVector) => {
+export const split_polygon = (poly, lineVector, linePoint) => {
   //    point: intersection [x,y] point or null if no intersection
   // at_index: where in the polygon this occurs
   const vertices_intersections = poly.map((v, i) => {
@@ -246,8 +248,8 @@ export const split_polygon = (poly, linePoint, lineVector) => {
   }).filter(el => el.point != null);
   const edges_intersections = poly.map((v, i, arr) => {
     const intersection = line_segment_exclusive(
-      linePoint,
       lineVector,
+      linePoint,
       v,
       arr[(i + 1) % arr.length]
     );
@@ -263,7 +265,7 @@ export const split_polygon = (poly, linePoint, lineVector) => {
   return poly;
 };
 
-export const split_convex_polygon = (poly, linePoint, lineVector) => {
+export const split_convex_polygon = (poly, lineVector, linePoint) => {
   // todo: should this return undefined if no intersection?
   //       or the original poly?
 
@@ -274,7 +276,7 @@ export const split_convex_polygon = (poly, linePoint, lineVector) => {
     return { point: intersection ? v : null, at_index: i };
   }).filter(el => el.point != null);
   let edges_intersections = poly.map((v,i,arr) => {
-    let intersection = line_segment_exclusive(linePoint, lineVector, v, arr[(i+1)%arr.length])
+    let intersection = line_segment_exclusive(lineVector, linePoint, v, arr[(i+1)%arr.length])
     return { point: intersection, at_index: i };
   }).filter(el => el.point != null);
 

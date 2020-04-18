@@ -19,17 +19,17 @@ export const multiply_matrix3_vector3 = (m, vector) => [
  * @param line in point-vector form, matrix
  * @returns transformed line in point-vector form
  */
-export const multiply_matrix3_line3 = (m, origin, vector) => ({
+export const multiply_matrix3_line3 = (m, vector, origin) => ({
+  vector: [
+    m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2],
+    m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2],
+    m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2]
+  ],
   origin: [
     m[0] * origin[0] + m[3] * origin[1] + m[6] * origin[2] + m[9],
     m[1] * origin[0] + m[4] * origin[1] + m[7] * origin[2] + m[10],
     m[2] * origin[0] + m[5] * origin[1] + m[8] * origin[2] + m[11]
   ],
-  vector: [
-    m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2],
-    m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2],
-    m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2]
-  ]
 });
 
 export const multiply_matrices3 = (m1, m2) => [
@@ -181,6 +181,15 @@ export const make_matrix3_reflectionZ = (vector, origin = [0, 0]) => {
   return [a, b, 0, c, d, 0, 0, 0, 0, tx, ty, 0];
 };
 
+/**
+ * 2D operation, assuming everything is 0 in the z plane
+ * @param line in vector-origin form
+ * @returns matrix3
+ */
+export const make_matrix3_reflection = (vector, origin = [0, 0, 0]) => {
+  // the line of reflection passes through origin, runs along vector
+  return [];
+};
 //               __                                           _
 //   _________  / /_  ______ ___  ____     ____ ___  ____ _  (_)___  _____
 //  / ___/ __ \/ / / / / __ `__ \/ __ \   / __ `__ \/ __ `/ / / __ \/ ___/

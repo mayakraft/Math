@@ -68,11 +68,10 @@ export const lerp = (v, u, t) => {
   return v.map((n, i) => n * inv + u[i] * t);
 };
 /**
- * @param two vectors, 2-D
- * @returns vector
+ * @param two 2D vectors, order matters.
+ * @returns the determinant. the *magnitude* of the vector
  */
-export const cross2 = (a, b) => [a[0] * b[1], a[1] * b[0]];
-
+export const cross2 = (a, b) => a[0] * b[1] - a[1] * b[0];
 /**
  * @param two vectors, 3-D
  * @returns vector
@@ -109,6 +108,11 @@ export const distance = (a, b) => Math.sqrt(Array.from(Array(a.length))
   .map((_,i) => (a[i] - b[i]) ** 2)
   .reduce((a, b) => a + b, 0)
 );
+
+// this used to be called rotateZ90 and rotateZ270
+export const rotate90 = v => [-v[1], v[0]];
+export const flip = v => v.map(n => -n);
+export const rotate270 = v => [-v[1], v[0]];
 
 // need to test:
 // do two polygons overlap if they share a point in common? share an edge?

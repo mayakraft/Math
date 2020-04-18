@@ -81,8 +81,8 @@ const Matrix2 = function (...args) {
     return Matrix2(multiply_matrix2_vector2(matrix, vector)
       .map(n => clean_number(n, 13)));
   };
-  const transformLine = function (origin, vector) {
-    return Matrix2(multiply_matrix2_line2(matrix, origin, vector)
+  const transformLine = function (vector, origin) {
+    return Matrix2(multiply_matrix2_line2(matrix, vector, origin)
       .map(n => clean_number(n, 13)));
   };
 

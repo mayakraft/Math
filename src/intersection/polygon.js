@@ -39,7 +39,7 @@ export const convex_poly_circle = function (poly, center, radius) {
 };
 
 /** clip an infinite line in a polygon, returns a segment or undefined if no intersection */
-export const convex_poly_line = function (poly, linePoint, lineVector) {
+export const convex_poly_line = function (poly, lineVector, linePoint) {
   const intersections = poly
     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into segment pairs
     .map(el => intersect_line_seg(linePoint, lineVector, el[0], el[1]))
@@ -60,7 +60,7 @@ export const convex_poly_line = function (poly, linePoint, lineVector) {
   }
 };
 
-export const convex_poly_ray = function (poly, linePoint, lineVector) {
+export const convex_poly_ray = function (poly, lineVector, linePoint) {
   const intersections = poly
     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into segment pairs
     .map(el => ray_segment(linePoint, lineVector, el[0], el[1]))
@@ -114,7 +114,7 @@ export const convex_poly_segment = function (poly, segmentA, segmentB) {
 
 // exclusive functions
 
-export const convex_poly_ray_exclusive = function (poly, linePoint, lineVector) {
+export const convex_poly_ray_exclusive = function (poly, lineVector, linePoint) {
   const intersections = poly
     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into segment pairs
     .map(el => ray_segment_exclusive(linePoint, lineVector, el[0], el[1]))

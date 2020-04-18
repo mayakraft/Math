@@ -30,7 +30,7 @@ export const nearest_point = (point, array_of_points) => {
   return index === undefined ? undefined : array_of_points[index];
 };
 
-export const nearest_point_on_line = (linePoint, lineVec, point, limiterFunc, epsilon = EPSILON) => {
+export const nearest_point_on_line = (lineVec, linePoint, point, limiterFunc, epsilon = EPSILON) => {
   const magSquared = (lineVec[0] ** 2) + (lineVec[1] ** 2);
   const vectorToPoint = [0, 1].map((_, i) => point[i] - linePoint[i]);
   // const pTo0 = [0, 1].map((_, i) => point[i] - linePoint[i]);

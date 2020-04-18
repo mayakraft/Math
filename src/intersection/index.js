@@ -58,11 +58,11 @@ const intersection_map = {
   },
 };
 
-const intersect = function (a, b) {
+const Intersect = function (a, b) {
   const aT = Typeof(a);
   const bT = Typeof(b);
   const func = intersection_map[aT][bT];
   return func(a, b);
 };
 
-export default intersect;
+export default Intersect;

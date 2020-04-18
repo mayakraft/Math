@@ -5,7 +5,9 @@ import {
   get_vector_of_vectors,
 } from "../../parsers/arguments";
 import { normalize } from "../../core/algebra";
-import { multiply_matrix2_line2 } from "../../core/matrix2";
+import {
+  multiply_matrix2_vector2,
+} from "../../core/matrix2";
 import LinePrototype from "../prototypes/line";
 import { EPSILON } from "../../core/equal";
 

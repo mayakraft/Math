@@ -11,15 +11,15 @@ export const multiply_matrix2_vector2 = (matrix, vector) => [
  * @param line in point-vector form, matrix
  * @returns transformed line in point-vector form
  */
-export const multiply_matrix2_line2 = (matrix, origin, vector) => ({
+export const multiply_matrix2_line2 = (matrix, vector, origin) => ({
+  vector: [
+    matrix[0] * vector[0] + matrix[2] * vector[1],
+    matrix[1] * vector[0] + matrix[3] * vector[1]
+  ],
   origin: [
     matrix[0] * origin[0] + matrix[2] * origin[1] + matrix[4],
     matrix[1] * origin[0] + matrix[3] * origin[1] + matrix[5]
   ],
-  vector: [
-    matrix[0] * vector[0] + matrix[2] * vector[1],
-    matrix[1] * vector[0] + matrix[3] * vector[1]
-  ]
 });
 /**
  * @param {number[]} matrix, matrix, left/right order matches what you'd see on a page.

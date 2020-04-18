@@ -113,17 +113,17 @@ Polygon.prototype.clipSegment = function (...args) {
 };
 Polygon.prototype.clipLine = function (...args) {
   const line = get_line(args);
-  const e = Intersect.convex_poly_line(this.points, line.origin, line.vector);
+  const e = Intersect.convex_poly_line(this.points, line.vector, line.origin);
   return e === undefined ? undefined : Constructors.segment(e);
 };
 Polygon.prototype.clipRay = function (...args) {
   const line = get_line(args);
-  const e = Intersect.convex_poly_ray(this.points, line.origin, line.vector);
+  const e = Intersect.convex_poly_ray(this.points, line.vector, line.origin);
   return e === undefined ? undefined : Constructors.segment(e);
 };
 Polygon.prototype.split = function (...args) {
   const line = get_line(args);
-  return split_polygon(this.points, line.origin, line.vector)
+  return split_polygon(this.points, line.vector, line.origin)
     .map(poly => Constructors.polygon(poly));
 };
 
