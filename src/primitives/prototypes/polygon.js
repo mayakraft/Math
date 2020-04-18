@@ -26,7 +26,11 @@ import {
 
 import { multiply_matrix2_vector2 } from "../../core/matrix2";
 
-const Polygon = function () {};
+// a polygon is expecting to have these properties:
+// this.points - an array of vectors in [] form
+const Polygon = function () {
+  this.points = [];
+};
 
 Polygon.prototype.area = function () { return signed_area(this.points); };
 Polygon.prototype.midpoint = function () { return average(this.points); };

@@ -6,6 +6,7 @@ import {
   get_segment,
 } from "../../parsers/arguments";
 import LinePrototype from "../prototypes/line";
+import { EPSILON } from "../../core/equal";
 
 export default {
   segment: {

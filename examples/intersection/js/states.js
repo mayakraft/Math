@@ -30,7 +30,7 @@ const states = {
     math: math.segment,
   },
   circle: {
-    svg: SVG.circle,
+    svg: (...pts) => SVG.circle(...pts).fill("#fb4").stroke("#e53").strokeWidth(0.004),
     math: math.circle,
   },
   "perpendicular-bisector": {

@@ -7,6 +7,7 @@ import {
 import { normalize } from "../../core/algebra";
 import { multiply_matrix2_line2 } from "../../core/matrix2";
 import LinePrototype from "../prototypes/line";
+import { EPSILON } from "../../core/equal";
 
 export default {
   ray: {

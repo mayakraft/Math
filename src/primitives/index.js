@@ -25,16 +25,6 @@ const create = function (primitiveName, args) {
   return Object.freeze(a);
 };
 
-const Definitions = Object.assign({},
-  Vector,
-  Circle,
-  Rect,
-  Polygon,
-  Line,
-  Ray,
-  Segment,
-);
-
 // these have to be typed out longform like this
 // this function name is what appears as the object type name in use
 const vector = function () { return create("vector", arguments); };
@@ -54,6 +44,16 @@ Object.assign(Constructors, {
   ray,
   segment,
 });
+
+const Definitions = Object.assign({},
+  Vector,
+  Circle,
+  Rect,
+  Polygon,
+  Line,
+  Ray,
+  Segment,
+);
 
 // build prototypes
 Object.keys(Definitions).forEach(primitiveName => {

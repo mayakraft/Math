@@ -120,7 +120,7 @@ SVG(1, 1, document.querySelectorAll(".canvas-container")[0], (svg) => {
     // draw all the arguments and intersection points
     [args, intersects].forEach((arr, i) => arr
       .forEach(p => drawLayer.circle(p).radius(0.01)
-        .fill(["#fb4", "#e53"][i])
+        .fill(["#000", "#e53"][i])
         .stroke("none")));
   };
 

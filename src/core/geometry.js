@@ -2,8 +2,10 @@ import { EPSILON } from "./equal";
 import { point_on_line } from "./query";
 import { clean_number } from "../parsers/arguments";
 import {
+  dot,
   normalize,
-  midpoint2,
+  midpoint,
+  add,
 } from "./algebra";
 
 import {
@@ -100,18 +102,17 @@ const interior_angles_unsorted = function (...vectors) {
 };
 
 /**
- * This bisects 2 vectors into both smaller and larger outside
- * angle bisections [small, large]
+ * This bisects 2 vectors into the smaller of their two angle bisections
+ * technically this works in any dimension... unless the vectors are 
  * @param {[number, number]} vector
  * @returns {[[number, number],[number, number]]} 2 vectors, the smaller first
  */
 export const bisect_vectors = (a, b) => {
   const aV = normalize(a);
   const bV = normalize(b);
-  const sum = aV.map((_, i) => aV[i] + bV[i]);
-  const vecA = normalize(sum);
-  const vecB = aV.map((_, i) => -aV[i] + -bV[i]);
-  return [vecA, normalize(vecB)];
+  return dot(aV, bV) < (-1 + EPSILON)
+    ? [-aV[1], aV[0]]
+    : normalize(add(aV, bV));
 };
 /** This bisects 2 lines
  * @param {[number, number]} all vectors, lines defined by points and vectors
@@ -123,7 +124,7 @@ export const bisect_vectors = (a, b) => {
 export const bisect_lines2 = (pointA, vectorA, pointB, vectorB) => {
   const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
   if (Math.abs(denominator) < EPSILON) { /* parallel */
-    const solution = [midpoint2(pointA, pointB), [vectorA[0], vectorA[1]]];
+    const solution = [midpoint(pointA, pointB), [vectorA[0], vectorA[1]]];
     const array = [solution, solution];
     const dot = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
     delete array[(dot > 0 ? 1 : 0)];
@@ -135,7 +136,7 @@ export const bisect_lines2 = (pointA, vectorA, pointB, vectorB) => {
   const x = pointA[0] + vectorA[0] * t;
   const y = pointA[1] + vectorA[1] * t;
   const bisects = bisect_vectors(vectorA, vectorB);
-  bisects[1] = [bisects[1][1], -bisects[1][0]];
+  bisects[1] = [-bisects[0][1], bisects[0][0]];
   return bisects.map(el => [[x, y], el]);
 };
 /**
@@ -161,7 +162,7 @@ export const subsect = (divisions, vectorA, vectorB) => {
 // export const subsectLines = function (divisions, pointA, vectorA, pointB, vectorB) {
 //   const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
 //   if (Math.abs(denominator) < EPSILON) { /* parallel */
-//     const solution = [midpoint2(pointA, pointB), [vectorA[0], vectorA[1]]];
+//     const solution = [midpoint(pointA, pointB), [vectorA[0], vectorA[1]]];
 //     const array = [solution, solution];
 //     const dot = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
 //     delete array[(dot > 0 ? 1 : 0)];
@@ -172,7 +173,7 @@ export const subsect = (divisions, vectorA, vectorB) => {
 //   const x = pointA[0] + vectorA[0] * t;
 //   const y = pointA[1] + vectorA[1] * t;
 //   const bisects = bisect_vectors(vectorA, vectorB);
-//   bisects[1] = [bisects[1][1], -bisects[1][0]];
+//   bisects[1] = [-bisects[0][1], bisects[0][0]];
 //   return bisects.map(el => [[x, y], el]);
 // };
 /** Calculates the signed area of a polygon. This requires the polygon be non-intersecting.

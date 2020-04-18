@@ -1,4 +1,5 @@
 import { distance, distance2 } from "./algebra";
+import { EPSILON } from "./equal";
 
 const smallest_comparison_search = (obj, array, compare_func) => {
   const objs = array.map((o, i) => ({ o, i, d: compare_func(obj, o) }));

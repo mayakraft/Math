@@ -117,6 +117,7 @@ export const flatten_arrays = function () {
  * @returns (number[]) vector in array form, or empty array for bad inputs
 */
 export const get_vector = function () {
+  // todo, incorporate constructors.vector check to all indices. and below
   if (arguments[0] instanceof Constructors.vector) { return arguments[0]; }
   let list = flatten_arrays(arguments);//.filter(a => a !== undefined);
   if (list.length > 0
@@ -141,8 +142,35 @@ export const get_vector_of_vectors = function () {
     .map(el => get_vector(el));
 };
 
-const identity2 = [1, 0, 0, 1, 0, 0];
-const identity3 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
+const identity2x2 = [1, 0, 0, 1];
+const identity2x3 = [1, 0, 0, 1, 0, 0];
+const identity3x3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+const identity3x4 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
+
+const maps_3x4 = [
+  [0, 1, 3, 4, 9, 10],
+  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+  [0, 1, 2, undefined, 3, 4, 5, undefined, 6, 7, 8, undefined, 9, 10, 11]
+];
+[11, 7, 3].forEach(i => delete maps_3x4[2][i]);
+
+const matrix_map_3x4 = len => {
+  const i = len < 8
+    ? 0
+    : (len < 13
+      ? 1
+      : 2);
+  return maps_3x4[i];
+};
+
+export const get_matrix_3x4 = function () {
+  const mat = flatten_arrays(arguments);
+  const matrix = [...identity3x4];
+  matrix_map_3x4(mat.length)
+    .filter((_, i) => mat[i] != null)
+    .forEach((n, i) => { matrix[n] = mat[i]; })
+  return matrix;
+};
 
 /**
  * a matrix2 is a 2x3 matrix, 2x2 with a column to represent translation
@@ -155,7 +183,7 @@ export const get_matrix2 = function () {
   if (m.length === 6) { return m; }
   if (m.length > 6) { return [m[0], m[1], m[2], m[3], m[4], m[5]]; }
   if (m.length < 6) {
-    return identity2.map((n, i) => m[i] || n);
+    return identity2x3.map((n, i) => m[i] || n);
   }
   // m doesn't have a length
   return undefined;
@@ -206,7 +234,7 @@ export const get_matrix3 = function (...args) {
     ];
   }
   if (m.length < 12) {
-    return identity3.map((n, i) => m[i] || n);
+    return identity3x4.map((n, i) => m[i] || n);
   }
   // m doesn't have a length
   return undefined;

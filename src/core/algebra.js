@@ -28,11 +28,13 @@ export const normalize = (v) => {
   return m === 0 ? v : v.map(c => c / m);
 };
 
+export const scale = (v, s) => v.map(n => n * s);
 /**
  * these *can* generalize to n-dimensions, but lengths of arguments must match.
  * the first element's dimension implies every other elements'.
  */
-
+export const add = (v, u) => v.map((n, i) => n + u[i]);
+export const subtract = (v, u) => v.map((n, i) => n - u[i]);
 /**
  * @param {number[]} two vectors
  * @returns {number} one number
@@ -41,9 +43,17 @@ export const dot = (v, u) => v
   .map((_, i) => v[i] * u[i])
   .reduce((a, b) => a + b, 0);
 /**
+ * @param {number[]} two vectors
+ * @returns {number[]} one vector
+ */
+// use "average". it generalizes for any number of arguments
+export const midpoint = (v, u) => v.map((n, i) => (n + u[i]) / 2);
+/**
  * @param {...number[]} sequence of vectors
  * @returns {number[]} on vector, the midpoint
  */
+// like midpoint, but this can accept any number of vectors
+// for example it can be used to average the points of a polygon
 export const average = function () {
   const dimension = (arguments.length > 0) ? arguments[0].length : 0;
   const sum = Array(dimension).fill(0);
@@ -51,17 +61,12 @@ export const average = function () {
   return sum.map(n => n / arguments.length);
 };
 /**
- * @param {number[]} two vectors
- * @returns {number[]} one vector
- */
-// use "average". it generalizes for any number of arguments
-export const midpoint2 = (a, b) => a.map((_, i) => (a[i] + b[i]) / 2);
-
-
-/**
  * everything else that follows is hard coded to a certain dimension
  */
-
+export const lerp = (v, u, t) => {
+  const inv = 1.0 - t;
+  return v.map((n, i) => n * inv + u[i] * t);
+};
 /**
  * @param two vectors, 2-D
  * @returns vector

@@ -1,6 +1,7 @@
 import {
   semi_flatten_arrays,
-  get_vector_of_vectors
+  get_vector_of_vectors,
+  resizeUp,
 } from "../parsers/arguments";
 
 export const EPSILON = 1e-6;
@@ -31,7 +32,12 @@ export const equivalent_numbers = function () {
  * @param {...number[]} compare n number of vectors, requires a consistent dimension
  * @returns boolean
  */
-export const equivalent_vectors = (...args) => {
+export const equivalent_vectors = (a, b) => {
+  const vecs = resizeUp(a, b);
+  return vecs[0].map((_, i) => Math.abs(vecs[0][i] - vecs[1][i]) < EPSILON)
+    .reduce((a, b) => a && b, true);
+};
+export const equivalent_vectors_old = (...args) => {
   const list = get_vector_of_vectors(...args);
   if (list.length === 0) { return false; }
   if (list.length === 1 && list[0] !== undefined) {

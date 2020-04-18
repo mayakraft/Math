@@ -16,36 +16,36 @@
 //   circle,
 // };
 
-import { nearest_point } from "./core/nearest";
-import {
-  magnitude,
-  normalize,
-  dot,
-  average,
-  midpoint2,
-  cross2,
-  cross3,
-  distance2,
-  distance3,
-  distance,
-} from "./core/algebra";
+// import { nearest_point } from "./core/nearest";
+// import {
+//   magnitude,
+//   normalize,
+//   dot,
+//   average,
+//   midpoint,
+//   cross2,
+//   cross3,
+//   distance2,
+//   distance3,
+//   distance,
+// } from "./core/algebra";
 
 import primitives from "./primitives/index";
 const math = primitives;
 
-math.core = {
-  nearest_point,
-  magnitude,
-  normalize,
-  dot,
-  average,
-  midpoint2,
-  cross2,
-  cross3,
-  distance2,
-  distance3,
-  distance,
-};
+// math.core = {
+//   nearest_point,
+//   magnitude,
+//   normalize,
+//   dot,
+//   average,
+//   midpoint,
+//   cross2,
+//   cross3,
+//   distance2,
+//   distance3,
+//   distance,
+// };
 
 export default math;
 

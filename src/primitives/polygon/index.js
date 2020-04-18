@@ -1,3 +1,4 @@
+import Constructors from "../constructors";
 import {
   semi_flatten_arrays,
 } from "../../parsers/arguments";
@@ -7,7 +8,8 @@ export default {
   polygon: {
     P: Prototype.prototype,
     A: function () {
-      this.points = semi_flatten_arrays(arguments);
+      this.points = semi_flatten_arrays(arguments)
+        .map(v => Constructors.vector(v));
     },
     G: {
     },

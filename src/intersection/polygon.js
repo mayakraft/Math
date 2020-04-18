@@ -11,7 +11,7 @@ import {
 
 export const determ2 = (a, b) => a[0] * b[1] - b[0] * a[1];
 
-const line_segment = (origin, vector, pt0, pt1) => {
+const intersect_line_seg = (origin, vector, pt0, pt1) => {
   const a = { origin, vector };
   const b = { origin: pt0, vector: [[pt1[0] - pt0[0]], [pt1[1] - pt0[1]]]};
   return intersect(a, b, comp_l_s);
@@ -42,7 +42,7 @@ export const convex_poly_circle = function (poly, center, radius) {
 export const convex_poly_line = function (poly, linePoint, lineVector) {
   const intersections = poly
     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into segment pairs
-    .map(el => line_segment(linePoint, lineVector, el[0], el[1]))
+    .map(el => intersect_line_seg(linePoint, lineVector, el[0], el[1]))
     .filter(el => el != null);
   switch (intersections.length) {
     case 0: return undefined;
