@@ -7,8 +7,6 @@ import {
   resize,
   resizeUp,
   get_vector,
-  get_line,
-  get_matrix2,
   get_matrix_3x4,
 } from "../../parsers/arguments";
 
@@ -29,7 +27,6 @@ import {
 } from "../../core/algebra";
 
 import {
-  multiply_matrix2_vector2,
   make_matrix2_rotate,
 } from "../../core/matrix2";
 
@@ -61,7 +58,7 @@ const table = {
     rotate90: function () { return rotate90(this); },
     rotate270: function () { return rotate270(this); },
     cross: function () {
-      return cross3(resize(3, this), resize(3, get_vector(arguments)))
+      return cross3(resize(3, this), resize(3, get_vector(arguments)));
     },
     transform: function () {
       return multiply_matrix3_vector3(get_matrix_3x4(arguments), resize(3, this));
@@ -98,7 +95,7 @@ Object.keys(table.preserve).forEach(key => {
 Object.keys(table.vector).forEach(key => {
   VectorMethods[key] = function () {
     return Constructors.vector(...table.vector[key].apply(this, arguments));
-  }
+  };
 });
 
 export default VectorMethods;

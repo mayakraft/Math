@@ -1,5 +1,12 @@
-import { distance, distance2 } from "./algebra";
 import { EPSILON } from "./equal";
+import {
+  distance,
+  distance2,
+  add,
+  subtract,
+  normalize,
+  scale
+} from "./algebra";
 
 const smallest_comparison_search = (obj, array, compare_func) => {
   const objs = array.map((o, i) => ({ o, i, d: compare_func(obj, o) }));
@@ -41,3 +48,24 @@ export const nearest_point_on_line = (lineVec, linePoint, point, limiterFunc, ep
   const d = limiterFunc(dist, epsilon);
   return [0, 1].map((_, i) => linePoint[i] + lineVec[i] * d);
 };
+
+const seg_limiter = (dist) => {
+  if (dist < -EPSILON) { return 0; }
+  if (dist > 1 + EPSILON) { return 1; }
+  return dist;
+};
+export const nearest_point_on_polygon = (polygon, point) => {
+  const v = polygon
+    .map((p, i, arr) => subtract(arr[(i + 1) % arr.length], p));
+  return polygon
+    .map((p, i) => nearest_point_on_line(v[i], p, point, seg_limiter))
+    .map((p, i) => ({ point: p, i, distance: distance(p, point) }))
+    .sort((a, b) => a.distance - b.distance)
+    .shift();
+};
+
+export const nearest_point_on_circle = (origin, radius, point) => add(
+  origin, scale(normalize(subtract(point, origin)), radius)
+);
+
+export const nearest_point_on_ellipse = () => false;

@@ -1,13 +1,7 @@
-import {
-  Typeof,
-  get_line,
-  get_vector_of_vectors,
-} from "../../parsers/arguments";
-
-import vector from "../vector/index";
-
+import { get_vector } from "../../parsers/arguments";
+import { nearest_point_on_circle } from "../../core/nearest";
 import Intersect from "../../intersection/index";
-
+import Constructors from "../constructors";
 
 const CircleMethods = {
   // intersectionLine: function () {
@@ -28,6 +22,13 @@ const CircleMethods = {
   // intersectionCircle: function () {
   //   // const circle = get_circle(arguments);
   // },
+  nearestPoint: function () {
+    return Constructors.vector(nearest_point_on_circle(
+      this.origin,
+      this.radius,
+      get_vector(arguments)
+    ));
+  },
   intersect: function (object) {
     return Intersect(this, object);
   },

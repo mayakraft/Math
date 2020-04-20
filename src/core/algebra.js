@@ -1,10 +1,3 @@
-// make this a console.log replaecment. but only flips on when you include
-// in the header of rollup a flag set to true.
-// const argument = {
-//   // log: console.log,
-//   log: () => {}
-// };
-
 /**
  * the following operations generalize for n-dimensions
  */
@@ -15,8 +8,7 @@
  */
 export const magnitude = v => Math.sqrt(v
   .map(n => n * n)
-  .reduce((a, b) => a + b, 0)
-);
+  .reduce((a, b) => a + b, 0));
 /**
  * @param {number[]}
  * @returns {number[]}
@@ -105,9 +97,8 @@ export const distance3 = (a, b) => {
  * @returns vector
  */
 export const distance = (a, b) => Math.sqrt(Array.from(Array(a.length))
-  .map((_,i) => (a[i] - b[i]) ** 2)
-  .reduce((a, b) => a + b, 0)
-);
+  .map((_, i) => (a[i] - b[i]) ** 2)
+  .reduce((u, v) => u + v, 0));
 
 // this used to be called rotateZ90 and rotateZ270
 export const rotate90 = v => [-v[1], v[0]];

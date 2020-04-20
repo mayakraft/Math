@@ -21,13 +21,14 @@ export default {
     },
 
     G: {
-      "0": function () { return this.points[0]; },
-      "1": function () { return this.points[1]; },
+      0: function () { return this.points[0]; },
+      1: function () { return this.points[1]; },
       length: function () { return this.vector.magnitude(); }
     },
 
     M: {
       // distance is between 0 and 1, representing the vector between start and end. cap accordingly
+      // todo. this is repeated in nearest_point_on_polygon
       clip_function: (dist) => {
         if (dist < -EPSILON) { return 0; }
         if (dist > 1 + EPSILON) { return 1; }
@@ -37,18 +38,17 @@ export default {
         const mat = get_matrix2(innerArgs);
         const transformed_points = this.points
           .map(point => multiply_matrix2_vector2(mat, point));
-        return Constructor.segment(transformed_points);
+        return Constructors.segment(transformed_points);
       },
       scale: function (magnitude) {
         const mid = average(this.points[0], this.points[1]);
         const transformed_points = this.points
           .map(p => p.lerp(mid, magnitude));
-        return Constructor.segment(transformed_points);
+        return Constructors.segment(transformed_points);
       },
       midpoint: function () {
-        return Constructor.vector(average(this.points[0], this.points[1]));
+        return Constructors.vector(average(this.points[0], this.points[1]));
       },
-
     },
 
     S: {

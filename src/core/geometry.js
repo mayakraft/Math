@@ -104,7 +104,7 @@ const interior_angles_unsorted = function (...vectors) {
 
 /**
  * This bisects 2 vectors into the smaller of their two angle bisections
- * technically this works in any dimension... unless the vectors are 
+ * technically this works in any dimension... unless the vectors are
  * @param {[number, number]} vector
  * @returns {[[number, number],[number, number]]} 2 vectors, the smaller first
  */
@@ -127,8 +127,8 @@ export const bisect_lines2 = (vectorA, pointA, vectorB, pointB) => {
   if (Math.abs(denominator) < EPSILON) { /* parallel */
     const solution = [[vectorA[0], vectorA[1]], midpoint(pointA, pointB)];
     const array = [solution, solution];
-    const dot = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
-    delete array[(dot > 0 ? 1 : 0)];
+    const dt = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
+    delete array[(dt > 0 ? 1 : 0)];
     return array;
   }
   // const vectorC = [pointB[0] - pointA[0], pointB[1] - pointA[1]];
@@ -224,10 +224,10 @@ export const enclosing_rectangle = (points) => {
  * todo: also possible to parameterize the radius as the center to the points
  */
 export const make_regular_polygon = (sides, x = 0, y = 0, radius = 1) => {
-  const halfwedge = 2 * Math.PI / sides * 0.5;
+  const halfwedge = (2 * Math.PI) / sides / 2;
   const r = radius / Math.cos(halfwedge);
   return Array.from(Array(Math.floor(sides))).map((_, i) => {
-    const a = -2 * Math.PI * i / sides + halfwedge;
+    const a = -(2 * Math.PI * i) / sides + halfwedge;
     const px = clean_number(x + r * Math.sin(a), 14);
     const py = clean_number(y + r * Math.cos(a), 14);
     return [px, py]; // align point along Y
@@ -271,12 +271,12 @@ export const split_convex_polygon = (poly, lineVector, linePoint) => {
 
   //    point: intersection [x,y] point or null if no intersection
   // at_index: where in the polygon this occurs
-  let vertices_intersections = poly.map((v,i) => {
+  let vertices_intersections = poly.map((v, i) => {
     let intersection = point_on_line(linePoint, lineVector, v);
     return { point: intersection ? v : null, at_index: i };
   }).filter(el => el.point != null);
-  let edges_intersections = poly.map((v,i,arr) => {
-    let intersection = line_segment_exclusive(lineVector, linePoint, v, arr[(i+1)%arr.length])
+  let edges_intersections = poly.map((v, i, arr) => {
+    let intersection = line_segment_exclusive(lineVector, linePoint, v, arr[(i + 1) % arr.length])
     return { point: intersection, at_index: i };
   }).filter(el => el.point != null);
 
