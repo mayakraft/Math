@@ -1,11 +1,10 @@
 import Constructors from "../constructors";
 import Prototype from "../prototypes/polygon";
-
+import { enclosing_rectangle } from "../../core/geometry";
 import {
   flatten_arrays,
   get_vector_of_vectors
 } from "../../parsers/arguments";
-import { enclosing_rectangle } from "../../core/geometry";
 
 /**
  * this Rectangle type is aligned to the axes for speedy calculation.
@@ -16,7 +15,7 @@ const argsToPoints = (x, y, w, h) => [[x, y], [x + w, y], [x + w, y + h], [x, y 
 /**
  * force a point into N-dimensions by adding 0s if they don't exist.
  */
-const resize = (d, a) => Array(d).fill(0).map((z, i) => a[i] ? a[i] : z);
+const resize = (d, a) => Array(d).fill(0).map((z, i) => (a[i] ? a[i] : z));
 
 export default {
   rect: {
@@ -33,7 +32,7 @@ export default {
       y: function () { return this.origin[1]; },
     },
     M: {
-      area: function () { return this.width * this.height },
+      area: function () { return this.width * this.height; },
       scale: function (magnitude, center_point) {
         const center = (center_point != null)
           ? center_point

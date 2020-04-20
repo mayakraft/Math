@@ -6,7 +6,6 @@ import {
 } from "../../parsers/arguments";
 
 import {
-  normalize,
   average,
   subtract,
   rotate90,
@@ -17,7 +16,7 @@ import { multiply_matrix2_line2 } from "../../core/matrix2";
 import LinePrototype from "../prototypes/line";
 
 // distance is between 0 and 1, representing the vector between start and end. cap accordingly
-const limit_line = dist => dist;
+// const limit_line = dist => dist;
 
 export default {
   line: {
@@ -38,7 +37,9 @@ export default {
         return Constructors.line(
           multiply_matrix2_line2(
             get_matrix2(arguments),
-            this.vector, this.origin));
+            this.vector, this.origin
+          )
+        );
       },
       clip_function: dist => dist,
       // compare_function: () => true,

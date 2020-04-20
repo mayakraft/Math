@@ -127,7 +127,7 @@ export const flatten_arrays = function () {
 export const get_vector = function () {
   // todo, incorporate constructors.vector check to all indices. and below
   if (arguments[0] instanceof Constructors.vector) { return arguments[0]; }
-  let list = flatten_arrays(arguments);//.filter(a => a !== undefined);
+  let list = flatten_arrays(arguments); //.filter(a => a !== undefined);
   if (list.length > 0
     && typeof list[0] === "object"
     && list[0] !== null
@@ -138,36 +138,6 @@ export const get_vector = function () {
   }
   return list.filter(n => typeof n === "number");
 };
-
-/**
- * @returns [[2,3],[10,11]]
-*/
-export function get_segment() {
-  if (arguments[0] instanceof Constructors.segment) { return arguments[0]; }
-  if (arguments.length === 4) {
-    return [
-      [arguments[0], arguments[1]],
-      [arguments[2], arguments[3]]
-    ];
-  }
-  return get_vector_of_vectors(arguments);
-}
-
-// this works for rays to interchangably except for that it will not
-// typecast a line into a ray, it will stay a ray type.
-export function get_line() {
-  if (arguments.length === 0) { return vector_origin_form([], []); }
-  if (arguments[0] instanceof Constructors.line
-    || arguments[0] instanceof Constructors.ray
-    || arguments[0] instanceof Constructors.segment) { return arguments[0]; }
-  if (arguments[0].constructor === Object) {
-    return vector_origin_form(arguments[0].vector || [], arguments[0].origin || []);
-  }
-  const args = semi_flatten_arrays(arguments);
-  return typeof args[0] === "number"
-    ? vector_origin_form(get_vector(args))
-    : vector_origin_form(...args.map(a => get_vector(a)));
-};
 /**
  * search function arguments for a an array of vectors. a vector of vectors
  * can handle object-vector representation {x:, y:}
@@ -177,6 +147,36 @@ export function get_line() {
 export const get_vector_of_vectors = function () {
   return semi_flatten_arrays(arguments)
     .map(el => get_vector(el));
+};
+
+/**
+ * @returns [[2,3],[10,11]]
+*/
+export const get_segment = function () {
+  if (arguments[0] instanceof Constructors.segment) { return arguments[0]; }
+  if (arguments.length === 4) {
+    return [
+      [arguments[0], arguments[1]],
+      [arguments[2], arguments[3]]
+    ];
+  }
+  return get_vector_of_vectors(arguments);
+};
+
+// this works for rays to interchangably except for that it will not
+// typecast a line into a ray, it will stay a ray type.
+export const get_line = function () {
+  const args = semi_flatten_arrays(arguments);
+  if (args.length === 0) { return vector_origin_form([], []); }
+  if (args[0] instanceof Constructors.line
+    || args[0] instanceof Constructors.ray
+    || args[0] instanceof Constructors.segment) { return args[0]; }
+  if (args[0].constructor === Object) {
+    return vector_origin_form(args[0].vector || [], args[0].origin || []);
+  }
+  return typeof args[0] === "number"
+    ? vector_origin_form(get_vector(args))
+    : vector_origin_form(...args.map(a => get_vector(a)));
 };
 
 const identity2x2 = [1, 0, 0, 1];
@@ -192,11 +192,10 @@ const maps_3x4 = [
 [11, 7, 3].forEach(i => delete maps_3x4[2][i]);
 
 const matrix_map_3x4 = len => {
-  const i = len < 8
-    ? 0
-    : (len < 13
-      ? 1
-      : 2);
+  let i;
+  if (len < 8) i = 0;
+  else if (len < 13) i = 1;
+  else i = 2;
   return maps_3x4[i];
 };
 
@@ -205,7 +204,7 @@ export const get_matrix_3x4 = function () {
   const matrix = [...identity3x4];
   matrix_map_3x4(mat.length)
     .filter((_, i) => mat[i] != null)
-    .forEach((n, i) => { matrix[n] = mat[i]; })
+    .forEach((n, i) => { matrix[n] = mat[i]; });
   return matrix;
 };
 

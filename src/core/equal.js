@@ -15,7 +15,7 @@ const array_similarity_test = (list, compFunc) => Array
   .reduce((a, b) => a && b, true);
 
 export const equivalent_arrays_of_numbers = function () {
-  
+
 };
 /**
  * @param {...number} a sequence of numbers
@@ -35,7 +35,7 @@ export const equivalent_numbers = function () {
 export const equivalent_vectors = (a, b) => {
   const vecs = resizeUp(a, b);
   return vecs[0].map((_, i) => Math.abs(vecs[0][i] - vecs[1][i]) < EPSILON)
-    .reduce((a, b) => a && b, true);
+    .reduce((u, v) => u && v, true);
 };
 export const equivalent_vectors_old = (...args) => {
   const list = get_vector_of_vectors(...args);
@@ -45,7 +45,7 @@ export const equivalent_vectors_old = (...args) => {
   }
   const dimension = list[0].length;
   const dim_array = Array.from(Array(dimension));
-  for (var i = 1; i < list.length; i += 1) {
+  for (let i = 1; i < list.length; i += 1) {
     if (typeof list[i - 1] !== typeof list[i]) { return false; }
   }
   return Array
@@ -104,7 +104,7 @@ export const equivalent_vectors_old = (...args) => {
  * @returns boolean
  */
 export const equivalent = (...args) => {
-  let list = semi_flatten_arrays(args);
+  const list = semi_flatten_arrays(args);
   if (list.length < 1) { return false; }
   const typeofList = typeof list[0];
   // array contains undefined, cannot compare

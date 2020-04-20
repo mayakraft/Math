@@ -25,6 +25,7 @@ import * as IntersectionLines from "./intersection/lines";
 import * as IntersectionPolygon from "./intersection/polygon";
 
 import primitives from "./primitives/index";
+
 const math = primitives;
 
 /*
@@ -41,7 +42,7 @@ const math = primitives;
  * the top level has properties like x, y, z.
  */
 
-math.core = Object.assign({}, 
+math.core = Object.assign({},
   algebra,
   equal,
   geometry,

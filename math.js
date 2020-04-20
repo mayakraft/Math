@@ -84,8 +84,8 @@
   var distance = function distance(a, b) {
     return Math.sqrt(Array.from(Array(a.length)).map(function (_, i) {
       return Math.pow(a[i] - b[i], 2);
-    }).reduce(function (a, b) {
-      return a + b;
+    }).reduce(function (u, v) {
+      return u + v;
     }, 0));
   };
   var rotate90 = function rotate90(v) {
@@ -345,7 +345,12 @@
       return typeof n === "number";
     });
   };
-  function get_segment() {
+  var get_vector_of_vectors = function get_vector_of_vectors() {
+    return semi_flatten_arrays(arguments).map(function (el) {
+      return get_vector(el);
+    });
+  };
+  var get_segment = function get_segment() {
     if (arguments[0] instanceof Constructors.segment) {
       return arguments[0];
     }
@@ -355,29 +360,25 @@
     }
 
     return get_vector_of_vectors(arguments);
-  }
-  function get_line() {
-    if (arguments.length === 0) {
+  };
+  var get_line = function get_line() {
+    var args = semi_flatten_arrays(arguments);
+
+    if (args.length === 0) {
       return vector_origin_form([], []);
     }
 
-    if (arguments[0] instanceof Constructors.line || arguments[0] instanceof Constructors.ray || arguments[0] instanceof Constructors.segment) {
-      return arguments[0];
+    if (args[0] instanceof Constructors.line || args[0] instanceof Constructors.ray || args[0] instanceof Constructors.segment) {
+      return args[0];
     }
 
-    if (arguments[0].constructor === Object) {
-      return vector_origin_form(arguments[0].vector || [], arguments[0].origin || []);
+    if (args[0].constructor === Object) {
+      return vector_origin_form(args[0].vector || [], args[0].origin || []);
     }
 
-    var args = semi_flatten_arrays(arguments);
     return typeof args[0] === "number" ? vector_origin_form(get_vector(args)) : vector_origin_form.apply(void 0, _toConsumableArray(args.map(function (a) {
       return get_vector(a);
     })));
-  }
-  var get_vector_of_vectors = function get_vector_of_vectors() {
-    return semi_flatten_arrays(arguments).map(function (el) {
-      return get_vector(el);
-    });
   };
   var identity2x3 = [1, 0, 0, 1, 0, 0];
   var identity3x4 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
@@ -387,7 +388,8 @@
   });
 
   var matrix_map_3x4 = function matrix_map_3x4(len) {
-    var i = len < 8 ? 0 : len < 13 ? 1 : 2;
+    var i;
+    if (len < 8) i = 0;else if (len < 13) i = 1;else i = 2;
     return maps_3x4[i];
   };
 
@@ -547,9 +549,9 @@
     semi_flatten_arrays: semi_flatten_arrays,
     flatten_arrays: flatten_arrays,
     get_vector: get_vector,
+    get_vector_of_vectors: get_vector_of_vectors,
     get_segment: get_segment,
     get_line: get_line,
-    get_vector_of_vectors: get_vector_of_vectors,
     get_matrix_3x4: get_matrix_3x4,
     get_matrix2: get_matrix2,
     get_matrix3: get_matrix3,
@@ -592,8 +594,8 @@
     var vecs = resizeUp(a, b);
     return vecs[0].map(function (_, i) {
       return Math.abs(vecs[0][i] - vecs[1][i]) < EPSILON;
-    }).reduce(function (a, b) {
-      return a && b;
+    }).reduce(function (u, v) {
+      return u && v;
     }, true);
   };
   var equivalent_vectors_old = function equivalent_vectors_old() {
@@ -1020,10 +1022,8 @@
     if (Math.abs(denominator) < EPSILON) {
       var solution = [[vectorA[0], vectorA[1]], midpoint(pointA, pointB)];
       var array = [solution, solution];
-
-      var _dot = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
-
-      delete array[_dot > 0 ? 1 : 0];
+      var dt = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
+      delete array[dt > 0 ? 1 : 0];
       return array;
     }
 
@@ -1095,10 +1095,10 @@
     var x = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
     var y = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
     var radius = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
-    var halfwedge = 2 * Math.PI / sides * 0.5;
+    var halfwedge = 2 * Math.PI / sides / 2;
     var r = radius / Math.cos(halfwedge);
     return Array.from(Array(Math.floor(sides))).map(function (_, i) {
-      var a = -2 * Math.PI * i / sides + halfwedge;
+      var a = -(2 * Math.PI * i) / sides + halfwedge;
       var px = clean_number(x + r * Math.sin(a), 14);
       var py = clean_number(y + r * Math.cos(a), 14);
       return [px, py];
@@ -1579,11 +1579,49 @@
     });
   };
 
+  var seg_limiter = function seg_limiter(dist) {
+    if (dist < -EPSILON) {
+      return 0;
+    }
+
+    if (dist > 1 + EPSILON) {
+      return 1;
+    }
+
+    return dist;
+  };
+
+  var nearest_point_on_polygon = function nearest_point_on_polygon(polygon, point) {
+    var v = polygon.map(function (p, i, arr) {
+      return subtract(arr[(i + 1) % arr.length], p);
+    });
+    return polygon.map(function (p, i) {
+      return nearest_point_on_line(v[i], p, point, seg_limiter);
+    }).map(function (p, i) {
+      return {
+        point: p,
+        i: i,
+        distance: distance(p, point)
+      };
+    }).sort(function (a, b) {
+      return a.distance - b.distance;
+    }).shift();
+  };
+  var nearest_point_on_circle = function nearest_point_on_circle(origin, radius, point) {
+    return add(origin, scale(normalize(subtract(point, origin)), radius));
+  };
+  var nearest_point_on_ellipse = function nearest_point_on_ellipse() {
+    return false;
+  };
+
   var nearest = /*#__PURE__*/Object.freeze({
     __proto__: null,
     nearest_point2: nearest_point2,
     nearest_point: nearest_point,
-    nearest_point_on_line: nearest_point_on_line
+    nearest_point_on_line: nearest_point_on_line,
+    nearest_point_on_polygon: nearest_point_on_polygon,
+    nearest_point_on_circle: nearest_point_on_circle,
+    nearest_point_on_ellipse: nearest_point_on_ellipse
   });
 
   var alternating_sum = function alternating_sum() {
@@ -2126,7 +2164,7 @@
     }
   };
 
-  var Vector$1 = {
+  var Vector = {
     vector: {
       P: Array.prototype,
       A: VectorArgs,
@@ -2162,6 +2200,9 @@
   };
 
   var CircleMethods = {
+    nearestPoint: function nearestPoint() {
+      return Constructors.vector(nearest_point_on_circle(this.origin, this.radius, get_vector(arguments)));
+    },
     intersect: function intersect(object) {
       return Intersect(this, object);
     }
@@ -2169,7 +2210,7 @@
 
   var CircleStatic = {
     fromPoints: function fromPoints() {
-      var points = get_vector_of_vectors(innerArgs);
+      var points = get_vector_of_vectors(arguments);
       return Constructors.circle(points, distance2(points[0], points[1]));
     }
   };
@@ -2180,6 +2221,173 @@
       G: CircleGetters,
       M: CircleMethods,
       S: CircleStatic
+    }
+  };
+
+  var Polygon = function Polygon() {
+    this.points = [];
+  };
+
+  Polygon.prototype.area = function () {
+    return signed_area(this.points);
+  };
+
+  Polygon.prototype.centroid = function () {
+    return Constructors.vector(centroid(this.points));
+  };
+
+  Polygon.prototype.enclosingRectangle = function () {
+    return Constructors.rect(enclosing_rectangle(this.points));
+  };
+
+  Polygon.prototype.contains = function () {
+    return point_in_poly(get_vector(arguments), this.points);
+  };
+
+  Polygon.prototype.scale = function (magnitude) {
+    var center = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : centroid(this.points);
+    var newPoints = this.points.map(function (p) {
+      return [0, 1].map(function (_, i) {
+        return p[i] - center[i];
+      });
+    }).map(function (vec) {
+      return vec.map(function (_, i) {
+        return center[i] + vec[i] * magnitude;
+      });
+    });
+    return Constructors.polygon(newPoints);
+  };
+
+  Polygon.prototype.rotate = function (angle) {
+    var centerPoint = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : centroid(this.points);
+    var newPoints = this.points.map(function (p) {
+      var vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
+      var mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
+      var a = Math.atan2(vec[1], vec[0]);
+      return [centerPoint[0] + Math.cos(a + angle) * mag, centerPoint[1] + Math.sin(a + angle) * mag];
+    });
+    return Constructors.polygon(newPoints);
+  };
+
+  Polygon.prototype.translate = function () {
+    var vec = get_vector(arguments);
+    var newPoints = this.points.map(function (p) {
+      return p.map(function (n, i) {
+        return n + vec[i];
+      });
+    });
+    return Constructors.polygon(newPoints);
+  };
+
+  Polygon.prototype.transform = function () {
+    var m = get_matrix2(arguments);
+    var newPoints = this.points.map(function (p) {
+      return multiply_matrix2_vector2(m, p);
+    });
+    return Constructors.polygon(newPoints);
+  };
+
+  Polygon.prototype.sectors = function () {
+    return this.points.map(function (p, i, arr) {
+      var prev = (i + arr.length - 1) % arr.length;
+      var next = (i + 1) % arr.length;
+      var center = p;
+      var a = arr[prev].map(function (n, j) {
+        return n - center[j];
+      });
+      var b = arr[next].map(function (n, j) {
+        return n - center[j];
+      });
+      return Constructors.sector(b, a, center);
+    });
+  };
+
+  Polygon.prototype.nearest = function () {
+    var point = get_vector(arguments);
+    var points = this.sides.map(function (edge) {
+      return edge.nearestPoint(point);
+    });
+    var lowD = Infinity;
+    var lowI;
+    points.map(function (p) {
+      return distance2(point, p);
+    }).forEach(function (d, i) {
+      if (d < lowD) {
+        lowD = d;
+        lowI = i;
+      }
+    });
+    return {
+      point: points[lowI],
+      edge: this.sides[lowI]
+    };
+  };
+
+  Polygon.prototype.split = function () {
+    var line = get_line(arguments);
+    return split_polygon(this.points, line.vector, line.origin).map(function (poly) {
+      return Constructors.polygon(poly);
+    });
+  };
+
+  var argsToPoints = function argsToPoints(x, y, w, h) {
+    return [[x, y], [x + w, y], [x + w, y + h], [x, y + h]];
+  };
+
+  var resize$1 = function resize(d, a) {
+    return Array(d).fill(0).map(function (z, i) {
+      return a[i] ? a[i] : z;
+    });
+  };
+
+  var Rect = {
+    rect: {
+      P: Polygon.prototype,
+      A: function A() {
+        var n = resize$1(4, flatten_arrays(arguments));
+        this.origin = [n[0], n[1]];
+        this.width = n[2];
+        this.height = n[3];
+        this.points = argsToPoints.apply(void 0, _toConsumableArray(n));
+      },
+      G: {
+        x: function x() {
+          return this.origin[0];
+        },
+        y: function y() {
+          return this.origin[1];
+        }
+      },
+      M: {
+        area: function area() {
+          return this.width * this.height;
+        },
+        scale: function scale(magnitude, center_point) {
+          var center = center_point != null ? center_point : [this.origin[0] + this.width, this.origin[1] + this.height];
+          var x = this.origin[0] + (center[0] - this.origin[0]) * (1 - magnitude);
+          var y = this.origin[1] + (center[1] - this.origin[1]) * (1 - magnitude);
+          return Constructors.rect(x, y, this.width * magnitude, this.height * magnitude);
+        }
+      },
+      S: {
+        fromPoints: function fromPoints() {
+          return Constructors.rect(enclosing_rectangle(get_vector_of_vectors(arguments)));
+        }
+      }
+    }
+  };
+
+  var Polygon$1 = {
+    polygon: {
+      P: Polygon.prototype,
+      A: function A() {
+        this.points = semi_flatten_arrays(arguments).map(function (v) {
+          return Constructors.vector(v);
+        });
+      },
+      G: {},
+      M: {},
+      S: {}
     }
   };
 
@@ -2196,12 +2404,12 @@
   };
 
   Line.prototype.reflection = function () {
-    return Matrix2.makeReflection(this.vector, this.origin);
+    return Constructors.matrix(make_matrix2_reflection(this.vector, this.origin));
   };
 
   Line.prototype.nearestPoint = function () {
     var point = get_vector(arguments);
-    return Vector(nearest_point_on_line(this.vector, this.origin, point, this.clip_function));
+    return Constructors.vector(nearest_point_on_line(this.vector, this.origin, point, this.clip_function));
   };
 
   Line.prototype.intersect = function (other) {
@@ -2314,10 +2522,10 @@
         this.vector = this.points[1].subtract(this.points[0]);
       },
       G: {
-        "0": function _() {
+        0: function _() {
           return this.points[0];
         },
-        "1": function _() {
+        1: function _() {
           return this.points[1];
         },
         length: function length() {
@@ -2345,22 +2553,108 @@
           var transformed_points = this.points.map(function (point) {
             return multiply_matrix2_vector2(mat, point);
           });
-          return Constructor.segment(transformed_points);
+          return Constructors.segment(transformed_points);
         },
         scale: function scale(magnitude) {
           var mid = average(this.points[0], this.points[1]);
           var transformed_points = this.points.map(function (p) {
             return p.lerp(mid, magnitude);
           });
-          return Constructor.segment(transformed_points);
+          return Constructors.segment(transformed_points);
         },
         midpoint: function midpoint() {
-          return Constructor.vector(average(this.points[0], this.points[1]));
+          return Constructors.vector(average(this.points[0], this.points[1]));
         }
       },
       S: {
         fromPoints: Constructors.segment
       }
+    }
+  };
+
+  var Matrix = {
+    matrix: {
+      P: Array.prototype,
+      A: function A() {
+        var _this = this;
+
+        get_matrix_3x4(arguments).forEach(function (m) {
+          return _this.push(m);
+        });
+      },
+      G: {},
+      M: {
+        multiply: function multiply() {
+          return Constructors.matrix(multiply_matrices3(this, get_matrix_3x4(arguments)).map(function (n) {
+            return clean_number(n, 13);
+          }));
+        },
+        determinant: function determinant() {
+          return clean_number(determinant3(this), 13);
+        },
+        inverse: function inverse() {
+          return Constructors.matrix(invert_matrix3(this).map(function (n) {
+            return clean_number(n, 13);
+          }));
+        },
+        translate: function translate(x, y, z) {
+          return Constructors.matrix(multiply_matrices3(this, make_matrix3_translate(x, y, z)).map(function (n) {
+            return clean_number(n, 13);
+          }));
+        },
+        rotateX: function rotateX(radians) {
+          return Constructors.matrix(multiply_matrices3(this, make_matrix3_rotateX(radians)).map(function (n) {
+            return clean_number(n, 13);
+          }));
+        },
+        rotateY: function rotateY(radians) {
+          return Constructors.matrix(multiply_matrices3(this, make_matrix3_rotateY(radians)).map(function (n) {
+            return clean_number(n, 13);
+          }));
+        },
+        rotateZ: function rotateZ(radians) {
+          return Constructors.matrix(multiply_matrices3(this, make_matrix3_rotateZ(radians)).map(function (n) {
+            return clean_number(n, 13);
+          }));
+        },
+        rotate: function rotate(radians, vector, origin) {
+          var transform = make_matrix3_rotate(radians, vector, origin);
+          return Constructors.matrix(multiply_matrices3(this, transform).map(function (n) {
+            return clean_number(n, 13);
+          }));
+        },
+        scale: function scale(amount) {
+          return Constructors.matrix(multiply_matrices3(this, make_matrix3_scale(amount)).map(function (n) {
+            return clean_number(n, 13);
+          }));
+        },
+        reflectZ: function reflectZ(vector, origin) {
+          var transform = make_matrix3_reflectionZ(vector, origin);
+          return Constructors.matrix(multiply_matrices3(this, transform).map(function (n) {
+            return clean_number(n, 13);
+          }));
+        },
+        transform: function transform() {
+          for (var _len = arguments.length, innerArgs = new Array(_len), _key = 0; _key < _len; _key++) {
+            innerArgs[_key] = arguments[_key];
+          }
+
+          return Constructors.vector(multiply_matrix3_vector3(get_vector(innerArgs), this).map(function (n) {
+            return clean_number(n, 13);
+          }));
+        },
+        transformVector: function transformVector(vector) {
+          return Constructors.matrix(multiply_matrix3_vector3(this, vector).map(function (n) {
+            return clean_number(n, 13);
+          }));
+        },
+        transformLine: function transformLine(origin, vector) {
+          return Constructors.matrix(multiply_matrix3_line3(this, origin, vector).map(function (n) {
+            return clean_number(n, 13);
+          }));
+        }
+      },
+      S: {}
     }
   };
 
@@ -2378,6 +2672,14 @@
     return create("circle", arguments);
   };
 
+  var rect = function rect() {
+    return create("rect", arguments);
+  };
+
+  var polygon = function polygon() {
+    return create("polygon", arguments);
+  };
+
   var line = function line() {
     return create("line", arguments);
   };
@@ -2390,14 +2692,21 @@
     return create("segment", arguments);
   };
 
+  var matrix = function matrix() {
+    return create("matrix", arguments);
+  };
+
   Object.assign(Constructors, {
     vector: vector,
     circle: circle,
+    rect: rect,
+    polygon: polygon,
     line: line,
     ray: ray,
-    segment: segment
+    segment: segment,
+    matrix: matrix
   });
-  var Definitions = Object.assign({}, Vector$1, Circle, Line$1, Ray, Segment);
+  var Definitions = Object.assign({}, Vector, Circle, Rect, Polygon$1, Line$1, Ray, Segment, Matrix);
   Object.keys(Definitions).forEach(function (primitiveName) {
     var Proto = {};
     Proto.prototype = Definitions[primitiveName].P != null ? Object.create(Definitions[primitiveName].P) : Object.create(Object.prototype);

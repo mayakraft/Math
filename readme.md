@@ -2,15 +2,9 @@
 
 [![Build Status](https://travis-ci.org/robbykraft/Math.svg?branch=master)](https://travis-ci.org/robbykraft/Math)
 
-this is the math engine for an [origami library](https://github.com/robbykraft/Origami). it has no dependencies, and it's small. you probably want a different math library if a search brought you here.
+this is the math engine for an [origami library](https://github.com/robbykraft/Origami). it has no dependencies, and it's small. it focuses on a small set of primitives, intersections with an inclusive or exclusive epsilon, and other computational geometry related things.
 
-## why
-
-i wrote this specifically to handle the edge cases, for example in geometric boolean operations.
-
-turns out in origami math when asking questions like intersection or inclusion/exclusion there is a high rate of parameters that are collinear, parallel, on to top of one another, etc... i had to be very sure about the results, and be able to manage the epsilon for different scales.
-
-## html
+## browser
 
 ``` html
 <script src="math.js"></script>

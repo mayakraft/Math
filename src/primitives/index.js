@@ -6,6 +6,8 @@ import Polygon from "./polygon/index";
 import Line from "./lines/line";
 import Ray from "./lines/ray";
 import Segment from "./lines/segment";
+import Matrix from "./matrix/matrix";
+// import Matrix2 from "./matrix/matrix2";
 
 // import PolygonPrototype from "./prototypes/polygon";
 
@@ -34,25 +36,31 @@ const polygon = function () { return create("polygon", arguments); };
 const line = function () { return create("line", arguments); };
 const ray = function () { return create("ray", arguments); };
 const segment = function () { return create("segment", arguments); };
+const matrix = function () { return create("matrix", arguments); };
+// const matrix2 = function () { return create("matrix2", arguments); };
 
 Object.assign(Constructors, {
   vector,
   circle,
-  // rect,
-  // polygon,
+  rect,
+  polygon,
   line,
   ray,
   segment,
+  matrix,
+  // matrix2,
 });
 
 const Definitions = Object.assign({},
   Vector,
   Circle,
-  // Rect,
-  // Polygon,
+  Rect,
+  Polygon,
   Line,
   Ray,
   Segment,
+  Matrix,
+  // Matrix2,
 );
 
 // build prototypes

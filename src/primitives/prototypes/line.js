@@ -12,7 +12,11 @@ import {
   degenerate,
 } from "../../core/query";
 
+import { make_matrix2_reflection } from "../../core/matrix2";
+
 import Intersect from "../../intersection/index";
+
+import Constructors from "../constructors";
 
 // do not define object methods as arrow functions in here
 
@@ -40,13 +44,17 @@ Line.prototype.isDegenerate = function (epsilon = EPSILON) {
   return degenerate(this.vector, epsilon);
 };
 
+// todo: convert this to matrix 3x4
 Line.prototype.reflection = function () {
-  return Matrix2.makeReflection(this.vector, this.origin);
+  // return Constructors.matrix2.makeReflection(this.vector, this.origin);
+  return Constructors.matrix(make_matrix2_reflection(this.vector, this.origin));
 };
 
 Line.prototype.nearestPoint = function () {
   const point = get_vector(arguments);
-  return Vector(nearest_point_on_line(this.vector, this.origin, point, this.clip_function));
+  return Constructors.vector(
+    nearest_point_on_line(this.vector, this.origin, point, this.clip_function)
+  );
 };
 
 Line.prototype.intersect = function (other) {
