@@ -5,6 +5,9 @@ Vue.component("button-mode", {
   </div>`
 });
 
+// use colors from 
+// https://kgolid.github.io/chromotome-site/
+
 var app = new Vue({
   el: "#app",
   data: {

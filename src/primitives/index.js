@@ -1,6 +1,7 @@
 import Constructors from "./constructors";
 import Vector from "./vector/index";
 import Circle from "./circle/index";
+import Ellipse from "./ellipse/index";
 import Rect from "./rect/index";
 import Polygon from "./polygon/index";
 import Line from "./lines/line";
@@ -31,6 +32,7 @@ const create = function (primitiveName, args) {
 // this function name is what appears as the object type name in use
 const vector = function () { return create("vector", arguments); };
 const circle = function () { return create("circle", arguments); };
+const ellipse = function () { return create("ellipse", arguments); };
 const rect = function () { return create("rect", arguments); };
 const polygon = function () { return create("polygon", arguments); };
 const line = function () { return create("line", arguments); };
@@ -42,6 +44,7 @@ const matrix = function () { return create("matrix", arguments); };
 Object.assign(Constructors, {
   vector,
   circle,
+  ellipse,
   rect,
   polygon,
   line,
@@ -54,6 +57,7 @@ Object.assign(Constructors, {
 const Definitions = Object.assign({},
   Vector,
   Circle,
+  Ellipse,
   Rect,
   Polygon,
   Line,

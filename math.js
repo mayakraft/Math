@@ -2224,6 +2224,77 @@
     }
   };
 
+  var f = function f(n) {
+    return Number.isInteger(n) ? n : n.toFixed(4);
+  };
+
+  var Ellipse = {
+    ellipse: {
+      A: function A() {
+        var arr = Array.from(arguments);
+        this.arcStart = 0;
+        this.arcEnd = Math.PI * 2;
+        this.rx = arr[0];
+        this.ry = arr[1];
+        this.spin = arr[2];
+        this.origin = arr[3];
+
+        if (typeof arr[4] === "number") {
+          this.arcStart = arr[4];
+        }
+
+        if (typeof arr[5] === "number") {
+          this.arcEnd = arr[5];
+        }
+      },
+      G: {
+        x: function x() {
+          return this.origin[0];
+        },
+        y: function y() {
+          return this.origin[1];
+        },
+        path: function path() {
+          var info = this.pathInfo();
+          return "M".concat(f(info.x1), " ").concat(f(info.y1), "A").concat(f(this.rx), " ").concat(f(this.ry), " ").concat(f(this.spin), " ").concat(f(info.fa), " ").concat(f(info.fs), " ").concat(f(info.x2 + 0.001), " ").concat(f(info.y2 + 0.001));
+        }
+      },
+      M: {
+        nearestPoint: function nearestPoint() {
+          return Constructors.vector(nearest_point_on_ellipse(this.origin, this.radius, get_vector(arguments)));
+        },
+        intersect: function intersect(object) {
+          return Intersect(this, object);
+        },
+        pathInfo: function pathInfo() {
+          var cos = Math.cos(this.spin);
+          var sin = Math.sin(this.spin);
+          var m = [cos, sin, -sin, cos];
+          var x1 = m[0] * this.rx * Math.cos(this.arcStart) + m[2] * this.ry * Math.sin(this.arcStart) + this.origin[0];
+          var y1 = m[1] * this.rx * Math.cos(this.arcStart) + m[3] * this.ry * Math.sin(this.arcStart) + this.origin[1];
+          var x2 = m[0] * this.rx * Math.cos(this.arcEnd) + m[2] * this.ry * Math.sin(this.arcEnd) + this.origin[0];
+          var y2 = m[1] * this.rx * Math.cos(this.arcEnd) + m[3] * this.ry * Math.sin(this.arcEnd) + this.origin[1];
+          var fa = this.arcEnd - this.arcStart > Math.PI ? 1 : 0;
+          var fs = this.arcEnd - this.arcStart > 0 ? 1 : 0;
+          return {
+            x1: x1,
+            y1: y1,
+            x2: x2,
+            y2: y2,
+            fa: fa,
+            fs: fs
+          };
+        }
+      },
+      S: {
+        fromPoints: function fromPoints() {
+          var points = get_vector_of_vectors(arguments);
+          return Constructors.circle(points, distance2(points[0], points[1]));
+        }
+      }
+    }
+  };
+
   var Polygon = function Polygon() {
     this.points = [];
   };
@@ -2367,6 +2438,21 @@
           var x = this.origin[0] + (center[0] - this.origin[0]) * (1 - magnitude);
           var y = this.origin[1] + (center[1] - this.origin[1]) * (1 - magnitude);
           return Constructors.rect(x, y, this.width * magnitude, this.height * magnitude);
+        },
+        clipSegment: function clipSegment() {
+          var edge = get_segment(arguments);
+          var e = Intersect.convex_poly_segment(this.points, edge[0], edge[1]);
+          return e === undefined ? undefined : Constructors.segment(e);
+        },
+        clipLine: function clipLine() {
+          var line = get_line(arguments);
+          var e = Intersect.convex_poly_line(this.points, line.vector, line.origin);
+          return e === undefined ? undefined : Constructors.segment(e);
+        },
+        clipRay: function clipRay() {
+          var line = get_line(arguments);
+          var e = Intersect.convex_poly_ray(this.points, line.vector, line.origin);
+          return e === undefined ? undefined : Constructors.segment(e);
         }
       },
       S: {
@@ -2672,6 +2758,10 @@
     return create("circle", arguments);
   };
 
+  var ellipse = function ellipse() {
+    return create("ellipse", arguments);
+  };
+
   var rect = function rect() {
     return create("rect", arguments);
   };
@@ -2699,6 +2789,7 @@
   Object.assign(Constructors, {
     vector: vector,
     circle: circle,
+    ellipse: ellipse,
     rect: rect,
     polygon: polygon,
     line: line,
@@ -2706,7 +2797,7 @@
     segment: segment,
     matrix: matrix
   });
-  var Definitions = Object.assign({}, Vector, Circle, Rect, Polygon$1, Line$1, Ray, Segment, Matrix);
+  var Definitions = Object.assign({}, Vector, Circle, Ellipse, Rect, Polygon$1, Line$1, Ray, Segment, Matrix);
   Object.keys(Definitions).forEach(function (primitiveName) {
     var Proto = {};
     Proto.prototype = Definitions[primitiveName].P != null ? Object.create(Definitions[primitiveName].P) : Object.create(Object.prototype);

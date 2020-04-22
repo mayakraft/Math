@@ -3,8 +3,11 @@ import Prototype from "../prototypes/polygon";
 import { enclosing_rectangle } from "../../core/geometry";
 import {
   flatten_arrays,
-  get_vector_of_vectors
+  get_line,
+  get_segment,
+  get_vector_of_vectors,
 } from "../../parsers/arguments";
+import Intersect from "../../intersection/index";
 
 /**
  * this Rectangle type is aligned to the axes for speedy calculation.
@@ -41,6 +44,22 @@ export default {
         const y = this.origin[1] + (center[1] - this.origin[1]) * (1 - magnitude);
         return Constructors.rect(x, y, this.width * magnitude, this.height * magnitude);
       },
+      clipSegment: function () {
+        const edge = get_segment(arguments);
+        const e = Intersect.convex_poly_segment(this.points, edge[0], edge[1]);
+        return e === undefined ? undefined : Constructors.segment(e);
+      },
+      clipLine: function () {
+        const line = get_line(arguments);
+        const e = Intersect.convex_poly_line(this.points, line.vector, line.origin);
+        return e === undefined ? undefined : Constructors.segment(e);
+      },
+      clipRay: function () {
+        const line = get_line(arguments);
+        const e = Intersect.convex_poly_ray(this.points, line.vector, line.origin);
+        return e === undefined ? undefined : Constructors.segment(e);
+      },
+
     },
     S: {
       fromPoints: function () {
