@@ -1,13 +1,13 @@
 import Constructors from "./constructors";
 import Vector from "./vector/index";
-// import Circle from "./circle/index";
-// import Ellipse from "./ellipse/index";
-// import Rect from "./rect/index";
-// import Polygon from "./polygon/index";
 import Line from "./lines/line";
-// import Ray from "./lines/ray";
-// import Segment from "./lines/segment";
-// import Matrix from "./matrix/matrix";
+import Ray from "./lines/ray";
+import Segment from "./lines/segment";
+import Circle from "./circle/index";
+// import Ellipse from "./ellipse/index";
+import Rect from "./rect/index";
+import Polygon from "./polygon/index";
+import Matrix from "./matrix/matrix";
 // import Matrix2 from "./matrix/matrix2";
 
 // import PolygonPrototype from "./prototypes/polygon";
@@ -24,14 +24,14 @@ import Line from "./lines/line";
 
 const Definitions = Object.assign({},
   Vector,
-  // Circle,
+  Line,
+  Ray,
+  Segment,
+  Circle,
   // Ellipse,
-  // Rect,
-  // Polygon,
-  // Line,
-  // Ray,
-  // Segment,
-  // Matrix,
+  Rect,
+  Polygon,
+  Matrix,
   // Matrix2,
 );
 
@@ -76,11 +76,15 @@ Object.keys(Definitions).forEach(primitiveName => {
     : Object.create(Object.prototype);
   Proto.prototype.constructor = Proto;
 
+  // make this present in the prototype chain so "instanceof" works
+  Constructors[primitiveName].prototype = Proto.prototype;
+  Constructors[primitiveName].prototype.constructor = Constructors[primitiveName];
+
   // getters
   Object.keys(Definitions[primitiveName].G)
     .forEach(key => Object.defineProperty(Proto.prototype, key, {
       get: Definitions[primitiveName].G[key],
-      enumerable: true
+      // enumerable: true
     }));
 
   // methods
@@ -89,16 +93,13 @@ Object.keys(Definitions).forEach(primitiveName => {
       value: Definitions[primitiveName].M[key],
     }));
 
-  // static methods
   // applied to the constructor not the prototype
   Object.keys(Definitions[primitiveName].S)
     .forEach(key => Object.defineProperty(Constructors[primitiveName], key, {
-      value: Definitions[primitiveName].S[key],
+      // bind to the prototype, this.constructor will point to the constructor
+      value: Definitions[primitiveName].S[key]
+        .bind(Constructors[primitiveName].prototype),
     }));
-
-  // make this present in the prototype chain so "instanceof" works
-  Constructors[primitiveName].prototype = Proto.prototype;
-  Constructors[primitiveName].prototype.constructor = Constructors[primitiveName];
 
   // done with prototype
   Object.freeze(Proto.prototype);

@@ -2,9 +2,11 @@ import { EPSILON } from "../../core/equal";
 import { bisect_lines2 } from "../../core/geometry";
 import { nearest_point_on_line } from "../../core/nearest";
 import {
+  resize,
   resizeUp,
   get_vector,
   get_line,
+  get_matrix_3x4,
 } from "../../parsers/arguments";
 
 import {
@@ -13,6 +15,7 @@ import {
 } from "../../core/query";
 
 import { make_matrix2_reflection } from "../../core/matrix2";
+import { multiply_matrix3_line3 } from "../../core/matrix3";
 
 import Intersect from "../../intersection/index";
 
@@ -31,42 +34,61 @@ import Constructors from "../constructors";
  *   and returns a modified d for what is considered valid space between 0-1
  */
 
-const Line = function () {};
+const LineProto = function () {};
 
 // todo, this only takes line types. it should be able to take a vector
-Line.prototype.isParallel = function () {
+LineProto.prototype.isParallel = function () {
   const arr = resizeUp(this.vector, get_line(...arguments).vector);
   console.log(arguments, this.vector, get_line(...arguments).vector, arr);
   return parallel(...arr);
 };
 
-Line.prototype.isDegenerate = function (epsilon = EPSILON) {
+LineProto.prototype.isDegenerate = function (epsilon = EPSILON) {
   return degenerate(this.vector, epsilon);
 };
 
 // todo: convert this to matrix 3x4
-Line.prototype.reflection = function () {
+LineProto.prototype.reflection = function () {
   // return Constructors.matrix2.makeReflection(this.vector, this.origin);
   return Constructors.matrix(make_matrix2_reflection(this.vector, this.origin));
 };
 
-Line.prototype.nearestPoint = function () {
+LineProto.prototype.nearestPoint = function () {
   const point = get_vector(arguments);
   return Constructors.vector(
     nearest_point_on_line(this.vector, this.origin, point, this.clip_function)
   );
 };
 
-Line.prototype.intersect = function (other) {
+// this works with lines and rays, it should be overwritten for segments
+LineProto.prototype.transform = function () {
+  const dim = this.dimension;
+  const r = multiply_matrix3_line3(
+    get_matrix_3x4(arguments),
+    resize(3, this.vector),
+    resize(3, this.origin)
+  );
+  return this.constructor(resize(dim, r.vector), resize(dim, r.origin));
+};
+
+LineProto.prototype.intersect = function (other) {
   return Intersect(this, other);
 };
 
-Line.prototype.bisect = function () {
+LineProto.prototype.bisect = function () {
   const line = get_line(arguments);
   return bisect_lines2(this.vector, this.origin, line.vector, line.origin);
 };
 
+Object.defineProperty(LineProto.prototype, "dimension", {
+  get: function () {
+    return [this.vector, this.origin]
+      .map(p => p.length)
+      .reduce((a, b) => Math.max(a, b), 0);
+  }
+});
+
 // const collinear = function (point){}
 // const equivalent = function (line, epsilon){}
 
-export default Line;
+export default LineProto;

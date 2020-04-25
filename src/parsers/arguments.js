@@ -15,7 +15,7 @@ export const Typeof = function (obj) {
   if (typeof obj === "object") {
     if (obj.radius != null) { return "circle"; }
     if (obj.width != null) { return "rectangle"; }
-    if (obj.x != null) { return "vector" }
+    if (obj.x != null) { return "vector"; }
     // line ray segment
     if (obj.rotate180 != null) { return "ray"; }
     if (obj[0] != null && obj[0].length && obj[0].x != null) { return "segment"; }
@@ -37,12 +37,12 @@ const vector_origin_form = (vector, origin) => ({
  * sort two vectors by their lengths, returning the shorter one first
  *
  */
-export const lengthSort = (a, b) => [a, b].sort((a, b) => a.length - b.length);
+export const lengthSort = (a, b) => [a, b].sort((m, n) => m.length - n.length);
 
 /**
  * force a vector into N-dimensions by adding 0s if they don't exist.
  */
-export const resize = (d, v) => Array(d).fill(0).map((z, i) => v[i] ? v[i] : z);
+export const resize = (d, v) => Array(d).fill(0).map((z, i) => (v[i] ? v[i] : z));
 
 /**
  * this makes the two vectors match in dimension.
@@ -127,7 +127,7 @@ export const flatten_arrays = function () {
 export const get_vector = function () {
   // todo, incorporate constructors.vector check to all indices. and below
   if (arguments[0] instanceof Constructors.vector) { return arguments[0]; }
-  let list = flatten_arrays(arguments); //.filter(a => a !== undefined);
+  let list = flatten_arrays(arguments); // .filter(a => a !== undefined);
   if (list.length > 0
     && typeof list[0] === "object"
     && list[0] !== null
@@ -199,6 +199,11 @@ const matrix_map_3x4 = len => {
   return maps_3x4[i];
 };
 
+/**
+ * a matrix3 is a 4x3 matrix, 3x3 orientation with a column for translation
+ *
+ * @returns {number[]} array of 12 numbers, or undefined if bad inputs
+*/
 export const get_matrix_3x4 = function () {
   const mat = flatten_arrays(arguments);
   const matrix = [...identity3x4];
@@ -224,114 +229,3 @@ export const get_matrix2 = function () {
   // m doesn't have a length
   return undefined;
 };
-/**
- * a matrix3 is a 4x3 matrix, 3x3 orientation with a column for translation
- *
- * @returns {number[]} array of 12 numbers, or undefined if bad inputs
-*/
-export const get_matrix3 = function (...args) {
-  const m = get_vector(args);
-  if (m === undefined) { return undefined; }
-  switch (m.length) {
-    case 4: return [
-      m[0], m[1], 0, 0,
-      m[2], m[3], 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1
-    ];
-    case 6: return [
-      m[0], m[1], 0,
-      m[2], m[3], 0,
-      0, 0, 1,
-      m[4], m[5], 0
-    ];
-    case 9: return [
-      m[0], m[1], m[2],
-      m[3], m[4], m[5],
-      m[6], m[7], m[8],
-      0, 0, 0
-    ];
-    case 12: return m;
-    // convert a 4x4 (openGL type) matrix into 3x4
-    case 16: return [
-      m[0], m[1], m[2],
-      m[4], m[5], m[6],
-      m[8], m[9], m[10],
-      m[12], m[13], m[14]
-    ];
-    default: break;
-  }
-  if (m.length > 12) {
-    return [
-      m[0], m[1], m[2],
-      m[4], m[5], m[6],
-      m[8], m[9], m[10],
-      m[12], m[13], m[14]
-    ];
-  }
-  if (m.length < 12) {
-    return identity3x4.map((n, i) => m[i] || n);
-  }
-  // m doesn't have a length
-  return undefined;
-};
-
-export function get_two_vec2(...args) {
-  if (args.length === 0) { return undefined; }
-  if (args.length === 1 && args[0] !== undefined) {
-    return get_two_vec2(...args[0]);
-  }
-  const params = Array.from(args);
-  const numbers = params.filter(param => !isNaN(param));
-  const arrays = params.filter(o => typeof o === "object")
-    .filter(param => param.constructor === Array);
-  if (numbers.length >= 4) {
-    return [
-      [numbers[0], numbers[1]],
-      [numbers[2], numbers[3]],
-    ];
-  }
-  if (arrays.length >= 2 && !isNaN(arrays[0][0])) {
-    return arrays;
-  }
-  if (arrays.length === 1 && !isNaN(arrays[0][0][0])) {
-    return arrays[0];
-  }
-  return undefined;
-}
-
-export function get_array_of_vec(...args) {
-  if (args.length === 0) { return undefined; }
-  if (args.length === 1 && args[0] !== undefined) {
-    return get_array_of_vec(...args[0]);
-  }
-  // let params = Array.from(args);
-  return Array.from(args);
-
-  // let arrays = params.filter((param) => param.constructor === Array);
-  // if (arrays.length == 1 && arrays[0].length > 0 && arrays[0][0].length > 0 && !isNaN(arrays[0][0][0])) {
-  //   return arrays[0];
-  // }
-  // if (params[0].constructor === Object) {
-  //   if (params[0].points != null) {
-  //     return params[0].points;
-  //   }
-  // }
-}
-
-
-export function get_array_of_vec2() {
-  // todo
-  let params = Array.from(arguments);
-  let arrays = params.filter((param) => param.constructor === Array);
-  if (arrays.length >= 2 && !isNaN(arrays[0][0])) {
-    return arrays;
-  }
-  if (arrays.length === 1 && arrays[0].length >= 1) {
-    return arrays[0];
-  }
-  // if (arrays[0] != null && arrays[0].length >= 2 && arrays[0][0] != null && !isNaN(arrays[0][0][0])) {
-  //  return arrays[0];
-  // }
-  return params;
-}

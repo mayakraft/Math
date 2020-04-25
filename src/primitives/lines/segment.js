@@ -1,8 +1,9 @@
 import Constructors from "../constructors";
 import { average } from "../../core/algebra";
-import { multiply_matrix2_vector2 } from "../../core/matrix2";
+import { multiply_matrix3_vector3 } from "../../core/matrix3";
 import {
-  get_matrix2,
+  resize,
+  get_matrix_3x4,
   get_segment,
 } from "../../parsers/arguments";
 import LinePrototype from "../prototypes/line";
@@ -16,8 +17,8 @@ export default {
       // const segment = Object.create(proto(Segment, points));
       this.points = get_segment(...arguments)
         .map(p => Constructors.vector(p));
-      this.origin = this.points[0];
       this.vector = this.points[1].subtract(this.points[0]);
+      this.origin = this.points[0];
     },
 
     G: {
@@ -35,9 +36,12 @@ export default {
         return dist;
       },
       transform: function (...innerArgs) {
-        const mat = get_matrix2(innerArgs);
+        const dim = this.dimension;
+        const mat = get_matrix_3x4(innerArgs);
         const transformed_points = this.points
-          .map(point => multiply_matrix2_vector2(mat, point));
+          .map(point => resize(3, point))
+          .map(point => multiply_matrix3_vector3(mat, point))
+          .map(point => resize(dim, point));
         return Constructors.segment(transformed_points);
       },
       scale: function (magnitude) {
@@ -52,7 +56,9 @@ export default {
     },
 
     S: {
-      fromPoints: Constructors.segment
+      fromPoints: function () {
+        return this.constructor(...arguments);
+      }
     }
 
   }
