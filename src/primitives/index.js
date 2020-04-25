@@ -1,13 +1,13 @@
 import Constructors from "./constructors";
 import Vector from "./vector/index";
-import Circle from "./circle/index";
-import Ellipse from "./ellipse/index";
-import Rect from "./rect/index";
-import Polygon from "./polygon/index";
+// import Circle from "./circle/index";
+// import Ellipse from "./ellipse/index";
+// import Rect from "./rect/index";
+// import Polygon from "./polygon/index";
 import Line from "./lines/line";
-import Ray from "./lines/ray";
-import Segment from "./lines/segment";
-import Matrix from "./matrix/matrix";
+// import Ray from "./lines/ray";
+// import Segment from "./lines/segment";
+// import Matrix from "./matrix/matrix";
 // import Matrix2 from "./matrix/matrix2";
 
 // import PolygonPrototype from "./prototypes/polygon";
@@ -21,6 +21,19 @@ import Matrix from "./matrix/matrix";
 //   S: static- static methods added to the constructor
 // }
 // keys are one letter to shrink minified compile size
+
+const Definitions = Object.assign({},
+  Vector,
+  // Circle,
+  // Ellipse,
+  // Rect,
+  // Polygon,
+  // Line,
+  // Ray,
+  // Segment,
+  // Matrix,
+  // Matrix2,
+);
 
 const create = function (primitiveName, args) {
   const a = Object.create(Definitions[primitiveName].proto);
@@ -53,19 +66,6 @@ Object.assign(Constructors, {
   matrix,
   // matrix2,
 });
-
-const Definitions = Object.assign({},
-  Vector,
-  Circle,
-  Ellipse,
-  Rect,
-  Polygon,
-  Line,
-  Ray,
-  Segment,
-  Matrix,
-  // Matrix2,
-);
 
 // build prototypes
 Object.keys(Definitions).forEach(primitiveName => {

@@ -54,6 +54,7 @@ const seg_limiter = (dist) => {
   if (dist > 1 + EPSILON) { return 1; }
   return dist;
 };
+
 export const nearest_point_on_polygon = (polygon, point) => {
   const v = polygon
     .map((p, i, arr) => subtract(arr[(i + 1) % arr.length], p));
