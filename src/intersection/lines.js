@@ -48,11 +48,11 @@ export const intersect = (a, b, compFunc, epsilon = EPSILON) => {
   const numerator0 = cross2([
     b.origin[0] - a.origin[0],
     b.origin[1] - a.origin[1]],
-    b.vector);
+  b.vector);
   const numerator1 = cross2([
     a.origin[0] - b.origin[0],
     a.origin[1] - b.origin[1]],
-    a.vector);
+  a.vector);
   const t0 = numerator0 / denominator0;
   const t1 = numerator1 / denominator1;
   if (compFunc(t0, t1, epsilon)) {
@@ -60,4 +60,3 @@ export const intersect = (a, b, compFunc, epsilon = EPSILON) => {
   }
   return undefined;
 };
-

@@ -9,7 +9,7 @@ import {
 
 import {
   get_line,
-  get_array_of_vec,
+  get_vector_of_vectors,
 } from "../parsers/arguments";
 
 import Segment from "./segment";
@@ -17,7 +17,7 @@ import Vector from "./vector/index";
 import Prototype from "./prototypes/polygon";
 
 const ConvexPolygon = function (...args) {
-  const points = get_array_of_vec(args).map(p => Vector(p));
+  const points = get_vector_of_vectors(args).map(p => Vector(p));
   // todo, best practices here
   if (points === undefined) { return undefined; }
   const sides = points
@@ -46,7 +46,7 @@ const ConvexPolygon = function (...args) {
   };
 
   const overlaps = function (...innerArgs) {
-    const poly2Points = get_array_of_vec(innerArgs);
+    const poly2Points = get_vector_of_vectors(innerArgs);
     return convex_polygons_overlap(points, poly2Points);
   };
 
