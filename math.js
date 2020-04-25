@@ -2247,6 +2247,79 @@
     }
   };
 
+  var f = function f(n) {
+    return Number.isInteger(n) ? n : n.toFixed(4);
+  };
+
+  var Ellipse = {
+    ellipse: {
+      A: function A() {
+        var arr = Array.from(arguments);
+        var numbers = flatten_arrays(arguments).filter(function (a) {
+          return !isNaN(a);
+        });
+        var params = resize(5, numbers);
+        this.rx = params[0];
+        this.ry = params[1];
+        this.origin = [params[2], params[3]];
+        this.spin = params[4];
+        this.arcStart = typeof arr[5] === "number" ? arr[5] : 0;
+        this.arcEnd = typeof arr[6] === "number" ? arr[6] : Math.PI * 2;
+      },
+      G: {
+        x: function x() {
+          return this.origin[0];
+        },
+        y: function y() {
+          return this.origin[1];
+        },
+        path: function path() {
+          var info = this.pathInfo();
+          return "M".concat(f(info.x1), " ").concat(f(info.y1), "A").concat(f(this.rx), " ").concat(f(this.ry), " ").concat(f(this.spin * 180 / Math.PI), " ").concat(f(info.fa), " ").concat(f(info.fs), " ").concat(f(info.x2), " ").concat(f(info.y2), "A").concat(f(this.rx), " ").concat(f(this.ry), " ").concat(f(this.spin * 180 / Math.PI), " ").concat(f(info.fa), " ").concat(f(info.fs), " ").concat(f(info.x1), " ").concat(f(info.y1));
+        }
+      },
+      M: {
+        nearestPoint: function nearestPoint() {
+          return Constructors.vector(nearest_point_on_ellipse(this.origin, this.radius, get_vector(arguments)));
+        },
+        intersect: function intersect(object) {
+          return Intersect(this, object);
+        },
+        pathInfo: function pathInfo() {
+          var arcStart = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.arcStart;
+          var arcEnd = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.arcEnd;
+          arcEnd = arcEnd / 2;
+          var cosSpin = Math.cos(this.spin);
+          var sinSpin = Math.sin(this.spin);
+          var cosStart = Math.cos(arcStart);
+          var sinStart = Math.sin(arcStart);
+          var cosEnd = Math.cos(arcEnd);
+          var sinEnd = Math.sin(arcEnd);
+          var x1 = this.origin[0] + cosSpin * this.rx * cosStart + -sinSpin * this.ry * sinStart;
+          var y1 = this.origin[1] + sinSpin * this.rx * cosStart + cosSpin * this.ry * sinStart;
+          var x2 = this.origin[0] + cosSpin * this.rx * cosEnd + -sinSpin * this.ry * sinEnd;
+          var y2 = this.origin[1] + sinSpin * this.rx * cosEnd + cosSpin * this.ry * sinEnd;
+          var fa = arcEnd - arcStart > Math.PI ? 1 : 0;
+          var fs = arcEnd - arcStart > 0 ? 1 : 0;
+          return {
+            x1: x1,
+            y1: y1,
+            x2: x2,
+            y2: y2,
+            fa: fa,
+            fs: fs
+          };
+        }
+      },
+      S: {
+        fromPoints: function fromPoints() {
+          var points = get_vector_of_vectors(arguments);
+          return Constructors.circle(points, distance2(points[0], points[1]));
+        }
+      }
+    }
+  };
+
   var PolygonProto = function PolygonProto() {
     this.points = [];
   };
@@ -2393,17 +2466,17 @@
         },
         clipSegment: function clipSegment() {
           var edge = get_segment(arguments);
-          var e = Intersect.convex_poly_segment(this.points, edge[0], edge[1]);
+          var e = convex_poly_segment(this.points, edge[0], edge[1]);
           return e === undefined ? undefined : Constructors.segment(e);
         },
         clipLine: function clipLine() {
           var line = get_line(arguments);
-          var e = Intersect.convex_poly_line(this.points, line.vector, line.origin);
+          var e = convex_poly_line(this.points, line.vector, line.origin);
           return e === undefined ? undefined : Constructors.segment(e);
         },
         clipRay: function clipRay() {
           var line = get_line(arguments);
-          var e = Intersect.convex_poly_ray(this.points, line.vector, line.origin);
+          var e = convex_poly_ray(this.points, line.vector, line.origin);
           return e === undefined ? undefined : Constructors.segment(e);
         }
       },
@@ -2515,7 +2588,7 @@
     }
   };
 
-  var Definitions = Object.assign({}, Vector, Line, Ray, Segment, Circle, Rect, Polygon, Matrix);
+  var Definitions = Object.assign({}, Vector, Line, Ray, Segment, Circle, Ellipse, Rect, Polygon, Matrix);
 
   var create = function create(primitiveName, args) {
     var a = Object.create(Definitions[primitiveName].proto);

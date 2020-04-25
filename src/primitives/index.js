@@ -4,7 +4,7 @@ import Line from "./lines/line";
 import Ray from "./lines/ray";
 import Segment from "./lines/segment";
 import Circle from "./circle/index";
-// import Ellipse from "./ellipse/index";
+import Ellipse from "./ellipse/index";
 import Rect from "./rect/index";
 import Polygon from "./polygon/index";
 import Matrix from "./matrix/matrix";
@@ -28,7 +28,7 @@ const Definitions = Object.assign({},
   Ray,
   Segment,
   Circle,
-  // Ellipse,
+  Ellipse,
   Rect,
   Polygon,
   Matrix,

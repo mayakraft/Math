@@ -1,19 +1,14 @@
 // infinity box
-const infinityBox = math.polygon(
-  [-1000, -1000],
-  [1000, -1000],
-  [1000, 1000],
-  [-1000, 1000]);
+const infinityBox = math.rect(-1000, -1000, 2000, 2000);
 
 const states = {
   select: {
     svg: pts => SVG.rect(
       pts[0].x,
       pts[0].y,
-      pts[pts.length-1].x - pts[0].x,
-      pts[pts.length-1].y - pts[0].y)
-    .strokeWidth(0.004)
-    .strokeDasharray(0.01),
+      pts[pts.length - 1].x - pts[0].x,
+      pts[pts.length - 1].y - pts[0].y
+    ).strokeWidth(0.004).strokeDasharray(0.01),
     math: math.rect.fromPoints,
   },
   remove: {

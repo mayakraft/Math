@@ -7,7 +7,7 @@ import {
   get_segment,
   get_vector_of_vectors,
 } from "../../parsers/arguments";
-import Intersect from "../../intersection/index";
+import * as Intersect from "../../intersection/polygon";
 
 /**
  * this Rectangle type is aligned to the axes for speedy calculation.
