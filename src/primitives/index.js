@@ -1,12 +1,13 @@
 import Constructors from "./constructors";
 import Vector from "./vector/index";
-import Circle from "./circle/index";
-import Rect from "./rect/index";
-import Polygon from "./polygon/index";
+// import Circle from "./circle/index";
+// import Ellipse from "./ellipse/index";
+// import Rect from "./rect/index";
+// import Polygon from "./polygon/index";
 import Line from "./lines/line";
-import Ray from "./lines/ray";
-import Segment from "./lines/segment";
-import Matrix from "./matrix/matrix";
+// import Ray from "./lines/ray";
+// import Segment from "./lines/segment";
+// import Matrix from "./matrix/matrix";
 // import Matrix2 from "./matrix/matrix2";
 
 // import PolygonPrototype from "./prototypes/polygon";
@@ -21,6 +22,19 @@ import Matrix from "./matrix/matrix";
 // }
 // keys are one letter to shrink minified compile size
 
+const Definitions = Object.assign({},
+  Vector,
+  // Circle,
+  // Ellipse,
+  // Rect,
+  // Polygon,
+  // Line,
+  // Ray,
+  // Segment,
+  // Matrix,
+  // Matrix2,
+);
+
 const create = function (primitiveName, args) {
   const a = Object.create(Definitions[primitiveName].proto);
   Definitions[primitiveName].A.apply(a, args);
@@ -31,6 +45,7 @@ const create = function (primitiveName, args) {
 // this function name is what appears as the object type name in use
 const vector = function () { return create("vector", arguments); };
 const circle = function () { return create("circle", arguments); };
+const ellipse = function () { return create("ellipse", arguments); };
 const rect = function () { return create("rect", arguments); };
 const polygon = function () { return create("polygon", arguments); };
 const line = function () { return create("line", arguments); };
@@ -42,6 +57,7 @@ const matrix = function () { return create("matrix", arguments); };
 Object.assign(Constructors, {
   vector,
   circle,
+  ellipse,
   rect,
   polygon,
   line,
@@ -50,18 +66,6 @@ Object.assign(Constructors, {
   matrix,
   // matrix2,
 });
-
-const Definitions = Object.assign({},
-  Vector,
-  Circle,
-  Rect,
-  Polygon,
-  Line,
-  Ray,
-  Segment,
-  Matrix,
-  // Matrix2,
-);
 
 // build prototypes
 Object.keys(Definitions).forEach(primitiveName => {

@@ -13,6 +13,7 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
+  "ignorePatterns": ["math.js", "math.min.js"],
   "rules": {
     "quotes": ["error", "double"],
     "func-names": ["error", "never"],

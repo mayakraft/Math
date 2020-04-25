@@ -12,7 +12,9 @@ import {
   get_vector,
   get_matrix2,
   get_line,
+  get_segment,
 } from "../../parsers/arguments";
+import * as Intersect from "../../intersection/polygon";
 
 // a polygon is expecting to have these properties:
 // this.points - an array of vectors in [] form

@@ -13,9 +13,9 @@ export const determ2 = (a, b) => a[0] * b[1] - b[0] * a[1];
 
 const intersect_line_seg = (origin, vector, pt0, pt1) => {
   const a = { origin, vector };
-  const b = { origin: pt0, vector: [[pt1[0] - pt0[0]], [pt1[1] - pt0[1]]]};
+  const b = { origin: pt0, vector: [[pt1[0] - pt0[0]], [pt1[1] - pt0[1]]] };
   return intersect(a, b, comp_l_s);
-}
+};
 
 /*
 ██████╗   ██████╗  ██╗   ██╗ ██╗       ██████╗   ██████╗  ███╗   ██╗ ███████╗
