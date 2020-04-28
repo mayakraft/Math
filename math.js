@@ -2247,14 +2247,52 @@
     }
   };
 
+  var pointOnEllipse = function pointOnEllipse(cx, cy, rx, ry, zRotation, arcAngle) {
+    var cos_rotate = Math.cos(zRotation);
+    var sin_rotate = Math.sin(zRotation);
+    var cos_arc = Math.cos(arcAngle);
+    var sin_arc = Math.sin(arcAngle);
+    return [cx + cos_rotate * rx * cos_arc + -sin_rotate * ry * sin_arc, cy + sin_rotate * rx * cos_arc + cos_rotate * ry * sin_arc];
+  };
+
+  var pathInfo = function pathInfo(cx, cy, rx, ry, zRotation, arcStart_, deltaArc_) {
+    var arcStart = arcStart_;
+
+    if (arcStart < 0 && !isNaN(arcStart)) {
+      while (arcStart < 0) {
+        arcStart += Math.PI * 2;
+      }
+    }
+
+    var deltaArc = deltaArc_ > Math.PI * 2 ? Math.PI * 2 : deltaArc_;
+    var start = pointOnEllipse(cx, cy, rx, ry, zRotation, arcStart);
+    var middle = pointOnEllipse(cx, cy, rx, ry, zRotation, arcStart + deltaArc / 2);
+    var end = pointOnEllipse(cx, cy, rx, ry, zRotation, arcStart + deltaArc);
+    var fa = deltaArc / 2 > Math.PI ? 1 : 0;
+    var fs = deltaArc / 2 > 0 ? 1 : 0;
+    return {
+      x1: start[0],
+      y1: start[1],
+      x2: middle[0],
+      y2: middle[1],
+      x3: end[0],
+      y3: end[1],
+      fa: fa,
+      fs: fs
+    };
+  };
+
   var f = function f(n) {
     return Number.isInteger(n) ? n : n.toFixed(4);
+  };
+
+  var ellipticalArcTo = function ellipticalArcTo(rx, ry, phi_degrees, fa, fs, endX, endY) {
+    return "A".concat(f(rx), " ").concat(f(ry), " ").concat(f(phi_degrees), " ").concat(f(fa), " ").concat(f(fs), " ").concat(f(endX), " ").concat(f(endY));
   };
 
   var Ellipse = {
     ellipse: {
       A: function A() {
-        var arr = Array.from(arguments);
         var numbers = flatten_arrays(arguments).filter(function (a) {
           return !isNaN(a);
         });
@@ -2263,8 +2301,6 @@
         this.ry = params[1];
         this.origin = [params[2], params[3]];
         this.spin = params[4];
-        this.arcStart = typeof arr[5] === "number" ? arr[5] : 0;
-        this.arcEnd = typeof arr[6] === "number" ? arr[6] : Math.PI * 2;
       },
       G: {
         x: function x() {
@@ -2272,10 +2308,6 @@
         },
         y: function y() {
           return this.origin[1];
-        },
-        path: function path() {
-          var info = this.pathInfo();
-          return "M".concat(f(info.x1), " ").concat(f(info.y1), "A").concat(f(this.rx), " ").concat(f(this.ry), " ").concat(f(this.spin * 180 / Math.PI), " ").concat(f(info.fa), " ").concat(f(info.fs), " ").concat(f(info.x2), " ").concat(f(info.y2), "A").concat(f(this.rx), " ").concat(f(this.ry), " ").concat(f(this.spin * 180 / Math.PI), " ").concat(f(info.fa), " ").concat(f(info.fs), " ").concat(f(info.x1), " ").concat(f(info.y1));
         }
       },
       M: {
@@ -2285,30 +2317,13 @@
         intersect: function intersect(object) {
           return Intersect(this, object);
         },
-        pathInfo: function pathInfo() {
-          var arcStart = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.arcStart;
-          var arcEnd = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.arcEnd;
-          arcEnd = arcEnd / 2;
-          var cosSpin = Math.cos(this.spin);
-          var sinSpin = Math.sin(this.spin);
-          var cosStart = Math.cos(arcStart);
-          var sinStart = Math.sin(arcStart);
-          var cosEnd = Math.cos(arcEnd);
-          var sinEnd = Math.sin(arcEnd);
-          var x1 = this.origin[0] + cosSpin * this.rx * cosStart + -sinSpin * this.ry * sinStart;
-          var y1 = this.origin[1] + sinSpin * this.rx * cosStart + cosSpin * this.ry * sinStart;
-          var x2 = this.origin[0] + cosSpin * this.rx * cosEnd + -sinSpin * this.ry * sinEnd;
-          var y2 = this.origin[1] + sinSpin * this.rx * cosEnd + cosSpin * this.ry * sinEnd;
-          var fa = arcEnd - arcStart > Math.PI ? 1 : 0;
-          var fs = arcEnd - arcStart > 0 ? 1 : 0;
-          return {
-            x1: x1,
-            y1: y1,
-            x2: x2,
-            y2: y2,
-            fa: fa,
-            fs: fs
-          };
+        path: function path() {
+          var arcStart = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+          var deltaArc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Math.PI * 2;
+          var info = pathInfo(this.origin[0], this.origin[1], this.rx, this.ry, this.spin, arcStart, deltaArc);
+          var arc1 = ellipticalArcTo(this.rx, this.ry, this.spin / Math.PI * 180, info.fa, info.fs, info.x2, info.y2);
+          var arc2 = ellipticalArcTo(this.rx, this.ry, this.spin / Math.PI * 180, info.fa, info.fs, info.x3, info.y3);
+          return "M".concat(f(info.x1), " ").concat(f(info.y1)).concat(arc1).concat(arc2);
         }
       },
       S: {
