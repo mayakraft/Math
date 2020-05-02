@@ -2223,12 +2223,35 @@
     }
   };
 
+  var f = function f(n) {
+    return Number.isInteger(n) ? n : n.toFixed(4);
+  };
+
+  var circleArcTo = function circleArcTo(radius, end) {
+    return "A".concat(f(radius), " ").concat(f(radius), " 0 0 0 ").concat(f(end[0]), " ").concat(f(end[1]));
+  };
+
+  var circlePoint = function circlePoint(origin, radius, angle) {
+    return [origin[0] + radius * Math.cos(angle), origin[1] + radius * Math.sin(angle)];
+  };
+
   var CircleMethods = {
     nearestPoint: function nearestPoint() {
       return Constructors.vector(nearest_point_on_circle(this.origin, this.radius, get_vector(arguments)));
     },
     intersect: function intersect(object) {
       return Intersect(this, object);
+    },
+    path: function path() {
+      var arcStart = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      var deltaArc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Math.PI * 2;
+      var arcMid = arcStart + deltaArc / 2;
+      var start = circlePoint(this.origin, this.radius, arcStart);
+      var mid = circlePoint(this.origin, this.radius, arcMid);
+      var end = circlePoint(this.origin, this.radius, arcStart + deltaArc);
+      var arc1 = circleArcTo(this.radius, mid);
+      var arc2 = circleArcTo(this.radius, end);
+      return "M".concat(f(start[0]), " ").concat(f(start[1])).concat(arc1).concat(arc2);
     }
   };
 
@@ -2254,7 +2277,6 @@
     var sin_arc = Math.sin(arcAngle);
     return [cx + cos_rotate * rx * cos_arc + -sin_rotate * ry * sin_arc, cy + sin_rotate * rx * cos_arc + cos_rotate * ry * sin_arc];
   };
-
   var pathInfo = function pathInfo(cx, cy, rx, ry, zRotation, arcStart_, deltaArc_) {
     var arcStart = arcStart_;
 
@@ -2282,12 +2304,21 @@
     };
   };
 
-  var f = function f(n) {
+  var f$1 = function f(n) {
     return Number.isInteger(n) ? n : n.toFixed(4);
   };
 
   var ellipticalArcTo = function ellipticalArcTo(rx, ry, phi_degrees, fa, fs, endX, endY) {
-    return "A".concat(f(rx), " ").concat(f(ry), " ").concat(f(phi_degrees), " ").concat(f(fa), " ").concat(f(fs), " ").concat(f(endX), " ").concat(f(endY));
+    return "A".concat(f$1(rx), " ").concat(f$1(ry), " ").concat(f$1(phi_degrees), " ").concat(f$1(fa), " ").concat(f$1(fs), " ").concat(f$1(endX), " ").concat(f$1(endY));
+  };
+
+  var getFoci = function getFoci(center, rx, ry, spin) {
+    var order = rx > ry;
+    var lsq = order ? Math.pow(rx, 2) - Math.pow(ry, 2) : Math.pow(ry, 2) - Math.pow(rx, 2);
+    var l = Math.sqrt(lsq);
+    var trigX = order ? Math.cos(spin) : Math.sin(spin);
+    var trigY = order ? Math.sin(spin) : Math.cos(spin);
+    return [Constructors.vector(center[0] + l * trigX, center[1] + l * trigY), Constructors.vector(center[0] - l * trigX, center[1] - l * trigY)];
   };
 
   var Ellipse = {
@@ -2299,8 +2330,9 @@
         var params = resize(5, numbers);
         this.rx = params[0];
         this.ry = params[1];
-        this.origin = [params[2], params[3]];
+        this.origin = Constructors.vector(params[2], params[3]);
         this.spin = params[4];
+        this.foci = getFoci(this.origin, this.rx, this.ry, this.spin);
       },
       G: {
         x: function x() {
@@ -2323,7 +2355,7 @@
           var info = pathInfo(this.origin[0], this.origin[1], this.rx, this.ry, this.spin, arcStart, deltaArc);
           var arc1 = ellipticalArcTo(this.rx, this.ry, this.spin / Math.PI * 180, info.fa, info.fs, info.x2, info.y2);
           var arc2 = ellipticalArcTo(this.rx, this.ry, this.spin / Math.PI * 180, info.fa, info.fs, info.x3, info.y3);
-          return "M".concat(f(info.x1), " ").concat(f(info.y1)).concat(arc1).concat(arc2);
+          return "M".concat(f$1(info.x1), " ").concat(f$1(info.y1)).concat(arc1).concat(arc2);
         }
       },
       S: {
