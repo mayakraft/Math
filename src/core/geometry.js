@@ -179,6 +179,34 @@ export const subsect = (divisions, vectorA, vectorB) => {
 //   bisects[1] = [-bisects[0][1], bisects[0][0]];
 //   return bisects.map(el => [[x, y], el]);
 // };
+
+export const circumcircle = function (a, b, c) {
+  const A = b[0] - a[0];
+  const B = b[1] - a[1];
+  const C = c[0] - a[0];
+  const D = c[1] - a[1];
+  const E = A * (a[0] + b[0]) + B * (a[1] + b[1]);
+  const F = C * (a[0] + c[0]) + D * (a[1] + c[1]);
+  const G = 2 * (A * (c[1] - b[1]) - B * (c[0] - b[0]));
+  if (Math.abs(G) < EPSILON) {
+    const minx = Math.min(a[0], b[0], c[0]);
+    const miny = Math.min(a[1], b[1], c[1]);
+    const dx = (Math.max(a[0], b[0], c[0]) - minx) * 0.5;
+    const dy = (Math.max(a[1], b[1], c[1]) - miny) * 0.5;
+    return {
+      origin: [minx + dx, miny + dy],
+      radius: Math.sqrt(dx * dx + dy * dy),
+    };
+  }
+  const origin = [(D * E - B * F) / G, (A * F - C * E) / G];
+  const dx = origin[0] - a[0];
+  const dy = origin[1] - a[1];
+  return {
+    origin,
+    radius: Math.sqrt(dx * dx + dy * dy),
+  };
+};
+
 /** Calculates the signed area of a polygon. This requires the polygon be non-intersecting.
  * @returns {number} the area of the polygon
  * @example

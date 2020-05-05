@@ -78,10 +78,10 @@ export default {
 
     S: {
       // static methods
-      fromPoints: function () {
-        const points = get_vector_of_vectors(arguments);
-        return Constructors.circle(points, distance2(points[0], points[1]));
-      }
+      // fromPoints: function () {
+      //   const points = get_vector_of_vectors(arguments);
+      //   return Constructors.circle(points, distance2(points[0], points[1]));
+      // }
     }
   }
 };

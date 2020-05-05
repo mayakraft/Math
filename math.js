@@ -211,6 +211,8 @@
 
   var Constructors = {};
 
+  var R2D = 180 / Math.PI;
+  var D2R = Math.PI / 180;
   var Typeof = function Typeof(obj) {
     if (_typeof(obj) === "object") {
       if (obj.radius != null) {
@@ -429,6 +431,8 @@
 
   var Arguments = /*#__PURE__*/Object.freeze({
     __proto__: null,
+    R2D: R2D,
+    D2R: D2R,
     Typeof: Typeof,
     lengthSort: lengthSort,
     resize: resize,
@@ -940,6 +944,37 @@
       return [Math.cos(rad), Math.sin(rad)];
     });
   };
+  var circumcircle = function circumcircle(a, b, c) {
+    var A = b[0] - a[0];
+    var B = b[1] - a[1];
+    var C = c[0] - a[0];
+    var D = c[1] - a[1];
+    var E = A * (a[0] + b[0]) + B * (a[1] + b[1]);
+    var F = C * (a[0] + c[0]) + D * (a[1] + c[1]);
+    var G = 2 * (A * (c[1] - b[1]) - B * (c[0] - b[0]));
+
+    if (Math.abs(G) < EPSILON) {
+      var minx = Math.min(a[0], b[0], c[0]);
+      var miny = Math.min(a[1], b[1], c[1]);
+
+      var _dx = (Math.max(a[0], b[0], c[0]) - minx) * 0.5;
+
+      var _dy = (Math.max(a[1], b[1], c[1]) - miny) * 0.5;
+
+      return {
+        origin: [minx + _dx, miny + _dy],
+        radius: Math.sqrt(_dx * _dx + _dy * _dy)
+      };
+    }
+
+    var origin = [(D * E - B * F) / G, (A * F - C * E) / G];
+    var dx = origin[0] - a[0];
+    var dy = origin[1] - a[1];
+    return {
+      origin: origin,
+      radius: Math.sqrt(dx * dx + dy * dy)
+    };
+  };
   var signed_area = function signed_area(points) {
     return 0.5 * points.map(function (el, i, arr) {
       var next = arr[(i + 1) % arr.length];
@@ -1178,6 +1213,7 @@
     bisect_lines2: bisect_lines2,
     subsect_radians: subsect_radians,
     subsect: subsect,
+    circumcircle: circumcircle,
     signed_area: signed_area,
     centroid: centroid,
     enclosing_rectangle: enclosing_rectangle,
@@ -2007,6 +2043,9 @@
   var VectorStatic = {
     fromAngle: function fromAngle(angle) {
       return Constructors.vector(Math.cos(angle), Math.sin(angle));
+    },
+    fromAngleDegrees: function fromAngleDegrees(angle) {
+      return Constructors.vector.fromAngle(angle * D2R);
     }
   };
 
@@ -2258,6 +2297,10 @@
   var CircleStatic = {
     fromPoints: function fromPoints() {
       return this.constructor.apply(this, arguments);
+    },
+    fromThreePoints: function fromThreePoints() {
+      var result = circumcircle.apply(void 0, arguments);
+      return this.constructor.apply(this, _toConsumableArray(result.origin).concat([result.radius]));
     }
   };
 
@@ -2358,12 +2401,7 @@
           return "M".concat(f$1(info.x1), " ").concat(f$1(info.y1)).concat(arc1).concat(arc2);
         }
       },
-      S: {
-        fromPoints: function fromPoints() {
-          var points = get_vector_of_vectors(arguments);
-          return Constructors.circle(points, distance2(points[0], points[1]));
-        }
-      }
+      S: {}
     }
   };
 
