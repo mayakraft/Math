@@ -12,13 +12,13 @@ test("rect", () => {
 
 // native
 test("area", () => {
-  const r = math.rect(1, 2, 3, 4);
-  expect(r.area()).toBe(3 * 4);
+  const r = math.rect(2, 3, 4, 5);
+  expect(r.area()).toBe(2 * 3);
 });
 
 test("scale", () => {
-  const r = math.rect(1, 2, 3, 4);
-  expect(r.scale(2).area()).toBe(3 * 4 * 4);
+  const r = math.rect(2, 3, 4, 5);
+  expect(r.scale(2).area()).toBe((2 * 2) * (3 * 2));
 });
 
 // test("midpoint", () => {
@@ -31,23 +31,23 @@ test("scale", () => {
 test("centroid", () => {
   const r = math.rect(1, 2, 3, 4);
   const centroid = r.centroid();
-  expect(centroid.x).toBe(1 + 1.5);
-  expect(centroid.y).toBe(2 + 2);
+  expect(centroid.x).toBe(3 + 1 / 2);
+  expect(centroid.y).toBe(4 + 2 / 2);
 });
 
 test("enclosingRectangle", () => {
   const r = math.rect(1, 2, 3, 4);
   const bounds = r.enclosingRectangle();
-  expect(bounds.x).toBe(1);
-  expect(bounds.y).toBe(2);
-  expect(bounds.width).toBe(3);
-  expect(bounds.height).toBe(4);
+  expect(bounds.x).toBe(3);
+  expect(bounds.y).toBe(4);
+  expect(bounds.width).toBe(1);
+  expect(bounds.height).toBe(2);
 });
 
 test("contains", () => {
   const r = math.rect(1, 2, 3, 4);
   expect(r.contains(0, 0)).toBe(false);
-  expect(r.contains(3, 3)).toBe(true);
+  expect(r.contains(3.5, 5)).toBe(true);
 });
 
 // test("rotate", () => {

@@ -1,6 +1,6 @@
 import {
   get_vector,
-  get_matrix3,
+  get_matrix_3x4,
   get_line,
   get_segment,
 } from "../../parsers/arguments";
@@ -9,7 +9,7 @@ import {
   convex_poly_segment,
   convex_poly_line,
   convex_poly_ray,
-} from "../../core/intersection";
+} from "../../intersection/polygon";
 
 import { point_in_poly } from "../../core/query";
 
@@ -25,11 +25,9 @@ import {
   distance2
 } from "../../core/algebra";
 
-import { multiply_matrix3_vector3 } from "../../core/matrix2";
+import { multiply_matrix3_vector3 } from "../../core/matrix3";
 
-import Vector from "../vector/index";
-import Segment from "../segment";
-import Sector from "../sector";
+import Constructors from "../constructors";
 
 // todo: need non-convex clipping functions returns an array of edges!!
 
@@ -39,10 +37,10 @@ import Sector from "../sector";
  * - points
  * - sides
  */
-export default function (subtype) {
+export default function () {
   const proto = {};
   // Type === Polygon or ConvexPolygon or Rectangle...
-  const Type = subtype;
+  // const Type = subtype;
 
   const area = function () { return signed_area(this.points); };
   const midpoint = function () { return average(this.points); };
@@ -62,7 +60,7 @@ export default function (subtype) {
       const center = p;
       const a = arr[prev].map((n, j) => n - center[j]);
       const b = arr[next].map((n, j) => n - center[j]);
-      return Sector(b, a, center);
+      return Constructors.sector(b, a, center);
     });
   };
   const contains = function (...args) {
@@ -88,28 +86,28 @@ export default function (subtype) {
   const clipSegment = function (...args) {
     const edge = get_segment(args);
     const e = convex_poly_segment(this.points, edge[0], edge[1]);
-    return e === undefined ? undefined : Segment(e);
+    return e === undefined ? undefined : Constructors.segment(e);
   };
   const clipLine = function (...args) {
     const line = get_line(args);
     const e = convex_poly_line(this.points, line.vector, line.origin);
-    return e === undefined ? undefined : Segment(e);
+    return e === undefined ? undefined : Constructors.segment(e);
   };
   const clipRay = function (...args) {
     const line = get_line(args);
     const e = convex_poly_ray(this.points, line.vector, line.origin);
-    return e === undefined ? undefined : Segment(e);
+    return e === undefined ? undefined : Constructors.segment(e);
   };
   const split = function (...args) {
     const line = get_line(args);
     return split_polygon(this.points, line.vector, line.origin)
-      .map(poly => Type(poly));
+      .map(poly => this.constructor(poly));
   };
   const scale = function (magnitude, center = centroid(this.points)) {
     const newPoints = this.points
       .map(p => [0, 1].map((_, i) => p[i] - center[i]))
       .map(vec => vec.map((_, i) => center[i] + vec[i] * magnitude));
-    return Type(newPoints);
+    return this.constructor(newPoints);
   };
   const rotate = function (angle, centerPoint = centroid(this.points)) {
     const newPoints = this.points.map((p) => {
@@ -121,20 +119,20 @@ export default function (subtype) {
         centerPoint[1] + Math.sin(a + angle) * mag,
       ];
     });
-    return Type(newPoints);
+    return this.constructor(newPoints);
   };
 
   const translate = function (...args) {
     const vec = get_vector(args);
     const newPoints = this.points.map(p => p.map((n, i) => n + vec[i]));
-    return Type(newPoints);
+    return this.constructor(newPoints);
   };
 
   const transform = function (...args) {
-    const m = get_matrix3(args);
+    const m = get_matrix_3x4(args);
     const newPoints = this.points
-      .map(p => Vector(multiply_matrix3_vector3(m, p)));
-    return Type(newPoints);
+      .map(p => Constructors.vector(multiply_matrix3_vector3(m, p)));
+    return this.constructor(newPoints);
   };
 
   Object.defineProperty(proto, "area", { value: area });

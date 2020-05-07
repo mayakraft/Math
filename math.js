@@ -211,6 +211,8 @@
 
   var Constructors = {};
 
+  var R2D = 180 / Math.PI;
+  var D2R = Math.PI / 180;
   var Typeof = function Typeof(obj) {
     if (_typeof(obj) === "object") {
       if (obj.radius != null) {
@@ -380,6 +382,37 @@
       return get_vector(a);
     })));
   };
+  var rect_form = function rect_form() {
+    var width = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var height = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var x = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var y = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+    return {
+      width: width,
+      height: height,
+      x: x,
+      y: y
+    };
+  };
+  var get_rect = function get_rect() {
+    if (arguments[0] instanceof Constructors.rect) {
+      return arguments[0];
+    }
+
+    var list = flatten_arrays(arguments);
+
+    if (list.length > 0 && _typeof(list[0]) === "object" && list[0] !== null && !isNaN(list[0].width)) {
+      return rect_form.apply(void 0, _toConsumableArray(["width", "height", "x", "y"].map(function (c) {
+        return list[0][c];
+      }).filter(function (a) {
+        return a !== undefined;
+      })));
+    }
+
+    return rect_form.apply(void 0, _toConsumableArray(list.filter(function (n) {
+      return typeof n === "number";
+    })));
+  };
   var identity2x3 = [1, 0, 0, 1, 0, 0];
   var identity3x4 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
   var maps_3x4 = [[0, 1, 3, 4, 9, 10], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [0, 1, 2, undefined, 3, 4, 5, undefined, 6, 7, 8, undefined, 9, 10, 11]];
@@ -429,6 +462,8 @@
 
   var Arguments = /*#__PURE__*/Object.freeze({
     __proto__: null,
+    R2D: R2D,
+    D2R: D2R,
     Typeof: Typeof,
     lengthSort: lengthSort,
     resize: resize,
@@ -444,6 +479,8 @@
     get_vector_of_vectors: get_vector_of_vectors,
     get_segment: get_segment,
     get_line: get_line,
+    rect_form: rect_form,
+    get_rect: get_rect,
     get_matrix_3x4: get_matrix_3x4,
     get_matrix2: get_matrix2
   });
@@ -940,6 +977,37 @@
       return [Math.cos(rad), Math.sin(rad)];
     });
   };
+  var circumcircle = function circumcircle(a, b, c) {
+    var A = b[0] - a[0];
+    var B = b[1] - a[1];
+    var C = c[0] - a[0];
+    var D = c[1] - a[1];
+    var E = A * (a[0] + b[0]) + B * (a[1] + b[1]);
+    var F = C * (a[0] + c[0]) + D * (a[1] + c[1]);
+    var G = 2 * (A * (c[1] - b[1]) - B * (c[0] - b[0]));
+
+    if (Math.abs(G) < EPSILON) {
+      var minx = Math.min(a[0], b[0], c[0]);
+      var miny = Math.min(a[1], b[1], c[1]);
+
+      var _dx = (Math.max(a[0], b[0], c[0]) - minx) * 0.5;
+
+      var _dy = (Math.max(a[1], b[1], c[1]) - miny) * 0.5;
+
+      return {
+        origin: [minx + _dx, miny + _dy],
+        radius: Math.sqrt(_dx * _dx + _dy * _dy)
+      };
+    }
+
+    var origin = [(D * E - B * F) / G, (A * F - C * E) / G];
+    var dx = origin[0] - a[0];
+    var dy = origin[1] - a[1];
+    return {
+      origin: origin,
+      radius: Math.sqrt(dx * dx + dy * dy)
+    };
+  };
   var signed_area = function signed_area(points) {
     return 0.5 * points.map(function (el, i, arr) {
       var next = arr[(i + 1) % arr.length];
@@ -977,7 +1045,7 @@
     var lengths = maxs.map(function (max, i) {
       return max - mins[i];
     });
-    return [mins, lengths];
+    return rect_form.apply(void 0, _toConsumableArray(lengths).concat(_toConsumableArray(mins)));
   };
   var make_regular_polygon = function make_regular_polygon(sides) {
     var x = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
@@ -1178,6 +1246,7 @@
     bisect_lines2: bisect_lines2,
     subsect_radians: subsect_radians,
     subsect: subsect,
+    circumcircle: circumcircle,
     signed_area: signed_area,
     centroid: centroid,
     enclosing_rectangle: enclosing_rectangle,
@@ -2007,6 +2076,9 @@
   var VectorStatic = {
     fromAngle: function fromAngle(angle) {
       return Constructors.vector(Math.cos(angle), Math.sin(angle));
+    },
+    fromAngleDegrees: function fromAngleDegrees(angle) {
+      return Constructors.vector.fromAngle(angle * D2R);
     }
   };
 
@@ -2200,17 +2272,15 @@
   };
 
   var CircleArgs = function CircleArgs() {
-    var numbers = flatten_arrays(arguments).filter(function (param) {
-      return !isNaN(param);
-    });
     var vectors = get_vector_of_vectors(arguments);
+    var numbers = resize(3, flatten_arrays(arguments));
 
-    if (numbers.length === 3) {
-      this.origin = Constructors.vector(numbers[0], numbers[1]);
-      this.radius = numbers[2];
-    } else if (vectors.length === 2) {
+    if (vectors.length === 2) {
       this.radius = distance2.apply(void 0, _toConsumableArray(vectors));
       this.origin = Constructors.vector.apply(Constructors, _toConsumableArray(vectors[0]));
+    } else {
+      this.radius = numbers[0];
+      this.origin = Constructors.vector(numbers[1], numbers[2]);
     }
   };
 
@@ -2223,18 +2293,45 @@
     }
   };
 
+  var cln = function cln(n) {
+    return clean_number(n, 4);
+  };
+
+  var circleArcTo = function circleArcTo(radius, end) {
+    return "A".concat(cln(radius), " ").concat(cln(radius), " 0 0 0 ").concat(cln(end[0]), " ").concat(cln(end[1]));
+  };
+
+  var circlePoint = function circlePoint(origin, radius, angle) {
+    return [origin[0] + radius * Math.cos(angle), origin[1] + radius * Math.sin(angle)];
+  };
+
   var CircleMethods = {
     nearestPoint: function nearestPoint() {
       return Constructors.vector(nearest_point_on_circle(this.origin, this.radius, get_vector(arguments)));
     },
     intersect: function intersect(object) {
       return Intersect(this, object);
+    },
+    path: function path() {
+      var arcStart = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      var deltaArc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Math.PI * 2;
+      var arcMid = arcStart + deltaArc / 2;
+      var start = circlePoint(this.origin, this.radius, arcStart);
+      var mid = circlePoint(this.origin, this.radius, arcMid);
+      var end = circlePoint(this.origin, this.radius, arcStart + deltaArc);
+      var arc1 = circleArcTo(this.radius, mid);
+      var arc2 = circleArcTo(this.radius, end);
+      return "M".concat(cln(start[0]), " ").concat(cln(start[1])).concat(arc1).concat(arc2);
     }
   };
 
   var CircleStatic = {
     fromPoints: function fromPoints() {
       return this.constructor.apply(this, arguments);
+    },
+    fromThreePoints: function fromThreePoints() {
+      var result = circumcircle.apply(void 0, arguments);
+      return this.constructor.apply(this, _toConsumableArray(result.origin).concat([result.radius]));
     }
   };
 
@@ -2254,7 +2351,6 @@
     var sin_arc = Math.sin(arcAngle);
     return [cx + cos_rotate * rx * cos_arc + -sin_rotate * ry * sin_arc, cy + sin_rotate * rx * cos_arc + cos_rotate * ry * sin_arc];
   };
-
   var pathInfo = function pathInfo(cx, cy, rx, ry, zRotation, arcStart_, deltaArc_) {
     var arcStart = arcStart_;
 
@@ -2282,12 +2378,21 @@
     };
   };
 
-  var f = function f(n) {
-    return Number.isInteger(n) ? n : n.toFixed(4);
+  var cln$1 = function cln(n) {
+    return clean_number(n, 4);
   };
 
   var ellipticalArcTo = function ellipticalArcTo(rx, ry, phi_degrees, fa, fs, endX, endY) {
-    return "A".concat(f(rx), " ").concat(f(ry), " ").concat(f(phi_degrees), " ").concat(f(fa), " ").concat(f(fs), " ").concat(f(endX), " ").concat(f(endY));
+    return "A".concat(cln$1(rx), " ").concat(cln$1(ry), " ").concat(cln$1(phi_degrees), " ").concat(cln$1(fa), " ").concat(cln$1(fs), " ").concat(cln$1(endX), " ").concat(cln$1(endY));
+  };
+
+  var getFoci = function getFoci(center, rx, ry, spin) {
+    var order = rx > ry;
+    var lsq = order ? Math.pow(rx, 2) - Math.pow(ry, 2) : Math.pow(ry, 2) - Math.pow(rx, 2);
+    var l = Math.sqrt(lsq);
+    var trigX = order ? Math.cos(spin) : Math.sin(spin);
+    var trigY = order ? Math.sin(spin) : Math.cos(spin);
+    return [Constructors.vector(center[0] + l * trigX, center[1] + l * trigY), Constructors.vector(center[0] - l * trigX, center[1] - l * trigY)];
   };
 
   var Ellipse = {
@@ -2299,8 +2404,9 @@
         var params = resize(5, numbers);
         this.rx = params[0];
         this.ry = params[1];
-        this.origin = [params[2], params[3]];
+        this.origin = Constructors.vector(params[2], params[3]);
         this.spin = params[4];
+        this.foci = getFoci(this.origin, this.rx, this.ry, this.spin);
       },
       G: {
         x: function x() {
@@ -2323,15 +2429,10 @@
           var info = pathInfo(this.origin[0], this.origin[1], this.rx, this.ry, this.spin, arcStart, deltaArc);
           var arc1 = ellipticalArcTo(this.rx, this.ry, this.spin / Math.PI * 180, info.fa, info.fs, info.x2, info.y2);
           var arc2 = ellipticalArcTo(this.rx, this.ry, this.spin / Math.PI * 180, info.fa, info.fs, info.x3, info.y3);
-          return "M".concat(f(info.x1), " ").concat(f(info.y1)).concat(arc1).concat(arc2);
+          return "M".concat(cln$1(info.x1), " ").concat(cln$1(info.y1)).concat(arc1).concat(arc2);
         }
       },
-      S: {
-        fromPoints: function fromPoints() {
-          var points = get_vector_of_vectors(arguments);
-          return Constructors.circle(points, distance2(points[0], points[1]));
-        }
-      }
+      S: {}
     }
   };
 
@@ -2441,25 +2542,19 @@
     });
   };
 
-  var argsToPoints = function argsToPoints(x, y, w, h) {
-    return [[x, y], [x + w, y], [x + w, y + h], [x, y + h]];
-  };
-
-  var resize$1 = function resize(d, a) {
-    return Array(d).fill(0).map(function (z, i) {
-      return a[i] ? a[i] : z;
-    });
+  var rectToPoints = function rectToPoints(r) {
+    return [[r.x, r.y], [r.x + r.width, r.y], [r.x + r.width, r.y + r.height], [r.x, r.y + r.height]];
   };
 
   var Rect = {
     rect: {
       P: PolygonProto.prototype,
       A: function A() {
-        var n = resize$1(4, flatten_arrays(arguments));
-        this.origin = [n[0], n[1]];
-        this.width = n[2];
-        this.height = n[3];
-        this.points = argsToPoints.apply(void 0, _toConsumableArray(n));
+        var r = get_rect.apply(void 0, arguments);
+        this.width = r.width;
+        this.height = r.height;
+        this.origin = Constructors.vector(r.x, r.y);
+        this.points = rectToPoints(this);
       },
       G: {
         x: function x() {
@@ -2477,7 +2572,7 @@
           var center = center_point != null ? center_point : [this.origin[0] + this.width, this.origin[1] + this.height];
           var x = this.origin[0] + (center[0] - this.origin[0]) * (1 - magnitude);
           var y = this.origin[1] + (center[1] - this.origin[1]) * (1 - magnitude);
-          return Constructors.rect(x, y, this.width * magnitude, this.height * magnitude);
+          return Constructors.rect(this.width * magnitude, this.height * magnitude, x, y);
         },
         clipSegment: function clipSegment() {
           var edge = get_segment(arguments);
@@ -2493,6 +2588,11 @@
           var line = get_line(arguments);
           var e = convex_poly_ray(this.points, line.vector, line.origin);
           return e === undefined ? undefined : Constructors.segment(e);
+        },
+        path: function path() {
+          return this.points.map(function (p, i) {
+            return "".concat(i === 0 ? "M" : "L").concat(p[0], ",").concat(p[1]);
+          }).join(" ") + "z";
         }
       },
       S: {

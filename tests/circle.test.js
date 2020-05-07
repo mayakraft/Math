@@ -5,8 +5,8 @@ const testEqual = function (...args) {
 };
 
 test("circle", () => {
-  testEqual(5, math.circle(1, 2, 5).radius);
-  testEqual([1, 2], math.circle(1, 2, 5).origin);
+  testEqual(5, math.circle(5, 1, 2).radius);
+  testEqual([1, 2], math.circle(5, 1, 2).origin);
   // testEqual(
   //   [[0.5, Math.sqrt(3) / 2], [0.5, -Math.sqrt(3) / 2]],
   //   math.circle(0, 0, 1).intersectionLine(math.line(0.5, 0, 0, 1))
