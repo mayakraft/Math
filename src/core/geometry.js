@@ -1,6 +1,9 @@
 import { EPSILON } from "./equal";
 import { point_on_line } from "./query";
-import { clean_number } from "../parsers/arguments";
+import {
+  clean_number,
+  rect_form
+} from "../parsers/arguments";
 import {
   dot,
   normalize,
@@ -232,6 +235,7 @@ export const centroid = (points) => {
   }).reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0])
     .map(c => c * sixthArea);
 };
+
 /**
  * works in any n-dimension (enclosing cube, hypercube..)
  * @returns array of arrays: [[x, y], [width, height]]
@@ -245,7 +249,7 @@ export const enclosing_rectangle = (points) => {
       if (c > maxs[i]) { maxs[i] = c; }
     }));
   const lengths = maxs.map((max, i) => max - mins[i]);
-  return [mins, lengths];
+  return rect_form(...lengths, ...mins);
 };
 /**
  * the radius parameter measures from the center to the midpoint of the edge

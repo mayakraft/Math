@@ -182,6 +182,24 @@ export const get_line = function () {
     : vector_origin_form(...args.map(a => get_vector(a)));
 };
 
+export const rect_form = (width = 0, height = 0, x = 0, y = 0) => ({
+  width, height, x, y
+});
+
+export const get_rect = function () {
+  if (arguments[0] instanceof Constructors.rect) { return arguments[0]; }
+  const list = flatten_arrays(arguments); // .filter(a => a !== undefined);
+  if (list.length > 0
+    && typeof list[0] === "object"
+    && list[0] !== null
+    && !isNaN(list[0].width)) {
+    return rect_form(...["width", "height", "x", "y"]
+      .map(c => list[0][c])
+      .filter(a => a !== undefined));
+  }
+  return rect_form(...list.filter(n => typeof n === "number"));
+};
+
 const identity2x2 = [1, 0, 0, 1];
 const identity2x3 = [1, 0, 0, 1, 0, 0];
 const identity3x3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];

@@ -1,11 +1,9 @@
 import Constructors from "../constructors";
-import { distance2 } from "../../core/algebra";
 import { nearest_point_on_ellipse } from "../../core/nearest";
 import {
   resize,
   flatten_arrays,
   get_vector,
-  get_vector_of_vectors,
 } from "../../parsers/arguments";
 import Intersect from "../../intersection/index";
 

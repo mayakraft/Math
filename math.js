@@ -382,6 +382,37 @@
       return get_vector(a);
     })));
   };
+  var rect_form = function rect_form() {
+    var width = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var height = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var x = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var y = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+    return {
+      width: width,
+      height: height,
+      x: x,
+      y: y
+    };
+  };
+  var get_rect = function get_rect() {
+    if (arguments[0] instanceof Constructors.rect) {
+      return arguments[0];
+    }
+
+    var list = flatten_arrays(arguments);
+
+    if (list.length > 0 && _typeof(list[0]) === "object" && list[0] !== null && !isNaN(list[0].width)) {
+      return rect_form.apply(void 0, _toConsumableArray(["width", "height", "x", "y"].map(function (c) {
+        return list[0][c];
+      }).filter(function (a) {
+        return a !== undefined;
+      })));
+    }
+
+    return rect_form.apply(void 0, _toConsumableArray(list.filter(function (n) {
+      return typeof n === "number";
+    })));
+  };
   var identity2x3 = [1, 0, 0, 1, 0, 0];
   var identity3x4 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
   var maps_3x4 = [[0, 1, 3, 4, 9, 10], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [0, 1, 2, undefined, 3, 4, 5, undefined, 6, 7, 8, undefined, 9, 10, 11]];
@@ -448,6 +479,8 @@
     get_vector_of_vectors: get_vector_of_vectors,
     get_segment: get_segment,
     get_line: get_line,
+    rect_form: rect_form,
+    get_rect: get_rect,
     get_matrix_3x4: get_matrix_3x4,
     get_matrix2: get_matrix2
   });
@@ -1012,7 +1045,7 @@
     var lengths = maxs.map(function (max, i) {
       return max - mins[i];
     });
-    return [mins, lengths];
+    return rect_form.apply(void 0, _toConsumableArray(lengths).concat(_toConsumableArray(mins)));
   };
   var make_regular_polygon = function make_regular_polygon(sides) {
     var x = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
@@ -2239,17 +2272,15 @@
   };
 
   var CircleArgs = function CircleArgs() {
-    var numbers = flatten_arrays(arguments).filter(function (param) {
-      return !isNaN(param);
-    });
     var vectors = get_vector_of_vectors(arguments);
+    var numbers = resize(3, flatten_arrays(arguments));
 
-    if (numbers.length === 3) {
-      this.origin = Constructors.vector(numbers[0], numbers[1]);
-      this.radius = numbers[2];
-    } else if (vectors.length === 2) {
+    if (vectors.length === 2) {
       this.radius = distance2.apply(void 0, _toConsumableArray(vectors));
       this.origin = Constructors.vector.apply(Constructors, _toConsumableArray(vectors[0]));
+    } else {
+      this.radius = numbers[0];
+      this.origin = Constructors.vector(numbers[1], numbers[2]);
     }
   };
 
@@ -2418,6 +2449,7 @@
   };
 
   PolygonProto.prototype.enclosingRectangle = function () {
+    console.log("params, ", enclosing_rectangle(this.points));
     return Constructors.rect(enclosing_rectangle(this.points));
   };
 
@@ -2511,25 +2543,19 @@
     });
   };
 
-  var argsToPoints = function argsToPoints(x, y, w, h) {
-    return [[x, y], [x + w, y], [x + w, y + h], [x, y + h]];
-  };
-
-  var resize$1 = function resize(d, a) {
-    return Array(d).fill(0).map(function (z, i) {
-      return a[i] ? a[i] : z;
-    });
+  var rectToPoints = function rectToPoints(r) {
+    return [[r.x, r.y], [r.x + r.width, r.y], [r.x + r.width, r.y + r.height], [r.x, r.y + r.height]];
   };
 
   var Rect = {
     rect: {
       P: PolygonProto.prototype,
       A: function A() {
-        var n = resize$1(4, flatten_arrays(arguments));
-        this.origin = [n[0], n[1]];
-        this.width = n[2];
-        this.height = n[3];
-        this.points = argsToPoints.apply(void 0, _toConsumableArray(n));
+        var r = get_rect.apply(void 0, arguments);
+        this.width = r.width;
+        this.height = r.height;
+        this.origin = Constructors.vector(r.x, r.y);
+        this.points = rectToPoints(this);
       },
       G: {
         x: function x() {
@@ -2547,7 +2573,7 @@
           var center = center_point != null ? center_point : [this.origin[0] + this.width, this.origin[1] + this.height];
           var x = this.origin[0] + (center[0] - this.origin[0]) * (1 - magnitude);
           var y = this.origin[1] + (center[1] - this.origin[1]) * (1 - magnitude);
-          return Constructors.rect(x, y, this.width * magnitude, this.height * magnitude);
+          return Constructors.rect(this.width * magnitude, this.height * magnitude, x, y);
         },
         clipSegment: function clipSegment() {
           var edge = get_segment(arguments);
