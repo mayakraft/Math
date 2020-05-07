@@ -2293,12 +2293,12 @@
     }
   };
 
-  var f = function f(n) {
-    return Number.isInteger(n) ? n : n.toFixed(4);
+  var cln = function cln(n) {
+    return clean_number(n, 4);
   };
 
   var circleArcTo = function circleArcTo(radius, end) {
-    return "A".concat(f(radius), " ").concat(f(radius), " 0 0 0 ").concat(f(end[0]), " ").concat(f(end[1]));
+    return "A".concat(cln(radius), " ").concat(cln(radius), " 0 0 0 ").concat(cln(end[0]), " ").concat(cln(end[1]));
   };
 
   var circlePoint = function circlePoint(origin, radius, angle) {
@@ -2321,7 +2321,7 @@
       var end = circlePoint(this.origin, this.radius, arcStart + deltaArc);
       var arc1 = circleArcTo(this.radius, mid);
       var arc2 = circleArcTo(this.radius, end);
-      return "M".concat(f(start[0]), " ").concat(f(start[1])).concat(arc1).concat(arc2);
+      return "M".concat(cln(start[0]), " ").concat(cln(start[1])).concat(arc1).concat(arc2);
     }
   };
 
@@ -2378,12 +2378,12 @@
     };
   };
 
-  var f$1 = function f(n) {
-    return Number.isInteger(n) ? n : n.toFixed(4);
+  var cln$1 = function cln(n) {
+    return clean_number(n, 4);
   };
 
   var ellipticalArcTo = function ellipticalArcTo(rx, ry, phi_degrees, fa, fs, endX, endY) {
-    return "A".concat(f$1(rx), " ").concat(f$1(ry), " ").concat(f$1(phi_degrees), " ").concat(f$1(fa), " ").concat(f$1(fs), " ").concat(f$1(endX), " ").concat(f$1(endY));
+    return "A".concat(cln$1(rx), " ").concat(cln$1(ry), " ").concat(cln$1(phi_degrees), " ").concat(cln$1(fa), " ").concat(cln$1(fs), " ").concat(cln$1(endX), " ").concat(cln$1(endY));
   };
 
   var getFoci = function getFoci(center, rx, ry, spin) {
@@ -2429,7 +2429,7 @@
           var info = pathInfo(this.origin[0], this.origin[1], this.rx, this.ry, this.spin, arcStart, deltaArc);
           var arc1 = ellipticalArcTo(this.rx, this.ry, this.spin / Math.PI * 180, info.fa, info.fs, info.x2, info.y2);
           var arc2 = ellipticalArcTo(this.rx, this.ry, this.spin / Math.PI * 180, info.fa, info.fs, info.x3, info.y3);
-          return "M".concat(f$1(info.x1), " ").concat(f$1(info.y1)).concat(arc1).concat(arc2);
+          return "M".concat(cln$1(info.x1), " ").concat(cln$1(info.y1)).concat(arc1).concat(arc2);
         }
       },
       S: {}
@@ -2449,7 +2449,6 @@
   };
 
   PolygonProto.prototype.enclosingRectangle = function () {
-    console.log("params, ", enclosing_rectangle(this.points));
     return Constructors.rect(enclosing_rectangle(this.points));
   };
 
@@ -2589,6 +2588,11 @@
           var line = get_line(arguments);
           var e = convex_poly_ray(this.points, line.vector, line.origin);
           return e === undefined ? undefined : Constructors.segment(e);
+        },
+        path: function path() {
+          return this.points.map(function (p, i) {
+            return "".concat(i === 0 ? "M" : "L").concat(p[0], ",").concat(p[1]);
+          }).join(" ") + "z";
         }
       },
       S: {

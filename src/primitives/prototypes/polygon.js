@@ -32,7 +32,6 @@ PolygonProto.prototype.centroid = function () {
 };
 
 PolygonProto.prototype.enclosingRectangle = function () {
-  console.log("params, ", enclosing_rectangle(this.points));
   return Constructors.rect(enclosing_rectangle(this.points));
 };
 

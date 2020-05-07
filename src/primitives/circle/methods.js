@@ -1,13 +1,16 @@
-import { get_vector } from "../../parsers/arguments";
+import {
+  get_vector,
+  clean_number,
+} from "../../parsers/arguments";
 import { nearest_point_on_circle } from "../../core/nearest";
 import Intersect from "../../intersection/index";
 import Constructors from "../constructors";
 
-const f = (n) => (Number.isInteger(n) ? n : n.toFixed(4));
+const cln = n => clean_number(n, 4);
 
 // (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
 const circleArcTo = (radius, end) =>
-  `A${f(radius)} ${f(radius)} 0 0 0 ${f(end[0])} ${f(end[1])}`;
+  `A${cln(radius)} ${cln(radius)} 0 0 0 ${cln(end[0])} ${cln(end[1])}`;
 
 const circlePoint = (origin, radius, angle) => [
   origin[0] + radius * Math.cos(angle),
@@ -32,7 +35,7 @@ const CircleMethods = {
     const end = circlePoint(this.origin, this.radius, arcStart + deltaArc);
     const arc1 = circleArcTo(this.radius, mid);
     const arc2 = circleArcTo(this.radius, end);
-    return `M${f(start[0])} ${f(start[1])}${arc1}${arc2}`;
+    return `M${cln(start[0])} ${cln(start[1])}${arc1}${arc2}`;
   },
 };
 

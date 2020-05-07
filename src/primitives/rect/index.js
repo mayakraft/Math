@@ -2,12 +2,15 @@ import Constructors from "../constructors";
 import Prototype from "../prototypes/polygon";
 import { enclosing_rectangle } from "../../core/geometry";
 import {
+  clean_number,
   get_line,
   get_segment,
   get_rect,
   get_vector_of_vectors,
 } from "../../parsers/arguments";
 import * as Intersect from "../../intersection/polygon";
+
+const cln = n => clean_number(n, 4);
 
 /**
  * this Rectangle type is aligned to the axes for speedy calculation.
@@ -59,7 +62,13 @@ export default {
         const e = Intersect.convex_poly_ray(this.points, line.vector, line.origin);
         return e === undefined ? undefined : Constructors.segment(e);
       },
-
+      path: function () {
+        // turn every point into a Move or Line command
+        // append with a "z" (close path)
+        return this.points
+          .map((p, i) => `${(i === 0 ? "M" : "L")}${p[0]},${p[1]}`)
+          .join(" ") + "z";
+      },
     },
     S: {
       fromPoints: function () {
