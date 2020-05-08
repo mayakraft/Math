@@ -1,5 +1,5 @@
 // infinity box
-const infinityBox = math.rect(-1000, -1000, 2000, 2000);
+const infinityBox = math.rect(2000, 2000, -1000, -1000);
 
 const states = {
   select: {

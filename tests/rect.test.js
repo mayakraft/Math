@@ -22,10 +22,10 @@ test("scale", () => {
 });
 
 // test("midpoint", () => {
-//   const r = math.rect(1, 2, 3, 4);
+//   const r = math.rect(2, 3, 4, 5);
 //   const mid = r.midpoint();
-//   expect(mid.x).toBe(1 + 1.5);
-//   expect(mid.y).toBe(2 + 2);
+//   expect(mid.x).toBe(4 + 2 / 2);
+//   expect(mid.y).toBe(5 + 3 / 2);
 // });
 
 test("centroid", () => {
