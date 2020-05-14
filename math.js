@@ -1564,7 +1564,7 @@
       return a.distance - b.distance;
     }).shift();
   };
-  var nearest_point_on_circle = function nearest_point_on_circle(origin, radius, point) {
+  var nearest_point_on_circle = function nearest_point_on_circle(radius, origin, point) {
     return add(origin, scale(normalize(subtract(point, origin)), radius));
   };
   var nearest_point_on_ellipse = function nearest_point_on_ellipse() {
@@ -2293,57 +2293,6 @@
     }
   };
 
-  var cln = function cln(n) {
-    return clean_number(n, 4);
-  };
-
-  var circleArcTo = function circleArcTo(radius, end) {
-    return "A".concat(cln(radius), " ").concat(cln(radius), " 0 0 0 ").concat(cln(end[0]), " ").concat(cln(end[1]));
-  };
-
-  var circlePoint = function circlePoint(origin, radius, angle) {
-    return [origin[0] + radius * Math.cos(angle), origin[1] + radius * Math.sin(angle)];
-  };
-
-  var CircleMethods = {
-    nearestPoint: function nearestPoint() {
-      return Constructors.vector(nearest_point_on_circle(this.origin, this.radius, get_vector(arguments)));
-    },
-    intersect: function intersect(object) {
-      return Intersect(this, object);
-    },
-    path: function path() {
-      var arcStart = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-      var deltaArc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Math.PI * 2;
-      var arcMid = arcStart + deltaArc / 2;
-      var start = circlePoint(this.origin, this.radius, arcStart);
-      var mid = circlePoint(this.origin, this.radius, arcMid);
-      var end = circlePoint(this.origin, this.radius, arcStart + deltaArc);
-      var arc1 = circleArcTo(this.radius, mid);
-      var arc2 = circleArcTo(this.radius, end);
-      return "M".concat(cln(start[0]), " ").concat(cln(start[1])).concat(arc1).concat(arc2);
-    }
-  };
-
-  var CircleStatic = {
-    fromPoints: function fromPoints() {
-      return this.constructor.apply(this, arguments);
-    },
-    fromThreePoints: function fromThreePoints() {
-      var result = circumcircle.apply(void 0, arguments);
-      return this.constructor.apply(this, _toConsumableArray(result.origin).concat([result.radius]));
-    }
-  };
-
-  var Circle = {
-    circle: {
-      A: CircleArgs,
-      G: CircleGetters,
-      M: CircleMethods,
-      S: CircleStatic
-    }
-  };
-
   var pointOnEllipse = function pointOnEllipse(cx, cy, rx, ry, zRotation, arcAngle) {
     var cos_rotate = Math.cos(zRotation);
     var sin_rotate = Math.sin(zRotation);
@@ -2378,12 +2327,48 @@
     };
   };
 
-  var cln$1 = function cln(n) {
+  var cln = function cln(n) {
     return clean_number(n, 4);
   };
 
   var ellipticalArcTo = function ellipticalArcTo(rx, ry, phi_degrees, fa, fs, endX, endY) {
-    return "A".concat(cln$1(rx), " ").concat(cln$1(ry), " ").concat(cln$1(phi_degrees), " ").concat(cln$1(fa), " ").concat(cln$1(fs), " ").concat(cln$1(endX), " ").concat(cln$1(endY));
+    return "A".concat(cln(rx), " ").concat(cln(ry), " ").concat(cln(phi_degrees), " ").concat(cln(fa), " ").concat(cln(fs), " ").concat(cln(endX), " ").concat(cln(endY));
+  };
+
+  var CircleMethods = {
+    nearestPoint: function nearestPoint() {
+      return Constructors.vector(nearest_point_on_circle(this.radius, this.origin, get_vector(arguments)));
+    },
+    intersect: function intersect(object) {
+      return Intersect(this, object);
+    },
+    path: function path() {
+      var arcStart = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      var deltaArc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Math.PI * 2;
+      var info = pathInfo(this.origin[0], this.origin[1], this.radius, this.radius, 0, arcStart, deltaArc);
+      var arc1 = ellipticalArcTo(this.radius, this.radius, 0, info.fa, info.fs, info.x2, info.y2);
+      var arc2 = ellipticalArcTo(this.radius, this.radius, 0, info.fa, info.fs, info.x3, info.y3);
+      return "M".concat(info.x1, " ").concat(info.y1).concat(arc1).concat(arc2);
+    }
+  };
+
+  var CircleStatic = {
+    fromPoints: function fromPoints() {
+      return this.constructor.apply(this, arguments);
+    },
+    fromThreePoints: function fromThreePoints() {
+      var result = circumcircle.apply(void 0, arguments);
+      return this.constructor.apply(this, _toConsumableArray(result.origin).concat([result.radius]));
+    }
+  };
+
+  var Circle = {
+    circle: {
+      A: CircleArgs,
+      G: CircleGetters,
+      M: CircleMethods,
+      S: CircleStatic
+    }
   };
 
   var getFoci = function getFoci(center, rx, ry, spin) {
@@ -2429,7 +2414,7 @@
           var info = pathInfo(this.origin[0], this.origin[1], this.rx, this.ry, this.spin, arcStart, deltaArc);
           var arc1 = ellipticalArcTo(this.rx, this.ry, this.spin / Math.PI * 180, info.fa, info.fs, info.x2, info.y2);
           var arc2 = ellipticalArcTo(this.rx, this.ry, this.spin / Math.PI * 180, info.fa, info.fs, info.x3, info.y3);
-          return "M".concat(cln$1(info.x1), " ").concat(cln$1(info.y1)).concat(arc1).concat(arc2);
+          return "M".concat(info.x1, " ").concat(info.y1).concat(arc1).concat(arc2);
         }
       },
       S: {}

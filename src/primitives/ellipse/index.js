@@ -4,17 +4,13 @@ import {
   resize,
   flatten_arrays,
   get_vector,
-  clean_number,
 } from "../../parsers/arguments";
 import Intersect from "../../intersection/index";
 
-import { pathInfo } from "./path";
-
-const cln = n => clean_number(n, 4);
-
-// (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
-const ellipticalArcTo = (rx, ry, phi_degrees, fa, fs, endX, endY) =>
-  `A${cln(rx)} ${cln(ry)} ${cln(phi_degrees)} ${cln(fa)} ${cln(fs)} ${cln(endX)} ${cln(endY)}`;
+import {
+  pathInfo,
+  ellipticalArcTo,
+} from "./path";
 
 const getFoci = function (center, rx, ry, spin) {
   const order = rx > ry;
@@ -71,7 +67,7 @@ export default {
         const info = pathInfo(this.origin[0], this.origin[1], this.rx, this.ry, this.spin, arcStart, deltaArc);
         const arc1 = ellipticalArcTo(this.rx, this.ry, (this.spin / Math.PI) * 180, info.fa, info.fs, info.x2, info.y2);
         const arc2 = ellipticalArcTo(this.rx, this.ry, (this.spin / Math.PI) * 180, info.fa, info.fs, info.x3, info.y3);
-        return `M${cln(info.x1)} ${cln(info.y1)}${arc1}${arc2}`;
+        return `M${info.x1} ${info.y1}${arc1}${arc2}`;
       },
     },
 
