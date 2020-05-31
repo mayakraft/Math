@@ -5,7 +5,6 @@ const testEqual = function (...args) {
 };
 
 
-
 test("intersections", () => {
-
+  expect(true).toBe(true);
 });

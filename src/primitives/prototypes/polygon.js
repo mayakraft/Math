@@ -122,7 +122,7 @@ const methods = {
     // make every point a Move or Line command, append with a "z" (close path)
     const pre = Array(this.points.length).fill("L");
     pre[0] = "M";
-    return `${this.points.map((p, i) => `${pre[i]}${p[0]},${p[1]}`).join("")}z`;
+    return `${this.points.map((p, i) => `${pre[i]}${p[0]} ${p[1]}`).join("")}z`;
   },
 };
 

@@ -2161,7 +2161,7 @@
       A: function A() {
         var l = get_line.apply(void 0, arguments);
         this.vector = Constructors.vector(l.vector);
-        this.origin = Constructors.vector(l.origin);
+        this.origin = Constructors.vector(resize(this.vector.length, l.origin));
       },
       G: {
         length: function length() {
@@ -2171,6 +2171,12 @@
       M: {
         clip_function: function clip_function(dist) {
           return dist;
+        },
+        path: function path() {
+          var length = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1000;
+          var start = this.origin.add(this.vector.scale(-length));
+          var end = this.vector.scale(length * 2);
+          return "M".concat(start[0], " ").concat(start[1], "l").concat(end[0], " ").concat(end[1]);
         }
       },
       S: Static
@@ -2183,7 +2189,7 @@
       A: function A() {
         var ray = get_line.apply(void 0, arguments);
         this.vector = Constructors.vector(ray.vector);
-        this.origin = Constructors.vector(ray.origin);
+        this.origin = Constructors.vector(resize(this.vector.length, ray.origin));
       },
       G: {
         length: function length() {
@@ -2196,6 +2202,11 @@
         },
         clip_function: function clip_function(dist) {
           return dist < -EPSILON ? 0 : dist;
+        },
+        path: function path() {
+          var length = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1000;
+          var end = this.vector.scale(length);
+          return "M".concat(this.origin[0], " ").concat(this.origin[1], "l").concat(end[0], " ").concat(end[1]);
         }
       },
       S: Static
@@ -2261,6 +2272,14 @@
         },
         midpoint: function midpoint() {
           return Constructors.vector(average(this.points[0], this.points[1]));
+        },
+        path: function path() {
+          var pointStrings = this.points.map(function (p) {
+            return "".concat(p[0], " ").concat(p[1]);
+          });
+          return ["M", "L"].map(function (cmd, i) {
+            return "".concat(cmd).concat(pointStrings[i]);
+          }).join("");
         }
       },
       S: {
@@ -2537,7 +2556,7 @@
       var pre = Array(this.points.length).fill("L");
       pre[0] = "M";
       return "".concat(this.points.map(function (p, i) {
-        return "".concat(pre[i]).concat(p[0], ",").concat(p[1]);
+        return "".concat(pre[i]).concat(p[0], " ").concat(p[1]);
       }).join(""), "z");
     }
   };

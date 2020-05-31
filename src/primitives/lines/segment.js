@@ -53,6 +53,11 @@ export default {
       midpoint: function () {
         return Constructors.vector(average(this.points[0], this.points[1]));
       },
+      path: function () {
+        const pointStrings = this.points.map(p => `${p[0]} ${p[1]}`);
+        return ["M", "L"].map((cmd, i) => `${cmd}${pointStrings[i]}`)
+          .join("");
+      },
     },
 
     S: {
