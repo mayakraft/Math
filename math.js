@@ -1564,7 +1564,7 @@
       return a.distance - b.distance;
     }).shift();
   };
-  var nearest_point_on_circle = function nearest_point_on_circle(origin, radius, point) {
+  var nearest_point_on_circle = function nearest_point_on_circle(radius, origin, point) {
     return add(origin, scale(normalize(subtract(point, origin)), radius));
   };
   var nearest_point_on_ellipse = function nearest_point_on_ellipse() {
@@ -2161,7 +2161,7 @@
       A: function A() {
         var l = get_line.apply(void 0, arguments);
         this.vector = Constructors.vector(l.vector);
-        this.origin = Constructors.vector(l.origin);
+        this.origin = Constructors.vector(resize(this.vector.length, l.origin));
       },
       G: {
         length: function length() {
@@ -2171,6 +2171,12 @@
       M: {
         clip_function: function clip_function(dist) {
           return dist;
+        },
+        path: function path() {
+          var length = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1000;
+          var start = this.origin.add(this.vector.scale(-length));
+          var end = this.vector.scale(length * 2);
+          return "M".concat(start[0], " ").concat(start[1], "l").concat(end[0], " ").concat(end[1]);
         }
       },
       S: Static
@@ -2183,7 +2189,7 @@
       A: function A() {
         var ray = get_line.apply(void 0, arguments);
         this.vector = Constructors.vector(ray.vector);
-        this.origin = Constructors.vector(ray.origin);
+        this.origin = Constructors.vector(resize(this.vector.length, ray.origin));
       },
       G: {
         length: function length() {
@@ -2196,6 +2202,11 @@
         },
         clip_function: function clip_function(dist) {
           return dist < -EPSILON ? 0 : dist;
+        },
+        path: function path() {
+          var length = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1000;
+          var end = this.vector.scale(length);
+          return "M".concat(this.origin[0], " ").concat(this.origin[1], "l").concat(end[0], " ").concat(end[1]);
         }
       },
       S: Static
@@ -2261,6 +2272,14 @@
         },
         midpoint: function midpoint() {
           return Constructors.vector(average(this.points[0], this.points[1]));
+        },
+        path: function path() {
+          var pointStrings = this.points.map(function (p) {
+            return "".concat(p[0], " ").concat(p[1]);
+          });
+          return ["M", "L"].map(function (cmd, i) {
+            return "".concat(cmd).concat(pointStrings[i]);
+          }).join("");
         }
       },
       S: {
@@ -2290,57 +2309,6 @@
     },
     y: function y() {
       return this.origin[1];
-    }
-  };
-
-  var cln = function cln(n) {
-    return clean_number(n, 4);
-  };
-
-  var circleArcTo = function circleArcTo(radius, end) {
-    return "A".concat(cln(radius), " ").concat(cln(radius), " 0 0 0 ").concat(cln(end[0]), " ").concat(cln(end[1]));
-  };
-
-  var circlePoint = function circlePoint(origin, radius, angle) {
-    return [origin[0] + radius * Math.cos(angle), origin[1] + radius * Math.sin(angle)];
-  };
-
-  var CircleMethods = {
-    nearestPoint: function nearestPoint() {
-      return Constructors.vector(nearest_point_on_circle(this.origin, this.radius, get_vector(arguments)));
-    },
-    intersect: function intersect(object) {
-      return Intersect(this, object);
-    },
-    path: function path() {
-      var arcStart = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-      var deltaArc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Math.PI * 2;
-      var arcMid = arcStart + deltaArc / 2;
-      var start = circlePoint(this.origin, this.radius, arcStart);
-      var mid = circlePoint(this.origin, this.radius, arcMid);
-      var end = circlePoint(this.origin, this.radius, arcStart + deltaArc);
-      var arc1 = circleArcTo(this.radius, mid);
-      var arc2 = circleArcTo(this.radius, end);
-      return "M".concat(cln(start[0]), " ").concat(cln(start[1])).concat(arc1).concat(arc2);
-    }
-  };
-
-  var CircleStatic = {
-    fromPoints: function fromPoints() {
-      return this.constructor.apply(this, arguments);
-    },
-    fromThreePoints: function fromThreePoints() {
-      var result = circumcircle.apply(void 0, arguments);
-      return this.constructor.apply(this, _toConsumableArray(result.origin).concat([result.radius]));
-    }
-  };
-
-  var Circle = {
-    circle: {
-      A: CircleArgs,
-      G: CircleGetters,
-      M: CircleMethods,
-      S: CircleStatic
     }
   };
 
@@ -2378,12 +2346,48 @@
     };
   };
 
-  var cln$1 = function cln(n) {
+  var cln = function cln(n) {
     return clean_number(n, 4);
   };
 
   var ellipticalArcTo = function ellipticalArcTo(rx, ry, phi_degrees, fa, fs, endX, endY) {
-    return "A".concat(cln$1(rx), " ").concat(cln$1(ry), " ").concat(cln$1(phi_degrees), " ").concat(cln$1(fa), " ").concat(cln$1(fs), " ").concat(cln$1(endX), " ").concat(cln$1(endY));
+    return "A".concat(cln(rx), " ").concat(cln(ry), " ").concat(cln(phi_degrees), " ").concat(cln(fa), " ").concat(cln(fs), " ").concat(cln(endX), " ").concat(cln(endY));
+  };
+
+  var CircleMethods = {
+    nearestPoint: function nearestPoint() {
+      return Constructors.vector(nearest_point_on_circle(this.radius, this.origin, get_vector(arguments)));
+    },
+    intersect: function intersect(object) {
+      return Intersect(this, object);
+    },
+    path: function path() {
+      var arcStart = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      var deltaArc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Math.PI * 2;
+      var info = pathInfo(this.origin[0], this.origin[1], this.radius, this.radius, 0, arcStart, deltaArc);
+      var arc1 = ellipticalArcTo(this.radius, this.radius, 0, info.fa, info.fs, info.x2, info.y2);
+      var arc2 = ellipticalArcTo(this.radius, this.radius, 0, info.fa, info.fs, info.x3, info.y3);
+      return "M".concat(info.x1, " ").concat(info.y1).concat(arc1).concat(arc2);
+    }
+  };
+
+  var CircleStatic = {
+    fromPoints: function fromPoints() {
+      return this.constructor.apply(this, arguments);
+    },
+    fromThreePoints: function fromThreePoints() {
+      var result = circumcircle.apply(void 0, arguments);
+      return this.constructor.apply(this, _toConsumableArray(result.origin).concat([result.radius]));
+    }
+  };
+
+  var Circle = {
+    circle: {
+      A: CircleArgs,
+      G: CircleGetters,
+      M: CircleMethods,
+      S: CircleStatic
+    }
   };
 
   var getFoci = function getFoci(center, rx, ry, spin) {
@@ -2429,10 +2433,131 @@
           var info = pathInfo(this.origin[0], this.origin[1], this.rx, this.ry, this.spin, arcStart, deltaArc);
           var arc1 = ellipticalArcTo(this.rx, this.ry, this.spin / Math.PI * 180, info.fa, info.fs, info.x2, info.y2);
           var arc2 = ellipticalArcTo(this.rx, this.ry, this.spin / Math.PI * 180, info.fa, info.fs, info.x3, info.y3);
-          return "M".concat(cln$1(info.x1), " ").concat(cln$1(info.y1)).concat(arc1).concat(arc2);
+          return "M".concat(info.x1, " ").concat(info.y1).concat(arc1).concat(arc2);
         }
       },
       S: {}
+    }
+  };
+
+  var methods = {
+    area: function area() {
+      return signed_area(this.points);
+    },
+    centroid: function centroid$1() {
+      return Constructors.vector(centroid(this.points));
+    },
+    enclosingRectangle: function enclosingRectangle() {
+      return Constructors.rect(enclosing_rectangle(this.points));
+    },
+    contains: function contains() {
+      return point_in_poly(get_vector(arguments), this.points);
+    },
+    scale: function scale(magnitude) {
+      var center = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : centroid(this.points);
+      var newPoints = this.points.map(function (p) {
+        return [0, 1].map(function (_, i) {
+          return p[i] - center[i];
+        });
+      }).map(function (vec) {
+        return vec.map(function (_, i) {
+          return center[i] + vec[i] * magnitude;
+        });
+      });
+      return this.constructor.fromPoints(newPoints);
+    },
+    rotate: function rotate(angle) {
+      var centerPoint = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : centroid(this.points);
+      var newPoints = this.points.map(function (p) {
+        var vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
+        var mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
+        var a = Math.atan2(vec[1], vec[0]);
+        return [centerPoint[0] + Math.cos(a + angle) * mag, centerPoint[1] + Math.sin(a + angle) * mag];
+      });
+      return Constructors.polygon(newPoints);
+    },
+    translate: function translate() {
+      var vec = get_vector(arguments);
+      var newPoints = this.points.map(function (p) {
+        return p.map(function (n, i) {
+          return n + vec[i];
+        });
+      });
+      return this.constructor.fromPoints(newPoints);
+    },
+    transform: function transform() {
+      var m = get_matrix_3x4(arguments);
+      var newPoints = this.points.map(function (p) {
+        return multiply_matrix3_vector3(m, resize(3, p));
+      });
+      return Constructors.polygon(newPoints);
+    },
+    sectors: function sectors() {
+      return this.points.map(function (p, i, arr) {
+        var prev = (i + arr.length - 1) % arr.length;
+        var next = (i + 1) % arr.length;
+        var center = p;
+        var a = arr[prev].map(function (n, j) {
+          return n - center[j];
+        });
+        var b = arr[next].map(function (n, j) {
+          return n - center[j];
+        });
+        return Constructors.sector(b, a, center);
+      });
+    },
+    nearest: function nearest() {
+      var point = get_vector(arguments);
+      var points = this.sides.map(function (edge) {
+        return edge.nearestPoint(point);
+      });
+      var lowD = Infinity;
+      var lowI;
+      points.map(function (p) {
+        return distance2(point, p);
+      }).forEach(function (d, i) {
+        if (d < lowD) {
+          lowD = d;
+          lowI = i;
+        }
+      });
+      return {
+        point: points[lowI],
+        edge: this.sides[lowI]
+      };
+    },
+    overlaps: function overlaps() {
+      var poly2Points = semi_flatten_arrays(arguments);
+      return convex_polygons_overlap(this.points, poly2Points);
+    },
+    split: function split() {
+      var line = get_line(arguments);
+      var split_func = this.convex ? split_convex_polygon : split_polygon;
+      return split_func(this.points, line.vector, line.origin).map(function (poly) {
+        return Constructors.polygon(poly);
+      });
+    },
+    clipSegment: function clipSegment() {
+      var edge = get_segment(arguments);
+      var e = convex_poly_segment(this.points, edge[0], edge[1]);
+      return e === undefined ? undefined : Constructors.segment(e);
+    },
+    clipLine: function clipLine() {
+      var line = get_line(arguments);
+      var e = convex_poly_line(this.points, line.vector, line.origin);
+      return e === undefined ? undefined : Constructors.segment(e);
+    },
+    clipRay: function clipRay() {
+      var line = get_line(arguments);
+      var e = convex_poly_ray(this.points, line.vector, line.origin);
+      return e === undefined ? undefined : Constructors.segment(e);
+    },
+    path: function path() {
+      var pre = Array(this.points.length).fill("L");
+      pre[0] = "M";
+      return "".concat(this.points.map(function (p, i) {
+        return "".concat(pre[i]).concat(p[0], " ").concat(p[1]);
+      }).join(""), "z");
     }
   };
 
@@ -2440,107 +2565,9 @@
     this.points = [];
   };
 
-  PolygonProto.prototype.area = function () {
-    return signed_area(this.points);
-  };
-
-  PolygonProto.prototype.centroid = function () {
-    return Constructors.vector(centroid(this.points));
-  };
-
-  PolygonProto.prototype.enclosingRectangle = function () {
-    return Constructors.rect(enclosing_rectangle(this.points));
-  };
-
-  PolygonProto.prototype.contains = function () {
-    return point_in_poly(get_vector(arguments), this.points);
-  };
-
-  PolygonProto.prototype.scale = function (magnitude) {
-    var center = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : centroid(this.points);
-    var newPoints = this.points.map(function (p) {
-      return [0, 1].map(function (_, i) {
-        return p[i] - center[i];
-      });
-    }).map(function (vec) {
-      return vec.map(function (_, i) {
-        return center[i] + vec[i] * magnitude;
-      });
-    });
-    return Constructors.polygon(newPoints);
-  };
-
-  PolygonProto.prototype.rotate = function (angle) {
-    var centerPoint = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : centroid(this.points);
-    var newPoints = this.points.map(function (p) {
-      var vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
-      var mag = Math.sqrt(Math.pow(vec[0], 2) + Math.pow(vec[1], 2));
-      var a = Math.atan2(vec[1], vec[0]);
-      return [centerPoint[0] + Math.cos(a + angle) * mag, centerPoint[1] + Math.sin(a + angle) * mag];
-    });
-    return Constructors.polygon(newPoints);
-  };
-
-  PolygonProto.prototype.translate = function () {
-    var vec = get_vector(arguments);
-    var newPoints = this.points.map(function (p) {
-      return p.map(function (n, i) {
-        return n + vec[i];
-      });
-    });
-    return Constructors.polygon(newPoints);
-  };
-
-  PolygonProto.prototype.transform = function () {
-    var m = get_matrix_3x4(arguments);
-    var newPoints = this.points.map(function (p) {
-      return multiply_matrix3_vector3(m, resize(3, p));
-    });
-    return Constructors.polygon(newPoints);
-  };
-
-  PolygonProto.prototype.sectors = function () {
-    return this.points.map(function (p, i, arr) {
-      var prev = (i + arr.length - 1) % arr.length;
-      var next = (i + 1) % arr.length;
-      var center = p;
-      var a = arr[prev].map(function (n, j) {
-        return n - center[j];
-      });
-      var b = arr[next].map(function (n, j) {
-        return n - center[j];
-      });
-      return Constructors.sector(b, a, center);
-    });
-  };
-
-  PolygonProto.prototype.nearest = function () {
-    var point = get_vector(arguments);
-    var points = this.sides.map(function (edge) {
-      return edge.nearestPoint(point);
-    });
-    var lowD = Infinity;
-    var lowI;
-    points.map(function (p) {
-      return distance2(point, p);
-    }).forEach(function (d, i) {
-      if (d < lowD) {
-        lowD = d;
-        lowI = i;
-      }
-    });
-    return {
-      point: points[lowI],
-      edge: this.sides[lowI]
-    };
-  };
-
-  PolygonProto.prototype.split = function () {
-    var line = get_line(arguments);
-    return split_polygon(this.points, line.vector, line.origin).map(function (poly) {
-      return Constructors.polygon(poly);
-    });
-  };
+  Object.keys(methods).forEach(function (key) {
+    PolygonProto.prototype[key] = methods[key];
+  });
 
   var rectToPoints = function rectToPoints(r) {
     return [[r.x, r.y], [r.x + r.width, r.y], [r.x + r.width, r.y + r.height], [r.x, r.y + r.height]];
@@ -2567,32 +2594,6 @@
       M: {
         area: function area() {
           return this.width * this.height;
-        },
-        scale: function scale(magnitude, center_point) {
-          var center = center_point != null ? center_point : [this.origin[0] + this.width, this.origin[1] + this.height];
-          var x = this.origin[0] + (center[0] - this.origin[0]) * (1 - magnitude);
-          var y = this.origin[1] + (center[1] - this.origin[1]) * (1 - magnitude);
-          return Constructors.rect(this.width * magnitude, this.height * magnitude, x, y);
-        },
-        clipSegment: function clipSegment() {
-          var edge = get_segment(arguments);
-          var e = convex_poly_segment(this.points, edge[0], edge[1]);
-          return e === undefined ? undefined : Constructors.segment(e);
-        },
-        clipLine: function clipLine() {
-          var line = get_line(arguments);
-          var e = convex_poly_line(this.points, line.vector, line.origin);
-          return e === undefined ? undefined : Constructors.segment(e);
-        },
-        clipRay: function clipRay() {
-          var line = get_line(arguments);
-          var e = convex_poly_ray(this.points, line.vector, line.origin);
-          return e === undefined ? undefined : Constructors.segment(e);
-        },
-        path: function path() {
-          return this.points.map(function (p, i) {
-            return "".concat(i === 0 ? "M" : "L").concat(p[0], ",").concat(p[1]);
-          }).join(" ") + "z";
         }
       },
       S: {
@@ -2610,10 +2611,33 @@
         this.points = semi_flatten_arrays(arguments).map(function (v) {
           return Constructors.vector(v);
         });
+        this.sides = this.points.map(function (p, i, arr) {
+          return [p, arr[(i + 1) % arr.length]];
+        }).map(function (ps) {
+          return Constructors.segment(ps[0][0], ps[0][1], ps[1][0], ps[1][1]);
+        });
       },
-      G: {},
+      G: {
+        isConvex: function isConvex() {
+          return true;
+        }
+      },
       M: {},
-      S: {}
+      S: {
+        fromPoints: function fromPoints() {
+          return this.constructor.apply(this, arguments);
+        },
+        regularPolygon: function regularPolygon(sides) {
+          var x = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+          var y = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+          var radius = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
+          return this.constructor(make_regular_polygon(sides, x, y, radius));
+        },
+        convexHull: function convexHull(points) {
+          var includeCollinear = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+          return this.constructor(convex_hull(points, includeCollinear));
+        }
+      }
     }
   };
 

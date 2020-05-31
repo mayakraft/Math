@@ -7,11 +7,10 @@ const testEqual = function (...args) {
 test("circle", () => {
   testEqual(5, math.circle(5, 1, 2).radius);
   testEqual([1, 2], math.circle(5, 1, 2).origin);
-  // testEqual(
-  //   [[0.5, Math.sqrt(3) / 2], [0.5, -Math.sqrt(3) / 2]],
-  //   math.circle(0, 0, 1).intersectionLine(math.line(0.5, 0, 0, 1))
-  // );
-
+  const clip = math.circle(1).intersect(math.line([0, 1], [0.5, 0]));
+  const shouldBe = [[0.5, -Math.sqrt(3) / 2], [0.5, Math.sqrt(3) / 2]];
+  testEqual(clip[0], shouldBe[0]);
+  testEqual(clip[1], shouldBe[1]);
 
   // todo, this needs to be written
   // testEqual(

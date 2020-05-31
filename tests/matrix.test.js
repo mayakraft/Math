@@ -79,4 +79,3 @@ test("matrix core", () => {
 //   testEqual([1, 1], math.matrix2.makeScale(0.5, 0.5, [1, 1]).transform([1, 1]));
 //   testEqual([0.75, 0.75], math.matrix2.makeScale(0.5, 0.5, [0.5, 0.5]).transform([1, 1]));
 // });
-

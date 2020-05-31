@@ -5,10 +5,10 @@ Vue.component("button-mode", {
   </div>`
 });
 
-// use colors from 
+// use colors from
 // https://kgolid.github.io/chromotome-site/
 
-var app = new Vue({
+const app = new Vue({
   el: "#app",
   data: {
     function: "bisect",
@@ -49,8 +49,8 @@ var app = new Vue({
       if (point.buttons > 0) {
         this.uiLayer.appendChild(states[this.function].svg([this.pressPoint, point]));
       }
-      this.nearestPoints = NearestPoints(this.history, point)
-      this.nearestPoints.forEach(p => this.uiLayer.circle(p.x, p.y, 0.01).stroke("none").fill("#fb4"));
+      this.nearestPoints = NearestPoints(this.history, point);
+      this.nearestPoints.forEach(p => this.uiLayer.circle(0.01, p.x, p.y).stroke("none").fill("#fb4"));
     },
     bigUpdate: function () {
       this.drawLayer.removeChildren();
@@ -60,14 +60,14 @@ var app = new Vue({
         .filter(el => el != null)
         .forEach(el => this.drawLayer.appendChild(el));
 
-      // snap-points are arguments + intersections 
+      // snap-points are arguments + intersections
       this.argPoints = this.history.map(h => h.arguments)
-        .reduce((a,b) => a.concat(b), []);
+        .reduce((a, b) => a.concat(b), []);
       this.intersections = Intersections(this.history);
 
       // draw all the arguments and intersection points
       [this.argPoints, this.intersections].forEach((arr, i) => arr
-        .forEach(p => this.drawLayer.circle(p).radius(0.01)
+        .forEach(p => this.drawLayer.circle(0.01).origin(p)
           .fill(["#000", "#e53"][i])
           .stroke("none")));
     },
@@ -77,23 +77,24 @@ var app = new Vue({
 const setPoint = (point, newX, newY) => {
   delete point.x;
   delete point.y;
-  Object.defineProperty(point, "x", {get: () => newX, enumerable: true});
-  Object.defineProperty(point, "y", {get: () => newY, enumerable: true});
+  Object.defineProperty(point, "x", { get: () => newX, enumerable: true });
+  Object.defineProperty(point, "y", { get: () => newY, enumerable: true });
   return point;
-}
+};
 
 const Snap = (point) => {
   const pt = point.x != null ? [point.x, point.y] : point;
   const level1 = [].concat(app.argPoints).concat(app.intersections)
-    .map(a => a.x != null ? [a.x, a.y] : a);
+    .map(a => (a.x != null ? [a.x, a.y] : a));
   const level2 = [].concat(app.nearestPoints)
-    .map(a => a.x != null ? [a.x, a.y] : a);
-  const points = level1
+    .map(a => (a.x != null ? [a.x, a.y] : a));
+  const points = level1;
   const nearest1 = math.core.nearest_point(pt, level1);
   const nearest2 = math.core.nearest_point(pt, level2);
   if (nearest1 && math.core.distance2(pt, nearest1) < 0.05) {
     return setPoint(point, nearest1[0], nearest1[1]);
-  } else if (nearest2 && math.core.distance2(pt, nearest2) < 0.05) {
+  }
+  if (nearest2 && math.core.distance2(pt, nearest2) < 0.05) {
     return setPoint(point, nearest2[0], nearest2[1]);
   }
   return point;
@@ -115,9 +116,9 @@ const Intersections = function (history) {
     .map((_, i) => Array.from(Array(i))
       .map((_, j) => primitives[i].intersect(primitives[j]))
       .filter(a => a != null)
-      .map(s => s.constructor === Array && typeof s[0] != "number" ? s : [s]))
-    .map(a => a.reduce((a,b) => a.concat(b), []))
-    .reduce((a,b) => a.concat(b), []);
+      .map(s => (s.constructor === Array && typeof s[0] !== "number" ? s : [s])))
+    .map(a => a.reduce((c, d) => c.concat(d), []))
+    .reduce((a, b) => a.concat(b), []);
 };
 
 SVG(1, 1, document.querySelectorAll(".canvas-container")[0], (svg) => {

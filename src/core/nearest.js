@@ -65,7 +65,7 @@ export const nearest_point_on_polygon = (polygon, point) => {
     .shift();
 };
 
-export const nearest_point_on_circle = (origin, radius, point) => add(
+export const nearest_point_on_circle = (radius, origin, point) => add(
   origin, scale(normalize(subtract(point, origin)), radius)
 );
 

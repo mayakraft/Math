@@ -1,3 +1,7 @@
+import {
+  clean_number,
+} from "../../parsers/arguments";
+
 export const pointOnEllipse = function (cx, cy, rx, ry, zRotation, arcAngle) {
   const cos_rotate = Math.cos(zRotation);
   const sin_rotate = Math.sin(zRotation);
@@ -34,3 +38,9 @@ export const pathInfo = function (cx, cy, rx, ry, zRotation, arcStart_, deltaArc
     fs
   };
 };
+
+const cln = n => clean_number(n, 4);
+
+// (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
+export const ellipticalArcTo = (rx, ry, phi_degrees, fa, fs, endX, endY) =>
+  `A${cln(rx)} ${cln(ry)} ${cln(phi_degrees)} ${cln(fa)} ${cln(fs)} ${cln(endX)} ${cln(endY)}`;

@@ -78,8 +78,9 @@ export const point_in_poly = (point, poly) => {
   let isInside = false;
   for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
     if ((poly[i][1] > point[1]) != (poly[j][1] > point[1])
-      && point[0] < (poly[j][0] - poly[i][0]) * (point[1] - poly[i][1])
-      / (poly[j][1] - poly[i][1]) + poly[i][0]) {
+      && point[0] < (poly[j][0] - poly[i][0])
+      * (point[1] - poly[i][1]) / (poly[j][1] - poly[i][1])
+      + poly[i][0]) {
       isInside = !isInside;
     }
   }
