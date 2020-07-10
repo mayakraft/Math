@@ -9,6 +9,7 @@ import Intersect from "../../intersection/index";
 
 import {
   pathInfo,
+  pointOnEllipse,
   ellipticalArcTo,
 } from "./path";
 
@@ -69,6 +70,26 @@ export default {
         const arc2 = ellipticalArcTo(this.rx, this.ry, (this.spin / Math.PI) * 180, info.fa, info.fs, info.x3, info.y3);
         return `M${info.x1} ${info.y1}${arc1}${arc2}`;
       },
+      points: function (count = 128) {
+        return Array.from(Array(count))
+          .map((_, i) => ((2 * Math.PI) / count) * i)
+          .map(angle => pointOnEllipse(
+            this.origin.x, this.origin.y,
+            this.rx, this.ry,
+            this.spin, angle
+          ));
+      },
+      polygon: function () {
+        return Constructors.polygon(this.points(arguments[0]));
+      },
+      segments: function () {
+        const points = this.points(arguments[0]);
+        return points.map((point, i) => {
+          const nextI = (i + 1) % points.length;
+          return [point, points[nextI]];
+        }); // .map(a => Constructors.segment(...a));
+      }
+
     },
 
     S: {

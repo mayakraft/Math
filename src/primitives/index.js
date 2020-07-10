@@ -8,6 +8,7 @@ import Ellipse from "./ellipse/index";
 import Rect from "./rect/index";
 import Polygon from "./polygon/index";
 import Matrix from "./matrix/matrix";
+import Plane from "./plane/index";
 // import Matrix2 from "./matrix/matrix2";
 
 // import PolygonPrototype from "./prototypes/polygon";
@@ -32,13 +33,14 @@ const Definitions = Object.assign({},
   Rect,
   Polygon,
   Matrix,
+  Plane,
   // Matrix2,
 );
 
 const create = function (primitiveName, args) {
   const a = Object.create(Definitions[primitiveName].proto);
   Definitions[primitiveName].A.apply(a, args);
-  return Object.freeze(a);
+  return Object.freeze(a); // basically no cost
 };
 
 // these have to be typed out longform like this
@@ -52,6 +54,7 @@ const line = function () { return create("line", arguments); };
 const ray = function () { return create("ray", arguments); };
 const segment = function () { return create("segment", arguments); };
 const matrix = function () { return create("matrix", arguments); };
+const plane = function () { return create("plane", arguments); };
 // const matrix2 = function () { return create("matrix2", arguments); };
 
 Object.assign(Constructors, {
@@ -64,6 +67,7 @@ Object.assign(Constructors, {
   ray,
   segment,
   matrix,
+  plane,
   // matrix2,
 });
 

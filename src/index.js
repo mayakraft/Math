@@ -50,14 +50,14 @@ math.core = Object.assign({},
   matrix2,
   matrix3,
   nearest,
-  origami,
   query,
   Arguments,
+  origami,
 );
 
-math.intersection = Intersection;
-math.intersection.circle = IntersectionCircle;
-math.intersection.lines = IntersectionLines;
-math.intersection.polygon = IntersectionPolygon;
+math.intersect = Intersection;
+math.intersect.circle = IntersectionCircle;
+math.intersect.lines = IntersectionLines;
+math.intersect.polygon = IntersectionPolygon;
 
 export default math;

@@ -20,7 +20,7 @@ import {
   convex_poly_ray_exclusive,
 } from "./polygon";
 
-const intersection_map = {
+const intersect_func = {
   // poly: {
   //   poly: I.poly_poly,
   //   circle: I.poly_circle,
@@ -58,11 +58,10 @@ const intersection_map = {
   },
 };
 
-const Intersect = function (a, b) {
+const intersect = function (a, b, c) {
   const aT = Typeof(a);
   const bT = Typeof(b);
-  const func = intersection_map[aT][bT];
-  return func(a, b);
+  return intersect_func[aT][bT](a, b, c);
 };
 
-export default Intersect;
+export default intersect;

@@ -17,6 +17,13 @@ const rectToPoints = r => [
   [r.x, r.y + r.height]
 ];
 
+const rectToSides = r => [
+  [[r.x, r.y], [r.x + r.width, r.y]],
+  [[r.x + r.width, r.y], [r.x + r.width, r.y + r.height]],
+  [[r.x + r.width, r.y + r.height], [r.x, r.y + r.height]],
+  [[r.x, r.y + r.height], [r.x, r.y]],
+];
+
 export default {
   rect: {
     P: Prototype.prototype,
@@ -33,6 +40,8 @@ export default {
     },
     M: {
       area: function () { return this.width * this.height; },
+      // points: function () { return rectToPoints(this); },
+      segments: function () { return rectToSides(this); },
     },
     S: {
       fromPoints: function () {

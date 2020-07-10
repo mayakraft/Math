@@ -1,4 +1,12 @@
 import Constructors from "../primitives/constructors";
+import {
+  // identity2x2,
+  identity2x3,
+} from "../core/matrix2";
+import {
+  // identity3x3,
+  identity3x4,
+} from "../core/matrix3";
 
 export const R2D = 180 / Math.PI;
 export const D2R = Math.PI / 180;
@@ -199,11 +207,6 @@ export const get_rect = function () {
   }
   return rect_form(...list.filter(n => typeof n === "number"));
 };
-
-const identity2x2 = [1, 0, 0, 1];
-const identity2x3 = [1, 0, 0, 1, 0, 0];
-const identity3x3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
-const identity3x4 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
 
 const maps_3x4 = [
   [0, 1, 3, 4, 9, 10],

@@ -7,6 +7,7 @@ import {
 import {
   intersect,
   comp_l_s,
+  exclude_s_s,
 } from "./lines";
 
 export const determ2 = (a, b) => a[0] * b[1] - b[0] * a[1];
@@ -15,6 +16,11 @@ const intersect_line_seg = (origin, vector, pt0, pt1) => {
   const a = { origin, vector };
   const b = { origin: pt0, vector: [[pt1[0] - pt0[0]], [pt1[1] - pt0[1]]] };
   return intersect(a, b, comp_l_s);
+};
+const intersect_seg_seg_exclude = (a0, a1, b0, b1) => {
+  const a = { origin: a0, vector: [[a1[0] - a0[0]], [a1[1] - a0[1]]] };
+  const b = { origin: b0, vector: [[b1[0] - b0[0]], [b1[1] - b0[1]]] };
+  return intersect(a, b, exclude_s_s);
 };
 
 /*
@@ -80,16 +86,16 @@ export const convex_poly_ray = function (poly, lineVector, linePoint) {
   }
 };
 
-export const convex_poly_segment = function (poly, segmentA, segmentB) {
+export const convex_poly_segment = function (poly, segmentA, segmentB, epsilon = EPSILON) {
   const intersections = poly
     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // polygon into segment pairs
-    .map(el => segment_segment_exclusive(segmentA, segmentB, el[0], el[1]))
+    .map(el => intersect_seg_seg_exclude(segmentA, segmentB, el[0], el[1]))
     .filter(el => el != null);
 
-  const aInsideExclusive = point_in_convex_poly_exclusive(segmentA, poly);
-  const bInsideExclusive = point_in_convex_poly_exclusive(segmentB, poly);
-  const aInsideInclusive = point_in_convex_poly(segmentA, poly);
-  const bInsideInclusive = point_in_convex_poly(segmentB, poly);
+  const aInsideExclusive = point_in_convex_poly_exclusive(segmentA, poly, epsilon);
+  const bInsideExclusive = point_in_convex_poly_exclusive(segmentB, poly, epsilon);
+  const aInsideInclusive = point_in_convex_poly(segmentA, poly, epsilon);
+  const bInsideInclusive = point_in_convex_poly(segmentB, poly, epsilon);
 
   // both are inside, OR, one is inside and the other is collinear to poly
   if (intersections.length === 0

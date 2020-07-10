@@ -1,6 +1,6 @@
 import { EPSILON } from "./equal";
 import { dot, normalize } from "./algebra";
-
+import { identity3x4 } from "./matrix3";
 /**
  * the generalized vector intersection function
  * requires a compFunction to describe valid bounds checking
@@ -44,6 +44,15 @@ export const degenerate = (v) => Math
  */
 export const parallel = (a, b) => 1 - Math
   .abs(dot(normalize(a), normalize(b))) < EPSILON;
+
+/**
+ * @param {number[]} is a 3x4 matrix the identity matrix
+ * with a translation component of 0, 0, 0
+ * @returns boolean
+ */
+export const is_identity3x4 = m => identity3x4
+  .map((n, i) => Math.abs(n - m[i]) < EPSILON)
+  .reduce((a, b) => a && b, true);
 
 /**
  *  Boolean tests

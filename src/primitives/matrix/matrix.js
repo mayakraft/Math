@@ -1,9 +1,13 @@
 import Constructors from "../constructors";
 
 import {
+  is_identity3x4
+} from "../../core/query";
+
+import {
   get_vector,
   get_matrix_3x4,
-  clean_number,
+  // clean_number,
 } from "../../parsers/arguments";
 
 import {
@@ -30,11 +34,13 @@ import {
  * [ 0 1 0 0 ]   y   [ 1 4 7 10]
  * [ 0 0 1 0 ]   z   [ 2 5 8 11]
  */
+
 export default {
   matrix: {
     P: Array.prototype,
 
     A: function () {
+      // [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0].forEach(m => this.push(m));
       get_matrix_3x4(arguments).forEach(m => this.push(m));
     },
 
@@ -42,75 +48,77 @@ export default {
     },
 
     M: {
+      isIdentity: function () { return is_identity3x4(this); },
       // todo: is this right, on the right hand side?
       multiply: function () {
         return Constructors.matrix(
-          multiply_matrices3(this, get_matrix_3x4(arguments))
-            .map(n => clean_number(n, 13))
+          ...multiply_matrices3(this, arguments)
+          // .map(n => clean_number(n, 13))
         );
       },
       determinant: function () {
-        return clean_number(determinant3(this), 13);
+        // return clean_number(determinant3(this), 13);
+        return determinant3(this);
       },
       inverse: function () {
-        return Constructors.matrix(invert_matrix3(this)
-          .map(n => clean_number(n, 13)));
+        return Constructors.matrix(...invert_matrix3(this));
+        // .map(n => clean_number(n, 13)));
       },
       // todo: is this the right order (this, transform)?
       translate: function (x, y, z) {
         return Constructors.matrix(
-          multiply_matrices3(this, make_matrix3_translate(x, y, z))
-            .map(n => clean_number(n, 13))
+          ...multiply_matrices3(this, make_matrix3_translate(x, y, z))
+          // .map(n => clean_number(n, 13))
         );
       },
       rotateX: function (radians) {
         return Constructors.matrix(
-          multiply_matrices3(this, make_matrix3_rotateX(radians))
-            .map(n => clean_number(n, 13))
+          ...multiply_matrices3(this, make_matrix3_rotateX(radians))
+          // .map(n => clean_number(n, 13))
         );
       },
       rotateY: function (radians) {
         return Constructors.matrix(
-          multiply_matrices3(this, make_matrix3_rotateY(radians))
-            .map(n => clean_number(n, 13))
+          ...multiply_matrices3(this, make_matrix3_rotateY(radians))
+          // .map(n => clean_number(n, 13))
         );
       },
       rotateZ: function (radians) {
         return Constructors.matrix(
-          multiply_matrices3(this, make_matrix3_rotateZ(radians))
-            .map(n => clean_number(n, 13))
+          ...multiply_matrices3(this, make_matrix3_rotateZ(radians))
+          // .map(n => clean_number(n, 13))
         );
       },
       rotate: function (radians, vector, origin) {
         const transform = make_matrix3_rotate(radians, vector, origin);
-        return Constructors.matrix(multiply_matrices3(this, transform)
-          .map(n => clean_number(n, 13)));
+        return Constructors.matrix(...multiply_matrices3(this, transform));
+        // .map(n => clean_number(n, 13)));
       },
       scale: function (amount) {
         return Constructors.matrix(
-          multiply_matrices3(this, make_matrix3_scale(amount))
-            .map(n => clean_number(n, 13))
+          ...multiply_matrices3(this, make_matrix3_scale(amount))
+          // .map(n => clean_number(n, 13))
         );
       },
       reflectZ: function (vector, origin) {
         const transform = make_matrix3_reflectionZ(vector, origin);
-        return Constructors.matrix(multiply_matrices3(this, transform)
-          .map(n => clean_number(n, 13)));
+        return Constructors.matrix(...multiply_matrices3(this, transform));
+        // .map(n => clean_number(n, 13)));
       },
       // todo, do type checking
       transform: function (...innerArgs) {
         return Constructors.vector(
-          multiply_matrix3_vector3(get_vector(innerArgs), this)
-            .map(n => clean_number(n, 13))
+          ...multiply_matrix3_vector3(get_vector(innerArgs), this)
+          // .map(n => clean_number(n, 13))
         );
       },
       transformVector: function (vector) {
-        return Constructors.matrix(multiply_matrix3_vector3(this, vector)
-          .map(n => clean_number(n, 13)));
+        return Constructors.matrix(...multiply_matrix3_vector3(this, vector));
+        // .map(n => clean_number(n, 13)));
       },
       transformLine: function (origin, vector) {
-        return Constructors.matrix(multiply_matrix3_line3(this, origin, vector)
-          .map(n => clean_number(n, 13)));
+        return Constructors.matrix(...multiply_matrix3_line3(this, origin, vector));
+        // .map(n => clean_number(n, 13)));
       },
     },
 

@@ -18,6 +18,10 @@ import Constructors from "../constructors";
 //   origin[1] + radius * Math.sin(angle),
 // ];
 
+// const circlePoints = c => Array.from(Array(count))
+//   .map((_, i) => { return })
+
+
 const CircleMethods = {
   nearestPoint: function () {
     return Constructors.vector(nearest_point_on_circle(
@@ -26,6 +30,7 @@ const CircleMethods = {
       get_vector(arguments)
     ));
   },
+
   intersect: function (object) {
     return Intersect(this, object);
   },
@@ -44,6 +49,25 @@ const CircleMethods = {
     // const arc2 = circleArcTo(this.radius, end);
     // return `M${cln(start[0])} ${cln(start[1])}${arc1}${arc2}`;
   },
+  points: function (count = 128) {
+    return Array.from(Array(count))
+      .map((_, i) => ((2 * Math.PI) / count) * i)
+      .map(angle => [
+        this.origin[0] + this.radius * Math.cos(angle),
+        this.origin[1] + this.radius * Math.sin(angle)
+      ]);
+  },
+  polygon: function () {
+    return Constructors.polygon(this.points(arguments[0]));
+  },
+  segments: function () {
+    const points = this.points(arguments[0]);
+    return points.map((point, i) => {
+      const nextI = (i + 1) % points.length;
+      return [point, points[nextI]];
+    }); // .map(a => Constructors.segment(...a));
+  }
+
 };
 
 // const tangentThroughPoint

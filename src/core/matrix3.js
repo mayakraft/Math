@@ -5,6 +5,9 @@
 
 import { normalize } from "./algebra";
 
+export const identity3x3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+export const identity3x4 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
+
 /**
  * @param {number[]} vector, in array form
  * @param {number[]} matrix, in array form

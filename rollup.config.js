@@ -16,10 +16,10 @@ module.exports = [{
       comments: "none",
       maxEmptyLines: 0,
     }),
-    babel({
-      babelrc: false,
-      presets: [["@babel/env", { modules: false }]],
-    }),
+    // babel({
+    //   babelrc: false,
+    //   presets: [["@babel/env", { modules: false }]],
+    // }),
     // terser(),
   ],
 },
@@ -34,11 +34,11 @@ module.exports = [{
   },
   plugins: [
     cleanup({ comments: "none" }),
-    babel({
-      babelrc: false,
-      presets: [["@babel/env", { modules: false }]],
-    }),
-    terser(),
+    // babel({
+    //   babelrc: false,
+    //   presets: [["@babel/env", { modules: false }]],
+    // }),
+    // terser(),
   ],
 }
 ];

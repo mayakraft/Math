@@ -10,19 +10,26 @@ export default {
   polygon: {
     P: Prototype.prototype,
     A: function () {
-      this.points = semi_flatten_arrays(arguments)
-        .map(v => Constructors.vector(v));
+      this.points = semi_flatten_arrays(arguments);
+        // .map(v => Constructors.vector(v));
       this.sides = this.points
-        .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
-        .map(ps => Constructors.segment(ps[0][0], ps[0][1], ps[1][0], ps[1][1]));
+        .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
+        // .map(ps => Constructors.segment(ps[0][0], ps[0][1], ps[1][0], ps[1][1]));
       // this.sectors
     },
     G: {
       isConvex: function () {
         return true;
+      },
+      edges: function () {
+        return this.sides;
+      },
+    },
+    M: {
+      segments: function () {
+        return this.sides;
       }
     },
-    M: {},
     S: {
       fromPoints: function () {
         return this.constructor(...arguments);
