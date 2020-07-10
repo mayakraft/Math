@@ -43,7 +43,6 @@ const vector_origin_form = (vector, origin) => ({
   origin: origin || []
 });
 
-
 /**
  * sort two vectors by their lengths, returning the shorter one first
  *
@@ -149,6 +148,7 @@ export const get_vector = function () {
   }
   return list.filter(n => typeof n === "number");
 };
+
 /**
  * search function arguments for a an array of vectors. a vector of vectors
  * can handle object-vector representation {x:, y:}

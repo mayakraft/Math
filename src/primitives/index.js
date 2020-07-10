@@ -40,7 +40,7 @@ const Definitions = Object.assign({},
 const create = function (primitiveName, args) {
   const a = Object.create(Definitions[primitiveName].proto);
   Definitions[primitiveName].A.apply(a, args);
-  return Object.freeze(a); // basically no cost
+  return a; // Object.freeze(a); // basically no cost
 };
 
 // these have to be typed out longform like this
