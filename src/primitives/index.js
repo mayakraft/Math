@@ -40,7 +40,7 @@ const Definitions = Object.assign({},
 const create = function (primitiveName, args) {
   const a = Object.create(Definitions[primitiveName].proto);
   Definitions[primitiveName].A.apply(a, args);
-  return a; // Object.freeze(a); // basically no cost
+  return a; // Object.freeze(a); // basically no cost. matrix needs to able to be modified now
 };
 
 // these have to be typed out longform like this
@@ -106,11 +106,17 @@ Object.keys(Definitions).forEach(primitiveName => {
     }));
 
   // done with prototype
-  Object.freeze(Proto.prototype);
+  // Object.freeze(Proto.prototype); // now able to be modified from the outside
+
   // store the prototype on the Definition, to be called during instantiation
   Definitions[primitiveName].proto = Proto.prototype;
 });
 
 // console.log(Definitions);
+
+Constructors.__prototypes__ = {};
+Object.keys(Definitions).forEach(primitiveName => {
+  Constructors.__prototypes__[primitiveName] = Definitions[primitiveName].proto;
+});
 
 export default Constructors;

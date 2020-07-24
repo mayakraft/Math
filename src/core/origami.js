@@ -2,7 +2,7 @@ import {
   counter_clockwise_angle2_radians
 } from "./geometry";
 
-import { clean_number } from "../parsers/arguments";
+import { clean_number } from "../arguments/resize";
 import { is_counter_clockwise_between } from "./query";
 
 /**

@@ -96,13 +96,19 @@ export const distance3 = (a, b) => {
  * @param two vectors, n-dimensions
  * @returns vector
  */
-export const distance = (a, b) => Math.sqrt(Array.from(Array(a.length))
+export const distance = (a, b) => Math.sqrt(a
   .map((_, i) => (a[i] - b[i]) ** 2)
   .reduce((u, v) => u + v, 0));
 
-// this used to be called rotateZ90 and rotateZ270
-export const rotate90 = v => [-v[1], v[0]];
+/**
+ * @param one vector, n-dimensions
+ * @returns vector, flipped to the opposite direction
+ */
 export const flip = v => v.map(n => -n);
+/**
+ * implicitly 2D
+ */
+export const rotate90 = v => [-v[1], v[0]];
 export const rotate270 = v => [-v[1], v[0]];
 
 // need to test:

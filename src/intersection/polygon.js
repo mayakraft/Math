@@ -7,6 +7,7 @@ import {
 import {
   intersect,
   comp_l_s,
+  comp_r_s,
   exclude_s_s,
 } from "./lines";
 
@@ -16,6 +17,11 @@ const intersect_line_seg = (origin, vector, pt0, pt1) => {
   const a = { origin, vector };
   const b = { origin: pt0, vector: [[pt1[0] - pt0[0]], [pt1[1] - pt0[1]]] };
   return intersect(a, b, comp_l_s);
+};
+const intersect_ray_seg = (origin, vector, pt0, pt1) => {
+  const a = { origin, vector };
+  const b = { origin: pt0, vector: [[pt1[0] - pt0[0]], [pt1[1] - pt0[1]]] };
+  return intersect(a, b, comp_r_s);
 };
 const intersect_seg_seg_exclude = (a0, a1, b0, b1) => {
   const a = { origin: a0, vector: [[a1[0] - a0[0]], [a1[1] - a0[1]]] };
@@ -69,12 +75,15 @@ export const convex_poly_line = function (poly, lineVector, linePoint) {
 export const convex_poly_ray = function (poly, lineVector, linePoint) {
   const intersections = poly
     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into segment pairs
-    .map(el => ray_segment(linePoint, lineVector, el[0], el[1]))
+    .map(el => intersect_ray_seg(linePoint, lineVector, el[0], el[1]))
     .filter(el => el != null);
   switch (intersections.length) {
     case 0: return undefined;
     case 1: return [linePoint, intersections[0]];
-    case 2: return intersections;
+    case 2:
+      return quick_equivalent_2(intersections[0], intersections[1])
+        ? [linePoint, intersections[0]]
+        : intersections;
     // default: throw "clipping ray in a convex polygon resulting in 3 or more points";
     default:
       for (let i = 1; i < intersections.length; i += 1) {

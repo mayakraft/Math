@@ -16,29 +16,10 @@ module.exports = [{
       comments: "none",
       maxEmptyLines: 0,
     }),
-    // babel({
-    //   babelrc: false,
-    //   presets: [["@babel/env", { modules: false }]],
-    // }),
-    // terser(),
-  ],
-},
-{
-  input: "src/index.js",
-  output: {
-    name: "math",
-    file: "math.min.js",
-    format: "umd",
-    // format: "es",
-    banner: "/* Math (c) Robby Kraft, MIT License */",
-  },
-  plugins: [
-    cleanup({ comments: "none" }),
-    // babel({
-    //   babelrc: false,
-    //   presets: [["@babel/env", { modules: false }]],
-    // }),
-    // terser(),
-  ],
-}
-];
+    babel({
+      babelrc: false,
+      presets: [["@babel/env", { modules: false }]],
+    }),
+    terser(),
+  ]
+}];

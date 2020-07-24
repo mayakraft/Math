@@ -1,6 +1,6 @@
 import {
   clean_number,
-} from "../../parsers/arguments";
+} from "../../arguments/resize";
 
 export const pointOnEllipse = function (cx, cy, rx, ry, zRotation, arcAngle) {
   const cos_rotate = Math.cos(zRotation);

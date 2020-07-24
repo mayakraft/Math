@@ -1,11 +1,11 @@
 import Constructors from "../constructors";
 import { average } from "../../core/algebra";
 import { multiply_matrix3_vector3 } from "../../core/matrix3";
+import { resize } from "../../arguments/resize";
 import {
-  resize,
   get_matrix_3x4,
   get_segment,
-} from "../../parsers/arguments";
+} from "../../arguments/get";
 import LinePrototype from "../prototypes/line";
 import { EPSILON } from "../../core/equal";
 
@@ -14,9 +14,11 @@ export default {
     P: LinePrototype.prototype,
 
     A: function () {
-      // const segment = Object.create(proto(Segment, points));
-      this.points = get_segment(...arguments)
-        .map(p => Constructors.vector(p));
+      const args = get_segment(...arguments);
+      this.points = [
+        Constructors.vector(args[0]),
+        Constructors.vector(args[1])
+      ];
       this.vector = this.points[1].subtract(this.points[0]);
       this.origin = this.points[0];
     },
@@ -53,7 +55,7 @@ export default {
       midpoint: function () {
         return Constructors.vector(average(this.points[0], this.points[1]));
       },
-      path: function () {
+      svgPath: function () {
         const pointStrings = this.points.map(p => `${p[0]} ${p[1]}`);
         return ["M", "L"].map((cmd, i) => `${cmd}${pointStrings[i]}`)
           .join("");

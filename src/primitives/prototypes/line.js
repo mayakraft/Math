@@ -3,11 +3,14 @@ import { bisect_lines2 } from "../../core/geometry";
 import { nearest_point_on_line } from "../../core/nearest";
 import {
   resize,
-  resizeUp,
+  resize_up
+} from "../../arguments/resize";
+
+import {
   get_vector,
   get_line,
   get_matrix_3x4,
-} from "../../parsers/arguments";
+} from "../../arguments/get";
 
 import {
   parallel,
@@ -38,7 +41,7 @@ const LineProto = function () {};
 
 // todo, this only takes line types. it should be able to take a vector
 LineProto.prototype.isParallel = function () {
-  const arr = resizeUp(this.vector, get_line(...arguments).vector);
+  const arr = resize_up(this.vector, get_line(...arguments).vector);
   console.log(arguments, this.vector, get_line(...arguments).vector, arr);
   return parallel(...arr);
 };

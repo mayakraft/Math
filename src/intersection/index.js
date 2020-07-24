@@ -1,4 +1,4 @@
-import { Typeof } from "../parsers/arguments";
+import type_of from "../arguments/typeof";
 
 import {
   intersect as line,
@@ -17,7 +17,6 @@ import {
   convex_poly_line,
   convex_poly_ray,
   convex_poly_segment,
-  convex_poly_ray_exclusive,
 } from "./polygon";
 
 const intersect_func = {
@@ -59,8 +58,8 @@ const intersect_func = {
 };
 
 const intersect = function (a, b, c) {
-  const aT = Typeof(a);
-  const bT = Typeof(b);
+  const aT = type_of(a);
+  const bT = type_of(b);
   return intersect_func[aT][bT](a, b, c);
 };
 

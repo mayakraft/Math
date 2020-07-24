@@ -1,4 +1,4 @@
-import { get_vector } from "../../parsers/arguments";
+import { get_vector } from "../../arguments/get";
 
 const VectorArgs = function () {
   get_vector(arguments).forEach(n => this.push(n));

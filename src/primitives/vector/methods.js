@@ -5,10 +5,13 @@ import { bisect_vectors } from "../../core/geometry";
 
 import {
   resize,
-  resizeUp,
+  resize_up,
+} from "../../arguments/resize";
+
+import {
   get_vector,
   get_matrix_3x4,
-} from "../../parsers/arguments";
+} from "../../arguments/get";
 
 import {
   magnitude,
@@ -41,13 +44,13 @@ const table = {
       return equivalent_vectors(this, get_vector(arguments));
     },
     isParallel: function () {
-      return parallel(...resizeUp(this, get_vector(arguments)));
+      return parallel(...resize_up(this, get_vector(arguments)));
     },
     dot: function () {
-      return dot(...resizeUp(this, get_vector(arguments)));
+      return dot(...resize_up(this, get_vector(arguments)));
     },
     distanceTo: function () {
-      return distance(...resizeUp(this, get_vector(arguments)));
+      return distance(...resize_up(this, get_vector(arguments)));
     },
   },
   vector: { // return type
@@ -77,7 +80,7 @@ const table = {
       return lerp(this, resize(this.length, get_vector(vector)), pct);
     },
     midpoint: function () {
-      return midpoint(...resizeUp(this, get_vector(arguments)));
+      return midpoint(...resize_up(this, get_vector(arguments)));
     },
     bisect: function () {
       return bisect_vectors(this, get_vector(arguments));

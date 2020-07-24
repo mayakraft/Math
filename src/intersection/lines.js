@@ -41,22 +41,24 @@ export const exclude_s_s = (t0, t1) => t0 > EPSILON && t0 < 1 - EPSILON && t1 > 
  * requires a compFunction to describe valid bounds checking
  * line always returns true, ray is true for t > 0, segment must be between 0 < t < 1
 */
-export const intersect = (a, b, compFunc, epsilon = EPSILON) => {
-  const denominator0 = cross2(a.vector, b.vector);
+export const intersect_2D = (aVector, aOrigin, bVector, bOrigin, compFunc, epsilon = EPSILON) => {
+  const denominator0 = cross2(aVector, bVector);
   if (Math.abs(denominator0) < epsilon) { return undefined; } /* parallel */
   const denominator1 = -denominator0;
-  const numerator0 = cross2([
-    b.origin[0] - a.origin[0],
-    b.origin[1] - a.origin[1]],
-  b.vector);
-  const numerator1 = cross2([
-    a.origin[0] - b.origin[0],
-    a.origin[1] - b.origin[1]],
-  a.vector);
+  const aOriX = aOrigin[0];
+  const aOriY = aOrigin[1];
+  const bOriX = bOrigin[0];
+  const bOriY = bOrigin[1];
+  const numerator0 = cross2([bOriX - aOriX, bOriY - aOriY], bVector);
+  const numerator1 = cross2([aOriX - bOriX, aOriY - bOriY], aVector);
   const t0 = numerator0 / denominator0;
   const t1 = numerator1 / denominator1;
   if (compFunc(t0, t1, epsilon)) {
-    return [a.origin[0] + a.vector[0] * t0, a.origin[1] + a.vector[1] * t0];
+    return [aOriX + aVector[0] * t0, aOriY + aVector[1] * t0];
   }
   return undefined;
 };
+
+export const intersect = (a, b, compFunc, epsilon = EPSILON) => intersect_2D(
+  a.vector, a.origin, b.vector, b.origin, compFunc, epsilon
+);

@@ -1,9 +1,7 @@
 import Constructors from "../constructors";
 import LinePrototype from "../prototypes/line";
-import {
-  get_line,
-  resize,
-} from "../../parsers/arguments";
+import { resize } from "../../arguments/resize";
+import { get_line } from "../../arguments/get";
 import Static from "./static";
 
 // distance is between 0 and 1, representing the vector between start and end. cap accordingly

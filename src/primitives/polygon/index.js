@@ -1,6 +1,6 @@
 import Constructors from "../constructors";
 import Prototype from "../prototypes/polygon";
-import { semi_flatten_arrays } from "../../parsers/arguments";
+import { semi_flatten_arrays } from "../../arguments/resize";
 import {
   convex_hull,
   make_regular_polygon,
@@ -28,7 +28,7 @@ export default {
     M: {
       segments: function () {
         return this.sides;
-      }
+      },
     },
     S: {
       fromPoints: function () {

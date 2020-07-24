@@ -1,8 +1,7 @@
 import {
   semi_flatten_arrays,
-  get_vector_of_vectors,
-  resizeUp,
-} from "../parsers/arguments";
+  resize_up,
+} from "../arguments/resize";
 
 export const EPSILON = 1e-6;
 
@@ -33,33 +32,11 @@ export const equivalent_numbers = function () {
  * @returns boolean
  */
 export const equivalent_vectors = (a, b) => {
-  const vecs = resizeUp(a, b);
-  return vecs[0].map((_, i) => Math.abs(vecs[0][i] - vecs[1][i]) < EPSILON)
+  const vecs = resize_up(a, b);
+  return vecs[0]
+    .map((_, i) => Math.abs(vecs[0][i] - vecs[1][i]) < EPSILON)
     .reduce((u, v) => u && v, true);
 };
-export const equivalent_vectors_old = (...args) => {
-  const list = get_vector_of_vectors(...args);
-  if (list.length === 0) { return false; }
-  if (list.length === 1 && list[0] !== undefined) {
-    return equivalent_vectors(...list[0]);
-  }
-  const dimension = list[0].length;
-  const dim_array = Array.from(Array(dimension));
-  for (let i = 1; i < list.length; i += 1) {
-    if (typeof list[i - 1] !== typeof list[i]) { return false; }
-  }
-  return Array
-    .from(Array(list.length - 1))
-    .map((element, i) => dim_array
-      .map((_, di) => Math.abs(list[i][di] - list[i + 1][di]) < EPSILON)
-      .reduce((prev, curr) => prev && curr, true))
-    .reduce((prev, curr) => prev && curr, true)
-  && Array
-    .from(Array(list.length - 1))
-    .map((_, i) => list[0].length === list[i + 1].length)
-    .reduce((a, b) => a && b, true);
-};
-
 // export const equivalent_arrays = function (...args) {
 //   const list = semi_flatten_arrays(args);
 //   if (list.length === 0) { return false; }

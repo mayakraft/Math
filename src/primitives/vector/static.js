@@ -1,5 +1,5 @@
 import Constructors from "../constructors";
-import { D2R } from "../../parsers/arguments";
+import { D2R } from "../../core/geometry";
 
 const VectorStatic = {
   fromAngle: function (angle) {

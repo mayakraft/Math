@@ -4,7 +4,7 @@ import { enclosing_rectangle } from "../../core/geometry";
 import {
   get_rect,
   get_vector_of_vectors,
-} from "../../parsers/arguments";
+} from "../../arguments/get";
 
 /**
  * this Rectangle type is aligned to the axes for speedy calculation.
@@ -42,6 +42,18 @@ export default {
       area: function () { return this.width * this.height; },
       // points: function () { return rectToPoints(this); },
       segments: function () { return rectToSides(this); },
+      // svgPath: function () {
+      //   return ["M", "L", "L", "L"]
+      //     .map((c, i) => `${c}${this.points[i].join(",")}`)
+      //     .join("");
+      // },
+      // svg: function () {
+      //   console.log("INER this", this);
+      //   console.log("Constructors", Constructors);
+      //   // return Constructors.svg
+      //   // ? Constructors.svg.
+      //   // : }
+      // },
     },
     S: {
       fromPoints: function () {

@@ -1,6 +1,6 @@
 import {
   get_vector,
-} from "../../parsers/arguments";
+} from "../../arguments/get";
 import {
   pathInfo,
   ellipticalArcTo,
@@ -35,7 +35,7 @@ const CircleMethods = {
     return Intersect(this, object);
   },
 
-  path: function (arcStart = 0, deltaArc = Math.PI * 2) {
+  svgPath: function (arcStart = 0, deltaArc = Math.PI * 2) {
     const info = pathInfo(this.origin[0], this.origin[1], this.radius, this.radius, 0, arcStart, deltaArc);
     const arc1 = ellipticalArcTo(this.radius, this.radius, 0, info.fa, info.fs, info.x2, info.y2);
     const arc2 = ellipticalArcTo(this.radius, this.radius, 0, info.fa, info.fs, info.x3, info.y3);

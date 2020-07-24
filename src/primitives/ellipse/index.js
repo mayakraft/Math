@@ -3,8 +3,8 @@ import { nearest_point_on_ellipse } from "../../core/nearest";
 import {
   resize,
   flatten_arrays,
-  get_vector,
-} from "../../parsers/arguments";
+} from "../../arguments/resize";
+import { get_vector } from "../../arguments/get";
 import Intersect from "../../intersection/index";
 
 import {
@@ -64,7 +64,7 @@ export default {
       intersect: function (object) {
         return Intersect(this, object);
       },
-      path: function (arcStart = 0, deltaArc = Math.PI * 2) {
+      svgPath: function (arcStart = 0, deltaArc = Math.PI * 2) {
         const info = pathInfo(this.origin[0], this.origin[1], this.rx, this.ry, this.spin, arcStart, deltaArc);
         const arc1 = ellipticalArcTo(this.rx, this.ry, (this.spin / Math.PI) * 180, info.fa, info.fs, info.x2, info.y2);
         const arc2 = ellipticalArcTo(this.rx, this.ry, (this.spin / Math.PI) * 180, info.fa, info.fs, info.x3, info.y3);

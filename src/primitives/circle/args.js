@@ -2,8 +2,8 @@ import Constructors from "../constructors";
 import {
   flatten_arrays,
   resize,
-  get_vector_of_vectors,
-} from "../../parsers/arguments";
+} from "../../arguments/resize";
+import { get_vector_of_vectors } from "../../arguments/get";
 import { distance2 } from "../../core/algebra";
 
 const CircleArgs = function () {

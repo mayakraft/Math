@@ -17,7 +17,9 @@ import * as matrix3 from "./core/matrix3";
 import * as nearest from "./core/nearest";
 import * as origami from "./core/origami";
 import * as query from "./core/query";
-import * as Arguments from "./parsers/arguments";
+import * as getters from "./arguments/get";
+import * as resizers from "./arguments/resize";
+import Typeof from "./arguments/typeof";
 
 import Intersection from "./intersection/index";
 import * as IntersectionCircle from "./intersection/circle";
@@ -51,9 +53,12 @@ math.core = Object.assign({},
   matrix3,
   nearest,
   query,
-  Arguments,
+  getters,
+  resizers,
   origami,
 );
+
+math.typeof = Typeof;
 
 math.intersect = Intersection;
 math.intersect.circle = IntersectionCircle;

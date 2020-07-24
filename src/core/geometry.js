@@ -2,8 +2,10 @@ import { EPSILON } from "./equal";
 import { point_on_line } from "./query";
 import {
   clean_number,
+} from "../arguments/resize";
+import {
   rect_form
-} from "../parsers/arguments";
+} from "../arguments/get";
 import {
   dot,
   normalize,
@@ -17,6 +19,8 @@ import {
   exclude_l_s,
 } from "../intersection/lines";
 
+export const R2D = 180 / Math.PI;
+export const D2R = Math.PI / 180;
 
 /** There are 2 interior angles between 2 absolute angle measurements, from A to B return the clock
 wise one

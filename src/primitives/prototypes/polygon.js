@@ -13,13 +13,15 @@ import {
   split_convex_polygon,
 } from "../../core/geometry";
 import {
-  resize,
   get_vector,
   get_matrix_3x4,
   get_line,
   get_segment,
+} from "../../arguments/get";
+import {
+  resize,
   semi_flatten_arrays,
-} from "../../parsers/arguments";
+} from "../../arguments/resize";
 import * as Intersect from "../../intersection/polygon";
 
 // a polygon is expecting to have these properties:
@@ -118,7 +120,7 @@ const methods = {
     const e = Intersect.convex_poly_ray(this.points, line.vector, line.origin);
     return e === undefined ? undefined : Constructors.segment(e);
   },
-  path: function () {
+  svgPath: function () {
     // make every point a Move or Line command, append with a "z" (close path)
     const pre = Array(this.points.length).fill("L");
     pre[0] = "M";

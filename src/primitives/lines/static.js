@@ -6,7 +6,7 @@ import {
 
 import {
   get_vector_of_vectors,
-} from "../../parsers/arguments";
+} from "../../arguments/get";
 
 export default {
   fromPoints: function () {
