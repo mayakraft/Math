@@ -4,6 +4,11 @@ const testEqual = function (...args) {
   expect(math.core.equivalent(...args)).toBe(true);
 };
 
+test("arguments", () => {
+  // const c2 = math.circle(1, [0.5, 0]);
+  expect(true).toBe(true);
+});
+
 test("circle", () => {
   testEqual(5, math.circle(5, 1, 2).radius);
   testEqual([1, 2], math.circle(5, 1, 2).origin);

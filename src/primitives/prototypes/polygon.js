@@ -22,7 +22,8 @@ import {
   resize,
   semi_flatten_arrays,
 } from "../../arguments/resize";
-import * as Intersect from "../../intersection/polygon";
+import * as PolyIntersect from "../../intersection/polygon";
+import Intersect from "../../intersection/index";
 
 // a polygon is expecting to have these properties:
 // this.points - an array of vectors in [] form
@@ -107,17 +108,17 @@ const methods = {
   // todo: need non-convex clipping functions returns an array of edges
   clipSegment: function () {
     const edge = get_segment(arguments);
-    const e = Intersect.convex_poly_segment(this.points, edge[0], edge[1]);
+    const e = PolyIntersect.convex_poly_segment(this.points, edge[0], edge[1]);
     return e === undefined ? undefined : Constructors.segment(e);
   },
   clipLine: function () {
     const line = get_line(arguments);
-    const e = Intersect.convex_poly_line(this.points, line.vector, line.origin);
+    const e = PolyIntersect.convex_poly_line(this.points, line.vector, line.origin);
     return e === undefined ? undefined : Constructors.segment(e);
   },
   clipRay: function () {
     const line = get_line(arguments);
-    const e = Intersect.convex_poly_ray(this.points, line.vector, line.origin);
+    const e = PolyIntersect.convex_poly_ray(this.points, line.vector, line.origin);
     return e === undefined ? undefined : Constructors.segment(e);
   },
   svgPath: function () {
@@ -125,6 +126,9 @@ const methods = {
     const pre = Array(this.points.length).fill("L");
     pre[0] = "M";
     return `${this.points.map((p, i) => `${pre[i]}${p[0]} ${p[1]}`).join("")}z`;
+  },
+  intersect: function (other) {
+    return Intersect(this, other);
   },
 };
 

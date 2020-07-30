@@ -19,37 +19,44 @@ import {
   convex_poly_segment,
 } from "./polygon";
 
+const convexPolyLine = (a, b) => convex_poly_line(
+  a.constructor === Array ? a : a.points, b.vector, b.origin);
+const convexPolyRay = (a, b) => convex_poly_ray(
+  a.constructor === Array ? a : a.points, b.vector, b.origin);
+const convexPolySegment = (a, b) => convex_poly_segment(
+  a.constructor === Array ? a : a.points, b[0], b[1]);
+
 const intersect_func = {
-  // poly: {
-  //   poly: I.poly_poly,
-  //   circle: I.poly_circle,
-  //   line: I.poly_line,
-  //   ray: I.poly_ray,
-  //   segment: I.poly_segment,
-  // },
+  polygon: {
+    // polygon: convex_poly_convex_poly,
+    // circle: convex_poly_circle,
+    line: convexPolyLine,
+    ray: convexPolyRay,
+    segment: convexPolySegment,
+  },
   circle: {
-    // poly: convex_poly_circle,
+    // polygon: (a, b) => convex_poly_circle(b, a),
     circle: circle_circle,
     line: circle_line,
     ray: circle_ray,
     segment: circle_segment,
   },
   line: {
-    poly: (a, b) => convex_poly_line(b, a),
+    polygon: (a, b) => convexPolyLine(b, a),
     circle: (a, b) => circle_line(b, a),
     line: (a, b) => line(a, b, comp_l_l),
     ray: (a, b, c) => line(a, b, c === false ? exclude_l_r : comp_l_r),
     segment: (a, b, c) => line(a, b, c === false ? exclude_l_s : comp_l_s),
   },
   ray: {
-    poly: (a, b) => convex_poly_ray(b, a),
+    polygon: (a, b) => convexPolyRay(b, a),
     circle: (a, b) => circle_ray(b, a),
     line: (a, b, c) => line(b, a, c === false ? exclude_l_r : comp_l_r),
     ray: (a, b, c) => line(a, b, c === false ? exclude_r_r : comp_r_r),
     segment: (a, b, c) => line(a, b, c === false ? exclude_r_s : comp_r_s),
   },
   segment: {
-    poly: (a, b) => convex_poly_segment(b, a),
+    polygon: (a, b) => convexPolySegment(b, a),
     circle: (a, b) => circle_segment(b, a),
     line: (a, b, c) => line(b, a, c === false ? exclude_l_s : comp_l_s),
     ray: (a, b, c) => line(b, a, c === false ? exclude_r_s : comp_r_s),

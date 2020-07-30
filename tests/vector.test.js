@@ -1,9 +1,5 @@
 const math = require("../math");
 
-// const testEqual = function (...args) {
-//   expect(math.core.equivalent(...args)).toBe(true);
-// };
-
 test("arguments", () => {
   expect(math.vector(1,2,3)[2]).toBe(3);
   expect(math.vector([1,2,3])[2]).toBe(3);
@@ -16,10 +12,19 @@ test("arguments", () => {
   expect(math.vector([[], {x:1,y:2,z:3}])[2]).toBe(3);
 });
 
+// static
 
-/**
- * vectors
- */
+test("static", () => {
+  expect(math.vector.fromAngle(Math.PI).x).toBeCloseTo(-1);
+  expect(math.vector.fromAngle(Math.PI).y).toBeCloseTo(0);
+  expect(math.vector.fromAngle(Math.PI).z).toBe(undefined);
+  expect(math.vector.fromAngleDegrees(90).x).toBeCloseTo(0);
+  expect(math.vector.fromAngleDegrees(90).y).toBeCloseTo(1);
+  expect(math.vector.fromAngleDegrees(90).z).toBe(undefined);
+});
+
+
+// methods
 
 test("magnitude", () => {
   const v = math.vector(1,2,3).normalize();
@@ -48,34 +53,35 @@ test("dot", () => {
 });
 
 test("distanceTo", () => {
-  const v = math.vector(3,0)
+  const v = math.vector(3,0);
   expect(v.distanceTo([-3,0])).toBe(6);
 });
 
-// test("bisect", () => {
-//   const v = math.vector(1,2,3)
-//   expect(v.bisect([-1,2,3])).toBe(true);
-// });
+test("bisect", () => {
+  expect(math.vector(1,0).bisect(math.vector(0,1)).x)
+    .toBeCloseTo(Math.sqrt(2)/2);
+  expect(math.vector(1,0).bisect(math.vector(0,1)).y)
+    .toBeCloseTo(Math.sqrt(2)/2);
+});
 
-// test("copy", () => {
-//   const v = math.vector(1,2,3).normalize();
-//   expect(v.copy([-1,2,3])).toBe(true);
-// });
+test("copy", () => {
+  const v = math.vector(1,2,3);
+  expect(v.copy().z).toBe(3);
+});
 
-// test("normalize", () => {
-//   const v = math.vector(1,2,3).normalize();
-//   expect(v.normalize$[-1,2,3]1()).toBe(true);
-// });
-
-// test("scale", () => {
-//   const v = math.vector(1,2,3).normalize();
-//   expect(v.scale([-1,2,3]mag)).toBe(true);
-// });
+test("scale", () => {
+  const v = math.vector(2,-3);
+  expect(v.scale(2).x).toBe(4);
+  expect(v.scale(2).y).toBe(-6);
+  expect(v.scale(-2).x).toBe(-4);
+  expect(v.scale(-2).y).toBe(6);
+  expect(v.scale(0).x).toBeCloseTo(0);
+  expect(v.scale(0).y).toBeCloseTo(0);
+});
 
 test("cross", () => {
   const v = math.vector(1,2,3).normalize();
   let w = math.vector(3,4).normalize()
-
   // [0, 0, 0.8]
   expect(0.8 - w.cross(2,4)[2]).toBeLessThan(1e-6); 
   expect(w.cross(2,-4,5)[0]).toBe(4);
@@ -104,25 +110,26 @@ test("subtract", () => {
   }
 });
 
-// test("rotateZ90", () => {
-//   const v = math.vector(1,2,3).normalize();
-//   expect(v.rotateZ90([-1,2,3])).toBe(true);
-// });
+test("rotate90", () => {
+  const v = math.vector(1,2,3);
+  expect(v.rotate90().x).toBe(-2);
+  expect(v.rotate90().y).toBe(1);
+  expect(v.rotate90().z).toBe(undefined);
+});
 
-// test("rotateZ180", () => {
-//   const v = math.vector(1,2,3).normalize();
-//   expect(v.rotateZ180([-1,2,3])).toBe(true);
-// });
+test("rotate270", () => {
+  const v = math.vector(1,2,3);
+  expect(v.rotate270().x).toBe(2);
+  expect(v.rotate270().y).toBe(-1);
+  expect(v.rotate270().z).toBe(undefined);
+});
 
-// test("rotateZ270", () => {
-//   const v = math.vector(1,2,3).normalize();
-//   expect(v.rotateZ270([-1,2,3])).toBe(true);
-// });
-
-// test("flip", () => {
-//   const v = math.vector(1,2,3).normalize();
-//   expect(v.flip([-1,2,3])).toBe(true);
-// });
+test("flip", () => {
+  const v = math.vector(1,2,3);
+  expect(v.flip().x).toBe(-1);
+  expect(v.flip().y).toBe(-2);
+  expect(v.flip().z).toBe(-3);
+});
 
 test("lerp", () => {
   const v = math.vector(2, 0)
@@ -136,41 +143,35 @@ test("lerp", () => {
 test("midpoint", () => {
   const v = math.vector(1,2,3);
   expect(v.midpoint([1,2])[2]).toBe(1.5);
-  // expect(v.midpoint([1,2, 10])).toBe([1, 2, 6.5]);
-  // expect(v.midpoint([1,2, 10, 20])).toBe([1, 2, 6.5, 10]);
-  // expect(v.midpoint([1])).toBe([1, 1, 1.5]);
-  // expect(v.midpoint([])).toBe([0.5, 1, 1.5]);
-  // expect(v.midpoint()).toBe([0.5, 1, 1.5]  );
+  expect(v.midpoint([1, 2, 10]).x).toBe(1);
+  expect(v.midpoint([1, 2, 10]).y).toBe(2);
+  expect(v.midpoint([1, 2, 10]).z).toBe(6.5);
+  expect(v.midpoint([1, 2, 10, 20])[3]).toBe(10);
+  expect(v.midpoint([1]).y).toBe(1);
+  expect(v.midpoint([]).z).toBe(1.5);
 });
 
+test("transform", () => {
+  const v = math.vector(1,2);
+  expect(v.transform(1,0,0,0,1,0,0,0,1).x).toBe(1);
+  expect(v.transform(1,0,0,0,1,0,0,0,1).y).toBe(2);
+  // rotate around x
+  expect(v.transform(1,0,0,0,0,-1,0,1,0).x).toBe(1);
+  expect(v.transform(1,0,0,0,0,-1,0,1,0).y).toBe(0);
+  expect(v.transform(1,0,0,0,0,-1,0,1,0).z).toBe(-2);
+  // rotate around z
+  expect(v.transform(0,-1,0,1,0,0,0,0,1).x).toBe(2);
+  expect(v.transform(0,-1,0,1,0,0,0,0,1).y).toBe(-1);
+  expect(v.transform(0,-1,0,1,0,0,0,0,1).z).toBe(0);
+  // rotate 2D
+  expect(v.transform(0,-1,1,0).x).toBe(2);
+  expect(v.transform(0,-1,1,0).y).toBe(-1);
+});
 
-
-// test("vector normalize, scale", () => {
-//   testEqual([Math.sqrt(2), Math.sqrt(2)],
-//     math.vector(10, 10).normalize().scale(2));
-// });
-
-// test("vector dot", () => {
-//   testEqual(0, math.vector(2, 1).normalize().dot(math.vector(1, -2).normalize()));
-//   testEqual(1, math.vector(2, 1).normalize().dot(math.vector(4, 2).normalize()));
-// });
-
-// test("vector cross", () => {
-//   testEqual([0, 0, -5], math.vector(2, 1).cross(math.vector(1, -2)));
-// });
-
-// test("vector parallel", () => {
-//   testEqual(true, math.vector(3, 4).isParallel(math.vector(-6, -8)));
-// });
-
-// test("lines parallel", () => {
-//   testEqual(true, math.line(100, 101, 3, 4).isParallel(math.line(5, 5, -6, -8)));
-// });
-
-// test("vector lerp", () => {
-//   testEqual([15.5, 3.5, 3], math.vector(30, 5, 3).lerp([1, 2, 3], 0.5));
-// });
-
-// test("vector copy", () => {
-//   testEqual([1, 2, 3], math.vector(1, 2, 3).copy().copy());
-// });
+test("rotateZ", () => {
+  const v = math.vector(1);
+  expect(v.rotateZ(Math.PI/2).x).toBeCloseTo(0);
+  expect(v.rotateZ(Math.PI/2).y).toBeCloseTo(1);
+  expect(v.rotateZ(-Math.PI/2).x).toBeCloseTo(0);
+  expect(v.rotateZ(-Math.PI/2).y).toBeCloseTo(-1);
+});

@@ -50,6 +50,13 @@ test("matrix core", () => {
       [-77, 25, -21, 3, 53, 42, 63, 2, 19, 0, 0, 0]));
 });
 
+test("invert", () => {
+  expect(math.core.invert_matrix2([1,0,0,1,0,0])).not.toBe(undefined);
+  expect(math.core.invert_matrix3([1,0,0,0,1,0,0,0,1,0,0,0])).not.toBe(undefined);
+  expect(math.core.invert_matrix2([5,5,4,4,3,3])).toBe(undefined);
+  expect(math.core.invert_matrix3([0,1,1,0,1,1,0,1,1,1,1,1])).toBe(undefined);
+});
+
 
 // test("matrices", () => {
 //   const ident = math.matrix();

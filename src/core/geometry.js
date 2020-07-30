@@ -15,12 +15,13 @@ import {
 } from "./algebra";
 
 import {
-  intersect,
+  intersect_2D,
   exclude_l_s,
 } from "../intersection/lines";
 
 export const R2D = 180 / Math.PI;
 export const D2R = Math.PI / 180;
+const TWO_PI = Math.PI * 2;
 
 /** There are 2 interior angles between 2 absolute angle measurements, from A to B return the clock
 wise one
@@ -29,23 +30,27 @@ wise one
  */
 export const clockwise_angle2_radians = (a, b) => {
   // this is on average 50 to 100 times faster than clockwise_angle2
-  while (a < 0) { a += Math.PI * 2; }
-  while (b < 0) { b += Math.PI * 2; }
+  while (a < 0) { a += TWO_PI; }
+  while (b < 0) { b += TWO_PI; }
+  while (a > TWO_PI) { a -= TWO_PI; }
+  while (b > TWO_PI) { b -= TWO_PI; }
   const a_b = a - b;
   return (a_b >= 0)
     ? a_b
-    : Math.PI * 2 - (b - a);
+    : TWO_PI - (b - a);
 };
 
 // @returns {number}
 export const counter_clockwise_angle2_radians = (a, b) => {
   // this is on average 50 to 100 times faster than counter_clockwise_angle2
-  while (a < 0) { a += Math.PI * 2; }
-  while (b < 0) { b += Math.PI * 2; }
+  while (a < 0) { a += TWO_PI; }
+  while (b < 0) { b += TWO_PI; }
+  while (a > TWO_PI) { a -= TWO_PI; }
+  while (b > TWO_PI) { b -= TWO_PI; }
   const b_a = b - a;
   return (b_a >= 0)
     ? b_a
-    : Math.PI * 2 - (a - b);
+    : TWO_PI - (a - b);
 };
 /** There are 2 angles between 2 vectors, from A to B return the clockwise one.
  * @param {[number, number]} vector
@@ -111,7 +116,10 @@ const interior_angles_unsorted = function (...vectors) {
 
 /**
  * This bisects 2 vectors into the smaller of their two angle bisections
- * technically this works in any dimension... unless the vectors are
+ * technically this works in any dimension... unless the vectors are 180deg
+ * from each other, there are an infinite number of solutions in 3D but
+ * 2 solutions in 2D, this will return one of the 2D solutions.
+ * todo: reconsider these assumptions
  * @param {[number, number]} vector
  * @returns {[[number, number],[number, number]]} 2 vectors, the smaller first
  */
@@ -273,33 +281,36 @@ export const make_regular_polygon = (sides, x = 0, y = 0, radius = 1) => {
 const line_segment_exclusive = function (lineVector, linePoint, segmentA, segmentB) {
   const pt = segmentA;
   const vec = [segmentB[0] - segmentA[0], segmentB[1] - segmentA[1]];
-  return intersect(linePoint, lineVector, pt, vec, exclude_l_s);
+  return intersect_2D(lineVector, linePoint, vec, pt, exclude_l_s);
 };
-export const split_polygon = (poly, lineVector, linePoint) => {
-  //    point: intersection [x,y] point or null if no intersection
-  // at_index: where in the polygon this occurs
-  const vertices_intersections = poly.map((v, i) => {
-    const intersection = point_on_line(linePoint, lineVector, v);
-    return { type: "v", point: intersection ? v : null, at_index: i };
-  }).filter(el => el.point != null);
-  const edges_intersections = poly.map((v, i, arr) => {
-    const intersection = line_segment_exclusive(
-      lineVector,
-      linePoint,
-      v,
-      arr[(i + 1) % arr.length]
-    );
-    return { type: "e", point: intersection, at_index: i };
-  }).filter(el => el.point != null);
 
-  const sorted = vertices_intersections
-    .concat(edges_intersections)
-    .sort((a, b) => (Math.abs(a.point[0] - b.point[0]) < EPSILON
-      ? a.point[1] - b.point[1]
-      : a.point[0] - b.point[0]));
-  console.log(sorted);
-  return poly;
-};
+export const split_polygon = () => console.warn("split polygon not done");
+
+// export const split_polygon = (poly, lineVector, linePoint) => {
+//   //    point: intersection [x,y] point or null if no intersection
+//   // at_index: where in the polygon this occurs
+//   const vertices_intersections = poly.map((v, i) => {
+//     const intersection = point_on_line(linePoint, lineVector, v);
+//     return { type: "v", point: intersection ? v : null, at_index: i };
+//   }).filter(el => el.point != null);
+//   const edges_intersections = poly.map((v, i, arr) => {
+//     const intersection = line_segment_exclusive(
+//       lineVector,
+//       linePoint,
+//       v,
+//       arr[(i + 1) % arr.length]
+//     );
+//     return { type: "e", point: intersection, at_index: i };
+//   }).filter(el => el.point != null);
+
+//   const sorted = vertices_intersections
+//     .concat(edges_intersections)
+//     .sort((a, b) => (Math.abs(a.point[0] - b.point[0]) < EPSILON
+//       ? a.point[1] - b.point[1]
+//       : a.point[0] - b.point[0]));
+//   console.log(sorted);
+//   return poly;
+// };
 
 export const split_convex_polygon = (poly, lineVector, linePoint) => {
   // todo: should this return undefined if no intersection?

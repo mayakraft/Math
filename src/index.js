@@ -11,7 +11,7 @@
 import * as algebra from "./core/algebra";
 import * as equal from "./core/equal";
 import * as geometry from "./core/geometry";
-import * as interpolation from "./core/interpolation";
+// import * as interpolation from "./core/interpolation";
 import * as matrix2 from "./core/matrix2";
 import * as matrix3 from "./core/matrix3";
 import * as nearest from "./core/nearest";
@@ -48,7 +48,7 @@ math.core = Object.assign({},
   algebra,
   equal,
   geometry,
-  interpolation,
+  // interpolation,
   matrix2,
   matrix3,
   nearest,

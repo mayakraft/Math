@@ -109,7 +109,7 @@ export const flip = v => v.map(n => -n);
  * implicitly 2D
  */
 export const rotate90 = v => [-v[1], v[0]];
-export const rotate270 = v => [-v[1], v[0]];
+export const rotate270 = v => [v[1], -v[0]];
 
 // need to test:
 // do two polygons overlap if they share a point in common? share an edge?

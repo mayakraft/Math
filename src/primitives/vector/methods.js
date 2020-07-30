@@ -61,10 +61,16 @@ const table = {
     rotate90: function () { return rotate90(this); },
     rotate270: function () { return rotate270(this); },
     cross: function () {
-      return cross3(resize(3, this), resize(3, get_vector(arguments)));
+      return cross3(
+        resize(3, this),
+        resize(3, get_vector(arguments))
+      );
     },
     transform: function () {
-      return multiply_matrix3_vector3(get_matrix_3x4(arguments), resize(3, this));
+      return multiply_matrix3_vector3(
+        get_matrix_3x4(arguments),
+        resize(3, this)
+      );
     },
     add: function () {
       return add(this, resize(this.length, get_vector(arguments)));
@@ -72,10 +78,14 @@ const table = {
     subtract: function () {
       return subtract(this, resize(this.length, get_vector(arguments)));
     },
-    // these are implicitly 2D functions, and will convert the vector into 2D
+    // todo, this is a very meandering implementation
     rotateZ: function (angle, origin) {
-      return multiply_matrix3_vector3(get_matrix_3x4(make_matrix2_rotate(angle, origin)), this);
+      return multiply_matrix3_vector3(
+        get_matrix_3x4(make_matrix2_rotate(angle, origin)),
+        resize(3, this)
+      );
     },
+    // these are implicitly 2D functions, and will convert the vector into 2D
     lerp: function (vector, pct) {
       return lerp(this, resize(this.length, get_vector(vector)), pct);
     },

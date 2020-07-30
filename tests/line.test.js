@@ -4,6 +4,22 @@ const testEqual = function (...args) {
   expect(math.core.equivalent(...args)).toBe(true);
 };
 
+test("arguments", () => {
+  const l1 = math.line(1);
+  expect(l1.origin[0]).toBe(0);
+  expect(l1.origin[1]).toBe(undefined);
+  expect(l1.origin[2]).toBe(undefined);
+  const l2 = math.line(1,2);
+  expect(l2.origin[0]).toBe(0);
+  expect(l2.origin[1]).toBe(0);
+  expect(l2.origin[2]).toBe(undefined);
+  const l3 = math.line(1,2,3);
+  expect(l3.origin[0]).toBe(0);
+  expect(l3.origin[1]).toBe(0);
+  expect(l3.origin[2]).toBe(0);
+});
+
+
 // from the prototype
 // test("isParallel", () => {
 //   const l = math.line(0,1,2,3);
