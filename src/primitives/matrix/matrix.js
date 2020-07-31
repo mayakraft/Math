@@ -47,8 +47,8 @@ export default {
     P: Array.prototype,
 
     A: function () {
-      [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0].forEach(m => this.push(m));
-      // get_matrix_3x4(arguments).forEach(m => this.push(m));
+      // [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0].forEach(m => this.push(m));
+      get_matrix_3x4(arguments).forEach(m => this.push(m));
     },
 
     G: {

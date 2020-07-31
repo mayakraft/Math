@@ -1,5 +1,8 @@
 import Constructors from "../constructors";
-import { distance2 } from "../../core/algebra";
+import {
+  subtract,
+  distance2,
+} from "../../core/algebra";
 import {
   point_in_poly,
   convex_polygons_overlap
@@ -24,6 +27,10 @@ import {
 } from "../../arguments/resize";
 import * as PolyIntersect from "../../intersection/polygon";
 import Intersect from "../../intersection/index";
+import {
+  nearest_point_on_line,
+  nearest_point_on_polygon,
+} from "../../core/nearest";
 
 // a polygon is expecting to have these properties:
 // this.points - an array of vectors in [] form
@@ -62,37 +69,32 @@ const methods = {
     return Constructors.polygon(newPoints);
   },
   translate: function () {
-    const vec = get_vector(arguments);
+    const vec = get_vector(...arguments);
     const newPoints = this.points.map(p => p.map((n, i) => n + vec[i]));
     return this.constructor.fromPoints(newPoints);
   },
   transform: function () {
-    const m = get_matrix_3x4(arguments);
+    const m = get_matrix_3x4(...arguments);
     const newPoints = this.points
       .map(p => multiply_matrix3_vector3(m, resize(3, p)));
     return Constructors.polygon(newPoints);
   },
-  sectors: function () {
-    return this.points.map((p, i, arr) => {
-      const prev = (i + arr.length - 1) % arr.length;
-      const next = (i + 1) % arr.length;
-      const center = p;
-      const a = arr[prev].map((n, j) => n - center[j]);
-      const b = arr[next].map((n, j) => n - center[j]);
-      return Constructors.sector(b, a, center);
-    });
-  },
+  // sectors: function () {
+  //   return this.points.map((p, i, arr) => {
+  //     const prev = (i + arr.length - 1) % arr.length;
+  //     const next = (i + 1) % arr.length;
+  //     const center = p;
+  //     const a = arr[prev].map((n, j) => n - center[j]);
+  //     const b = arr[next].map((n, j) => n - center[j]);
+  //     return Constructors.sector(b, a, center);
+  //   });
+  // },
   nearest: function () {
-    const point = get_vector(arguments);
-    const points = this.sides.map(edge => edge.nearestPoint(point));
-    let lowD = Infinity;
-    let lowI;
-    points.map(p => distance2(point, p))
-      .forEach((d, i) => { if (d < lowD) { lowD = d; lowI = i; } });
-    return {
-      point: points[lowI],
-      edge: this.sides[lowI],
-    };
+    const point = get_vector(...arguments);
+    const result = nearest_point_on_polygon(this.points, point);
+    return result === undefined
+      ? undefined
+      : Object.assign(result, { edge: this.sides[result.i] });
   },
   // todo: non convex too
   overlaps: function () {
@@ -100,24 +102,24 @@ const methods = {
     return convex_polygons_overlap(this.points, poly2Points);
   },
   split: function () {
-    const line = get_line(arguments);
+    const line = get_line(...arguments);
     const split_func = this.convex ? split_convex_polygon : split_polygon;
     return split_func(this.points, line.vector, line.origin)
       .map(poly => Constructors.polygon(poly));
   },
   // todo: need non-convex clipping functions returns an array of edges
   clipSegment: function () {
-    const edge = get_segment(arguments);
+    const edge = get_segment(...arguments);
     const e = PolyIntersect.convex_poly_segment(this.points, edge[0], edge[1]);
     return e === undefined ? undefined : Constructors.segment(e);
   },
   clipLine: function () {
-    const line = get_line(arguments);
+    const line = get_line(...arguments);
     const e = PolyIntersect.convex_poly_line(this.points, line.vector, line.origin);
     return e === undefined ? undefined : Constructors.segment(e);
   },
   clipRay: function () {
-    const line = get_line(arguments);
+    const line = get_line(...arguments);
     const e = PolyIntersect.convex_poly_ray(this.points, line.vector, line.origin);
     return e === undefined ? undefined : Constructors.segment(e);
   },

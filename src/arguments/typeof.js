@@ -23,11 +23,10 @@ const type_of = function (obj) {
   if (typeof obj === "object") {
     if (obj.radius != null) { return "circle"; }
     if (obj.width != null) { return "rect"; }
-    if (obj.x != null) { return "vector"; }
+    if (obj.x != null || typeof obj[0] === "number") { return "vector"; }
     // line ray segment
-    if (obj.rotate180 != null) { return "ray"; }
-    if (obj[0] != null && obj[0].length && obj[0].x != null) { return "segment"; }
-    if (obj.vector != null && obj.origin != null) { return "line"; }
+    if (obj[0] != null && obj[0].length && (typeof obj[0].x === "number" || typeof obj[0][0] === "number")) { return "segment"; }
+    if (obj.vector != null && obj.origin != null) { return "line"; } // or ray
   }
   return undefined;
 };

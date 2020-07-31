@@ -49,7 +49,7 @@ export const nearest_point_on_line = (lineVec, linePoint, point, limiterFunc, ep
   return [0, 1].map((_, i) => linePoint[i] + lineVec[i] * d);
 };
 
-const seg_limiter = (dist) => {
+export const segment_limiter = (dist) => {
   if (dist < -EPSILON) { return 0; }
   if (dist > 1 + EPSILON) { return 1; }
   return dist;
@@ -59,7 +59,7 @@ export const nearest_point_on_polygon = (polygon, point) => {
   const v = polygon
     .map((p, i, arr) => subtract(arr[(i + 1) % arr.length], p));
   return polygon
-    .map((p, i) => nearest_point_on_line(v[i], p, point, seg_limiter))
+    .map((p, i) => nearest_point_on_line(v[i], p, point, segment_limiter))
     .map((p, i) => ({ point: p, i, distance: distance(p, point) }))
     .sort((a, b) => a.distance - b.distance)
     .shift();

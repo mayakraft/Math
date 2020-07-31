@@ -15,7 +15,7 @@ import * as geometry from "./core/geometry";
 import * as matrix2 from "./core/matrix2";
 import * as matrix3 from "./core/matrix3";
 import * as nearest from "./core/nearest";
-import * as origami from "./core/origami";
+// import * as origami from "./core/origami";
 import * as query from "./core/query";
 import * as getters from "./arguments/get";
 import * as resizers from "./arguments/resize";
@@ -55,7 +55,7 @@ math.core = Object.assign({},
   query,
   getters,
   resizers,
-  origami,
+  // origami,
 );
 
 math.typeof = Typeof;

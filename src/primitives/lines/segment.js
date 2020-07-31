@@ -1,5 +1,6 @@
 import Constructors from "../constructors";
 import { average } from "../../core/algebra";
+import { segment_limiter } from "../../core/nearest";
 import { multiply_matrix3_vector3 } from "../../core/matrix3";
 import { resize } from "../../arguments/resize";
 import {
@@ -32,11 +33,7 @@ export default {
     M: {
       // distance is between 0 and 1, representing the vector between start and end. cap accordingly
       // todo. this is repeated in nearest_point_on_polygon
-      clip_function: (dist) => {
-        if (dist < -EPSILON) { return 0; }
-        if (dist > 1 + EPSILON) { return 1; }
-        return dist;
-      },
+      clip_function: segment_limiter,
       transform: function (...innerArgs) {
         const dim = this.dimension;
         const mat = get_matrix_3x4(innerArgs);

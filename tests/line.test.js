@@ -19,52 +19,73 @@ test("arguments", () => {
   expect(l3.origin[2]).toBe(0);
 });
 
-
 // from the prototype
-// test("isParallel", () => {
-//   const l = math.line(0,1,2,3);
-//   expect(l.isParallel()).toBe(true);
-// });
-// test("isDegenerate", () => {
-//   const l = math.line(0,1,2,3);
-//   expect(l.isDegenerate()).toBe(true);
-// });
-// test("reflection", () => {
-//   const l = math.line(0,1,2,3);
-//   expect(l.reflection()).toBe(true);
-// });
-// test("nearestPoint", () => {
-//   const l = math.line(0,1,2,3);
-//   expect(l.nearestPoint()).toBe(true);
-// });
-// test("intersect", () => {
-//   const l = math.line(0,1,2,3);
-//   expect(l.intersect()).toBe(true);
-// });
-// test("bisectLine", () => {
-//   const l = math.line(0,1,2,3);
-//   expect(l.bisectLine()).toBe(true);
-// });
-// test("bisectRay", () => {
-//   const l = math.line(0,1,2,3);
-//   expect(l.bisectRay()).toBe(true);
-// });
-// test("bisectSegment", () => {
-//   const l = math.line(0,1,2,3);
-//   expect(l.bisectSegment()).toBe(true);
-// });
+test("isParallel", () => {
+  const l = math.line([0,1],[2,3]);
+  expect(l.isParallel([0,-1], [7, 8])).toBe(true);
+});
+test("isDegenerate", () => {
+  const l = math.line([0,0],[2,3]);
+  expect(l.isDegenerate()).toBe(true);
+});
+test("reflection", () => {
+  const result = math.line([0,1],[2,3]).reflection();
+  expect(result[0]).toBeCloseTo(-1);
+  expect(result[1]).toBeCloseTo(0);
+  expect(result[2]).toBeCloseTo(0);
+  expect(result[3]).toBeCloseTo(0);
+  expect(result[4]).toBeCloseTo(1);
+  expect(result[9]).toBeCloseTo(4);
+  expect(result[10]).toBeCloseTo(0);
+  // expect(l.reflection().origin).toBe();
+});
+test("nearestPoint", () => {
+  const res = math.line([1,1],[2,3]).nearestPoint(0,0);
+  expect(res[0]).toBe(-0.5);
+  expect(res[1]).toBe(0.5);
+  // expect(l.nearestPoint(0,0)).toBe(true);
+});
+test("transform", () => {
+  const res = math.line([0,1],[2,3]).transform([2,0,0,0,2,0,0,0,2,0,0,0]);
+  expect(res.vector[0]).toBeCloseTo(0);
+  expect(res.vector[1]).toBeCloseTo(2);
+  expect(res.origin[0]).toBeCloseTo(4);
+  expect(res.origin[1]).toBeCloseTo(6);
+});
+test("intersect", () => {
+  const polygon = math.polygon([0, 1.15], [-1, -0.577], [1, -0.577]);
+  const circle = math.circle(1);
+  const line = math.line([1, 2], [-0.5, 0]);
+  const line2 = math.line([-1, 2], [0.5, 0]);
+  const ray = math.ray([-1, 2], [0.5, 0]);
+  const segment = math.segment([-2, 0.5], [2, 0.5]);
+  [
+    line.intersect(polygon),
+    line.intersect(circle),
+    line.intersect(line2),
+    line.intersect(ray),
+    line.intersect(segment)
+  ].forEach(intersect => expect(intersect).not.toBe(undefined));
+
+});
+
+// todo problems
+test("bisect", () => {
+  expect(true).toBe(true);
+  const l0 = math.line([0,1], [0,0]);
+  const l1 = math.line([0,1], [1,0]);
+  const res = l0.bisect(l1);
+  // console.log("Bisec", res);
+  // expect(l.bisectLine()).toBe(true);
+});
 
 // // line
-// test("transform", () => {
-//   const l = math.line(0,1,2,3);
-//   expect(l.transform()).toBe(true);
-// });
 // test("fromPoints", () => {
-//   const l = math.line(0,1,2,3);
+//   const l = math.line([0,1],[2,3]);
 //   expect(l.fromPoints()).toBe(true);
 // });
 // test("perpendicularBisector", () => {
-//   const l = math.line(0,1,2,3);
+//   const l = math.line([0,1],[2,3]);
 //   expect(l.perpendicularBisector()).toBe(true);
 // });
 

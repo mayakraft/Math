@@ -1,6 +1,7 @@
 import Constructors from "../constructors";
 import Prototype from "../prototypes/polygon";
 import { semi_flatten_arrays } from "../../arguments/resize";
+import { subtract } from "../../core/algebra";
 import {
   convex_hull,
   make_regular_polygon,
@@ -15,6 +16,7 @@ export default {
       this.sides = this.points
         .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
         // .map(ps => Constructors.segment(ps[0][0], ps[0][1], ps[1][0], ps[1][1]));
+      this.vectors = this.sides.map(side => subtract(side[1], side[0]));
       // this.sectors
     },
     G: {
@@ -34,8 +36,8 @@ export default {
       fromPoints: function () {
         return this.constructor(...arguments);
       },
-      regularPolygon: function (sides, x = 0, y = 0, radius = 1) {
-        return this.constructor(make_regular_polygon(sides, x, y, radius));
+      regularPolygon: function (sides, radius = 1, x = 0, y = 0) {
+        return this.constructor(make_regular_polygon(sides, radius, x, y));
       },
       convexHull: function (points, includeCollinear = false) {
         return this.constructor(convex_hull(points, includeCollinear));

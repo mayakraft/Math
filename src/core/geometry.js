@@ -60,7 +60,7 @@ export const clockwise_angle2 = (a, b) => {
   const dotProduct = b[0] * a[0] + b[1] * a[1];
   const determinant = b[0] * a[1] - b[1] * a[0];
   let angle = Math.atan2(determinant, dotProduct);
-  if (angle < 0) { angle += Math.PI * 2; }
+  if (angle < 0) { angle += TWO_PI; }
   return angle;
 };
 
@@ -69,7 +69,7 @@ export const counter_clockwise_angle2 = (a, b) => {
   const dotProduct = a[0] * b[0] + a[1] * b[1];
   const determinant = a[0] * b[1] - a[1] * b[0];
   let angle = Math.atan2(determinant, dotProduct);
-  if (angle < 0) { angle += Math.PI * 2; }
+  if (angle < 0) { angle += TWO_PI; }
   return angle;
 };
 /**
@@ -161,7 +161,7 @@ export const bisect_lines2 = (vectorA, pointA, vectorB, pointB) => {
  * subsect the angle between two vectors already converted to radians
  */
 export const subsect_radians = (divisions, angleA, angleB) => {
-  const angle = counter_clockwise_angle2(angleA, angleB) / divisions;
+  const angle = counter_clockwise_angle2_radians(angleA, angleB) / divisions;
   return Array.from(Array(divisions - 1))
     .map((_, i) => angleA + angle * i);
 };
@@ -265,16 +265,19 @@ export const enclosing_rectangle = (points) => {
 };
 /**
  * the radius parameter measures from the center to the midpoint of the edge
+ * vertex-axis aligned
  * todo: also possible to parameterize the radius as the center to the points
+ * todo: can be edge-aligned
  */
-export const make_regular_polygon = (sides, x = 0, y = 0, radius = 1) => {
-  const halfwedge = (2 * Math.PI) / sides / 2;
-  const r = radius / Math.cos(halfwedge);
+export const make_regular_polygon = (sides, radius = 1, x = 0, y = 0) => {
+  const halfwedge = TWO_PI / sides / 2;
+  const r = radius / 2 / Math.cos(halfwedge);
   return Array.from(Array(Math.floor(sides))).map((_, i) => {
-    const a = -(2 * Math.PI * i) / sides + halfwedge;
-    const px = clean_number(x + r * Math.sin(a), 14);
-    const py = clean_number(y + r * Math.cos(a), 14);
-    return [px, py]; // align point along Y
+    // const a = -(TWO_PI * i) / sides + halfwedge; // edge-aligned
+    const a = TWO_PI * (i / sides);
+    const px = clean_number(x + r * Math.cos(a), 14);
+    const py = clean_number(y + r * Math.sin(a), 14);
+    return [px, py];
   });
 };
 

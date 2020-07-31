@@ -8,7 +8,7 @@ import Ellipse from "./ellipse/index";
 import Rect from "./rect/index";
 import Polygon from "./polygon/index";
 import Matrix from "./matrix/matrix";
-import Plane from "./plane/index";
+// import Plane from "./plane/index";
 // import Matrix2 from "./matrix/matrix2";
 
 // import PolygonPrototype from "./prototypes/polygon";
@@ -33,7 +33,7 @@ const Definitions = Object.assign({},
   Rect,
   Polygon,
   Matrix,
-  Plane,
+  // Plane,
   // Matrix2,
 );
 
@@ -54,7 +54,7 @@ const line = function () { return create("line", arguments); };
 const ray = function () { return create("ray", arguments); };
 const segment = function () { return create("segment", arguments); };
 const matrix = function () { return create("matrix", arguments); };
-const plane = function () { return create("plane", arguments); };
+// const plane = function () { return create("plane", arguments); };
 // const matrix2 = function () { return create("matrix2", arguments); };
 
 Object.assign(Constructors, {
@@ -67,7 +67,7 @@ Object.assign(Constructors, {
   ray,
   segment,
   matrix,
-  plane,
+  // plane,
   // matrix2,
 });
 

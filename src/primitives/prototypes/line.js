@@ -42,7 +42,6 @@ const LineProto = function () {};
 // todo, this only takes line types. it should be able to take a vector
 LineProto.prototype.isParallel = function () {
   const arr = resize_up(this.vector, get_line(...arguments).vector);
-  console.log(arguments, this.vector, get_line(...arguments).vector, arr);
   return parallel(...arr);
 };
 

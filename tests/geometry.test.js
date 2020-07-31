@@ -104,45 +104,101 @@ test("counter_clockwise_angle2", () => {
 //   math.core.interior_angles2(a, b)
 // });
 
-// test("interior_angles", () => {
-//   math.core.interior_angles(...vecs)
-// });
+test("interior_angles", () => {
+  expect(math.core.interior_angles([1,0], [0,1], [-1,0])[0]).toBeCloseTo(Math.PI/2);
+  expect(math.core.interior_angles([1,0], [0,1], [-1,0])[1]).toBeCloseTo(Math.PI/2);
+  expect(math.core.interior_angles([1,0], [0,1], [-1,0])[2]).toBeCloseTo(Math.PI);
 
-// test("bisect_vectors", () => {
-//   math.core.bisect_vectors(a, b)
-// });
+  expect(math.core.interior_angles([1,0], [-1,0], [0,-1])[0]).toBeCloseTo(Math.PI);
+  expect(math.core.interior_angles([1,0], [-1,0], [0,-1])[1]).toBeCloseTo(Math.PI/2);
+  expect(math.core.interior_angles([1,0], [-1,0], [0,-1])[2]).toBeCloseTo(Math.PI/2);
+});
 
-// test("bisect_lines2", () => {
-//   math.core.bisect_lines2(vectorA, pointA, vectorB, pointB)
-// });
+test("bisect_vectors", () => {
+  expect(math.core.bisect_vectors([1,0], [0,1])[0])
+    .toBeCloseTo(Math.sqrt(2)/2);
+  expect(math.core.bisect_vectors([1,0], [0,1])[1])
+    .toBeCloseTo(Math.sqrt(2)/2);
+  expect(math.core.bisect_vectors([0,1], [-1,0])[0])
+    .toBeCloseTo(-Math.sqrt(2)/2);
+  expect(math.core.bisect_vectors([0,1], [-1,0])[1])
+    .toBeCloseTo(Math.sqrt(2)/2);
+});
 
-// test("subsect_radians", () => {
-//   math.core.subsect_radians(divisions, angleA, angleB)
-// });
+test("bisect_lines2", () => {
+  expect(math.core.bisect_lines2([0,1], [0,0], [0,1], [1,0])[1])
+    .toBe(undefined);
+  expect(math.core.bisect_lines2([0,1], [0,0], [0,1], [1,0])[0][0][0])
+    .toBeCloseTo(0);
+  expect(math.core.bisect_lines2([0,1], [0,0], [0,1], [1,0])[0][0][1])
+    .toBeCloseTo(1);
+  expect(math.core.bisect_lines2([0,1], [0,0], [0,1], [1,0])[0][1][0])
+    .toBeCloseTo(0.5);
+  expect(math.core.bisect_lines2([0,1], [0,0], [0,1], [1,0])[0][1][1])
+    .toBeCloseTo(0);
+  
+  expect(math.core.bisect_lines2([0,1], [0,0], [1,1], [1,0])[0].vector[0])
+    .toBeCloseTo(0.3826834323650897);
+  expect(math.core.bisect_lines2([0,1], [0,0], [1,1], [1,0])[0].vector[1])
+    .toBeCloseTo(0.9238795325112867);
+  expect(math.core.bisect_lines2([0,1], [0,0], [1,1], [1,0])[0].origin[0])
+    .toBeCloseTo(0);
+  expect(math.core.bisect_lines2([0,1], [0,0], [1,1], [1,0])[0].origin[1])
+    .toBeCloseTo(-1);
 
-// test("subsect", () => {
-//   math.core.subsect(divisions, vectorA, vectorB)
-// });
+});
 
-// test("circumcircle", () => {
-//   math.core.circumcircle(a, b, c)
-// });
+test("subsect_radians", () => {
+  math.core.subsect_radians(2, 0, Math.PI/2)
+});
 
-// test("signed_area", () => {
-//   math.core.signed_area(points)
-// });
+test("subsect", () => {
+  math.core.subsect(2, [1,0], [0,1]);
+});
 
-// test("centroid", () => {
-//   math.core.centroid(points)
-// });
+test("circumcircle", () => {
+  const circle = math.core.circumcircle([1,0], [0,1], [-1,0]);
+  expect(circle.origin[0]).toBeCloseTo(0);
+  expect(circle.origin[1]).toBeCloseTo(0);
+  expect(circle.radius).toBeCloseTo(1);
+});
 
-// test("enclosing_rectangle", () => {
-//   math.core.enclosing_rectangle(points)
-// });
+test("signed_area", () => {
+  expect(math.core.signed_area([[1,0], [0,1], [-1,0], [0,-1]])).toBeCloseTo(2);
+  expect(math.core.signed_area([[1,0], [0,1], [-1,0]])).toBeCloseTo(1);
+});
 
-// test("make_regular_polygon", () => {
-//   math.core.make_regular_polygon(sides, x, y, radius)
-// });
+test("centroid", () => {
+  expect(math.core.centroid([[1,0], [0,1], [-1,0], [0,-1]])[0]).toBeCloseTo(0);
+  expect(math.core.centroid([[1,0], [0,1], [-1,0], [0,-1]])[1]).toBeCloseTo(0);
+  expect(math.core.centroid([[1,0], [0,1], [-1,0]])[0]).toBeCloseTo(0);
+  expect(math.core.centroid([[1,0], [0,1], [-1,0]])[1]).toBeCloseTo(1/3);
+
+});
+
+test("enclosing_rectangle", () => {
+  const rect = math.core.enclosing_rectangle([[1,0], [0,1], [-1,0], [0,-1]]);
+  expect(rect.x).toBe(-1);
+  expect(rect.y).toBe(-1);
+  expect(rect.width).toBe(2);
+  expect(rect.height).toBe(2);
+});
+
+test("make_regular_polygon", () => {
+  const tri1 = math.core.make_regular_polygon(3);
+  const tri2 = math.core.make_regular_polygon(3, 2);
+  // first coord (1,0)
+  expect(tri1[0][0]).toBeCloseTo(1);
+  expect(tri1[0][1]).toBeCloseTo(0);
+  expect(tri1[1][0]).toBeCloseTo(-0.5);
+  expect(tri1[1][1]).toBeCloseTo(Math.sqrt(3)/2);
+  expect(tri1[2][0]).toBeCloseTo(-0.5);
+  expect(tri1[2][1]).toBeCloseTo(-Math.sqrt(3)/2);
+  //2
+  expect(tri2[0][0]).toBeCloseTo(2);
+  expect(tri2[1][0]).toBeCloseTo(-1);
+
+});
 
 // test("split_polygon", () => {
 //   math.core.split_polygon(poly, lineVector, linePoint)

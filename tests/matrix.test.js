@@ -1,5 +1,80 @@
 const math = require("../math");
 
+
+test("copy", () => {
+  const matrix = math.matrix(1,2,3,4,5,6,7,8,9);
+  const result = matrix.copy();
+  matrix.set(1,0,0,0,1,0,0,0,1,0,0,0);
+  expect(result[3]).toBe(4);
+});
+test("set", () => {
+  const matrix = math.matrix(1,2,3,4,5,6,7,8,9);
+  matrix.set(1,0,0,0,1,0,0,0,1,0,0,0);
+  expect(matrix[3]).toBe(0);
+});
+test("isIdentity", () => {
+  expect(math.matrix(1,2,3,4,5,6,7,8,9).isIdentity()).toBe(false);
+  expect(math.matrix().isIdentity()).toBe(true);
+  expect(math.matrix(1,0,0,0,1,0,0,0,1,4,5,6).isIdentity()).toBe(false);
+  expect(math.matrix(1,0,0,0,1,0,0,0,1,0,0,0).isIdentity()).toBe(true);
+});
+test("multiply", () => {
+  const matrix = math.matrix();
+  const m = math.matrix().multiply(math.matrix().rotateX(Math.PI/4).rotateZ(Math.PI/4));
+  const sq = Math.sqrt(2)/2;
+  [sq,0.5,0.5,-sq,0.5,0.5,0,-sq,sq,0,0,0]
+    .forEach((a, i) => expect(a).toBeCloseTo(m[i]));
+});
+test("determinant", () => {
+  expect(math.matrix().determinant()).toBe(1);
+});
+test("inverse", () => {
+  const m = math.matrix(0,-1,0,1,0,0,0,0,1).inverse();
+  [0,1,-0,-1,0,0,0,-0,1,0,0,0].forEach((a, i) => expect(a).toBeCloseTo(m[i]));
+
+});
+test("translate", () => {
+  expect(math.matrix().translate(4,5,6)[9]).toBe(4);
+  expect(math.matrix().translate(4,5,6)[10]).toBe(5);
+  expect(math.matrix().translate(4,5,6)[11]).toBe(6);
+});
+test("rotateX", () => {
+  const sq = Math.sqrt(2)/2;
+  const m = math.matrix().rotateX(Math.PI/4);
+  [1,0,0,0,sq,sq,0,-sq,sq,0,0,0].forEach((a, i) => expect(a).toBeCloseTo(m[i]));
+});
+test("rotateY", () => {
+  const sq = Math.sqrt(2)/2;
+  const m = math.matrix().rotateY(Math.PI/4);
+  [sq,0,-sq,0,1,0,sq,0,sq,0,0,0].forEach((a, i) => expect(a).toBeCloseTo(m[i]));
+});
+test("rotateZ", () => {
+  const sq = Math.sqrt(2)/2;
+  const m = math.matrix().rotateZ(Math.PI/4);
+  [sq,sq,0,-sq,sq,0,0,0,1,0,0,0].forEach((a, i) => expect(a).toBeCloseTo(m[i]));
+});
+// test("rotate", () => {
+//   rotate(radians, vector, origin) {
+// });
+test("scale", () => {
+  expect(math.matrix().scale(0.5)[0]).toBe(0.5);
+});
+test("reflectZ", () => {
+  
+});
+test("transform", () => {
+  const matrix = math.matrix().rotateZ(Math.PI/2).translate(4,5,6);
+  const result = matrix.transform(math.segment([-1, 0], [1, 0]));
+});
+// test("transformVector", () => {
+//   transformVector(vector) {
+// });
+// test("transformLine", () => {
+//   transformLine(origin, vector) {
+// });
+
+
+
 const testEqual = function (...args) {
   expect(math.core.equivalent(...args)).toBe(true);
 };
