@@ -95,14 +95,14 @@ export const counter_clockwise_vector_order = (...vectors) => {
  * @param {[number, number]} vector
  * @returns {[number, number]} 2 angle measurements between vectors
  */
-export const interior_angles2 = (a, b) => {
-  const interior1 = counter_clockwise_angle2(a, b);
-  const interior2 = Math.PI * 2 - interior1;
-  // return (interior1 < interior2)
-  //   ? [interior1, interior2]
-  //   : [interior2, interior1];
-  return [interior1, interior2];
-};
+// export const interior_angles2 = (a, b) => {
+//   const interior1 = counter_clockwise_angle2(a, b);
+//   const interior2 = Math.PI * 2 - interior1;
+//   // return (interior1 < interior2)
+//   //   ? [interior1, interior2]
+//   //   : [interior2, interior1];
+//   return [interior1, interior2];
+// };
 /**
  * very important! this does not do any sorting. it calculates the interior
  * angle between each consecutive vector. if you need them to add up to 360deg,

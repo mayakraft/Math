@@ -24,9 +24,9 @@ export default {
     M: {
       clip_function: dist => dist,
       // compare_function: () => true,
-      path: function (length = 1000) {
-        const start = this.origin.add(this.vector.scale(-length));
-        const end = this.vector.scale(length * 2);
+      svgPath: function (length = 20000) {
+        const start = this.origin.add(this.vector.scale(-length / 2));
+        const end = this.vector.scale(length);
         return `M${start[0]} ${start[1]}l${end[0]} ${end[1]}`;
       },
     },

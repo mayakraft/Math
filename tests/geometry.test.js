@@ -12,7 +12,6 @@ test("nearest point", () => {
       [5, 5, 10], [6, 6, 0], [7, 7, 0], [8, 8, 0], [9, 9, 0]]));
 });
 
-
 test("interior angles", () => {
   testEqual(
     [Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
@@ -100,10 +99,6 @@ test("counter_clockwise_angle2", () => {
 //   math.core.counter_clockwise_vector_order(...vectors)
 // });
 
-// test("interior_angles2", () => {
-//   math.core.interior_angles2(a, b)
-// });
-
 test("interior_angles", () => {
   expect(math.core.interior_angles([1,0], [0,1], [-1,0])[0]).toBeCloseTo(Math.PI/2);
   expect(math.core.interior_angles([1,0], [0,1], [-1,0])[1]).toBeCloseTo(Math.PI/2);
@@ -123,6 +118,9 @@ test("bisect_vectors", () => {
     .toBeCloseTo(-Math.sqrt(2)/2);
   expect(math.core.bisect_vectors([0,1], [-1,0])[1])
     .toBeCloseTo(Math.sqrt(2)/2);
+  // flipped vectors
+  expect(math.core.bisect_vectors([1,0], [-1,0])[0]).toBeCloseTo(0);
+  expect(math.core.bisect_vectors([1,0], [-1,0])[1]).toBeCloseTo(1);
 });
 
 test("bisect_lines2", () => {
@@ -161,6 +159,11 @@ test("circumcircle", () => {
   expect(circle.origin[0]).toBeCloseTo(0);
   expect(circle.origin[1]).toBeCloseTo(0);
   expect(circle.radius).toBeCloseTo(1);
+  // todo, this is the degenerate case. not sure why the result is such
+  const circle2 = math.core.circumcircle([1,0], [0,0], [-1,0]);
+  expect(circle2.origin[0]).toBeCloseTo(0);
+  expect(circle2.origin[1]).toBeCloseTo(0);
+  expect(circle2.radius).toBeCloseTo(1);
 });
 
 test("signed_area", () => {
@@ -222,6 +225,38 @@ test("split_convex_polygon", () => {
     expect(JSON.stringify(expected)).toBe(JSON.stringify(res0[0][i]));
   });
   [[1,-1], [1,1], [0.5,1], [-0.5,-1]].forEach((expected, i) => {
+    expect(JSON.stringify(expected)).toBe(JSON.stringify(res0[1][i]));
+  });
+});
+
+test("split_convex_polygon vertex collinear", () => {
+  const rect_counter = [
+    [-1, -1],
+    [+1, -1],
+    [+1, +1],
+    [-1, +1],
+  ];
+  const res0 = math.core.split_convex_polygon(rect_counter, [1,1], [0,0]);
+  [[1,1],[-1,1],[-1,-1]].forEach((expected, i) => {
+    expect(JSON.stringify(expected)).toBe(JSON.stringify(res0[0][i]));
+  });
+  [[-1,-1],[1,-1],[1,1]].forEach((expected, i) => {
+    expect(JSON.stringify(expected)).toBe(JSON.stringify(res0[1][i]));
+  });
+});
+
+test("split_convex_polygon 1 edge and 1 vertex collinear", () => {
+  const rect_counter = [
+    [-1, -1],
+    [+1, -1],
+    [+1, +1],
+    [-1, +1],
+  ];
+  const res0 = math.core.split_convex_polygon(rect_counter, [1,2], [-1, -1]);
+  [[-1,1],[-1,-1],[0,1]].forEach((expected, i) => {
+    expect(JSON.stringify(expected)).toBe(JSON.stringify(res0[0][i]));
+  });
+  [[1,-1],[1,1],[0,1],[-1,-1]].forEach((expected, i) => {
     expect(JSON.stringify(expected)).toBe(JSON.stringify(res0[1][i]));
   });
 });

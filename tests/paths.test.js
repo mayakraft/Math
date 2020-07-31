@@ -5,11 +5,13 @@ test("segment", () => {
 });
 
 test("line", () => {
-  // expect(math.line(1, 2).svgPath()).toBe("M-1000 -2000l2000 4000");
+  expect(math.line(1, 2).svgPath()).toBe("M-10000 -20000l20000 40000");
+  expect(math.line(1, 2).svgPath(20)).toBe("M-10 -20l20 40");
 });
 
 test("ray", () => {
-  // expect(math.ray(1, 2).svgPath()).toBe("M0 0l1000 2000");
+  expect(math.ray(1, 2).svgPath()).toBe("M0 0l10000 20000");
+  expect(math.ray(1, 2).svgPath(10)).toBe("M0 0l10 20");
 });
 
 test("rect", () => {

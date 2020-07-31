@@ -4,6 +4,13 @@ test("equivalent", () => {
 
 });
 
+test("equivalent numbers", () => {
+  expect(math.core.equivalent_numbers()).toBe(false);
+  expect(math.core.equivalent_numbers([[[1, 1, 1, 1, 1]]])).toBe(true);
+  expect(math.core.equivalent_numbers([[[1, 1, 1, 1, 1, 4]]])).toBe(false);
+  expect(math.core.equivalent_numbers([1, 1, 1, 1, 1, 1], [1, 2])).toBe(false);
+});
+
 // equivalent is doing weird things by on ly checking 2 arguments sometimes.
 /**
  * queries
@@ -29,10 +36,4 @@ test("equivalent", () => {
 //   // testEqual(true, math.core.equivalent("hi", "hi", "hi"));
 //   // testEqual(false, math.core.equivalent("hi", "hi", "bye"));
 //   // testEqual(false, math.core.equivalent(["hi", "hi"], ["hi", "hi", "hi"]));
-// });
-
-// test("equivalent numbers", () => {
-//   expect(math.core.equivalent_numbers([[[1, 1, 1, 1, 1]]])).toBe(true);
-//   expect(math.core.equivalent_numbers([[[1, 1, 1, 1, 1, 4]]])).toBe(false);
-//   expect(math.core.equivalent_numbers([1, 1, 1, 1, 1, 1], [1, 2])).toBe(false);
 // });

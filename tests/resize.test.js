@@ -48,6 +48,16 @@ test("clean_number", () => {
   equalTest(math.core.clean_number(0.000000001, 9), 0.000000001);
 });
 
+test("clean_number invalid input", () => {
+  // this is the most decimal places javascript uses
+  expect(math.core.clean_number("50.00000000001")).toBe("50.00000000001");
+  expect(math.core.clean_number(undefined)).toBe(undefined);
+  expect(math.core.clean_number(true)).toBe(true);
+  expect(math.core.clean_number(false)).toBe(false);
+  const arr = [];
+  expect(math.core.clean_number(arr)).toBe(arr);
+});
+
 /**
  * inputs and argument inference
  */

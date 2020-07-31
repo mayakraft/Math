@@ -3,6 +3,24 @@ const math = require("../math");
 const equalTest = (a, b) => expect(JSON.stringify(a))
   .toBe(JSON.stringify(b));
 
+test("get with real types", () => {
+  const vector = math.vector(1,2,3);
+  const matrix = math.matrix(1,2,3,4);
+  const line = math.line(1,2);
+  const ray = math.ray(1,2);
+  const segment = math.segment([1,2],[3,4]);
+  const circle = math.circle(1);
+  const rect = math.rect(2,4);
+  const ellipse = math.ellipse(1,2);
+  expect(math.core.get_vector(vector)[2]).toBe(3);
+  // expect(math.core.get_vector_of_vectors(segment)[0]).toBe(1);
+  expect(math.core.get_segment(segment)[0][1]).toBe(2);
+  expect(math.core.get_line(line).vector[1]).toBe(2);
+  expect(math.core.get_rect(rect).height).toBe(4);
+  expect(math.core.get_matrix_3x4(matrix)[4]).toBe(4);
+  expect(math.core.get_matrix2(matrix)[1]).toBe(2);
+});
+
 test("get_vector", () => {
   equalTest(
     [1, 2, 3, 4],

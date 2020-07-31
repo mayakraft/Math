@@ -62,7 +62,7 @@ export const invert_matrix2 = (m) => {
  * @param {number} x, y
  * @returns {number[]} matrix
  */
-export const make_matrix2_translate = (x, y) => [1, 0, 0, 1, x, y];
+export const make_matrix2_translate = (x = 0, y = 0) => [1, 0, 0, 1, x, y];
 /**
  * @param ratio of scale, optional origin homothetic center (0,0 default)
  * @returns {number[]} matrix
