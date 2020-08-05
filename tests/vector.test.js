@@ -31,6 +31,12 @@ test("magnitude", () => {
   expect(v.magnitude()).toBe(1);
 });
 
+test("normalize", () => {
+  const v = math.vector(0).normalize();
+  expect(v.magnitude()).toBe(0);
+  // normalize appears so many places in these tests...
+});
+
 test("isEquivalent", () => {
   const v = math.vector(1,2,3);
   expect(v.isEquivalent([1,2,2.99999999])).toBe(true);

@@ -1,27 +1,21 @@
 import { EPSILON } from "../core/equal";
-import {
-  point_in_convex_poly,
-  point_in_convex_poly_exclusive
-} from "../core/query";
-
+import Overlap from "../core/overlap";
 import {
   intersect,
-  comp_l_s,
-  comp_r_s,
+  include_l_s,
+  include_r_s,
   exclude_s_s,
 } from "./lines";
-
-export const determ2 = (a, b) => a[0] * b[1] - b[0] * a[1];
 
 const intersect_line_seg = (origin, vector, pt0, pt1) => {
   const a = { origin, vector };
   const b = { origin: pt0, vector: [[pt1[0] - pt0[0]], [pt1[1] - pt0[1]]] };
-  return intersect(a, b, comp_l_s);
+  return intersect(a, b, include_l_s);
 };
 const intersect_ray_seg = (origin, vector, pt0, pt1) => {
   const a = { origin, vector };
   const b = { origin: pt0, vector: [[pt1[0] - pt0[0]], [pt1[1] - pt0[1]]] };
-  return intersect(a, b, comp_r_s);
+  return intersect(a, b, include_r_s);
 };
 const intersect_seg_seg_exclude = (a0, a1, b0, b1) => {
   const a = { origin: a0, vector: [[a1[0] - a0[0]], [a1[1] - a0[1]]] };
@@ -101,10 +95,10 @@ export const convex_poly_segment = function (poly, segmentA, segmentB, epsilon =
     .map(el => intersect_seg_seg_exclude(segmentA, segmentB, el[0], el[1]))
     .filter(el => el != null);
 
-  const aInsideExclusive = point_in_convex_poly_exclusive(segmentA, poly, epsilon);
-  const bInsideExclusive = point_in_convex_poly_exclusive(segmentB, poly, epsilon);
-  const aInsideInclusive = point_in_convex_poly(segmentA, poly, epsilon);
-  const bInsideInclusive = point_in_convex_poly(segmentB, poly, epsilon);
+  const aInsideExclusive = Overlap.point_in_convex_poly_exclusive(segmentA, poly, epsilon);
+  const bInsideExclusive = Overlap.point_in_convex_poly_exclusive(segmentB, poly, epsilon);
+  const aInsideInclusive = Overlap.point_in_convex_poly(segmentA, poly, epsilon);
+  const bInsideInclusive = Overlap.point_in_convex_poly(segmentB, poly, epsilon);
 
   // both are inside, OR, one is inside and the other is collinear to poly
   if (intersections.length === 0

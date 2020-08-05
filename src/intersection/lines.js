@@ -1,40 +1,33 @@
 import { EPSILON } from "../core/equal";
 import { cross2 } from "../core/algebra";
 
-/*
-██╗      ██╗ ███╗   ██╗ ███████╗ ███████╗
-██║      ██║ ████╗  ██║ ██╔════╝ ██╔════╝
-██║      ██║ ██╔██╗ ██║ █████╗   ███████╗
-██║      ██║ ██║╚██╗██║ ██╔══╝   ╚════██║
-███████╗ ██║ ██║ ╚████║ ███████╗ ███████║
-╚══════╝ ╚═╝ ╚═╝  ╚═══╝ ╚══════╝ ╚══════╝
- * inputs: lines
- * solutions: points
- */
+// todo: get rid of these >= and <=. comparison to epsilons. needs to be < or >
 
-/**
- *  all intersection functions are inclusive and return true if
- *  intersection lies directly on a segment's endpoint. to exclude
- *  endpoints, use "exclusive" functions
- */
+export const include_l = () => true;
+export const include_r = (t, e=EPSILON) => t >= -e;
+export const include_s = (t, e=EPSILON) => t >= -e && t <= 1 + e;
+
+export const exclude_l = () => true;
+export const exclude_r = (t, e=EPSILON) => t > e;
+export const exclude_s = (t, e=EPSILON) => t > e && t < 1 - e;
 
 /** comparison functions for a generalized vector intersection function */
-export const comp_l_l = () => true;
-export const comp_l_r = (t0, t1) => t1 >= -EPSILON;
-export const comp_l_s = (t0, t1) => t1 >= -EPSILON && t1 <= 1 + EPSILON;
-export const comp_r_r = (t0, t1) => t0 >= -EPSILON && t1 >= -EPSILON;
-export const comp_r_s = (t0, t1) => t0 >= -EPSILON && t1 >= -EPSILON && t1 <= 1 + EPSILON;
-export const comp_s_s = (t0, t1) => t0 >= -EPSILON && t0 <= 1 + EPSILON && t1 >= -EPSILON
-  && t1 <= 1 + EPSILON;
+export const include_l_l = () => true;
+export const include_l_r = (t0, t1, e=EPSILON) => t1 >= -e;
+export const include_l_s = (t0, t1, e=EPSILON) => t1 >= -e && t1 <= 1 + e;
+export const include_r_r = (t0, t1, e=EPSILON) => t0 >= -e && t1 >= -e;
+export const include_r_s = (t0, t1, e=EPSILON) => t0 >= -e && t1 >= -e && t1 <= 1 + e;
+export const include_s_s = (t0, t1, e=EPSILON) => t0 >= -e && t0 <= 1 + e && t1 >= -e
+  && t1 <= 1 + e;
 
 // todo this has not been tested yet
 // export const exclude_l_l = function () { return true; } // redundant
-export const exclude_l_r = (t0, t1) => t1 > EPSILON;
-export const exclude_l_s = (t0, t1) => t1 > EPSILON && t1 < 1 - EPSILON;
-export const exclude_r_r = (t0, t1) => t0 > EPSILON && t1 > EPSILON;
-export const exclude_r_s = (t0, t1) => t0 > EPSILON && t1 > EPSILON && t1 < 1 - EPSILON;
-export const exclude_s_s = (t0, t1) => t0 > EPSILON && t0 < 1 - EPSILON && t1 > EPSILON
-  && t1 < 1 - EPSILON;
+export const exclude_l_r = (t0, t1, e=EPSILON) => t1 > e;
+export const exclude_l_s = (t0, t1, e=EPSILON) => t1 > e && t1 < 1 - e;
+export const exclude_r_r = (t0, t1, e=EPSILON) => t0 > e && t1 > e;
+export const exclude_r_s = (t0, t1, e=EPSILON) => t0 > e && t1 > e && t1 < 1 - e;
+export const exclude_s_s = (t0, t1, e=EPSILON) => t0 > e && t0 < 1 - e && t1 > e
+  && t1 < 1 - e;
 
 /**
  * the generalized vector intersection function

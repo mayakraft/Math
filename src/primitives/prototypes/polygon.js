@@ -3,10 +3,7 @@ import {
   subtract,
   distance2,
 } from "../../core/algebra";
-import {
-  point_in_poly,
-  convex_polygons_overlap
-} from "../../core/query";
+import Overlap from "../../core/overlap";
 import { multiply_matrix3_vector3 } from "../../core/matrix3";
 import {
   signed_area,
@@ -47,7 +44,7 @@ const methods = {
     return Constructors.rect(enclosing_rectangle(this.points));
   },
   contains: function () {
-    return point_in_poly(get_vector(arguments), this.points);
+    return Overlap.point_in_poly(get_vector(arguments), this.points);
   },
   // scale will return a rect for rectangles, otherwise polygon
   scale: function (magnitude, center = centroid(this.points)) {
@@ -99,7 +96,7 @@ const methods = {
   // todo: non convex too
   overlaps: function () {
     const poly2Points = semi_flatten_arrays(arguments);
-    return convex_polygons_overlap(this.points, poly2Points);
+    return Overlap.convex_polygons_overlap(this.points, poly2Points);
   },
   split: function () {
     const line = get_line(...arguments);

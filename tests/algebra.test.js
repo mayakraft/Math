@@ -8,6 +8,11 @@ const testEqual = function (...args) {
  * algebra core
  */
 test("average function", () => {
+  // improper use
+  expect(math.core.average().length).toBe(0);
+  expect(math.core.average(0, 1, 2).length).toBe(0);
+  expect(math.core.average([], [], []).length).toBe(0);
+  // correct
   testEqual([3.75, 4.75],
     math.core.average([4, 1], [5, 6], [4, 6], [2, 6]));
   testEqual([4, 5, 3],

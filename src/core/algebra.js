@@ -47,18 +47,25 @@ export const midpoint = (v, u) => v.map((n, i) => (n + u[i]) / 2);
 // like midpoint, but this can accept any number of vectors
 // for example it can be used to average the points of a polygon
 export const average = function () {
-  const dimension = (arguments.length > 0) ? arguments[0].length : 0;
+  if (arguments.length === 0) { return []; }
+  const dimension = (arguments[0].length > 0) ? arguments[0].length : 0;
   const sum = Array(dimension).fill(0);
   Array.from(arguments).forEach(vec => sum.forEach((_, i) => { sum[i] += vec[i] || 0; }));
   return sum.map(n => n / arguments.length);
 };
 /**
- * everything else that follows is hard coded to a certain dimension
+ * @param {number[]} vector
+ * @param {number[]} vector
+ * @param {number} number between 0 and 1
+ * @returns {number[]} one vector
  */
 export const lerp = (v, u, t) => {
   const inv = 1.0 - t;
   return v.map((n, i) => n * inv + u[i] * t);
 };
+/**
+ * everything else that follows is hard coded to a certain dimension
+ */
 /**
  * @param two 2D vectors, order matters.
  * @returns the determinant. the *magnitude* of the vector

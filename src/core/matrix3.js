@@ -6,11 +6,11 @@
 import { normalize } from "./algebra";
 
 export const identity3x3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
-export const identity3x4 = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
+export const identity3x4 = identity3x3.concat(0, 0, 0);
 
 /**
  * @param {number[]} vector, in array form
- * @param {number[]} matrix, in array form
+ * @param {number[]} matrix, in array frotateorm
  * @returns {number[]} vector, the input vector transformed by the matrix
  */
 export const multiply_matrix3_vector3 = (m, vector) => [
@@ -89,52 +89,36 @@ export const invert_matrix3 = (m) => {
   return inv.map(n => n * invDet);
 };
 
-export const make_matrix3_translate = (x = 0, y = 0, z = 0) => [
-  1, 0, 0, 0, 1, 0, 0, 0, 1, x, y, z
-];
-export const make_matrix3_rotateX = (angle, origin = [0, 0, 0]) => {
+export const make_matrix3_translate = (x = 0, y = 0, z = 0) => identity3x3.concat(x, y, z);
+
+// i0 and i1 direct which columns and rows are filled
+// sgn manages right hand rule
+const single_axis_rotate = (angle, origin, i0, i1, sgn) => {
+  const mat = identity3x3.concat([0, 1, 2].map(i => origin[i] || 0));
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
-  return [
-    1, 0, 0,
-    0, cos, sin,
-    0, -sin, cos,
-    origin[0] || 0, origin[1] || 0, origin[2] || 0
-  ];
-};
-export const make_matrix3_rotateY = (angle, origin = [0, 0, 0]) => {
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
-  return [
-    cos, 0, -sin,
-    0, 1, 0,
-    sin, 0, cos,
-    origin[0] || 0, origin[1] || 0, origin[2] || 0
-  ];
-};
-export const make_matrix3_rotateZ = (angle, origin = [0, 0, 0]) => {
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
-  return [
-    cos, sin, 0,
-    -sin, cos, 0,
-    0, 0, 1,
-    origin[0] || 0, origin[1] || 0, origin[2] || 0
-  ];
+  mat[i0*3 + i0] = cos;
+  mat[i0*3 + i1] = (sgn ? +1 : -1) * sin;
+  mat[i1*3 + i0] = (sgn ? -1 : +1) * sin;
+  mat[i1*3 + i1] = cos;
+  return mat;
 };
 
+export const make_matrix3_rotateX = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 1, 2, true);
+export const make_matrix3_rotateY = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 0, 2, false);
+export const make_matrix3_rotateZ = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 0, 1, true);
 export const make_matrix3_rotate = (angle, vector = [0, 0, 1], origin = [0, 0, 0]) => {
   // normalize inputs
   const vec = normalize(vector);
-  const pos = Array.from(Array(3)).map((n, i) => origin[i] || 0);
+  const pos = [0, 1, 2].map(i => origin[i] || 0);
   const [a, b, c] = vec;
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
   const d = Math.sqrt((vec[1] * vec[1]) + (vec[2] * vec[2]));
   const b_d = Math.abs(d) < 1e-6 ? 0 : b / d;
   const c_d = Math.abs(d) < 1e-6 ? 1 : c / d;
-  const t     = [1, 0, 0, 0, 1, 0, 0, 0, 1, pos[0], pos[1], pos[2]];
-  const t_inv = [1, 0, 0, 0, 1, 0, 0, 0, 1, -pos[0], -pos[1], -pos[2]];
+  const t     = identity3x3.concat(pos[0], pos[1], pos[2]);
+  const t_inv = identity3x3.concat(-pos[0], -pos[1], -pos[2]);
   const rx     = [1, 0, 0, 0, c_d, b_d, 0, -b_d, c_d, 0, 0, 0];
   const rx_inv = [1, 0, 0, 0, c_d, -b_d, 0, b_d, c_d, 0, 0, 0];
   const ry     = [d, 0, a, 0, 1, 0, -a, 0, d, 0, 0, 0];

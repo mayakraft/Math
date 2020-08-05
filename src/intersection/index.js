@@ -2,7 +2,7 @@ import type_of from "../arguments/typeof";
 
 import {
   intersect as line,
-  comp_l_l, comp_l_r, comp_l_s, comp_r_r, comp_r_s, comp_s_s,
+  include_l_l, include_l_r, include_l_s, include_r_r, include_r_s, include_s_s,
   exclude_l_r, exclude_l_s, exclude_r_r, exclude_r_s, exclude_s_s,
 } from "./lines";
 
@@ -44,23 +44,23 @@ const intersect_func = {
   line: {
     polygon: (a, b) => convexPolyLine(b, a),
     circle: (a, b) => circle_line(b, a),
-    line: (a, b) => line(a, b, comp_l_l),
-    ray: (a, b, c) => line(a, b, c === false ? exclude_l_r : comp_l_r),
-    segment: (a, b, c) => line(a, b, c === false ? exclude_l_s : comp_l_s),
+    line: (a, b) => line(a, b, include_l_l),
+    ray: (a, b, c) => line(a, b, c === false ? exclude_l_r : include_l_r),
+    segment: (a, b, c) => line(a, b, c === false ? exclude_l_s : include_l_s),
   },
   ray: {
     polygon: (a, b) => convexPolyRay(b, a),
     circle: (a, b) => circle_ray(b, a),
-    line: (a, b, c) => line(b, a, c === false ? exclude_l_r : comp_l_r),
-    ray: (a, b, c) => line(a, b, c === false ? exclude_r_r : comp_r_r),
-    segment: (a, b, c) => line(a, b, c === false ? exclude_r_s : comp_r_s),
+    line: (a, b, c) => line(b, a, c === false ? exclude_l_r : include_l_r),
+    ray: (a, b, c) => line(a, b, c === false ? exclude_r_r : include_r_r),
+    segment: (a, b, c) => line(a, b, c === false ? exclude_r_s : include_r_s),
   },
   segment: {
     polygon: (a, b) => convexPolySegment(b, a),
     circle: (a, b) => circle_segment(b, a),
-    line: (a, b, c) => line(b, a, c === false ? exclude_l_s : comp_l_s),
-    ray: (a, b, c) => line(b, a, c === false ? exclude_r_s : comp_r_s),
-    segment: (a, b, c) => line(a, b, c === false ? exclude_s_s : comp_s_s),
+    line: (a, b, c) => line(b, a, c === false ? exclude_l_s : include_l_s),
+    ray: (a, b, c) => line(b, a, c === false ? exclude_r_s : include_r_s),
+    segment: (a, b, c) => line(a, b, c === false ? exclude_s_s : include_s_s),
   },
 };
 

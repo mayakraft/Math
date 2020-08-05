@@ -1,5 +1,5 @@
 import { EPSILON } from "./equal";
-import { point_on_line } from "./query";
+import Overlap from "./overlap";
 import {
   clean_number,
 } from "../arguments/resize";
@@ -272,13 +272,11 @@ export const enclosing_rectangle = (points) => {
 export const make_regular_polygon = (sides, radius = 1, x = 0, y = 0) => {
   const halfwedge = TWO_PI / sides / 2;
   const r = radius / 2 / Math.cos(halfwedge);
-  return Array.from(Array(Math.floor(sides))).map((_, i) => {
+  return Array.from(Array(Math.floor(sides)))
     // const a = -(TWO_PI * i) / sides + halfwedge; // edge-aligned
-    const a = TWO_PI * (i / sides);
-    const px = clean_number(x + r * Math.cos(a), 14);
-    const py = clean_number(y + r * Math.sin(a), 14);
-    return [px, py];
-  });
+    .map((_, i) => TWO_PI * (i / sides))
+    .map(a => [x + r * Math.cos(a), y + r * Math.sin(a)])
+    .map(p => p.map(n => clean_number(n, 14)));  // this step is costly!
 };
 
 const line_segment_exclusive = function (lineVector, linePoint, segmentA, segmentB) {
@@ -293,7 +291,7 @@ export const split_polygon = () => console.warn("split polygon not done");
 //   //    point: intersection [x,y] point or null if no intersection
 //   // at_index: where in the polygon this occurs
 //   const vertices_intersections = poly.map((v, i) => {
-//     const intersection = point_on_line(linePoint, lineVector, v);
+//     const intersection = point_line_overlap(linePoint, lineVector, v);
 //     return { type: "v", point: intersection ? v : null, at_index: i };
 //   }).filter(el => el.point != null);
 //   const edges_intersections = poly.map((v, i, arr) => {
@@ -322,7 +320,7 @@ export const split_convex_polygon = (poly, lineVector, linePoint) => {
   //    point: intersection [x,y] point or null if no intersection
   // at_index: where in the polygon this occurs
   let vertices_intersections = poly.map((v, i) => {
-    let intersection = point_on_line(linePoint, lineVector, v);
+    let intersection = Overlap.line_point(lineVector, linePoint, v);
     return { point: intersection ? v : null, at_index: i };
   }).filter(el => el.point != null);
   let edges_intersections = poly.map((v, i, arr) => {

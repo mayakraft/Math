@@ -1,5 +1,5 @@
 export const identity2x2 = [1, 0, 0, 1];
-export const identity2x3 = [1, 0, 0, 1, 0, 0];
+export const identity2x3 = identity2x2.concat(0, 0);
 
 /**
  * @param {number[]} vector, in array form
@@ -62,7 +62,7 @@ export const invert_matrix2 = (m) => {
  * @param {number} x, y
  * @returns {number[]} matrix
  */
-export const make_matrix2_translate = (x = 0, y = 0) => [1, 0, 0, 1, x, y];
+export const make_matrix2_translate = (x = 0, y = 0) => identity2x2.concat(x, y);
 /**
  * @param ratio of scale, optional origin homothetic center (0,0 default)
  * @returns {number[]} matrix
