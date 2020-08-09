@@ -8,15 +8,27 @@ test("prototype member variables accessing 'this'", () => {
   expect(math.polygon.regularPolygon(4).area()).toBeCloseTo(1);
 });
 
+test("isConvex", () => {
+  expect(math.polygon.regularPolygon(4).isConvex).toBe(true);
+});
+
+test(".segments", () => {
+  const polygon = math.polygon.regularPolygon(4);
+  const segments = polygon.segments();
+  expect(segments.length).toBe(4);
+  expect(polygon.sides[0]).toBe(polygon.segments()[0]);
+  expect(polygon.sides[0]).toBe(polygon.edges[0]);
+});
+
 test("polygon", () => {
   // equalTest(
   //   math.polygon.regularPolygon(4).clipLine(math.line(0.5, 0.5, 6, -11)),
   //   math.convexPolygon.regularPolygon(4).clipLine(math.line(0.5, 0.5, 6, -11))
   // );
-  const segment = math.polygon.regularPolygon(4).clipLine(math.line(1, 0));
-  expect(segment[0][0]).toBeCloseTo(Math.sqrt(2)/2);
+  const segment = math.polygon.regularPolygon(4).intersectLine(math.line(1, 0));
+  expect(Math.abs(segment[0][0])).toBeCloseTo(Math.sqrt(2)/2);
   expect(segment[0][1]).toBeCloseTo(0);
-  expect(segment[1][0]).toBeCloseTo(-Math.sqrt(2)/2);
+  expect(Math.abs(segment[1][0])).toBeCloseTo(Math.sqrt(2)/2);
   expect(segment[1][1]).toBeCloseTo(0);
 
   // equalTest(true, math.convexPolygon([1, 0], [0, 1.87], [-1, 0]).sides);
@@ -30,6 +42,11 @@ test("polygon", () => {
 test("area", () => {
   expect(math.polygon([-0.5,-0.5], [0.5,-0.5], [0.5, 0.5], [-0.5, 0.5]).area()).toBeCloseTo(1);
 });
+test("convex Hull", () => {
+  const result = math.polygon.convexHull([[1,0], [0.5,0], [0,1], [0,-1]]);
+  expect(result.points.length).toBe(3);
+});
+
 // test("midpoint", () => {
 //   const result = math.polygon([-0.5,-0.5], [0.5,-0.5], [0.5, 0.5], [-0.5, 0.5]).midpoint();
 //   expect(result[0]).toBeCloseTo(0);
@@ -104,31 +121,25 @@ test("overlaps", () => {
 //   console.log("split1", poly.split(line1));
 //   console.log("split2", poly.split(line2));
 // });
-test("clipSegment", () => {
-  const poly = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]);
-  const segment = math.segment([-2, 0.5], [2, 0.5]);
-  const result = poly.clipSegment(segment);
-  expect(result.points[0][0]).toBeCloseTo(0.5);
-  expect(result.points[0][1]).toBeCloseTo(0.5);
-  expect(result.points[1][0]).toBeCloseTo(-0.5);
-  expect(result.points[1][1]).toBeCloseTo(0.5);
-});
-test("clipLine", () => {
+test("intersectLine", () => {
   const poly = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]);
   const line = math.line([1,0], [0, 0.5]);
-  const result = poly.clipLine(line);
+  const result = poly.intersectLine(line);
+  expect(result.points[0][0]).toBeCloseTo(0.5);
+  expect(result.points[0][1]).toBeCloseTo(0.5);
+});
+test("intersectRay", () => {
+  const poly = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]);
+  const ray = math.ray([1,0], [0, 0.5]);
+  const result = poly.intersectRay(ray);
+});
+test("intersectSegment", () => {
+  const poly = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]);
+  const segment = math.segment([-2, 0.5], [2, 0.5]);
+  const result = poly.intersectSegment(segment);
   expect(result.points[0][0]).toBeCloseTo(0.5);
   expect(result.points[0][1]).toBeCloseTo(0.5);
   expect(result.points[1][0]).toBeCloseTo(-0.5);
-  expect(result.points[1][1]).toBeCloseTo(0.5);
-});
-test("clipRay", () => {
-  const poly = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]);
-  const ray = math.ray([1,0], [0, 0.5]);
-  const result = poly.clipRay(ray);
-  expect(result.points[0][0]).toBeCloseTo(0);
-  expect(result.points[0][1]).toBeCloseTo(0.5);
-  expect(result.points[1][0]).toBeCloseTo(0.5);
   expect(result.points[1][1]).toBeCloseTo(0.5);
 });
 // test("svgPath", () => {

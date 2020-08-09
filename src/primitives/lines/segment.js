@@ -35,18 +35,12 @@ export default {
       // todo. this is repeated in nearest_point_on_polygon
       clip_function: segment_limiter,
       transform: function (...innerArgs) {
-        const dim = this.dimension;
+        const dim = this.points[0].length;
         const mat = get_matrix_3x4(innerArgs);
         const transformed_points = this.points
           .map(point => resize(3, point))
           .map(point => multiply_matrix3_vector3(mat, point))
           .map(point => resize(dim, point));
-        return Constructors.segment(transformed_points);
-      },
-      scale: function (magnitude) {
-        const mid = average(this.points[0], this.points[1]);
-        const transformed_points = this.points
-          .map(p => p.lerp(mid, magnitude));
         return Constructors.segment(transformed_points);
       },
       midpoint: function () {

@@ -2,6 +2,7 @@ import Constructors from "../constructors";
 
 import {
   get_vector,
+  get_line,
   get_matrix_3x4,
 } from "../../arguments/get";
 
@@ -105,8 +106,9 @@ export default {
       transformVector: function (vector) {
         return Constructors.vector(multiply_matrix3_vector3(this, vector));
       },
-      transformLine: function (origin, vector) {
-        return Constructors.line(multiply_matrix3_line3(this, origin, vector));
+      transformLine: function (...innerArgs) {
+        const l = get_line(innerArgs);
+        return Constructors.line(multiply_matrix3_line3(this, l.vector, l.origin));
       },
     },
 

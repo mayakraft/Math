@@ -32,7 +32,7 @@ export const exclude_s_s = (t0, t1, e=EPSILON) => t0 > e && t0 < 1 - e && t1 > e
  * requires a compFunction to describe valid bounds checking
  * line always returns true, ray is true for t > 0, segment must be between 0 < t < 1
 */
-export const intersect_2D = (aVector, aOrigin, bVector, bOrigin, compFunc, epsilon = EPSILON) => {
+export const intersect_lines = (aVector, aOrigin, bVector, bOrigin, compFunc, epsilon = EPSILON) => {
   const denominator0 = cross2(aVector, bVector);
   if (Math.abs(denominator0) < epsilon) { return undefined; } /* parallel */
   const denominator1 = -denominator0;
@@ -49,7 +49,3 @@ export const intersect_2D = (aVector, aOrigin, bVector, bOrigin, compFunc, epsil
   }
   return undefined;
 };
-
-export const intersect = (a, b, compFunc, epsilon = EPSILON) => intersect_2D(
-  a.vector, a.origin, b.vector, b.origin, compFunc, epsilon
-);

@@ -21,6 +21,12 @@ test("scale", () => {
   expect(r.scale(2).area()).toBe((2 * 2) * (3 * 2));
 });
 
+test("segments", () => {
+  const r = math.rect(2, 3, 4, 5);
+  const seg = r.segments();
+  expect(seg.length).toBe(4);
+});
+
 // test("midpoint", () => {
 //   const r = math.rect(2, 3, 4, 5);
 //   const mid = r.midpoint();

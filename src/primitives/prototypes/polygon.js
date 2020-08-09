@@ -35,6 +35,16 @@ import {
 // a polygon is expecting to have these properties:
 // this.points - an array of vectors in [] form
 
+const makeClip = (e) => {
+  if (e === undefined) { return undefined; }
+  switch (e.length) {
+    case undefined: break;
+    case 1: return Constructors.vector(e);
+    case 2: return Constructors.segment(e);
+    default: return e;
+  }
+};
+
 const methods = {
   area: function () {
     return signed_area(this.points);
@@ -108,21 +118,36 @@ const methods = {
       .map(poly => Constructors.polygon(poly));
   },
   // todo: need non-convex clipping functions returns an array of edges
-  clipSegment: function () {
-    const edge = get_segment(...arguments);
-    const e = PolyIntersect.convex_poly_segment(this.points, edge[0], edge[1]);
-    return e === undefined ? undefined : Constructors.segment(e);
-  },
-  clipLine: function () {
+  intersectLine: function () {
     const line = get_line(...arguments);
     const e = PolyIntersect.convex_poly_line(this.points, line.vector, line.origin);
-    return e === undefined ? undefined : Constructors.segment(e);
+    return makeClip(e);
   },
-  clipRay: function () {
+  intersectRay: function () {
     const line = get_line(...arguments);
-    const e = PolyIntersect.convex_poly_ray(this.points, line.vector, line.origin);
-    return e === undefined ? undefined : Constructors.segment(e);
+    const e = PolyIntersect.convex_poly_ray_exclusive(this.points, line.vector, line.origin);
+    return makeClip(e);
   },
+  intersectSegment: function () {
+    const edge = get_segment(...arguments);
+    const e = PolyIntersect.convex_poly_segment_exclusive(this.points, edge[0], edge[1]);
+    return makeClip(e);
+  },
+  // clipLine: function () {
+  //   const line = get_line(...arguments);
+  //   const e = PolyIntersect.convex_poly_line(this.points, line.vector, line.origin);
+  //   return makeClip(e);
+  // },
+  // clipRay: function () {
+  //   const line = get_line(...arguments);
+  //   const e = PolyIntersect.convex_poly_ray_exclusive(this.points, line.vector, line.origin);
+  //   return makeClip(e);
+  // },
+  // clipSegment: function () {
+  //   const edge = get_segment(...arguments);
+  //   const e = PolyIntersect.convex_poly_segment_exclusive(this.points, edge[0], edge[1]);
+  //   return makeClip(e);
+  // },
   svgPath: function () {
     // make every point a Move or Line command, append with a "z" (close path)
     const pre = Array(this.points.length).fill("L");

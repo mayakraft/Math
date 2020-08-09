@@ -1,47 +1,3 @@
-import { EPSILON } from "../core/equal";
-import { subtract } from "../core/algebra";
-import {
-  point_in_convex_poly_inclusive,
-  point_in_convex_poly_exclusive,
-} from "../overlap/polygon";
-import {
-  intersect_lines,
-  include_l_s,
-  include_r_s,
-  exclude_r_s,
-  // todo: include_r_s
-  exclude_s_s,
-} from "./lines";
-
-const intersect_line_seg = (vector, origin, pt0, pt1) => intersect_lines(
-  vector, origin,
-  subtract(pt1, pt0), pt0,
-  include_l_s
-);
-const intersect_ray_seg_include = (vector, origin, pt0, pt1) => intersect_lines(
-  vector, origin,
-  subtract(pt1, pt0), pt0,
-  include_r_s
-);
-const intersect_ray_seg_exclude = (vector, origin, pt0, pt1) => intersect_lines(
-  vector, origin,
-  subtract(pt1, pt0), pt0,
-  exclude_r_s
-);
-const intersect_seg_seg_exclude = (a0, a1, b0, b1) => intersect_lines(
-  subtract(a1, a0), a0,
-  subtract(b1, b0), b0,
-  exclude_s_s
-);
-
-// equivalency test for 2d-vectors
-const quick_equivalent_2 = function (a, b) {
-  return Math.abs(a[0] - b[0]) < EPSILON && Math.abs(a[1] - b[1]) < EPSILON;
-};
-
-export const convex_poly_circle = function (poly, center, radius) {
-  return [];
-};
 
 /** clip an infinite line in a polygon, returns a segment or undefined if no intersection */
 export const convex_poly_line = function (poly, lineVector, linePoint) {
@@ -72,10 +28,10 @@ export const convex_poly_ray_inclusive = function (poly, lineVector, linePoint) 
     .filter(el => el != null);
   switch (intersections.length) {
     case 0: return undefined;
-    case 1: return intersections; // [linePoint, intersections[0]];
+    case 1: return [linePoint, intersections[0]];
     case 2:
       return quick_equivalent_2(intersections[0], intersections[1])
-        ? [intersections[0]] // [linePoint, intersections[0]]
+        ? [linePoint, intersections[0]]
         : intersections;
     // default: throw "clipping ray in a convex polygon resulting in 3 or more points";
     default:
@@ -95,11 +51,8 @@ export const convex_poly_ray_exclusive = function (poly, lineVector, linePoint) 
     .filter(el => el != null);
   switch (intersections.length) {
     case 0: return undefined;
-    case 1: return intersections; // [linePoint, intersections[0]];
-    case 2:
-      return quick_equivalent_2(intersections[0], intersections[1])
-        ? [intersections[0]] // [linePoint, intersections[0]]
-        : intersections;
+    case 1: return [linePoint, intersections[0]];
+    case 2: return intersections;
     // default: throw "clipping ray in a convex polygon resulting in 3 or more points";
     default:
       for (let i = 1; i < intersections.length; i += 1) {
@@ -121,13 +74,29 @@ export const convex_poly_segment_exclusive = function (poly, segmentA, segmentB,
     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // polygon into segment pairs
     .map(el => intersect_seg_seg_exclude(segmentA, segmentB, el[0], el[1]))
     .filter(el => el != null);
+
+  const aInsideExclusive = point_in_convex_poly_exclusive(segmentA, poly, epsilon);
+  const bInsideExclusive = point_in_convex_poly_exclusive(segmentB, poly, epsilon);
+  const aInsideInclusive = point_in_convex_poly_inclusive(segmentA, poly, epsilon);
+  const bInsideInclusive = point_in_convex_poly_inclusive(segmentB, poly, epsilon);
+
+  // both are inside, OR, one is inside and the other is collinear to poly
+  if (intersections.length === 0
+    && (aInsideExclusive || bInsideExclusive)) {
+    return [segmentA, segmentB];
+  }
+  if (intersections.length === 0
+    && (aInsideInclusive && bInsideInclusive)) {
+    return [segmentA, segmentB];
+  }
   switch (intersections.length) {
-    case 0: return undefined;
-    case 1: return intersections;
-    case 2:
-      return quick_equivalent_2(intersections[0], intersections[1])
-        ? [intersections[0]]
-        : intersections;
+    case 0: return (aInsideExclusive
+      ? [[...segmentA], [...segmentB]]
+      : undefined);
+    case 1: return (aInsideInclusive
+      ? [[...segmentA], intersections[0]]
+      : [[...segmentB], intersections[0]]);
+    case 2: return intersections;
     default: throw new Error("clipping segment in a convex polygon resulting in 3 or more points");
   }
 };

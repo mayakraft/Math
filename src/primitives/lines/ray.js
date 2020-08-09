@@ -3,6 +3,7 @@ import LinePrototype from "../prototypes/line";
 import { resize } from "../../arguments/resize";
 import { get_line } from "../../arguments/get";
 import { EPSILON } from "../../core/equal";
+import { flip } from "../../core/algebra";
 import Static from "./static";
 
 export default {
@@ -21,7 +22,7 @@ export default {
 
     M: {
       rotate180: function () {
-        return Constructors.ray(this.origin[0], this.origin[1], -this.vector[0], -this.vector[1]);
+        return Constructors.ray(flip(this.vector), this.origin);
       },
       // distance is between 0 and 1, representing the vector between start and end. cap accordingly
       clip_function: dist => (dist < -EPSILON ? 0 : dist),

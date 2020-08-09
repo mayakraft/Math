@@ -6,7 +6,7 @@ const CircleStatic = {
   },
   fromThreePoints: function () {
     const result = circumcircle(...arguments);
-    return this.constructor(...result.origin, result.radius);
+    return this.constructor(result.radius, ...result.origin);
   }
 };
 

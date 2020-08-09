@@ -21,10 +21,10 @@ import * as getters from "./arguments/get";
 import * as resizers from "./arguments/resize";
 import Typeof from "./arguments/typeof";
 
-import Intersection from "./intersection/index";
-import * as IntersectionCircle from "./intersection/circle";
-import * as IntersectionLines from "./intersection/lines";
-import * as IntersectionPolygon from "./intersection/polygon";
+import intersect from "./intersection/index";
+import * as intersect_circle from "./intersection/circle";
+import * as intersect_lines from "./intersection/lines";
+import * as intersect_polygon from "./intersection/polygon";
 
 import primitives from "./primitives/index";
 
@@ -56,13 +56,12 @@ math.core = Object.assign(Object.create(null),
   getters,
   resizers,
   // origami,
+  intersect_circle,
+  intersect_lines,
+  intersect_polygon,
 );
 
 math.typeof = Typeof;
-
-math.intersect = Intersection;
-math.intersect.circle = IntersectionCircle;
-math.intersect.lines = IntersectionLines;
-math.intersect.polygon = IntersectionPolygon;
+math.intersect = intersect;
 
 export default math;

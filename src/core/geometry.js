@@ -10,7 +10,7 @@ import {
   rotate90,
 } from "./algebra";
 import {
-  intersect_2D,
+  intersect_lines,
   exclude_l_s,
 } from "../intersection/lines";
 
@@ -283,7 +283,7 @@ export const make_regular_polygon = (sides, radius = 1, x = 0, y = 0) => {
 const line_segment_exclusive = function (lineVector, linePoint, segmentA, segmentB) {
   const pt = segmentA;
   const vec = [segmentB[0] - segmentA[0], segmentB[1] - segmentA[1]];
-  return intersect_2D(lineVector, linePoint, vec, pt, exclude_l_s);
+  return intersect_lines(lineVector, linePoint, vec, pt, exclude_l_s);
 };
 
 export const split_polygon = () => console.warn("split polygon not done");

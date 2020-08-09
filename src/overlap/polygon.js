@@ -87,26 +87,26 @@ export const overlap_convex_polygons_exclusive = (poly1, poly2) => overlap_conve
  * is one polygon (inner) completely enclosed by another (outer)
  *
  */
-export const convex_polygon_is_enclosed = (inner, outer) => {
-  const goesInside = outer
-    .map(p => point_in_convex_poly(p, inner))
-    .reduce((a, b) => a || b, false);
-  if (goesInside) { return false; }
-  // not done
-  return undefined;
-};
+// export const convex_polygon_is_enclosed = (inner, outer) => {
+//   const goesInside = outer
+//     .map(p => point_in_convex_poly(p, inner))
+//     .reduce((a, b) => a || b, false);
+//   if (goesInside) { return false; }
+//   // not done
+//   return undefined;
+// };
 /**
  * pairs of convex polygons, does one enclose another
  *
  */
-export const convex_polygons_enclose = (inner, outer) => {
+export const enclose_convex_polygons_inclusive = (outer, inner) => {
   // these points should be *not inside* (false)
   const outerGoesInside = outer
-    .map(p => point_in_convex_poly(p, inner))
+    .map(p => point_in_convex_poly_inclusive(p, inner))
     .reduce((a, b) => a || b, false);
   // these points should be *inside* (true)
   const innerGoesOutside = inner
-    .map(p => point_in_convex_poly(p, inner))
+    .map(p => point_in_convex_poly_inclusive(p, inner))
     .reduce((a, b) => a && b, true);
   return (!outerGoesInside && innerGoesOutside);
 };

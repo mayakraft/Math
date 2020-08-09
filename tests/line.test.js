@@ -79,59 +79,88 @@ test("bisect", () => {
   // expect(l.bisectLine()).toBe(true);
 });
 
-// // line
-// test("fromPoints", () => {
-//   const l = math.line([0,1],[2,3]);
-//   expect(l.fromPoints()).toBe(true);
-// });
-// test("perpendicularBisector", () => {
-//   const l = math.line([0,1],[2,3]);
-//   expect(l.perpendicularBisector()).toBe(true);
-// });
+// line
+test("fromPoints", () => {
+  const result = math.line.fromPoints([1,2],[3,4]);
+  expect(result.origin.x).toBe(1);
+  expect(result.origin.y).toBe(2);
+  expect(result.vector.x).toBe(2);
+  expect(result.vector.y).toBe(2);
+});
+test("perpendicularBisector", () => {
+  const result = math.line.perpendicularBisector([0,1],[2,3]);
+  expect(result.origin.x).toBe(1);
+  expect(result.origin.y).toBe(2);
+  expect(result.vector.x).toBe(-2);
+  expect(result.vector.y).toBe(2);
+});
+test("length infinity", () => {
+  expect(math.line().length).toBe(Infinity);
+  expect(math.line([1,2],[3,4]).length).toBe(Infinity);
+  expect(math.line.fromPoints([1,2],[3,4]).length).toBe(Infinity);
 
+  expect(math.ray().length).toBe(Infinity);
+  expect(math.ray([1,2],[3,4]).length).toBe(Infinity);
+  expect(math.ray.fromPoints([1,2],[3,4]).length).toBe(Infinity);
+});
 // // ray
 // test("transform", () => {
 //   const r = math.ray(0,1,2,3);
 //   expect(r.transform()).toBe(true);
 // });
-// test("rotate180", () => {
-//   const r = math.ray(0,1,2,3);
-//   expect(r.rotate180()).toBe(true);
-// });
-// test("fromPoints", () => {
-//   const r = math.ray(0,1,2,3);
-//   expect(r.fromPoints()).toBe(true);
-// });
+test("ray", () => {
+  const result = math.ray([1,2], [3,3]);
+  expect(result.origin.x).toBe(3);
+  expect(result.origin.y).toBe(3);
+  expect(result.vector.x).toBe(1);
+  expect(result.vector.y).toBe(2);
+});
+test("rotate180", () => {
+  const result = math.ray([1,2], [3,3]).rotate180();
+  expect(result.origin.x).toBe(3);
+  expect(result.origin.y).toBe(3);
+  expect(result.vector.x).toBe(-1);
+  expect(result.vector.y).toBe(-2);
+});
+test("fromPoints", () => {
+  const result = math.ray.fromPoints([1,2],[3,4]);
+  expect(result.origin.x).toBe(1);
+  expect(result.origin.y).toBe(2);
+  expect(result.vector.x).toBe(2);
+  expect(result.vector.y).toBe(2);
+});
 
-// // segment
-// test("0", () => {
-//   const s = math.segment(0,1,2,3);
-//   expect(s[0]()).toBe(true);
-// });
-// test("1", () => {
-//   const s = math.segment(0,1,2,3);
-//   expect(s[1]()).toBe(true);
-// });
-// test("length", () => {
-//   const s = math.segment(0,1,2,3);
-//   expect(s.length()).toBe(true);
-// });
-// test("clip_function", () => {
-//   const s = math.segment(0,1,2,3);
-//   expect(s.clip_function()).toBe(true);
-// });
-// test("transform", () => {
-//   const s = math.segment(0,1,2,3);
-//   expect(s.transform()).toBe(true);
-// });
-// test("scale", () => {
-//   const s = math.segment(0,1,2,3);
-//   expect(s.scale()).toBe(true);
-// });
-// test("midpoint", () => {
-//   const s = math.segment(0,1,2,3);
-//   expect(s.midpoint()).toBe(true);
-// });
+// segment
+test("[0], [1]", () => {
+  const result = math.segment([1,2], [3,4]);
+  expect(result[0][0]).toBe(1);
+  expect(result[0][1]).toBe(2);
+  expect(result[1][0]).toBe(3);
+  expect(result[1][1]).toBe(4);
+});
+test("length", () => {
+  const result = math.segment([1,2], [3,4]);
+  expect(result.length).toBeCloseTo(Math.sqrt(2) * 2);
+});
+test("transform", () => {
+  const result1 = math.segment([1,2], [3,4]).transform(math.matrix().scale(0.5));
+  expect(result1[0].x).toBe(0.5);
+  expect(result1[0].y).toBe(1);
+  expect(result1[1].x).toBe(1.5);
+  expect(result1[1].y).toBe(2);
+});
+test("midpoint", () => {
+  const result = math.segment([1,2], [3,4]).midpoint();
+  expect(result.x).toBe(2);
+  expect(result.y).toBe(3);
+});
+test("fromPoints", () => {
+  const result = math.segment.fromPoints([1,2],[3,4]);
+  expect(result[0].x).toBe(1);
+  expect(result[0].y).toBe(2);
+  expect(result[1].x).toBe(3);
+  expect(result[1].y).toBe(4);
+});
 
 /**
  * lines, rays, segments

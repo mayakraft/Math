@@ -53,27 +53,46 @@ test("rotateZ", () => {
   const m = math.matrix().rotateZ(Math.PI/4);
   [sq,sq,0,-sq,sq,0,0,0,1,0,0,0].forEach((a, i) => expect(a).toBeCloseTo(m[i]));
 });
-// test("rotate", () => {
-//   rotate(radians, vector, origin) {
-// });
+test("rotate", () => {
+  const m = math.matrix().rotate(Math.PI/2, [1, 1, 1], [0, 0, 0]);
+  expect(m[2]).toBeCloseTo(m[3]);
+  expect(m[0]).toBeCloseTo(m[4]);
+  expect(m[1]).toBeCloseTo(m[5]);
+});
 test("scale", () => {
   expect(math.matrix().scale(0.5)[0]).toBe(0.5);
 });
 test("reflectZ", () => {
-  
+  const m = math.matrix().reflectZ([1, 1, 1], [0, 0, 0]);
+  expect(m[1]).toBeCloseTo(m[3]);
+  expect(m[0]).toBeCloseTo(m[4]);
+  expect(m[2]).toBeCloseTo(m[5]);
+  expect(m[5]).toBeCloseTo(m[6]);
 });
 test("transform", () => {
   const matrix = math.matrix().rotateZ(Math.PI/2).translate(4,5,6);
   const result = matrix.transform(math.segment([-1, 0], [1, 0]));
 });
-// test("transformVector", () => {
-//   transformVector(vector) {
+test("transformVector", () => {
+  const vector = math.vector(1,2,3);
+  expect(math.matrix().scale(0.5).transformVector(vector).x).toBeCloseTo(0.5);
+  expect(math.matrix().scale(0.5).transformVector(vector).y).toBeCloseTo(1);
+  expect(math.matrix().scale(0.5).transformVector(vector).z).toBeCloseTo(1.5);
+});
+test("transformLine", () => {
+  const line = math.line([0.707, 0.707, 0], [1, 0, 0]);
+  const result = math.matrix().scale(0.5).transformLine(line);
+  expect(result.vector.x).toBeCloseTo(0.3535);
+  expect(result.vector.y).toBeCloseTo(0.3535);
+  expect(result.vector.z).toBeCloseTo(0);
+  expect(result.origin.x).toBeCloseTo(0.5);
+  expect(result.origin.y).toBeCloseTo(0);
+  expect(result.origin.z).toBeCloseTo(0);
+});
+// test("transformLine with 2D vectors", () => {
+//   const vector = math.line([0.707, 0.707], [1, 0]);
+//   console.log(math.matrix().scale(0.5).transformLine(vector));
 // });
-// test("transformLine", () => {
-//   transformLine(origin, vector) {
-// });
-
-
 
 const testEqual = function (...args) {
   expect(math.core.equivalent(...args)).toBe(true);
