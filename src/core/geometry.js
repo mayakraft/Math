@@ -1,11 +1,7 @@
 import { EPSILON } from "./equal";
-import Overlap from "./overlap";
-import {
-  clean_number,
-} from "../arguments/resize";
-import {
-  rect_form
-} from "../arguments/get";
+import { clean_number } from "../arguments/resize";
+import { rect_form } from "../arguments/get";
+import { point_on_line } from "../overlap/points";
 import {
   dot,
   normalize,
@@ -13,7 +9,6 @@ import {
   add,
   rotate90,
 } from "./algebra";
-
 import {
   intersect_2D,
   exclude_l_s,
@@ -21,8 +16,14 @@ import {
 
 export const R2D = 180 / Math.PI;
 export const D2R = Math.PI / 180;
-const TWO_PI = Math.PI * 2;
+export const TWO_PI = Math.PI * 2;
 
+export const is_counter_clockwise_between = (angle, angleA, angleB) => {
+  while (angleB < angleA) { angleB += TWO_PI; }
+  while (angle > angleA) { angle -= TWO_PI; }
+  while (angle < angleA) { angle += TWO_PI; }
+  return angle < angleB;
+};
 /** There are 2 interior angles between 2 absolute angle measurements, from A to B return the clock
 wise one
  * @param {number} angle in radians, angle PI/2 is along the +Y axis
@@ -320,7 +321,7 @@ export const split_convex_polygon = (poly, lineVector, linePoint) => {
   //    point: intersection [x,y] point or null if no intersection
   // at_index: where in the polygon this occurs
   let vertices_intersections = poly.map((v, i) => {
-    let intersection = Overlap.line_point(lineVector, linePoint, v);
+    let intersection = point_on_line(v, lineVector, linePoint);
     return { point: intersection ? v : null, at_index: i };
   }).filter(el => el.point != null);
   let edges_intersections = poly.map((v, i, arr) => {

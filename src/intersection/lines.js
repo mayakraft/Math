@@ -1,11 +1,9 @@
 import { EPSILON } from "../core/equal";
 import { cross2 } from "../core/algebra";
 
-// todo: get rid of these >= and <=. comparison to epsilons. needs to be < or >
-
 export const include_l = () => true;
-export const include_r = (t, e=EPSILON) => t >= -e;
-export const include_s = (t, e=EPSILON) => t >= -e && t <= 1 + e;
+export const include_r = (t, e=EPSILON) => t > -e;
+export const include_s = (t, e=EPSILON) => t > -e && t < 1 + e;
 
 export const exclude_l = () => true;
 export const exclude_r = (t, e=EPSILON) => t > e;
@@ -13,12 +11,12 @@ export const exclude_s = (t, e=EPSILON) => t > e && t < 1 - e;
 
 /** comparison functions for a generalized vector intersection function */
 export const include_l_l = () => true;
-export const include_l_r = (t0, t1, e=EPSILON) => t1 >= -e;
-export const include_l_s = (t0, t1, e=EPSILON) => t1 >= -e && t1 <= 1 + e;
-export const include_r_r = (t0, t1, e=EPSILON) => t0 >= -e && t1 >= -e;
-export const include_r_s = (t0, t1, e=EPSILON) => t0 >= -e && t1 >= -e && t1 <= 1 + e;
-export const include_s_s = (t0, t1, e=EPSILON) => t0 >= -e && t0 <= 1 + e && t1 >= -e
-  && t1 <= 1 + e;
+export const include_l_r = (t0, t1, e=EPSILON) => t1 > -e;
+export const include_l_s = (t0, t1, e=EPSILON) => t1 > -e && t1 < 1 + e;
+export const include_r_r = (t0, t1, e=EPSILON) => t0 > -e && t1 > -e;
+export const include_r_s = (t0, t1, e=EPSILON) => t0 > -e && t1 > -e && t1 < 1 + e;
+export const include_s_s = (t0, t1, e=EPSILON) => t0 > -e && t0 < 1 + e && t1 > -e
+  && t1 < 1 + e;
 
 // todo this has not been tested yet
 // export const exclude_l_l = function () { return true; } // redundant

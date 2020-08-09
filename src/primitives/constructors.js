@@ -4,4 +4,4 @@
 //
 // this file should import no other file
 
-export default {};
+export default Object.create(null);

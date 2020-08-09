@@ -15,7 +15,7 @@ import {
 import {
   parallel,
   degenerate,
-} from "../../core/query";
+} from "../../core/algebra";
 
 import { make_matrix2_reflection } from "../../core/matrix2";
 import { multiply_matrix3_line3 } from "../../core/matrix3";

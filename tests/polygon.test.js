@@ -90,9 +90,9 @@ test("nearest", () => {
 
 // TODO this test is failing
 test("overlaps", () => {
-  const poly1 = math.polygon([[1,0], [0,1], [-1,0]]);
-  const poly2 = math.polygon([[0,1], [-1,0], [0,-1]]);
-  const poly3 = math.polygon([[1,0], [0,1], [0,-1]]);
+  const poly1 = math.polygon([[1,0], [0,1], [-1,0]]);  // top
+  const poly2 = math.polygon([[0,1], [-1,0], [0,-1]]); // left
+  const poly3 = math.polygon([[1,0], [0,1], [0,-1]]);  // right
   // expect(poly1.overlaps(poly2)).toBe(true);
   // expect(poly2.overlaps(poly3)).toBe(false);
   // expect(poly1.overlaps(poly3)).toBe(true);

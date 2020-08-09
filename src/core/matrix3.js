@@ -3,11 +3,19 @@
  * these methods depend on arrays of 12 items, 3x3 matrices won't work.
  */
 
+import { EPSILON } from "./equal";
 import { normalize } from "./algebra";
 
 export const identity3x3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
 export const identity3x4 = identity3x3.concat(0, 0, 0);
-
+/**
+ * @param {number[]} is a 3x4 matrix the identity matrix
+ * with a translation component of 0, 0, 0
+ * @returns boolean
+ */
+export const is_identity3x4 = m => identity3x4
+  .map((n, i) => Math.abs(n - m[i]) < EPSILON)
+  .reduce((a, b) => a && b, true);
 /**
  * @param {number[]} vector, in array form
  * @param {number[]} matrix, in array frotateorm

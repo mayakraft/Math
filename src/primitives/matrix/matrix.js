@@ -1,15 +1,12 @@
 import Constructors from "../constructors";
 
 import {
-  is_identity3x4
-} from "../../core/query";
-
-import {
   get_vector,
   get_matrix_3x4,
 } from "../../arguments/get";
 
 import {
+  is_identity3x4,
   multiply_matrix3_vector3,
   multiply_matrix3_line3,
   multiply_matrices3,

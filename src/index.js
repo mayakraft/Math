@@ -1,11 +1,11 @@
-/**              _                       _                      _   _
-                (_)                     (_)                    | | | |
-       ___  _ __ _  __ _  __ _ _ __ ___  _      _ __ ___   __ _| |_| |__
-      / _ \| '__| |/ _` |/ _` | '_ ` _ \| |    | '_ ` _ \ / _` | __| '_ \
-     | (_) | |  | | (_| | (_| | | | | | | |    | | | | | | (_| | |_| | | |
-      \___/|_|  |_|\__, |\__,_|_| |_| |_|_|    |_| |_| |_|\__,_|\__|_| |_|
-                    __/ |
-                   |___/
+/**           _                       _                      _   _
+             (_)                     (_)                    | | | |
+    ___  _ __ _  __ _  __ _ _ __ ___  _      _ __ ___   __ _| |_| |__
+   / _ \| '__| |/ _` |/ _` | '_ ` _ \| |    | '_ ` _ \ / _` | __| '_ \
+  | (_) | |  | | (_| | (_| | | | | | | |    | | | | | | (_| | |_| | | |
+   \___/|_|  |_|\__, |\__,_|_| |_| |_|_|    |_| |_| |_|\__,_|\__|_| |_|
+                 __/ |
+                |___/
  */
 
 import * as algebra from "./core/algebra";
@@ -16,13 +16,10 @@ import * as matrix2 from "./core/matrix2";
 import * as matrix3 from "./core/matrix3";
 import * as nearest from "./core/nearest";
 // import * as origami from "./core/origami";
-import * as query from "./core/query";
-// import * as overlap from "./core/overlap";
+import overlap from "./overlap/index";
 import * as getters from "./arguments/get";
 import * as resizers from "./arguments/resize";
 import Typeof from "./arguments/typeof";
-
-import overlap from "./core/overlap";
 
 import Intersection from "./intersection/index";
 import * as IntersectionCircle from "./intersection/circle";
@@ -47,7 +44,7 @@ const math = primitives;
  * the top level has properties like x, y, z.
  */
 
-math.core = Object.assign({},
+math.core = Object.assign(Object.create(null),
   algebra,
   equal,
   geometry,
@@ -55,16 +52,13 @@ math.core = Object.assign({},
   matrix2,
   matrix3,
   nearest,
-  query,
-  // overlap,
+  overlap,
   getters,
   resizers,
   // origami,
 );
 
 math.typeof = Typeof;
-
-math.overlap = overlap;
 
 math.intersect = Intersection;
 math.intersect.circle = IntersectionCircle;

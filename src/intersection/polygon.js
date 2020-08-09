@@ -1,5 +1,8 @@
 import { EPSILON } from "../core/equal";
-import Overlap from "../core/overlap";
+import {
+  point_in_convex_poly_inclusive,
+  point_in_convex_poly_exclusive,
+} from "../overlap/polygon";
 import {
   intersect,
   include_l_s,
@@ -23,22 +26,10 @@ const intersect_seg_seg_exclude = (a0, a1, b0, b1) => {
   return intersect(a, b, exclude_s_s);
 };
 
-/*
-██████╗   ██████╗  ██╗   ██╗ ██╗       ██████╗   ██████╗  ███╗   ██╗ ███████╗
-██╔══██╗ ██╔═══██╗ ╚██╗ ██╔╝ ██║      ██╔════╝  ██╔═══██╗ ████╗  ██║ ██╔════╝
-██████╔╝ ██║   ██║  ╚████╔╝  ██║      ██║  ███╗ ██║   ██║ ██╔██╗ ██║ ███████╗
-██╔═══╝  ██║   ██║   ╚██╔╝   ██║      ██║   ██║ ██║   ██║ ██║╚██╗██║ ╚════██║
-██║      ╚██████╔╝    ██║    ███████╗ ╚██████╔╝ ╚██████╔╝ ██║ ╚████║ ███████║
-╚═╝       ╚═════╝     ╚═╝    ╚══════╝  ╚═════╝   ╚═════╝  ╚═╝  ╚═══╝ ╚══════╝
- * inputs: polygons, lines
- * solutions: lines, points
- */
-
 // equivalency test for 2d-vectors
 const quick_equivalent_2 = function (a, b) {
   return Math.abs(a[0] - b[0]) < EPSILON && Math.abs(a[1] - b[1]) < EPSILON;
 };
-
 
 export const convex_poly_circle = function (poly, center, radius) {
   return [];
@@ -95,10 +86,10 @@ export const convex_poly_segment = function (poly, segmentA, segmentB, epsilon =
     .map(el => intersect_seg_seg_exclude(segmentA, segmentB, el[0], el[1]))
     .filter(el => el != null);
 
-  const aInsideExclusive = Overlap.point_in_convex_poly_exclusive(segmentA, poly, epsilon);
-  const bInsideExclusive = Overlap.point_in_convex_poly_exclusive(segmentB, poly, epsilon);
-  const aInsideInclusive = Overlap.point_in_convex_poly(segmentA, poly, epsilon);
-  const bInsideInclusive = Overlap.point_in_convex_poly(segmentB, poly, epsilon);
+  const aInsideExclusive = point_in_convex_poly_exclusive(segmentA, poly, epsilon);
+  const bInsideExclusive = point_in_convex_poly_exclusive(segmentB, poly, epsilon);
+  const aInsideInclusive = point_in_convex_poly_inclusive(segmentA, poly, epsilon);
+  const bInsideInclusive = point_in_convex_poly_inclusive(segmentB, poly, epsilon);
 
   // both are inside, OR, one is inside and the other is collinear to poly
   if (intersections.length === 0

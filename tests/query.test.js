@@ -11,22 +11,15 @@ test("equivalent numbers", () => {
   expect(math.core.equivalent_numbers([1, 1, 1, 1, 1, 1], [1, 2])).toBe(false);
 });
 
-test("overlap.segment_point_inclusive", () => {
-  expect(math.overlap.segment_point_inclusive([3, 3], [6, 3], [4, 3])).toBe(true);
-  expect(math.overlap.segment_point_inclusive([3, 3], [6, 3], [3, 3])).toBe(true);
-  expect(math.overlap.segment_point_inclusive([3, 3], [6, 3], [2.9, 3])).toBe(false);
-  expect(math.overlap.segment_point_inclusive([3, 3], [6, 3], [2.9999999999, 3])).toBe(true);
-  expect(math.overlap.segment_point_inclusive([3, 3], [6, 3], [6.1, 3])).toBe(false);
-  expect(math.overlap.segment_point_inclusive([3, 3], [6, 3], [6.0000000001, 3])).toBe(true);
+test("is_counter_clockwise_between", () => {
+  expect(math.core.is_counter_clockwise_between(0.5, 0, 1)).toBe(true);
+  expect(math.core.is_counter_clockwise_between(0.5, 1, 0)).toBe(false);
+  expect(math.core.is_counter_clockwise_between(11, 10, 12)).toBe(true);
+  expect(math.core.is_counter_clockwise_between(11, 12, 10)).toBe(false);
+  expect(math.core.is_counter_clockwise_between(Math.PI*2*4 + Math.PI/2, 0, Math.PI)).toBe(true);
+  expect(math.core.is_counter_clockwise_between(Math.PI*2*4 + Math.PI/2, Math.PI, 0)).toBe(false);
+})
 
-  expect(math.overlap.segment_point_inclusive([2, 2], [4, 4], [3.5, 3.5])).toBe(true);
-  expect(math.overlap.segment_point_inclusive([2, 2], [4, 4], [2.9, 3.1])).toBe(false);
-  expect(math.overlap.segment_point_inclusive([2, 2], [4, 4], [2.99999999, 3.000000001])).toBe(true);
-  // degenerate edge still tests positive if the point is in common
-  expect(math.overlap.segment_point_inclusive([2, 2], [2, 2], [2, 2])).toBe(true);
-  expect(math.overlap.segment_point_inclusive([2, 2], [2, 2], [2.1, 2.1])).toBe(false);
-  expect(math.overlap.segment_point_inclusive([2, 2], [2, 2], [2.000000001, 2.00000001])).toBe(true);
-});
 
 // equivalent is doing weird things by on ly checking 2 arguments sometimes.
 /**

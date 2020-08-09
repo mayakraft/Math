@@ -1,51 +1,75 @@
-/**
- * the following operations generalize for n-dimensions
- */
+import { EPSILON } from "./equal";
 
 /**
- * @param {number[]}
- * @returns {number}
+ * algebra operations on vectors (mostly).
+ *
+ * many of these operations can handle vectors of arbitrary dimension
+ * but wherever it specifies "dimensions match first parameter"
+ * you should verify that the second parameter is at least as long as the first
+ */
+const fn_square = n => n * n;
+const fn_add = (a, b) => a + b;
+/**
+ * @param {number[]} one vector, n-dimensions
+ * @returns {number} one scalar
  */
 export const magnitude = v => Math.sqrt(v
-  .map(n => n * n)
-  .reduce((a, b) => a + b, 0));
+  .map(fn_square)
+  .reduce(fn_add, 0));
 /**
- * @param {number[]}
- * @returns {number[]}
+ * @param {number[]} one vector, n-dimensions
+ * @returns {number} one scalar
+ */
+export const mag_squared = v => v
+  .map(fn_square)
+  .reduce(fn_add, 0);
+/**
+ * @param {number[]} one vector, n-dimensions
+ * @returns {number[]} one vector
  */
 export const normalize = (v) => {
   const m = magnitude(v);
-  // todo: should this catch divide by 0?
-  // should a vector with magnitude 0 return the untouched argument?
   return m === 0 ? v : v.map(c => c / m);
 };
-
+/**
+ * @param {number[]} one vector, n-dimensions
+ * @param {number} one scalar
+ * @returns {number[]} one vector
+ */
 export const scale = (v, s) => v.map(n => n * s);
 /**
- * these *can* generalize to n-dimensions, but lengths of arguments must match.
- * the first element's dimension implies every other elements'.
+ * @param {number[]} one vector, n-dimensions
+ * @param {number[]} one vector, n-dimensions
+ * @returns {number[]} one vector, dimension matching first parameter
  */
 export const add = (v, u) => v.map((n, i) => n + u[i]);
+/**
+ * @param {number[]} one vector, n-dimensions
+ * @param {number[]} one vector, n-dimensions
+ * @returns {number[]} one vector, dimension matching first parameter
+ */
 export const subtract = (v, u) => v.map((n, i) => n - u[i]);
 /**
- * @param {number[]} two vectors
- * @returns {number} one number
+ * @param {number[]} one vector, n-dimensions
+ * @param {number[]} one vector, n-dimensions
+ * @returns {number} one scalar
  */
 export const dot = (v, u) => v
   .map((_, i) => v[i] * u[i])
-  .reduce((a, b) => a + b, 0);
+  .reduce(fn_add, 0);
 /**
- * @param {number[]} two vectors
- * @returns {number[]} one vector
+ * @param {number[]} one vector, n-dimensions
+ * @param {number[]} one vector, n-dimensions
+ * @returns {number} one vector, dimension matching first parameter
  */
-// use "average". it generalizes for any number of arguments
 export const midpoint = (v, u) => v.map((n, i) => (n + u[i]) / 2);
 /**
- * @param {...number[]} sequence of vectors
- * @returns {number[]} on vector, the midpoint
+ * average is like midpoint, but not limited to only 2 arguments.
  */
-// like midpoint, but this can accept any number of vectors
-// for example it can be used to average the points of a polygon
+/**
+ * @param {...number[]} sequence of vectors
+ * @returns {number[]} one vector, dimension matching first parameter
+ */
 export const average = function () {
   if (arguments.length === 0) { return []; }
   const dimension = (arguments[0].length > 0) ? arguments[0].length : 0;
@@ -54,26 +78,25 @@ export const average = function () {
   return sum.map(n => n / arguments.length);
 };
 /**
- * @param {number[]} vector
- * @param {number[]} vector
- * @param {number} number between 0 and 1
- * @returns {number[]} one vector
+ * @param {number[]} one vector, n-dimensions
+ * @param {number[]} one vector, n-dimensions
+ * @param {number} scalar between 0 and 1
+ * @returns {number[]} one vector, dimensions matching first parameter
  */
 export const lerp = (v, u, t) => {
   const inv = 1.0 - t;
   return v.map((n, i) => n * inv + u[i] * t);
 };
 /**
- * everything else that follows is hard coded to a certain dimension
- */
-/**
- * @param two 2D vectors, order matters.
- * @returns the determinant. the *magnitude* of the vector
+ * @param {number[]} one 2D vector
+ * @param {number[]} one 2D vector
+ * @returns {number} one scalar; the determinant; the magnitude of the vector
  */
 export const cross2 = (a, b) => a[0] * b[1] - a[1] * b[0];
 /**
- * @param two vectors, 3-D
- * @returns vector
+ * @param {number[]} one 3D vector
+ * @param {number[]} one 3D vector
+ * @returns {number[]} one 3D vector
  */
 export const cross3 = (a, b) => [
   a[1] * b[2] - a[2] * b[1],
@@ -81,8 +104,9 @@ export const cross3 = (a, b) => [
   a[0] * b[1] - a[1] * b[0],
 ];
 /**
- * @param two vectors, 2-D
- * @returns vector
+ * @param {number[]} one 2D vector
+ * @param {number[]} one 2D vector
+ * @returns {number[]} one 2D vector
  */
 export const distance2 = (a, b) => {
   const p = a[0] - b[0];
@@ -90,8 +114,9 @@ export const distance2 = (a, b) => {
   return Math.sqrt((p * p) + (q * q));
 };
 /**
- * @param two vectors, 3-D
- * @returns vector
+ * @param {number[]} one 3D vector
+ * @param {number[]} one 3D vector
+ * @returns {number} one scalar
  */
 export const distance3 = (a, b) => {
   const c = a[0] - b[0];
@@ -100,23 +125,42 @@ export const distance3 = (a, b) => {
   return Math.sqrt((c * c) + (d * d) + (e * e));
 };
 /**
- * @param two vectors, n-dimensions
- * @returns vector
+ * @param {number[]} one vector, n-dimensions
+ * @param {number[]} one vector, n-dimensions
+ * @returns {number} one scalar
  */
 export const distance = (a, b) => Math.sqrt(a
   .map((_, i) => (a[i] - b[i]) ** 2)
   .reduce((u, v) => u + v, 0));
-
 /**
- * @param one vector, n-dimensions
- * @returns vector, flipped to the opposite direction
+ * @param {number[]} one vector, n-dimensions
+ * @returns {number[]} one vector
  */
 export const flip = v => v.map(n => -n);
 /**
- * implicitly 2D
+ * @param {number[]} one 2D vector
+ * @returns {number[]} one 2D vector
  */
 export const rotate90 = v => [-v[1], v[0]];
+/**
+ * @param {number[]} one 2D vector
+ * @returns {number[]} one 2D vector
+ */
 export const rotate270 = v => [v[1], -v[0]];
 
-// need to test:
-// do two polygons overlap if they share a point in common? share an edge?
+/**
+ * @param {number[]} one vector, n-dimensions
+ * @returns boolean
+ */
+export const degenerate = (v) => Math
+  .abs(v.reduce((a, b) => a + b, 0)) < EPSILON;
+
+// todo: should we use cross product to determine parallel?
+
+/**
+ * @param {number[]} one vector, n-dimensions
+ * @param {number[]} one vector, n-dimensions
+ * @returns boolean
+ */
+export const parallel = (a, b) => 1 - Math
+  .abs(dot(normalize(a), normalize(b))) < EPSILON;

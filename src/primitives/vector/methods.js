@@ -1,6 +1,5 @@
 import Constructors from "../constructors";
 import { equivalent_vectors } from "../../core/equal";
-import { parallel } from "../../core/query";
 import { bisect_vectors } from "../../core/geometry";
 
 import {
@@ -27,6 +26,7 @@ import {
   flip,
   rotate90,
   rotate270,
+  parallel,
 } from "../../core/algebra";
 
 import {

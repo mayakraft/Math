@@ -114,9 +114,10 @@ Object.keys(Definitions).forEach(primitiveName => {
 
 // console.log(Definitions);
 
-Constructors.__prototypes__ = {};
-Object.keys(Definitions).forEach(primitiveName => {
-  Constructors.__prototypes__[primitiveName] = Definitions[primitiveName].proto;
-});
+// add the prototypes as a child of the main exported object
+// Constructors.__prototypes__ = Object.create(null);
+// Object.keys(Definitions).forEach(primitiveName => {
+//   Constructors.__prototypes__[primitiveName] = Definitions[primitiveName].proto;
+// });
 
 export default Constructors;
