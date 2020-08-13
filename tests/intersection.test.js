@@ -61,9 +61,68 @@ test("core polygon intersection lines", () => {
     .toBe(1);
   expect(math.core.convex_poly_ray_exclusive(poly, vector, point).length)
     .toBe(1);
-  // todo
-  // expect(math.core.convex_poly_segment_inclusive(poly, segmentA, segmentB).length)
-  //   .toBe(1);
+  expect(math.core.convex_poly_segment_inclusive(poly, segmentA, segmentB).length)
+    .toBe(1);
   expect(math.core.convex_poly_segment_exclusive(poly, segmentA, segmentB).length)
     .toBe(1);
+});
+
+
+test("core polygon intersection lines, collinear to edge", () => {
+  const poly = [[0,0], [1,0], [0.5, 0.866]];
+  const vector = [1, 0];
+  const point = [-5, 0];
+  const segmentA = [0, 0];
+  const segmentB = [1, 0];
+
+  expect(math.core.convex_poly_line(poly, vector, point).length)
+    .toBe(2);
+  expect(math.core.convex_poly_ray_inclusive(poly, vector, point).length)
+    .toBe(2);
+  expect(math.core.convex_poly_ray_exclusive(poly, vector, point))
+    .toBe(undefined);
+  expect(math.core.convex_poly_segment_inclusive(poly, segmentA, segmentB).length)
+    .toBe(2);
+  expect(math.core.convex_poly_segment_exclusive(poly, segmentA, segmentB))
+    .toBe(undefined);
+});
+
+
+test("core polygon intersection lines, collinear to vertex", () => {
+  const poly = [[0,0], [1,0], [0.5, 0.866]];
+  const vector = [1, 0];
+  const point = [-5, 0.866];
+  const segmentA = [0, 0.866];
+  const segmentB = [1, 0.866];
+
+  expect(math.core.convex_poly_line(poly, vector, point).length)
+    .toBe(1);
+  expect(math.core.convex_poly_ray_inclusive(poly, vector, point).length)
+    .toBe(1);
+  expect(math.core.convex_poly_ray_exclusive(poly, vector, point))
+    .toBe(undefined);
+  expect(math.core.convex_poly_segment_inclusive(poly, segmentA, segmentB).length)
+    .toBe(1);
+  expect(math.core.convex_poly_segment_exclusive(poly, segmentA, segmentB))
+    .toBe(undefined);
+});
+
+
+test("core polygon intersection lines, no intersections", () => {
+  const poly = [[0,0], [1,0], [0.5, 0.866]];
+  const vector = [1, 0];
+  const point = [-5, 10];
+  const segmentA = [0, 10];
+  const segmentB = [1, 10];
+
+  expect(math.core.convex_poly_line(poly, vector, point))
+    .toBe(undefined);
+  expect(math.core.convex_poly_ray_inclusive(poly, vector, point))
+    .toBe(undefined);
+  expect(math.core.convex_poly_ray_exclusive(poly, vector, point))
+    .toBe(undefined);
+  expect(math.core.convex_poly_segment_inclusive(poly, segmentA, segmentB))
+    .toBe(undefined);
+  expect(math.core.convex_poly_segment_exclusive(poly, segmentA, segmentB))
+    .toBe(undefined);
 });

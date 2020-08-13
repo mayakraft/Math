@@ -1218,6 +1218,11 @@
     subtract(pt1, pt0), pt0,
     exclude_r_s
   );
+  const intersect_seg_seg_include = (a0, a1, b0, b1) => intersect_lines(
+    subtract(a1, a0), a0,
+    subtract(b1, b0), b0,
+    include_s_s
+  );
   const intersect_seg_seg_exclude = (a0, a1, b0, b1) => intersect_lines(
     subtract(a1, a0), a0,
     subtract(b1, b0), b0,
@@ -1229,84 +1234,33 @@
   const convex_poly_circle = function (poly, center, radius) {
     return [];
   };
-  const convex_poly_line = function (poly, lineVector, linePoint) {
+  const convex_poly_line_intersect = (intersect_func, poly, line1, line2) => {
     const intersections = poly
       .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
-      .map(el => intersect_line_seg(lineVector, linePoint, el[0], el[1]))
+      .map(el => intersect_func(line1, line2, el[0], el[1]))
       .filter(el => el != null);
     switch (intersections.length) {
       case 0: return undefined;
-      case 1: return [intersections[0], intersections[0]];
-      case 2: return intersections;
+      case 1: return intersections;
       default:
         for (let i = 1; i < intersections.length; i += 1) {
           if (!quick_equivalent_2(intersections[0], intersections[i])) {
             return [intersections[0], intersections[i]];
           }
         }
-        return undefined;
+        return [intersections[0]];
     }
   };
-  const convex_poly_ray_inclusive = function (poly, lineVector, linePoint) {
-    const intersections = poly
-      .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
-      .map(el => intersect_ray_seg_include(lineVector, linePoint, el[0], el[1]))
-      .filter(el => el != null);
-    switch (intersections.length) {
-      case 0: return undefined;
-      case 1: return intersections;
-      case 2:
-        return quick_equivalent_2(intersections[0], intersections[1])
-          ? [intersections[0]]
-          : intersections;
-      default:
-        for (let i = 1; i < intersections.length; i += 1) {
-          if (!quick_equivalent_2(intersections[0], intersections[i])) {
-            return [intersections[0], intersections[i]];
-          }
-        }
-        return undefined;
-    }
-  };
-  const convex_poly_ray_exclusive = function (poly, lineVector, linePoint) {
-    const intersections = poly
-      .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
-      .map(el => intersect_ray_seg_exclude(lineVector, linePoint, el[0], el[1]))
-      .filter(el => el != null);
-    switch (intersections.length) {
-      case 0: return undefined;
-      case 1: return intersections;
-      case 2:
-        return quick_equivalent_2(intersections[0], intersections[1])
-          ? [intersections[0]]
-          : intersections;
-      default:
-        for (let i = 1; i < intersections.length; i += 1) {
-          if (!quick_equivalent_2(intersections[0], intersections[i])) {
-            return [intersections[0], intersections[i]];
-          }
-        }
-        return undefined;
-    }
-  };
-  const convex_poly_segment_inclusive$1 = function (poly, segmentA, segmentB, epsilon = EPSILON) {
-    console.log("todo");
-  };
-  const convex_poly_segment_exclusive = function (poly, segmentA, segmentB, epsilon = EPSILON) {
-    const intersections = poly
-      .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
-      .map(el => intersect_seg_seg_exclude(segmentA, segmentB, el[0], el[1]))
-      .filter(el => el != null);
-    switch (intersections.length) {
-      case 0: return undefined;
-      case 1: return intersections;
-      case 2:
-        return quick_equivalent_2(intersections[0], intersections[1])
-          ? [intersections[0]]
-          : intersections;
-      default: throw new Error("clipping segment in a convex polygon resulting in 3 or more points");
-    }
-  };
+  const convex_poly_line = (poly, vec, org, ep = EPSILON) =>
+    convex_poly_line_intersect(intersect_line_seg, poly, vec, org);
+  const convex_poly_ray_inclusive = (poly, vec, org, ep = EPSILON) =>
+    convex_poly_line_intersect(intersect_ray_seg_include, poly, vec, org);
+  const convex_poly_ray_exclusive = (poly, vec, org, ep = EPSILON) =>
+    convex_poly_line_intersect(intersect_ray_seg_exclude, poly, vec, org);
+  const convex_poly_segment_inclusive$1 = (poly, pt0, pt1, ep = EPSILON) =>
+    convex_poly_line_intersect(intersect_seg_seg_include, poly, pt0, pt1);
+  const convex_poly_segment_exclusive = (poly, pt0, pt1, ep = EPSILON) =>
+    convex_poly_line_intersect(intersect_seg_seg_exclude, poly, pt0, pt1);
 
   var intersect_polygon = /*#__PURE__*/Object.freeze({
     __proto__: null,
