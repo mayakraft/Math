@@ -129,6 +129,14 @@ test("fromPoints", () => {
   expect(result.vector.x).toBe(2);
   expect(result.vector.y).toBe(2);
 });
+test("nearestPoint", () => {
+  const result = math.ray([1,1],[2,3]).nearestPoint(0,0);
+  expect(result[0]).toBe(2);
+  expect(result[1]).toBe(3);
+  const result2 = math.ray([0,1],[5,-5]).nearestPoint(0,0);
+  expect(result2[0]).toBe(5);
+  expect(result2[1]).toBe(0);
+});
 
 // segment
 test("[0], [1]", () => {
@@ -160,6 +168,11 @@ test("fromPoints", () => {
   expect(result[0].y).toBe(2);
   expect(result[1].x).toBe(3);
   expect(result[1].y).toBe(4);
+});
+test("nearestPoint", () => {
+  const res = math.segment([1,1],[2,3]).nearestPoint(0,0);
+  expect(res[0]).toBe(1);
+  expect(res[1]).toBe(1);
 });
 
 /**

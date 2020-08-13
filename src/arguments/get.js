@@ -118,8 +118,8 @@ export const get_matrix_3x4 = function () {
   const mat = flatten_arrays(arguments);
   const matrix = [...identity3x4];
   matrix_map_3x4(mat.length)
-    .filter((_, i) => mat[i] != null)
-    .forEach((n, i) => { matrix[n] = mat[i]; });
+    // .filter((_, i) => mat[i] != null)
+    .forEach((n, i) => { if (mat[i] != null) { matrix[n] = mat[i]; } });
   return matrix;
 };
 
@@ -130,12 +130,9 @@ export const get_matrix_3x4 = function () {
 */
 export const get_matrix2 = function () {
   const m = get_vector(arguments);
-  if (m === undefined) { return undefined; }
   if (m.length === 6) { return m; }
   if (m.length > 6) { return [m[0], m[1], m[2], m[3], m[4], m[5]]; }
   if (m.length < 6) {
     return identity2x3.map((n, i) => m[i] || n);
   }
-  // m doesn't have a length
-  return undefined;
 };

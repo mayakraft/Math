@@ -37,7 +37,9 @@ import Constructors from "../constructors";
  *   and returns a modified d for what is considered valid space between 0-1
  */
 
-const LineProto = function () {};
+const LineProto = {};
+LineProto.prototype = Object.create(Object.prototype);
+LineProto.prototype.constructor = LineProto;
 
 // todo, this only takes line types. it should be able to take a vector
 LineProto.prototype.isParallel = function () {

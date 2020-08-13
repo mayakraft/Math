@@ -229,6 +229,19 @@ test("split_convex_polygon", () => {
   });
 });
 
+test("split_convex_polygon no overlap", () => {
+  const rect_counter = [
+    [-1, -1],
+    [+1, -1],
+    [+1, +1],
+    [-1, +1],
+  ];
+  const result = math.core.split_convex_polygon(rect_counter, [1,2], [10,0]);
+  rect_counter.forEach((expected, i) => {
+    expect(JSON.stringify(expected)).toBe(JSON.stringify(result[0][i]));
+  });
+});
+
 test("split_convex_polygon vertex collinear", () => {
   const rect_counter = [
     [-1, -1],

@@ -432,5 +432,4 @@ export const convex_hull = (points, include_collinear = false, epsilon = EPSILON
     // update walking direction with the angle to the new point
     ang = Math.atan2(hull[h][1] - angles[0].node[1], hull[h][0] - angles[0].node[0]);
   } while (infiniteLoop < INFINITE_LOOP);
-  return undefined;
 };

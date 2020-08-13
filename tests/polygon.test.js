@@ -105,22 +105,47 @@ test("nearest", () => {
   expect(result.edge[0][1]).toBeCloseTo(0);
 });
 
-// TODO this test is failing
 test("overlaps", () => {
   const poly1 = math.polygon([[1,0], [0,1], [-1,0]]);  // top
   const poly2 = math.polygon([[0,1], [-1,0], [0,-1]]); // left
   const poly3 = math.polygon([[1,0], [0,1], [0,-1]]);  // right
-  // expect(poly1.overlaps(poly2)).toBe(true);
-  // expect(poly2.overlaps(poly3)).toBe(false);
-  // expect(poly1.overlaps(poly3)).toBe(true);
+  const poly4 = math.polygon([[1,0], [-1,0], [0,-1]]);  // bottom
+  expect(poly1.overlaps(poly2)).toBe(true);
+  expect(poly1.overlaps(poly3)).toBe(true);
+  expect(poly4.overlaps(poly2)).toBe(true);
+  expect(poly4.overlaps(poly3)).toBe(true);
+
+  expect(poly2.overlaps(poly3)).toBe(false);
+  expect(poly1.overlaps(poly4)).toBe(false);
 });
-// test("split", () => {
-//   const poly = math.polygon([[1,0], [0,1], [-1,0]]);
-//   const line1 = math.line([1, 0], [0, 0.5]);
-//   const line2 = math.line([1, 0], [0, -0.5]);
-//   console.log("split1", poly.split(line1));
-//   console.log("split2", poly.split(line2));
-// });
+test("split", () => {
+  const poly = math.polygon([[1,0], [0,1], [-1,0]]);
+  const line1 = math.line([1, 0], [0, 0.5]);
+  const line2 = math.line([1, 0], [0, -0.5]);
+  const result1 = poly.split(line1);
+
+  expect(result1[0][0][0]).toBe(-1);
+  expect(result1[0][0][1]).toBe(0);
+
+  expect(result1[0][1][0]).toBe(1);
+  expect(result1[0][1][1]).toBe(0);
+
+  expect(result1[0][2][0]).toBe(0.5);
+  expect(result1[0][2][1]).toBe(0.5);
+
+  expect(result1[0][3][0]).toBe(-0.5);
+  expect(result1[0][3][1]).toBe(0.5);
+
+  expect(result1[1][0][0]).toBe(0);
+  expect(result1[1][0][1]).toBe(1);
+
+  expect(result1[1][1][0]).toBe(-0.5);
+  expect(result1[1][1][1]).toBe(0.5);
+
+  expect(result1[1][2][0]).toBe(0.5);
+  expect(result1[1][2][1]).toBe(0.5);
+});
+
 test("intersectLine", () => {
   const poly = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]);
   const line = math.line([1,0], [0, 0.5]);

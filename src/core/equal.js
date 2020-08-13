@@ -1,6 +1,7 @@
 import {
   semi_flatten_arrays,
   resize_up,
+  resize,
 } from "../arguments/resize";
 
 export const EPSILON = 1e-6;
@@ -28,13 +29,27 @@ export const equivalent_numbers = function () {
   return array_similarity_test(arguments, fEpsilonEqual);
 };
 /**
+ * this method compares two vectors and is permissive with trailing zeros
+ * equivalency of [1, 2] and [1, 2, 0] is true
+ * however, equivalency of [1, 2] and [1, 2, 3] is false
  * @param {...number[]} compare n number of vectors, requires a consistent dimension
  * @returns boolean
  */
-export const equivalent_vectors = (a, b) => {
-  const vecs = resize_up(a, b);
-  return vecs[0]
-    .map((_, i) => Math.abs(vecs[0][i] - vecs[1][i]) < EPSILON)
+// export const equivalent_vectors = (a, b) => {
+//   const vecs = resize_up(a, b);
+//   return vecs[0]
+//     .map((_, i) => Math.abs(vecs[0][i] - vecs[1][i]) < EPSILON)
+//     .reduce((u, v) => u && v, true);
+// };
+
+export const equivalent_vectors = function () {
+  const args = Array.from(arguments);
+  const length = args.map(a => a.length).reduce((a, b) => a > b ? a : b);
+  const vecs = args.map(a => resize(length, a));
+  return Array.from(Array(arguments.length - 1))
+    .map((_, i) => vecs[0]
+      .map((_, n) => Math.abs(vecs[0][n] - vecs[i + 1][n]) < EPSILON)
+      .reduce((u, v) => u && v, true))
     .reduce((u, v) => u && v, true);
 };
 // export const equivalent_arrays = function (...args) {
@@ -80,8 +95,8 @@ export const equivalent_vectors = (a, b) => {
  *   3. arrays of numbers (vectors)
  * @returns boolean
  */
-export const equivalent = (...args) => {
-  const list = semi_flatten_arrays(args);
+export const equivalent = function () {
+  const list = semi_flatten_arrays(...arguments);
   if (list.length < 1) { return false; }
   const typeofList = typeof list[0];
   // array contains undefined, cannot compare
@@ -94,11 +109,7 @@ export const equivalent = (...args) => {
       return array_similarity_test(list, fEqual);
     case "object":
       if (list[0].constructor === Array) { return equivalent_vectors(...list); }
-      console.warn("comparing array of objects for equivalency by slow JSON.stringify with no epsilon check");
       return array_similarity_test(list, (a, b) => JSON.stringify(a) === JSON.stringify(b));
-    default:
-      console.warn("incapable of determining comparison method");
-      break;
+    default: return undefined;
   }
-  return false;
 };

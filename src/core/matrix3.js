@@ -181,10 +181,11 @@ export const make_matrix3_reflectionZ = (vector, origin = [0, 0]) => {
  * @param line in vector-origin form
  * @returns matrix3
  */
-export const make_matrix3_reflection = (vector, origin = [0, 0, 0]) => {
-  // the line of reflection passes through origin, runs along vector
-  return [];
-};
+// export const make_matrix3_reflection = (vector, origin = [0, 0, 0]) => {
+//   // the line of reflection passes through origin, runs along vector
+//   return [];
+// };
+
 //               __                                           _
 //   _________  / /_  ______ ___  ____     ____ ___  ____ _  (_)___  _____
 //  / ___/ __ \/ / / / / __ `__ \/ __ \   / __ `__ \/ __ `/ / / __ \/ ___/

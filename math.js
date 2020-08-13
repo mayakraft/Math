@@ -1,1 +1,2136 @@
-!function(n,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(n="undefined"!=typeof globalThis?globalThis:n||self).math=t()}(this,(function(){"use strict";function n(t){return(n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(n){return typeof n}:function(n){return n&&"function"==typeof Symbol&&n.constructor===Symbol&&n!==Symbol.prototype?"symbol":typeof n})(t)}function t(n,t){return function(n){if(Array.isArray(n))return n}(n)||function(n,t){if("undefined"==typeof Symbol||!(Symbol.iterator in Object(n)))return;var r=[],e=!0,i=!1,o=void 0;try{for(var u,c=n[Symbol.iterator]();!(e=(u=c.next()).done)&&(r.push(u.value),!t||r.length!==t);e=!0);}catch(n){i=!0,o=n}finally{try{e||null==c.return||c.return()}finally{if(i)throw o}}return r}(n,t)||e(n,t)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function r(n){return function(n){if(Array.isArray(n))return i(n)}(n)||function(n){if("undefined"!=typeof Symbol&&Symbol.iterator in Object(n))return Array.from(n)}(n)||e(n)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function e(n,t){if(n){if("string"==typeof n)return i(n,t);var r=Object.prototype.toString.call(n).slice(8,-1);return"Object"===r&&n.constructor&&(r=n.constructor.name),"Map"===r||"Set"===r?Array.from(n):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?i(n,t):void 0}}function i(n,t){(null==t||t>n.length)&&(t=n.length);for(var r=0,e=new Array(t);r<t;r++)e[r]=n[r];return e}var o=function(n,t){return t.length===n?t:Array(n).fill(0).map((function(n,r){return t[r]?t[r]:n}))},u=function(n,t){var r=n.length>t.length?n.length:t.length;return[n,t].map((function(n){return o(r,n)}))},c=function(n){var t="".concat(n).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);return t?Math.max(0,(t[1]?t[1].length:0)-(t[2]?+t[2]:0)):0},a=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:15;if("number"!=typeof n)return n;var r=parseFloat(n.toFixed(t));return c(r)===Math.min(t,c(n))?n:r},s=function(n){return null!=n&&"function"==typeof n[Symbol.iterator]},f=function n(){switch(arguments.length){case void 0:case 0:return Array.from(arguments);case 1:return s(arguments[0])&&"string"!=typeof arguments[0]?n.apply(void 0,r(arguments[0])):[arguments[0]];default:return Array.from(arguments).map((function(t){return s(t)?r(n(t)):t}))}},l=function n(){switch(arguments.length){case void 0:case 0:return Array.from(arguments);case 1:return s(arguments[0])&&"string"!=typeof arguments[0]?n.apply(void 0,r(arguments[0])):[arguments[0]];default:return Array.from(arguments).map((function(t){return s(t)?r(n(t)):t})).reduce((function(n,t){return n.concat(t)}),[])}},h=Object.freeze({__proto__:null,resize:o,resize_up:u,resize_down:function(n,t){var r=n.length>t.length?t.length:n.length;return[n,t].map((function(n){return o(r,n)}))},clean_number:a,semi_flatten_arrays:f,flatten_arrays:l}),v=1e-6,p=function(n,t){return n===t},g=function(n,t){return Math.abs(n-t)<v},d=function(n,t){return Array.from(Array(n.length-1)).map((function(r,e){return t(n[0],n[e+1])})).reduce((function(n,t){return n&&t}),!0)},_=function(n,t){var r=u(n,t);return r[0].map((function(n,t){return Math.abs(r[0][t]-r[1][t])<v})).reduce((function(n,t){return n&&t}),!0)},m=Object.freeze({__proto__:null,EPSILON:v,equivalent_arrays_of_numbers:function(){},equivalent_numbers:function n(){return 0!==arguments.length&&(1===arguments.length&&void 0!==arguments[0]?n.apply(void 0,r(arguments[0])):d(arguments,g))},equivalent_vectors:_,equivalent:function(){for(var t=arguments.length,e=new Array(t),i=0;i<t;i++)e[i]=arguments[i];var o=f(e);if(o.length<1)return!1;var u=n(o[0]);if("undefined"===u)return!1;switch(u){case"number":return d(o,g);case"boolean":case"string":return d(o,p);case"object":return o[0].constructor===Array?_.apply(void 0,r(o)):(console.warn("comparing array of objects for equivalency by slow JSON.stringify with no epsilon check"),d(o,(function(n,t){return JSON.stringify(n)===JSON.stringify(t)})));default:console.warn("incapable of determining comparison method")}return!1}}),y=function(n){return n*n},M=function(n,t){return n+t},x=function(n){return Math.sqrt(n.map(y).reduce(M,0))},b=function(n){return n.map(y).reduce(M,0)},w=function(n){var t=x(n);return 0===t?n:n.map((function(n){return n/t}))},A=function(n,t){return n.map((function(n){return n*t}))},j=function(n,t){return n.map((function(n,r){return n+t[r]}))},P=function(n,t){return n.map((function(n,r){return n-t[r]}))},O=function(n,t){return n.map((function(r,e){return n[e]*t[e]})).reduce(M,0)},S=function(n,t){return n.map((function(n,r){return(n+t[r])/2}))},k=function(){var n=arguments;if(0===arguments.length)return[];var t=arguments[0].length>0?arguments[0].length:0,r=Array(t).fill(0);return Array.from(arguments).forEach((function(n){return r.forEach((function(t,e){r[e]+=n[e]||0}))})),r.map((function(t){return t/n.length}))},I=function(n,t,r){var e=1-r;return n.map((function(n,i){return n*e+t[i]*r}))},z=function(n,t){return n[0]*t[1]-n[1]*t[0]},E=function(n,t){return[n[1]*t[2]-n[2]*t[1],n[0]*t[2]-n[2]*t[0],n[0]*t[1]-n[1]*t[0]]},q=function(n,t){var r=n[0]-t[0],e=n[1]-t[1];return Math.sqrt(r*r+e*e)},N=function(n,t){return Math.sqrt(n.map((function(r,e){return Math.pow(n[e]-t[e],2)})).reduce((function(n,t){return n+t}),0))},G=function(n){return n.map((function(n){return-n}))},F=function(n){return[-n[1],n[0]]},T=function(n){return[n[1],-n[0]]},L=function(n){return Math.abs(n.reduce((function(n,t){return n+t}),0))<v},Z=function(n,t){return 1-Math.abs(O(w(n),w(t)))<v},D=Object.freeze({__proto__:null,magnitude:x,mag_squared:b,normalize:w,scale:A,add:j,subtract:P,dot:O,midpoint:S,average:k,lerp:I,cross2:z,cross3:E,distance2:q,distance3:function(n,t){var r=n[0]-t[0],e=n[1]-t[1],i=n[2]-t[2];return Math.sqrt(r*r+e*e+i*i)},distance:N,flip:G,rotate90:F,rotate270:T,degenerate:L,parallel:Z}),R=Object.create(null),J=[1,0,0,1],C=J.concat(0,0),X=function(n){return n[0]*n[3]-n[1]*n[2]},Y=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:[0,0],r=Math.cos(n),e=Math.sin(n);return[r,e,-e,r,t[0],t[1]]},$=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:[0,0],r=Math.atan2(n[1],n[0]),e=Math.cos(r),i=Math.sin(r),o=Math.cos(-r),u=Math.sin(-r),c=e*o+i*u,a=e*-u+i*o,s=i*o+-e*u,f=i*-u+-e*o,l=t[0]+c*-t[0]+-t[1]*s,h=t[1]+a*-t[0]+-t[1]*f;return[c,a,s,f,l,h]},B=Object.freeze({__proto__:null,identity2x2:J,identity2x3:C,multiply_matrix2_vector2:function(n,t){return[n[0]*t[0]+n[2]*t[1]+n[4],n[1]*t[0]+n[3]*t[1]+n[5]]},multiply_matrix2_line2:function(n,t,r){return{vector:[n[0]*t[0]+n[2]*t[1],n[1]*t[0]+n[3]*t[1]],origin:[n[0]*r[0]+n[2]*r[1]+n[4],n[1]*r[0]+n[3]*r[1]+n[5]]}},multiply_matrices2:function(n,t){return[n[0]*t[0]+n[2]*t[1],n[1]*t[0]+n[3]*t[1],n[0]*t[2]+n[2]*t[3],n[1]*t[2]+n[3]*t[3],n[0]*t[4]+n[2]*t[5]+n[4],n[1]*t[4]+n[3]*t[5]+n[5]]},determinant2:X,invert_matrix2:function(n){var t=X(n);if(!(Math.abs(t)<1e-6||isNaN(t))&&isFinite(n[4])&&isFinite(n[5]))return[n[3]/t,-n[1]/t,-n[2]/t,n[0]/t,(n[2]*n[5]-n[3]*n[4])/t,(n[1]*n[4]-n[0]*n[5])/t]},make_matrix2_translate:function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:0,t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:0;return J.concat(n,t)},make_matrix2_scale:function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:[0,0];return[n,0,0,t,n*-r[0]+r[0],t*-r[1]+r[1]]},make_matrix2_rotate:Y,make_matrix2_reflection:$}),H=[1,0,0,0,1,0,0,0,1],U=H.concat(0,0,0),V=function(n){return U.map((function(t,r){return Math.abs(t-n[r])<v})).reduce((function(n,t){return n&&t}),!0)},W=function(n,t){return[n[0]*t[0]+n[3]*t[1]+n[6]*t[2]+n[9],n[1]*t[0]+n[4]*t[1]+n[7]*t[2]+n[10],n[2]*t[0]+n[5]*t[1]+n[8]*t[2]+n[11]]},K=function(n,t,r){return{vector:[n[0]*t[0]+n[3]*t[1]+n[6]*t[2],n[1]*t[0]+n[4]*t[1]+n[7]*t[2],n[2]*t[0]+n[5]*t[1]+n[8]*t[2]],origin:[n[0]*r[0]+n[3]*r[1]+n[6]*r[2]+n[9],n[1]*r[0]+n[4]*r[1]+n[7]*r[2]+n[10],n[2]*r[0]+n[5]*r[1]+n[8]*r[2]+n[11]]}},Q=function(n,t){return[n[0]*t[0]+n[3]*t[1]+n[6]*t[2],n[1]*t[0]+n[4]*t[1]+n[7]*t[2],n[2]*t[0]+n[5]*t[1]+n[8]*t[2],n[0]*t[3]+n[3]*t[4]+n[6]*t[5],n[1]*t[3]+n[4]*t[4]+n[7]*t[5],n[2]*t[3]+n[5]*t[4]+n[8]*t[5],n[0]*t[6]+n[3]*t[7]+n[6]*t[8],n[1]*t[6]+n[4]*t[7]+n[7]*t[8],n[2]*t[6]+n[5]*t[7]+n[8]*t[8],n[0]*t[9]+n[3]*t[10]+n[6]*t[11]+n[9],n[1]*t[9]+n[4]*t[10]+n[7]*t[11]+n[10],n[2]*t[9]+n[5]*t[10]+n[8]*t[11]+n[11]]},nn=function(n){return n[0]*n[4]*n[8]-n[0]*n[7]*n[5]-n[3]*n[1]*n[8]+n[3]*n[7]*n[2]+n[6]*n[1]*n[5]-n[6]*n[4]*n[2]},tn=function(n){var t=nn(n);if(!(Math.abs(t)<1e-6||isNaN(t))&&isFinite(n[9])&&isFinite(n[10])&&isFinite(n[11])){var r=[n[4]*n[8]-n[7]*n[5],-n[1]*n[8]+n[7]*n[2],n[1]*n[5]-n[4]*n[2],-n[3]*n[8]+n[6]*n[5],n[0]*n[8]-n[6]*n[2],-n[0]*n[5]+n[3]*n[2],n[3]*n[7]-n[6]*n[4],-n[0]*n[7]+n[6]*n[1],n[0]*n[4]-n[3]*n[1],-n[3]*n[7]*n[11]+n[3]*n[8]*n[10]+n[6]*n[4]*n[11]-n[6]*n[5]*n[10]-n[9]*n[4]*n[8]+n[9]*n[5]*n[7],n[0]*n[7]*n[11]-n[0]*n[8]*n[10]-n[6]*n[1]*n[11]+n[6]*n[2]*n[10]+n[9]*n[1]*n[8]-n[9]*n[2]*n[7],-n[0]*n[4]*n[11]+n[0]*n[5]*n[10]+n[3]*n[1]*n[11]-n[3]*n[2]*n[10]-n[9]*n[1]*n[5]+n[9]*n[2]*n[4]],e=1/t;return r.map((function(n){return n*e}))}},rn=function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:0,t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:0,r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:0;return H.concat(n,t,r)},en=function(n,t,r,e,i){var o=H.concat([0,1,2].map((function(n){return t[n]||0}))),u=Math.cos(n),c=Math.sin(n);return o[3*r+r]=u,o[3*r+e]=(i?1:-1)*c,o[3*e+r]=(i?-1:1)*c,o[3*e+e]=u,o},on=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:[0,0,0];return en(n,t,1,2,!0)},un=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:[0,0,0];return en(n,t,0,2,!1)},cn=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:[0,0,0];return en(n,t,0,1,!0)},an=function(n){var r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:[0,0,1],e=arguments.length>2&&void 0!==arguments[2]?arguments[2]:[0,0,0],i=w(r),o=[0,1,2].map((function(n){return e[n]||0})),u=t(i,3),c=u[0],a=u[1],s=u[2],f=Math.cos(n),l=Math.sin(n),h=Math.sqrt(i[1]*i[1]+i[2]*i[2]),v=Math.abs(h)<1e-6?0:a/h,p=Math.abs(h)<1e-6?1:s/h,g=H.concat(o[0],o[1],o[2]),d=H.concat(-o[0],-o[1],-o[2]),_=[1,0,0,0,p,v,0,-v,p,0,0,0],m=[1,0,0,0,p,-v,0,v,p,0,0,0],y=[h,0,c,0,1,0,-c,0,h,0,0,0],M=[h,0,-c,0,1,0,c,0,h,0,0,0],x=[f,l,0,-l,f,0,0,0,1,0,0,0];return Q(d,Q(m,Q(M,Q(x,Q(y,Q(_,g))))))},sn=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:[0,0,0];return[n,0,0,0,n,0,0,0,n,n*-t[0]+t[0],n*-t[1]+t[1],n*-t[2]+t[2]]},fn=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:[0,0],r=Math.atan2(n[1],n[0]),e=Math.cos(r),i=Math.sin(r),o=Math.cos(-r),u=Math.sin(-r),c=e*o+i*u,a=e*-u+i*o,s=i*o+-e*u,f=i*-u+-e*o,l=t[0]+c*-t[0]+-t[1]*s,h=t[1]+a*-t[0]+-t[1]*f;return[c,a,0,s,f,0,0,0,0,l,h,0]},ln=Object.freeze({__proto__:null,identity3x3:H,identity3x4:U,is_identity3x4:V,multiply_matrix3_vector3:W,multiply_matrix3_line3:K,multiply_matrices3:Q,determinant3:nn,invert_matrix3:tn,make_matrix3_translate:rn,make_matrix3_rotateX:on,make_matrix3_rotateY:un,make_matrix3_rotateZ:cn,make_matrix3_rotate:an,make_matrix3_scale:sn,make_matrix3_reflectionZ:fn,make_matrix3_reflection:function(n){return[]}}),hn=function(n,t){return{vector:n||[],origin:t||[]}},vn=function(){if(arguments[0]instanceof R.vector)return arguments[0];var t=l(arguments);return t.length>0&&"object"===n(t[0])&&null!==t[0]&&!isNaN(t[0].x)&&(t=["x","y","z"].map((function(n){return t[0][n]})).filter((function(n){return void 0!==n}))),t.filter((function(n){return"number"==typeof n}))},pn=function(){return f(arguments).map((function(n){return vn(n)}))},gn=function(){if(arguments[0]instanceof R.segment)return arguments[0];var n=f(arguments);return 4===n.length?[[n[0],n[1]],[n[2],n[3]]]:pn(n)},dn=function(){var n=f(arguments);return 0===n.length?hn([],[]):n[0]instanceof R.line||n[0]instanceof R.ray||n[0]instanceof R.segment?n[0]:n[0].constructor===Object?hn(n[0].vector||[],n[0].origin||[]):"number"==typeof n[0]?hn(vn(n)):hn.apply(void 0,r(n.map((function(n){return vn(n)}))))},_n=function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:0,t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:0,r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:0,e=arguments.length>3&&void 0!==arguments[3]?arguments[3]:0;return{width:n,height:t,x:r,y:e}},mn=function(){if(arguments[0]instanceof R.rect)return arguments[0];var t=l(arguments);return t.length>0&&"object"===n(t[0])&&null!==t[0]&&!isNaN(t[0].width)?_n.apply(void 0,r(["width","height","x","y"].map((function(n){return t[0][n]})).filter((function(n){return void 0!==n})))):_n.apply(void 0,r(t.filter((function(n){return"number"==typeof n}))))},yn=[[0,1,3,4,9,10],[0,1,2,3,4,5,6,7,8,9,10,11],[0,1,2,void 0,3,4,5,void 0,6,7,8,void 0,9,10,11]];[11,7,3].forEach((function(n){return delete yn[2][n]}));var Mn=function(n){return yn[n<8?0:n<13?1:2]},xn=function(){var n=l(arguments),t=r(U);return Mn(n.length).filter((function(t,r){return null!=n[r]})).forEach((function(r,e){t[r]=n[e]})),t},bn=Object.freeze({__proto__:null,get_vector:vn,get_vector_of_vectors:pn,get_segment:gn,get_line:dn,rect_form:_n,get_rect:mn,get_matrix_3x4:xn,get_matrix2:function(){var n=vn(arguments);if(void 0!==n)return 6===n.length?n:n.length>6?[n[0],n[1],n[2],n[3],n[4],n[5]]:n.length<6?C.map((function(t,r){return n[r]||t})):void 0}}),wn=function(){return!0},An=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:v;return n>-t},jn=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:v;return n>-t&&n<1+t},Pn=function(){return!0},On=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:v;return n>t},Sn=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:v;return n>t&&n<1-t},kn=function(){return!0},In=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return t>-r},zn=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return t>-r&&t<1+r},En=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return n>-r&&t>-r},qn=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return n>-r&&t>-r&&t<1+r},Nn=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return n>-r&&n<1+r&&t>-r&&t<1+r},Gn=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return t>r},Fn=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return t>r&&t<1-r},Tn=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return n>r&&t>r},Ln=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return n>r&&t>r&&t<1-r},Zn=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return n>r&&n<1-r&&t>r&&t<1-r},Dn=function(n,t,r,e,i){var o=arguments.length>5&&void 0!==arguments[5]?arguments[5]:v,u=z(n,r);if(!(Math.abs(u)<o)){var c=-u,a=t[0],s=t[1],f=e[0],l=e[1],h=z([f-a,l-s],r),p=z([a-f,s-l],n),g=h/u,d=p/c;return i(g,d,o)?[a+n[0]*g,s+n[1]*g]:void 0}},Rn=Object.freeze({__proto__:null,include_l:wn,include_r:An,include_s:jn,exclude_l:Pn,exclude_r:On,exclude_s:Sn,include_l_l:kn,include_l_r:In,include_l_s:zn,include_r_r:En,include_r_s:qn,include_s_s:Nn,exclude_l_r:Gn,exclude_l_s:Fn,exclude_r_r:Tn,exclude_r_s:Ln,exclude_s_s:Zn,intersect_lines:Dn}),Jn=function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v,o=P(n,r),u=b(t),c=b(o);if(c<i)return e(c,i);if(u<i)return!1;var a=z(o,t),s=O(o,t)/u;return Math.abs(a)<i&&e(s,i)},Cn=function(n,t,r){var e=arguments.length>3&&void 0!==arguments[3]?arguments[3]:v,i=P(n,r);return Math.abs(z(i,t))<e},Xn=Object.freeze({__proto__:null,collinear:Jn,point_on_line:Cn,point_on_ray_inclusive:function(n,t,r){var e=arguments.length>3&&void 0!==arguments[3]?arguments[3]:v;return Jn(n,t,r,An,e)},point_on_ray_exclusive:function(n,t,r){var e=arguments.length>3&&void 0!==arguments[3]?arguments[3]:v;return Jn(n,t,r,On,e)},point_on_segment_inclusive:function(n,t,r){var e=arguments.length>3&&void 0!==arguments[3]?arguments[3]:v;return Jn(n,P(r,t),t,jn,e)},point_on_segment_exclusive:function(n,t,r){var e=arguments.length>3&&void 0!==arguments[3]?arguments[3]:v;return Jn(n,P(r,t),t,Sn,e)}}),Yn=180/Math.PI,$n=Math.PI/180,Bn=2*Math.PI,Hn=function(n,t){for(;n<0;)n+=Bn;for(;t<0;)t+=Bn;for(;n>Bn;)n-=Bn;for(;t>Bn;)t-=Bn;var r=t-n;return r>=0?r:Bn-(n-t)},Un=function(n,t){var r=n[0]*t[0]+n[1]*t[1],e=n[0]*t[1]-n[1]*t[0],i=Math.atan2(e,r);return i<0&&(i+=Bn),i},Vn=function(n,t){var r=w(n),e=w(t);return O(r,e)<-1+v?[-r[1],r[0]]:w(j(r,e))},Wn=function(n,t,r,e){var i=n[0]*r[1]-r[0]*n[1];if(Math.abs(i)<v){var o=[[n[0],n[1]],S(t,e)],u=[o,o];return delete u[n[0]*r[0]+n[1]*r[1]>0?1:0],u}var c=((e[0]-t[0])*r[1]-r[0]*(e[1]-t[1]))/i,a=[t[0]+n[0]*c,t[1]+n[1]*c],s=[Vn(n,r)];return s[1]=F(s[0]),s.map((function(n){return{vector:n,origin:a}}))},Kn=function(n,t,r){var e=Hn(t,r)/n;return Array.from(Array(n-1)).map((function(n,r){return t+e*r}))},Qn=function(n,t,r){var e=t[0]-n[0],i=t[1]-n[1],o=r[0]-n[0],u=r[1]-n[1],c=e*(n[0]+t[0])+i*(n[1]+t[1]),a=o*(n[0]+r[0])+u*(n[1]+r[1]),s=2*(e*(r[1]-t[1])-i*(r[0]-t[0]));if(Math.abs(s)<v){var f=Math.min(n[0],t[0],r[0]),l=Math.min(n[1],t[1],r[1]),h=.5*(Math.max(n[0],t[0],r[0])-f),p=.5*(Math.max(n[1],t[1],r[1])-l);return{origin:[f+h,l+p],radius:Math.sqrt(h*h+p*p)}}var g=[(u*c-i*a)/s,(e*a-o*c)/s],d=g[0]-n[0],_=g[1]-n[1];return{origin:g,radius:Math.sqrt(d*d+_*_)}},nt=function(n){return.5*n.map((function(n,t,r){var e=r[(t+1)%r.length];return n[0]*e[1]-e[0]*n[1]})).reduce((function(n,t){return n+t}),0)},tt=function(n){var t=1/(6*nt(n));return n.map((function(n,t,r){var e=r[(t+1)%r.length],i=n[0]*e[1]-e[0]*n[1];return[(n[0]+e[0])*i,(n[1]+e[1])*i]})).reduce((function(n,t){return[n[0]+t[0],n[1]+t[1]]}),[0,0]).map((function(n){return n*t}))},rt=function(n){var t=Array(n[0].length).fill(1/0),e=Array(n[0].length).fill(-1/0);n.forEach((function(n){return n.forEach((function(n,r){n<t[r]&&(t[r]=n),n>e[r]&&(e[r]=n)}))}));var i=e.map((function(n,r){return n-t[r]}));return _n.apply(void 0,r(i).concat(r(t)))},et=function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:1,r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:0,e=arguments.length>3&&void 0!==arguments[3]?arguments[3]:0,i=Bn/n/2,o=t/2/Math.cos(i);return Array.from(Array(Math.floor(n))).map((function(t,r){return Bn*(r/n)})).map((function(n){return[r+o*Math.cos(n),e+o*Math.sin(n)]})).map((function(n){return n.map((function(n){return a(n,14)}))}))},it=function(){return console.warn("split polygon not done")},ot=function(n,t,r){var e=n.map((function(n,e){return{point:Cn(n,t,r)?n:null,at_index:e}})).filter((function(n){return null!=n.point})),i=n.map((function(n,e,i){return{point:function(n,t,r,e){var i=r,o=[e[0]-r[0],e[1]-r[1]];return Dn(n,t,o,i,Fn)}(t,r,n,i[(e+1)%i.length]),at_index:e}})).filter((function(n){return null!=n.point}));if(2==i.length){var o=i.slice().sort((function(n,t){return n.at_index-t.at_index})),u=n.slice(o[1].at_index+1).concat(n.slice(0,o[0].at_index+1));u.push(o[0].point),u.push(o[1].point);var c=n.slice(o[0].at_index+1,o[1].at_index+1);return c.push(o[1].point),c.push(o[0].point),[u,c]}if(1==i.length&&1==e.length){e[0].type="v",i[0].type="e";var a=e.concat(i).sort((function(n,t){return n.at_index-t.at_index})),s=n.slice(a[1].at_index+1).concat(n.slice(0,a[0].at_index+1));"e"===a[0].type&&s.push(a[0].point),s.push(a[1].point);var f=n.slice(a[0].at_index+1,a[1].at_index+1);return"e"===a[1].type&&f.push(a[1].point),f.push(a[0].point),[s,f]}if(2==e.length){var l=e.slice().sort((function(n,t){return n.at_index-t.at_index}));return[n.slice(l[1].at_index).concat(n.slice(0,l[0].at_index+1)),n.slice(l[0].at_index,l[1].at_index+1)]}return[n.slice()]},ut=function(t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v,e=1e4,i=t.slice().sort((function(n,t){return Math.abs(n[1]-t[1])<r?n[0]-t[0]:n[1]-t[1]})),o=[];o.push(i[0]);var u=0,c=0,a=function(){c+=1;var n=o.length-1,t=i.filter((function(t){return!(Math.abs(t[0]-o[n][0])<r&&Math.abs(t[1]-o[n][1])<r)})).map((function(t){for(var r=Math.atan2(o[n][1]-t[1],o[n][0]-t[0]);r<u;)r+=2*Math.PI;return{node:t,angle:r,distance:void 0}})).sort((function(n,t){return n.angle<t.angle?-1:n.angle>t.angle?1:0}));if(0===t.length)return{v:void 0};var e=t[0];if(t=t.filter((function(n){return Math.abs(e.angle-n.angle)<r})).map((function(t){var r=Math.sqrt(Math.pow(o[n][0]-t.node[0],2)+Math.pow(o[n][1]-t.node[1],2));return t.distance=r,t})).sort((function(n,t){return n.distance<t.distance?1:n.distance>t.distance?-1:0})),o.filter((function(n){return n===t[0].node})).length>0)return{v:o};o.push(t[0].node),u=Math.atan2(o[n][1]-t[0].node[1],o[n][0]-t[0].node[0])};do{var s=a();if("object"===n(s))return s.v}while(c<e)},ct=Object.freeze({__proto__:null,R2D:Yn,D2R:$n,TWO_PI:Bn,is_counter_clockwise_between:function(n,t,r){for(;r<t;)r+=Bn;for(;n>t;)n-=Bn;for(;n<t;)n+=Bn;return n<r},clockwise_angle2_radians:function(n,t){for(;n<0;)n+=Bn;for(;t<0;)t+=Bn;for(;n>Bn;)n-=Bn;for(;t>Bn;)t-=Bn;var r=n-t;return r>=0?r:Bn-(t-n)},counter_clockwise_angle2_radians:Hn,clockwise_angle2:function(n,t){var r=t[0]*n[0]+t[1]*n[1],e=t[0]*n[1]-t[1]*n[0],i=Math.atan2(e,r);return i<0&&(i+=Bn),i},counter_clockwise_angle2:Un,counter_clockwise_vector_order:function(){for(var n=arguments.length,t=new Array(n),r=0;r<n;r++)t[r]=arguments[r];var e=t.map((function(n){return Math.atan2(n[1],n[0])})),i=Array.from(Array(e.length)).map((function(n,t){return t})).sort((function(n,t){return e[n]-e[t]}));return i.slice(i.indexOf(0),i.length).concat(i.slice(0,i.indexOf(0)))},interior_angles:function(){for(var n=arguments.length,t=new Array(n),r=0;r<n;r++)t[r]=arguments[r];return t.map((function(n,t,r){return Un(n,r[(t+1)%r.length])}))},bisect_vectors:Vn,bisect_lines2:Wn,subsect_radians:Kn,subsect:function(n,t,r){var e=Math.atan2(t[1],t[0]),i=Math.atan2(r[1],r[0]);return Kn(n,e,i).map((function(n){return[Math.cos(n),Math.sin(n)]}))},circumcircle:Qn,signed_area:nt,centroid:tt,enclosing_rectangle:rt,make_regular_polygon:et,split_polygon:it,split_convex_polygon:ot,convex_hull:ut}),at=function(n,t,r){for(var e,i=t.map((function(t,e){return{o:t,i:e,d:r(n,t)}})),o=1/0,u=0;u<i.length;u+=1)i[u].d<o&&(e=u,o=i[u].d);return e},st=function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v,o=Math.pow(n[0],2)+Math.pow(n[1],2),u=[0,1].map((function(n,e){return r[e]-t[e]})),c=[0,1].map((function(t,r){return n[r]*u[r]})).reduce((function(n,t){return n+t}),0),a=c/o,s=e(a,i);return[0,1].map((function(r,e){return t[e]+n[e]*s}))},ft=function(n){return n<-v?0:n>1+v?1:n},lt=function(n,t){var r=n.map((function(n,t,r){return P(r[(t+1)%r.length],n)}));return n.map((function(n,e){return st(r[e],n,t,ft)})).map((function(n,r){return{point:n,i:r,distance:N(n,t)}})).sort((function(n,t){return n.distance-t.distance})).shift()},ht=function(n,t,r){return j(t,A(w(P(r,t)),n))},vt=function(){return!1},pt=Object.freeze({__proto__:null,nearest_point2:function(n,t){var r=at(n,t,q);return void 0===r?void 0:t[r]},nearest_point:function(n,t){var r=at(n,t,N);return void 0===r?void 0:t[r]},nearest_point_on_line:st,segment_limiter:ft,nearest_point_on_polygon:lt,nearest_point_on_circle:ht,nearest_point_on_ellipse:vt}),gt=function(n,t,r,e,i,o){var u=arguments.length>6&&void 0!==arguments[6]?arguments[6]:v,c=z(n,r),a=-c,s=z(P(e,t),r),f=z(P(t,e),n);if(Math.abs(c)<u)return!1;var l=s/c,h=f/a;return i(l,u)&&o(h,u)},dt=function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v;return gt(P(t,n),n,P(e,r),r,jn,jn,i)},_t=function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v;return gt(P(t,n),n,P(e,r),r,Sn,Sn,i)},mt=Object.freeze({__proto__:null,overlap_lines:gt,overlap_line_line_inclusive:function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v;return gt(n,t,r,e,wn,wn,i)},overlap_line_ray_inclusive:function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v;return gt(n,t,r,e,wn,An,i)},overlap_line_segment_inclusive:function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v;return gt(n,t,P(e,r),r,wn,jn,i)},overlap_ray_ray_inclusive:function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v;return gt(n,t,r,e,An,An,i)},overlap_ray_segment_inclusive:function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v;return gt(n,t,P(e,r),r,An,jn,i)},overlap_segment_segment_inclusive:dt,overlap_line_line_exclusive:function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v;return gt(n,t,r,e,Pn,Pn,i)},overlap_line_ray_exclusive:function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v;return gt(n,t,r,e,Pn,On,i)},overlap_line_segment_exclusive:function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v;return gt(n,t,P(e,r),r,Pn,Sn,i)},overlap_ray_ray_exclusive:function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v;return gt(n,t,r,e,On,On,i)},overlap_ray_segment_exclusive:function(n,t,r,e){var i=arguments.length>4&&void 0!==arguments[4]?arguments[4]:v;return gt(n,t,P(e,r),r,On,Sn,i)},overlap_segment_segment_exclusive:_t}),yt=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return t.map((function(n,t,r){return[n,r[(t+1)%r.length]]})).map((function(t){return z(P(t[1],t[0]),P(n,t[0]))>-r})).map((function(n,t,r){return n===r[0]})).reduce((function(n,t){return n&&t}),!0)},Mt=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return t.map((function(n,t,r){return[n,r[(t+1)%r.length]]})).map((function(t){return z(P(t[1],t[0]),P(n,t[0]))>r})).map((function(n,t,r){return n===r[0]})).reduce((function(n,t){return n&&t}),!0)},xt=function(n,t){for(var r=!1,e=0,i=t.length-1;e<t.length;i=e++)t[e][1]>n[1]!=t[i][1]>n[1]&&n[0]<(t[i][0]-t[e][0])*(n[1]-t[e][1])/(t[i][1]-t[e][1])+t[e][0]&&(r=!r);return r},bt=function(n,t,r,e){for(var i=n.map((function(n,t,r){return[n,r[(t+1)%r.length]]})),o=t.map((function(n,t,r){return[n,r[(t+1)%r.length]]})),u=0;u<i.length;u+=1)for(var c=0;c<o.length;c+=1)if(r(i[u][0],i[u][1],o[c][0],o[c][1]))return!0;return!!e(t[0],n)||!!e(n[0],t)},wt=function(n,t){return bt(n,t,dt,yt)},At=Object.freeze({__proto__:null,point_in_convex_poly_inclusive:yt,point_in_convex_poly_exclusive:Mt,point_in_poly:xt,overlap_convex_polygons_inclusive:wt,overlap_convex_polygons_exclusive:function(n,t){return bt(n,t,_t,Mt)},enclose_convex_polygons_inclusive:function(n,t){var r=n.map((function(n){return yt(n,t)})).reduce((function(n,t){return n||t}),!1),e=t.map((function(n){return yt(n,t)})).reduce((function(n,t){return n&&t}),!0);return!r&&e}}),jt=Object.assign(Object.create(null),mt,Xn,At),Pt=function(t){switch(t.constructor.name){case"vector":case"matrix":case"segment":case"ray":case"line":case"circle":case"ellipse":case"rect":case"polygon":return t.constructor.name}if("object"===n(t)){if(null!=t.radius)return"circle";if(null!=t.width)return"rect";if(null!=t.x||"number"==typeof t[0])return"vector";if(null!=t[0]&&t[0].length&&("number"==typeof t[0].x||"number"==typeof t[0][0]))return"segment";if(null!=t.vector&&null!=t.origin)return"line"}},Ot=function(n){return n>=1?0:n<=-1?Math.PI:Math.acos(n)},St=function(n,t,r){var e=t[0]-n[0],i=t[1]-n[1],o=e*Math.cos(r)+i*Math.sin(r),u=i*Math.cos(r)-e*Math.sin(r);return[n[0]+o,n[1]+u]},kt=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v,e=n.radius<t.radius?n.radius:t.radius,i=n.radius<t.radius?t.radius:n.radius,o=n.radius<t.radius?n.origin:t.origin,u=n.radius<t.radius?t.origin:n.origin,c=[o[0]-u[0],o[1]-u[1]],a=Math.sqrt(Math.pow(c[0],2)+Math.pow(c[1],2));if(!(a<r)){var s=c.map((function(n,t){return n/a*i+u[t]}));if(Math.abs(i+e-a)<r||Math.abs(i-(e+a))<r)return[s];if(!(a+e<i||i+e<a)){var f=Ot((e*e-a*a-i*i)/(-2*a*i)),l=St(u,s,+f),h=St(u,s,-f);return[l,h]}}},It=function(n,t,r,e,i){var o=arguments.length>5&&void 0!==arguments[5]?arguments[5]:v,u=Math.pow(r[0],2)+Math.pow(r[1],2),c=Math.sqrt(u),a=0===c?r:r.map((function(n){return n/c})),s=[-a[1],a[0]],f=[e[0]-t[0],e[1]-t[1]],l=f[0]*a[1]-a[0]*f[1];if(!(Math.abs(l)>n+o)){var h=Math.sqrt(Math.pow(n,2)-Math.pow(l,2)),p=function(n,r){return t[r]-s[r]*l+a[r]*n},g=Math.abs(n-Math.abs(l))<o?[h].map((function(n){return[n,n].map(p)})):[-h,h].map((function(n){return[n,n].map(p)})),d=g.map((function(n){return n.map((function(n,t){return n-e[t]}))})).map((function(n){return n[0]*r[0]+r[1]*n[1]})).map((function(n){return n/u}));return g.filter((function(n,t){return i(d[t],o)}))}},zt=function(){return!0},Et=function(n,t){return n>-t},qt=function(n,t){return n>-t&&n<1+t},Nt=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return It(n.radius,n.origin,t.vector,t.origin,zt,r)},Gt=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return It(n.radius,n.origin,t.vector,t.origin,Et,r)},Ft=function(n,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:v;return It(n.radius,n.origin,t.vector,t.origin,qt,r)},Tt=Object.freeze({__proto__:null,circle_circle:kt,circle_line:Nt,circle_ray:Gt,circle_segment:Ft}),Lt=function(n,t){return Math.abs(n[0]-t[0])<v&&Math.abs(n[1]-t[1])<v},Zt=function(n,t,r){var e=n.map((function(n,t,r){return[n,r[(t+1)%r.length]]})).map((function(n){return function(n,t,r,e){return Dn(n,t,P(e,r),r,zn)}(t,r,n[0],n[1])})).filter((function(n){return null!=n}));switch(e.length){case 0:return;case 1:return[e[0],e[0]];case 2:return e;default:for(var i=1;i<e.length;i+=1)if(!Lt(e[0],e[i]))return[e[0],e[i]];return}},Dt=function(n,t,r){var e=n.map((function(n,t,r){return[n,r[(t+1)%r.length]]})).map((function(n){return function(n,t,r,e){return Dn(n,t,P(e,r),r,qn)}(t,r,n[0],n[1])})).filter((function(n){return null!=n}));switch(e.length){case 0:return;case 1:return e;case 2:return Lt(e[0],e[1])?[e[0]]:e;default:for(var i=1;i<e.length;i+=1)if(!Lt(e[0],e[i]))return[e[0],e[i]];return}},Rt=function(n,t,r){var e=n.map((function(n,t,r){return[n,r[(t+1)%r.length]]})).map((function(n){return function(n,t,r,e){return Dn(n,t,P(e,r),r,Ln)}(t,r,n[0],n[1])})).filter((function(n){return null!=n}));switch(e.length){case 0:return;case 1:return e;case 2:return Lt(e[0],e[1])?[e[0]]:e;default:for(var i=1;i<e.length;i+=1)if(!Lt(e[0],e[i]))return[e[0],e[i]];return}},Jt=function(n,t,r){var e=n.map((function(n,t,r){return[n,r[(t+1)%r.length]]})).map((function(n){return e=t,i=r,o=n[0],u=n[1],Dn(P(i,e),e,P(u,o),o,Zn);var e,i,o,u})).filter((function(n){return null!=n}));switch(e.length){case 0:return;case 1:return e;case 2:return Lt(e[0],e[1])?[e[0]]:e;default:throw new Error("clipping segment in a convex polygon resulting in 3 or more points")}},Ct=Object.freeze({__proto__:null,convex_poly_circle:function(n,t,r){return[]},convex_poly_line:Zt,convex_poly_ray_inclusive:Dt,convex_poly_ray_exclusive:Rt,convex_poly_segment_inclusive:function(n,t,r){console.log("todo")},convex_poly_segment_exclusive:Jt}),Xt=function(n,t,r,e){return Dn(n.vector,n.origin,t.vector,t.origin,r,e)},Yt=function(n,t){return Zt(n.constructor===Array?n:n.points,t.vector,t.origin)},$t=function(n,t,r){return r(n.constructor===Array?n:n.points,t.vector,t.origin)},Bt=function(n,t,r){return r(n.constructor===Array?n:n.points,t[0],t[1])},Ht={polygon:{line:Yt,ray:function(n,t,r){return $t(n,t,!1===r?Dt:Rt)},segment:function(n,t,r){return Bt(n,t,!1===r?convex_poly_segment_inclusive:Jt)}},circle:{circle:kt,line:Nt,ray:Gt,segment:Ft},line:{polygon:function(n,t){return Yt(t,n)},circle:function(n,t){return Nt(t,n)},line:function(n,t){return Xt(n,t,kn)},ray:function(n,t,r){return Xt(n,t,!1===r?Gn:In)},segment:function(n,t,r){return Xt(n,t,!1===r?Fn:zn)}},ray:{polygon:function(n,t,r){return $t(t,n,!1===r?Dt:Rt)},circle:function(n,t){return Gt(t,n)},line:function(n,t,r){return Xt(t,n,!1===r?Gn:In)},ray:function(n,t,r){return Xt(n,t,!1===r?Tn:En)},segment:function(n,t,r){return Xt(n,t,!1===r?Ln:qn)}},segment:{polygon:function(n,t,r){return Bt(t,n,!1===r?convex_poly_segment_inclusive:Jt)},circle:function(n,t){return Ft(t,n)},line:function(n,t,r){return Xt(t,n,!1===r?Fn:zn)},ray:function(n,t,r){return Xt(t,n,!1===r?Ln:qn)},segment:function(n,t,r){return Xt(n,t,!1===r?Zn:Nn)}}},Ut=function(n,t){var r,e=Pt(n),i=Pt(t);return(r=Ht[e])[i].apply(r,arguments)},Vt={preserve:{magnitude:function(){return x(this)},isEquivalent:function(){return _(this,vn(arguments))},isParallel:function(){return Z.apply(void 0,r(u(this,vn(arguments))))},dot:function(){return O.apply(void 0,r(u(this,vn(arguments))))},distanceTo:function(){return N.apply(void 0,r(u(this,vn(arguments))))}},vector:{copy:function(){return r(this)},normalize:function(){return w(this)},scale:function(){return A(this,arguments[0])},flip:function(){return G(this)},rotate90:function(){return F(this)},rotate270:function(){return T(this)},cross:function(){return E(o(3,this),o(3,vn(arguments)))},transform:function(){return W(xn(arguments),o(3,this))},add:function(){return j(this,o(this.length,vn(arguments)))},subtract:function(){return P(this,o(this.length,vn(arguments)))},rotateZ:function(n,t){return W(xn(Y(n,t)),o(3,this))},lerp:function(n,t){return I(this,o(this.length,vn(n)),t)},midpoint:function(){return S.apply(void 0,r(u(this,vn(arguments))))},bisect:function(){return Vn(this,vn(arguments))}}},Wt={};Object.keys(Vt.preserve).forEach((function(n){Wt[n]=Vt.preserve[n]})),Object.keys(Vt.vector).forEach((function(n){Wt[n]=function(){return R.vector.apply(R,r(Vt.vector[n].apply(this,arguments)))}}));var Kt={fromAngle:function(n){return R.vector(Math.cos(n),Math.sin(n))},fromAngleDegrees:function(n){return R.vector.fromAngle(n*$n)}},Qt={vector:{P:Array.prototype,A:function(){var n=this;vn(arguments).forEach((function(t){return n.push(t)}))},G:{x:function(){return this[0]},y:function(){return this[1]},z:function(){return this[2]}},M:Wt,S:Kt}},nr=function(){};nr.prototype.isParallel=function(){var n=u(this.vector,dn.apply(void 0,arguments).vector);return Z.apply(void 0,r(n))},nr.prototype.isDegenerate=function(){return L(this.vector)},nr.prototype.reflection=function(){return R.matrix($(this.vector,this.origin))},nr.prototype.nearestPoint=function(){var n=vn(arguments);return R.vector(st(this.vector,this.origin,n,this.clip_function))},nr.prototype.transform=function(){var n=this.dimension,t=K(xn(arguments),o(3,this.vector),o(3,this.origin));return this.constructor(o(n,t.vector),o(n,t.origin))},nr.prototype.intersect=function(n){return Ut(this,n)},nr.prototype.bisect=function(){var n=dn(arguments);return Wn(this.vector,this.origin,n.vector,n.origin)},Object.defineProperty(nr.prototype,"dimension",{get:function(){return[this.vector,this.origin].map((function(n){return n.length})).reduce((function(n,t){return Math.max(n,t)}),0)}});var tr={fromPoints:function(){var n=pn(arguments);return this.constructor({vector:P(n[1],n[0]),origin:n[0]})},perpendicularBisector:function(){var n=pn(arguments);return this.constructor({vector:F(P(n[1],n[0])),origin:k(n[0],n[1])})}},rr={line:{P:nr.prototype,A:function(){var n=dn.apply(void 0,arguments);this.vector=R.vector(n.vector),this.origin=R.vector(o(this.vector.length,n.origin))},G:{length:function(){return 1/0}},M:{clip_function:function(n){return n},svgPath:function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:2e4,t=this.origin.add(this.vector.scale(-n/2)),r=this.vector.scale(n);return"M".concat(t[0]," ").concat(t[1],"l").concat(r[0]," ").concat(r[1])}},S:tr}},er={ray:{P:nr.prototype,A:function(){var n=dn.apply(void 0,arguments);this.vector=R.vector(n.vector),this.origin=R.vector(o(this.vector.length,n.origin))},G:{length:function(){return 1/0}},M:{rotate180:function(){return R.ray(G(this.vector),this.origin)},clip_function:function(n){return n<-v?0:n},svgPath:function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:1e4,t=this.vector.scale(n);return"M".concat(this.origin[0]," ").concat(this.origin[1],"l").concat(t[0]," ").concat(t[1])}},S:tr}},ir={segment:{P:nr.prototype,A:function(){var n=gn.apply(void 0,arguments);this.points=[R.vector(n[0]),R.vector(n[1])],this.vector=this.points[1].subtract(this.points[0]),this.origin=this.points[0]},G:{0:function(){return this.points[0]},1:function(){return this.points[1]},length:function(){return this.vector.magnitude()}},M:{clip_function:ft,transform:function(){for(var n=this.points[0].length,t=arguments.length,r=new Array(t),e=0;e<t;e++)r[e]=arguments[e];var i=xn(r),u=this.points.map((function(n){return o(3,n)})).map((function(n){return W(i,n)})).map((function(t){return o(n,t)}));return R.segment(u)},midpoint:function(){return R.vector(k(this.points[0],this.points[1]))},svgPath:function(){var n=this.points.map((function(n){return"".concat(n[0]," ").concat(n[1])}));return["M","L"].map((function(t,r){return"".concat(t).concat(n[r])})).join("")}},S:{fromPoints:function(){return this.constructor.apply(this,arguments)}}}},or=function(n,t,r,e,i,o){var u=Math.cos(i),c=Math.sin(i),a=Math.cos(o),s=Math.sin(o);return[n+u*r*a+-c*e*s,t+c*r*a+u*e*s]},ur=function(n,t,r,e,i,o,u){var c=o;if(c<0&&!isNaN(c))for(;c<0;)c+=2*Math.PI;var a=u>2*Math.PI?2*Math.PI:u,s=or(n,t,r,e,i,c),f=or(n,t,r,e,i,c+a/2),l=or(n,t,r,e,i,c+a),h=a/2>Math.PI?1:0,v=a/2>0?1:0;return{x1:s[0],y1:s[1],x2:f[0],y2:f[1],x3:l[0],y3:l[1],fa:h,fs:v}},cr=function(n){return a(n,4)},ar=function(n,t,r,e,i,o,u){return"A".concat(cr(n)," ").concat(cr(t)," ").concat(cr(r)," ").concat(cr(e)," ").concat(cr(i)," ").concat(cr(o)," ").concat(cr(u))},sr={circle:{A:function(){var n=pn(arguments),t=o(3,l(arguments));2===n.length?(this.radius=1===n[0].length?n[0][0]:q.apply(void 0,r(n)),this.origin=1===n[0].length?R.vector.apply(R,r(n[1])):R.vector.apply(R,r(n[0]))):(this.radius=t[0],this.origin=R.vector(t[1],t[2]))},G:{x:function(){return this.origin[0]},y:function(){return this.origin[1]}},M:{nearestPoint:function(){return R.vector(ht(this.radius,this.origin,vn(arguments)))},intersect:function(n){return Ut(this,n)},svgPath:function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:0,t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:2*Math.PI,r=ur(this.origin[0],this.origin[1],this.radius,this.radius,0,n,t),e=ar(this.radius,this.radius,0,r.fa,r.fs,r.x2,r.y2),i=ar(this.radius,this.radius,0,r.fa,r.fs,r.x3,r.y3);return"M".concat(r.x1," ").concat(r.y1).concat(e).concat(i)},points:function(){var n=this,t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:128;return Array.from(Array(t)).map((function(n,r){return 2*Math.PI/t*r})).map((function(t){return[n.origin[0]+n.radius*Math.cos(t),n.origin[1]+n.radius*Math.sin(t)]}))},polygon:function(){return R.polygon(this.points(arguments[0]))},segments:function(){var n=this.points(arguments[0]);return n.map((function(t,r){var e=(r+1)%n.length;return[t,n[e]]}))}},S:{fromPoints:function(){return this.constructor.apply(this,arguments)},fromThreePoints:function(){var n=Qn.apply(void 0,arguments);return this.constructor.apply(this,[n.radius].concat(r(n.origin)))}}}},fr=function(n,t,r,e){var i=t>r,o=i?Math.pow(t,2)-Math.pow(r,2):Math.pow(r,2)-Math.pow(t,2),u=Math.sqrt(o),c=i?Math.cos(e):Math.sin(e),a=i?Math.sin(e):Math.cos(e);return[R.vector(n[0]+u*c,n[1]+u*a),R.vector(n[0]-u*c,n[1]-u*a)]},lr={ellipse:{A:function(){var n=l(arguments).filter((function(n){return!isNaN(n)})),t=o(5,n);this.rx=t[0],this.ry=t[1],this.origin=R.vector(t[2],t[3]),this.spin=t[4],this.foci=fr(this.origin,this.rx,this.ry,this.spin)},G:{x:function(){return this.origin[0]},y:function(){return this.origin[1]}},M:{nearestPoint:function(){return R.vector((this.origin,this.radius,vn(arguments),!1))},intersect:function(n){return Ut(this,n)},svgPath:function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:0,t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:2*Math.PI,r=ur(this.origin[0],this.origin[1],this.rx,this.ry,this.spin,n,t),e=ar(this.rx,this.ry,this.spin/Math.PI*180,r.fa,r.fs,r.x2,r.y2),i=ar(this.rx,this.ry,this.spin/Math.PI*180,r.fa,r.fs,r.x3,r.y3);return"M".concat(r.x1," ").concat(r.y1).concat(e).concat(i)},points:function(){var n=this,t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:128;return Array.from(Array(t)).map((function(n,r){return 2*Math.PI/t*r})).map((function(t){return or(n.origin.x,n.origin.y,n.rx,n.ry,n.spin,t)}))},polygon:function(){return R.polygon(this.points(arguments[0]))},segments:function(){var n=this.points(arguments[0]);return n.map((function(t,r){var e=(r+1)%n.length;return[t,n[e]]}))}},S:{}}},hr=function(n){if(void 0!==n)switch(n.length){case void 0:break;case 1:return R.vector(n);case 2:return R.segment(n);default:return n}},vr={area:function(){return nt(this.points)},centroid:function(){return R.vector(tt(this.points))},enclosingRectangle:function(){return R.rect(rt(this.points))},contains:function(){return xt(vn(arguments),this.points)},scale:function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:tt(this.points),r=this.points.map((function(n){return[0,1].map((function(r,e){return n[e]-t[e]}))})).map((function(r){return r.map((function(e,i){return t[i]+r[i]*n}))}));return this.constructor.fromPoints(r)},rotate:function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:tt(this.points),r=this.points.map((function(r){var e=[r[0]-t[0],r[1]-t[1]],i=Math.sqrt(Math.pow(e[0],2)+Math.pow(e[1],2)),o=Math.atan2(e[1],e[0]);return[t[0]+Math.cos(o+n)*i,t[1]+Math.sin(o+n)*i]}));return R.polygon(r)},translate:function(){var n=vn.apply(void 0,arguments),t=this.points.map((function(t){return t.map((function(t,r){return t+n[r]}))}));return this.constructor.fromPoints(t)},transform:function(){var n=xn.apply(void 0,arguments),t=this.points.map((function(t){return W(n,o(3,t))}));return R.polygon(t)},nearest:function(){var n=vn.apply(void 0,arguments),t=lt(this.points,n);return void 0===t?void 0:Object.assign(t,{edge:this.sides[t.i]})},overlaps:function(){var n=f(arguments);return wt(this.points,n)},split:function(){var n=dn.apply(void 0,arguments),t=this.convex?ot:it;return t(this.points,n.vector,n.origin).map((function(n){return R.polygon(n)}))},intersectLine:function(){var n=dn.apply(void 0,arguments),t=Zt(this.points,n.vector,n.origin);return hr(t)},intersectRay:function(){var n=dn.apply(void 0,arguments),t=Rt(this.points,n.vector,n.origin);return hr(t)},intersectSegment:function(){var n=gn.apply(void 0,arguments),t=Jt(this.points,n[0],n[1]);return hr(t)},svgPath:function(){var n=Array(this.points.length).fill("L");return n[0]="M","".concat(this.points.map((function(t,r){return"".concat(n[r]).concat(t[0]," ").concat(t[1])})).join(""),"z")},intersect:function(n){return Ut(this,n)}},pr=function(){this.points=[]};Object.keys(vr).forEach((function(n){pr.prototype[n]=vr[n]}));var gr=function(n){return[[n.x,n.y],[n.x+n.width,n.y],[n.x+n.width,n.y+n.height],[n.x,n.y+n.height]]},dr={rect:{P:pr.prototype,A:function(){var n=mn.apply(void 0,arguments);this.width=n.width,this.height=n.height,this.origin=R.vector(n.x,n.y),this.points=gr(this)},G:{x:function(){return this.origin[0]},y:function(){return this.origin[1]}},M:{area:function(){return this.width*this.height},segments:function(){return[[[(n=this).x,n.y],[n.x+n.width,n.y]],[[n.x+n.width,n.y],[n.x+n.width,n.y+n.height]],[[n.x+n.width,n.y+n.height],[n.x,n.y+n.height]],[[n.x,n.y+n.height],[n.x,n.y]]];var n}},S:{fromPoints:function(){return R.rect(rt(pn(arguments)))}}}},_r={polygon:{P:pr.prototype,A:function(){this.points=f(arguments),this.sides=this.points.map((function(n,t,r){return[n,r[(t+1)%r.length]]})),this.vectors=this.sides.map((function(n){return P(n[1],n[0])}))},G:{isConvex:function(){return!0},edges:function(){return this.sides}},M:{segments:function(){return this.sides}},S:{fromPoints:function(){return this.constructor.apply(this,arguments)},regularPolygon:function(n){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:1,r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:0,e=arguments.length>3&&void 0!==arguments[3]?arguments[3]:0;return this.constructor(et(n,t,r,e))},convexHull:function(n){var t=arguments.length>1&&void 0!==arguments[1]&&arguments[1];return this.constructor(ut(n,t))}}}},mr=function(n,t){for(var r=0;r<12;r+=1)n[r]=t[r];return n},yr={matrix:{P:Array.prototype,A:function(){var n=this;xn(arguments).forEach((function(t){return n.push(t)}))},G:{},M:{copy:function(){return R.matrix.apply(R,r(Array.from(this)))},set:function(){return mr(this,xn(arguments))},isIdentity:function(){return V(this)},multiply:function(n){return mr(this,Q(this,n))},determinant:function(){return nn(this)},inverse:function(){return mr(this,tn(this))},translate:function(n,t,r){return mr(this,Q(this,rn(n,t,r)))},rotateX:function(n){return mr(this,Q(this,on(n)))},rotateY:function(n){return mr(this,Q(this,un(n)))},rotateZ:function(n){return mr(this,Q(this,cn(n)))},rotate:function(n,t,r){var e=an(n,t,r);return mr(this,Q(this,e))},scale:function(n){return mr(this,Q(this,sn(n)))},reflectZ:function(n,t){var r=fn(n,t);return mr(this,Q(this,r))},transform:function(){for(var n=arguments.length,t=new Array(n),r=0;r<n;r++)t[r]=arguments[r];return R.vector(W(vn(t),this))},transformVector:function(n){return R.vector(W(this,n))},transformLine:function(){for(var n=arguments.length,t=new Array(n),r=0;r<n;r++)t[r]=arguments[r];var e=dn(t);return R.line(K(this,e.vector,e.origin))}},S:{}}},Mr=Object.assign({},Qt,rr,er,ir,sr,lr,dr,_r,yr),xr=function(n,t){var r=Object.create(Mr[n].proto);return Mr[n].A.apply(r,t),r};Object.assign(R,{vector:function(){return xr("vector",arguments)},circle:function(){return xr("circle",arguments)},ellipse:function(){return xr("ellipse",arguments)},rect:function(){return xr("rect",arguments)},polygon:function(){return xr("polygon",arguments)},line:function(){return xr("line",arguments)},ray:function(){return xr("ray",arguments)},segment:function(){return xr("segment",arguments)},matrix:function(){return xr("matrix",arguments)}}),Object.keys(Mr).forEach((function(n){var t={};t.prototype=null!=Mr[n].P?Object.create(Mr[n].P):Object.create(Object.prototype),t.prototype.constructor=t,R[n].prototype=t.prototype,R[n].prototype.constructor=R[n],Object.keys(Mr[n].G).forEach((function(r){return Object.defineProperty(t.prototype,r,{get:Mr[n].G[r]})})),Object.keys(Mr[n].M).forEach((function(r){return Object.defineProperty(t.prototype,r,{value:Mr[n].M[r]})})),Object.keys(Mr[n].S).forEach((function(t){return Object.defineProperty(R[n],t,{value:Mr[n].S[t].bind(R[n].prototype)})})),Mr[n].proto=t.prototype}));var br=R;return br.core=Object.assign(Object.create(null),D,m,ct,B,ln,pt,jt,bn,h,Tt,Rn,Ct),br.typeof=Pt,br.intersect=Ut,br}));
+/* Math (c) Robby Kraft, MIT License */
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.math = factory());
+}(this, (function () { 'use strict';
+
+  const resize = (d, v) => (v.length === d
+    ? v
+    : Array(d).fill(0).map((z, i) => (v[i] ? v[i] : z)));
+  const resize_up = (a, b) => {
+    const size = a.length > b.length ? a.length : b.length;
+    return [a, b].map(v => resize(size, v));
+  };
+  const resize_down = (a, b) => {
+    const size = a.length > b.length ? b.length : a.length;
+    return [a, b].map(v => resize(size, v));
+  };
+  const count_places = function (num) {
+    const m = (`${num}`).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+    if (!m) { return 0; }
+    return Math.max(0, (m[1] ? m[1].length : 0) - (m[2] ? +m[2] : 0));
+  };
+  const clean_number = function (num, places = 15) {
+    if (typeof num !== "number") { return num; }
+    const crop = parseFloat(num.toFixed(places));
+    if (count_places(crop) === Math.min(places, count_places(num))) {
+      return num;
+    }
+    return crop;
+  };
+  const is_iterable = obj => obj != null
+    && typeof obj[Symbol.iterator] === "function";
+  const semi_flatten_arrays = function () {
+    switch (arguments.length) {
+      case undefined:
+      case 0: return Array.from(arguments);
+      case 1: return is_iterable(arguments[0]) && typeof arguments[0] !== "string"
+        ? semi_flatten_arrays(...arguments[0])
+        : [arguments[0]];
+      default:
+        return Array.from(arguments).map(a => (is_iterable(a)
+          ? [...semi_flatten_arrays(a)]
+          : a));
+    }
+  };
+  const flatten_arrays = function () {
+    switch (arguments.length) {
+      case undefined:
+      case 0: return Array.from(arguments);
+      case 1: return is_iterable(arguments[0]) && typeof arguments[0] !== "string"
+        ? flatten_arrays(...arguments[0])
+        : [arguments[0]];
+      default:
+        return Array.from(arguments).map(a => (is_iterable(a)
+          ? [...flatten_arrays(a)]
+          : a)).reduce((a, b) => a.concat(b), []);
+    }
+  };
+
+  var resizers = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    resize: resize,
+    resize_up: resize_up,
+    resize_down: resize_down,
+    clean_number: clean_number,
+    semi_flatten_arrays: semi_flatten_arrays,
+    flatten_arrays: flatten_arrays
+  });
+
+  const EPSILON = 1e-6;
+  const fEqual = (a, b) => a === b;
+  const fEpsilonEqual = (a, b) => Math.abs(a - b) < EPSILON;
+  const array_similarity_test = (list, compFunc) => Array
+    .from(Array(list.length - 1))
+    .map((_, i) => compFunc(list[0], list[i + 1]))
+    .reduce((a, b) => a && b, true);
+  const equivalent_arrays_of_numbers = function () {
+  };
+  const equivalent_numbers = function () {
+    if (arguments.length === 0) { return false; }
+    if (arguments.length === 1 && arguments[0] !== undefined) {
+      return equivalent_numbers(...arguments[0]);
+    }
+    return array_similarity_test(arguments, fEpsilonEqual);
+  };
+  const equivalent_vectors = function () {
+    const args = Array.from(arguments);
+    const length = args.map(a => a.length).reduce((a, b) => a > b ? a : b);
+    const vecs = args.map(a => resize(length, a));
+    return Array.from(Array(arguments.length - 1))
+      .map((_, i) => vecs[0]
+        .map((_, n) => Math.abs(vecs[0][n] - vecs[i + 1][n]) < EPSILON)
+        .reduce((u, v) => u && v, true))
+      .reduce((u, v) => u && v, true);
+  };
+  const equivalent = function () {
+    const list = semi_flatten_arrays(...arguments);
+    if (list.length < 1) { return false; }
+    const typeofList = typeof list[0];
+    if (typeofList === "undefined") { return false; }
+    switch (typeofList) {
+      case "number":
+        return array_similarity_test(list, fEpsilonEqual);
+      case "boolean":
+      case "string":
+        return array_similarity_test(list, fEqual);
+      case "object":
+        if (list[0].constructor === Array) { return equivalent_vectors(...list); }
+        return array_similarity_test(list, (a, b) => JSON.stringify(a) === JSON.stringify(b));
+      default: return undefined;
+    }
+  };
+
+  var equal = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    EPSILON: EPSILON,
+    equivalent_arrays_of_numbers: equivalent_arrays_of_numbers,
+    equivalent_numbers: equivalent_numbers,
+    equivalent_vectors: equivalent_vectors,
+    equivalent: equivalent
+  });
+
+  const fn_square = n => n * n;
+  const fn_add = (a, b) => a + b;
+  const magnitude = v => Math.sqrt(v
+    .map(fn_square)
+    .reduce(fn_add, 0));
+  const mag_squared = v => v
+    .map(fn_square)
+    .reduce(fn_add, 0);
+  const normalize = (v) => {
+    const m = magnitude(v);
+    return m === 0 ? v : v.map(c => c / m);
+  };
+  const scale = (v, s) => v.map(n => n * s);
+  const add = (v, u) => v.map((n, i) => n + u[i]);
+  const subtract = (v, u) => v.map((n, i) => n - u[i]);
+  const dot = (v, u) => v
+    .map((_, i) => v[i] * u[i])
+    .reduce(fn_add, 0);
+  const midpoint = (v, u) => v.map((n, i) => (n + u[i]) / 2);
+  const average = function () {
+    if (arguments.length === 0) { return []; }
+    const dimension = (arguments[0].length > 0) ? arguments[0].length : 0;
+    const sum = Array(dimension).fill(0);
+    Array.from(arguments).forEach(vec => sum.forEach((_, i) => { sum[i] += vec[i] || 0; }));
+    return sum.map(n => n / arguments.length);
+  };
+  const lerp = (v, u, t) => {
+    const inv = 1.0 - t;
+    return v.map((n, i) => n * inv + u[i] * t);
+  };
+  const cross2 = (a, b) => a[0] * b[1] - a[1] * b[0];
+  const cross3 = (a, b) => [
+    a[1] * b[2] - a[2] * b[1],
+    a[0] * b[2] - a[2] * b[0],
+    a[0] * b[1] - a[1] * b[0],
+  ];
+  const distance2 = (a, b) => {
+    const p = a[0] - b[0];
+    const q = a[1] - b[1];
+    return Math.sqrt((p * p) + (q * q));
+  };
+  const distance3 = (a, b) => {
+    const c = a[0] - b[0];
+    const d = a[1] - b[1];
+    const e = a[2] - b[2];
+    return Math.sqrt((c * c) + (d * d) + (e * e));
+  };
+  const distance = (a, b) => Math.sqrt(a
+    .map((_, i) => (a[i] - b[i]) ** 2)
+    .reduce((u, v) => u + v, 0));
+  const flip = v => v.map(n => -n);
+  const rotate90 = v => [-v[1], v[0]];
+  const rotate270 = v => [v[1], -v[0]];
+  const degenerate = (v) => Math
+    .abs(v.reduce((a, b) => a + b, 0)) < EPSILON;
+  const parallel = (a, b) => 1 - Math
+    .abs(dot(normalize(a), normalize(b))) < EPSILON;
+
+  var algebra = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    magnitude: magnitude,
+    mag_squared: mag_squared,
+    normalize: normalize,
+    scale: scale,
+    add: add,
+    subtract: subtract,
+    dot: dot,
+    midpoint: midpoint,
+    average: average,
+    lerp: lerp,
+    cross2: cross2,
+    cross3: cross3,
+    distance2: distance2,
+    distance3: distance3,
+    distance: distance,
+    flip: flip,
+    rotate90: rotate90,
+    rotate270: rotate270,
+    degenerate: degenerate,
+    parallel: parallel
+  });
+
+  var Constructors = Object.create(null);
+
+  const identity2x2 = [1, 0, 0, 1];
+  const identity2x3 = identity2x2.concat(0, 0);
+  const multiply_matrix2_vector2 = (matrix, vector) => [
+    matrix[0] * vector[0] + matrix[2] * vector[1] + matrix[4],
+    matrix[1] * vector[0] + matrix[3] * vector[1] + matrix[5]
+  ];
+  const multiply_matrix2_line2 = (matrix, vector, origin) => ({
+    vector: [
+      matrix[0] * vector[0] + matrix[2] * vector[1],
+      matrix[1] * vector[0] + matrix[3] * vector[1]
+    ],
+    origin: [
+      matrix[0] * origin[0] + matrix[2] * origin[1] + matrix[4],
+      matrix[1] * origin[0] + matrix[3] * origin[1] + matrix[5]
+    ],
+  });
+  const multiply_matrices2 = (m1, m2) => [
+    m1[0] * m2[0] + m1[2] * m2[1],
+    m1[1] * m2[0] + m1[3] * m2[1],
+    m1[0] * m2[2] + m1[2] * m2[3],
+    m1[1] * m2[2] + m1[3] * m2[3],
+    m1[0] * m2[4] + m1[2] * m2[5] + m1[4],
+    m1[1] * m2[4] + m1[3] * m2[5] + m1[5]
+  ];
+  const determinant2 = m => m[0] * m[3] - m[1] * m[2];
+  const invert_matrix2 = (m) => {
+    const det = determinant2(m);
+    if (Math.abs(det) < 1e-6 || isNaN(det) || !isFinite(m[4]) || !isFinite(m[5])) {
+      return undefined;
+    }
+    return [
+      m[3] / det,
+      -m[1] / det,
+      -m[2] / det,
+      m[0] / det,
+      (m[2] * m[5] - m[3] * m[4]) / det,
+      (m[1] * m[4] - m[0] * m[5]) / det
+    ];
+  };
+  const make_matrix2_translate = (x = 0, y = 0) => identity2x2.concat(x, y);
+  const make_matrix2_scale = (x, y, origin = [0, 0]) => [
+    x,
+    0,
+    0,
+    y,
+    x * -origin[0] + origin[0],
+    y * -origin[1] + origin[1]
+  ];
+  const make_matrix2_rotate = (angle, origin = [0, 0]) => {
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    return [
+      cos,
+      sin,
+      -sin,
+      cos,
+      origin[0],
+      origin[1]
+    ];
+  };
+  const make_matrix2_reflection = (vector, origin = [0, 0]) => {
+    const angle = Math.atan2(vector[1], vector[0]);
+    const cosAngle = Math.cos(angle);
+    const sinAngle = Math.sin(angle);
+    const cos_Angle = Math.cos(-angle);
+    const sin_Angle = Math.sin(-angle);
+    const a = cosAngle * cos_Angle + sinAngle * sin_Angle;
+    const b = cosAngle * -sin_Angle + sinAngle * cos_Angle;
+    const c = sinAngle * cos_Angle + -cosAngle * sin_Angle;
+    const d = sinAngle * -sin_Angle + -cosAngle * cos_Angle;
+    const tx = origin[0] + a * -origin[0] + -origin[1] * c;
+    const ty = origin[1] + b * -origin[0] + -origin[1] * d;
+    return [a, b, c, d, tx, ty];
+  };
+
+  var matrix2 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    identity2x2: identity2x2,
+    identity2x3: identity2x3,
+    multiply_matrix2_vector2: multiply_matrix2_vector2,
+    multiply_matrix2_line2: multiply_matrix2_line2,
+    multiply_matrices2: multiply_matrices2,
+    determinant2: determinant2,
+    invert_matrix2: invert_matrix2,
+    make_matrix2_translate: make_matrix2_translate,
+    make_matrix2_scale: make_matrix2_scale,
+    make_matrix2_rotate: make_matrix2_rotate,
+    make_matrix2_reflection: make_matrix2_reflection
+  });
+
+  const identity3x3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+  const identity3x4 = identity3x3.concat(0, 0, 0);
+  const is_identity3x4 = m => identity3x4
+    .map((n, i) => Math.abs(n - m[i]) < EPSILON)
+    .reduce((a, b) => a && b, true);
+  const multiply_matrix3_vector3 = (m, vector) => [
+    m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2] + m[9],
+    m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2] + m[10],
+    m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2] + m[11]
+  ];
+  const multiply_matrix3_line3 = (m, vector, origin) => ({
+    vector: [
+      m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2],
+      m[1] * vector[0] + m[4] * vector[1] + m[7] * vector[2],
+      m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2]
+    ],
+    origin: [
+      m[0] * origin[0] + m[3] * origin[1] + m[6] * origin[2] + m[9],
+      m[1] * origin[0] + m[4] * origin[1] + m[7] * origin[2] + m[10],
+      m[2] * origin[0] + m[5] * origin[1] + m[8] * origin[2] + m[11]
+    ],
+  });
+  const multiply_matrices3 = (m1, m2) => [
+    m1[0] * m2[0] + m1[3] * m2[1] + m1[6] * m2[2],
+    m1[1] * m2[0] + m1[4] * m2[1] + m1[7] * m2[2],
+    m1[2] * m2[0] + m1[5] * m2[1] + m1[8] * m2[2],
+    m1[0] * m2[3] + m1[3] * m2[4] + m1[6] * m2[5],
+    m1[1] * m2[3] + m1[4] * m2[4] + m1[7] * m2[5],
+    m1[2] * m2[3] + m1[5] * m2[4] + m1[8] * m2[5],
+    m1[0] * m2[6] + m1[3] * m2[7] + m1[6] * m2[8],
+    m1[1] * m2[6] + m1[4] * m2[7] + m1[7] * m2[8],
+    m1[2] * m2[6] + m1[5] * m2[7] + m1[8] * m2[8],
+    m1[0] * m2[9] + m1[3] * m2[10] + m1[6] * m2[11] + m1[9],
+    m1[1] * m2[9] + m1[4] * m2[10] + m1[7] * m2[11] + m1[10],
+    m1[2] * m2[9] + m1[5] * m2[10] + m1[8] * m2[11] + m1[11]
+  ];
+  const determinant3 = m => (
+      m[0] * m[4] * m[8]
+    - m[0] * m[7] * m[5]
+    - m[3] * m[1] * m[8]
+    + m[3] * m[7] * m[2]
+    + m[6] * m[1] * m[5]
+    - m[6] * m[4] * m[2]
+  );
+  const invert_matrix3 = (m) => {
+    const det = determinant3(m);
+    if (Math.abs(det) < 1e-6 || isNaN(det)
+      || !isFinite(m[9]) || !isFinite(m[10]) || !isFinite(m[11])) {
+      return undefined;
+    }
+    const inv = [
+      m[4] * m[8] - m[7] * m[5],
+      -m[1] * m[8] + m[7] * m[2],
+      m[1] * m[5] - m[4] * m[2],
+      -m[3] * m[8] + m[6] * m[5],
+      m[0] * m[8] - m[6] * m[2],
+      -m[0] * m[5] + m[3] * m[2],
+      m[3] * m[7] - m[6] * m[4],
+      -m[0] * m[7] + m[6] * m[1],
+      m[0] * m[4] - m[3] * m[1],
+      -m[3] * m[7] * m[11] + m[3] * m[8] * m[10] + m[6] * m[4] * m[11]
+        - m[6] * m[5] * m[10] - m[9] * m[4] * m[8] + m[9] * m[5] * m[7],
+      m[0] * m[7] * m[11] - m[0] * m[8] * m[10] - m[6] * m[1] * m[11]
+        + m[6] * m[2] * m[10] + m[9] * m[1] * m[8] - m[9] * m[2] * m[7],
+      -m[0] * m[4] * m[11] + m[0] * m[5] * m[10] + m[3] * m[1] * m[11]
+        - m[3] * m[2] * m[10] - m[9] * m[1] * m[5] + m[9] * m[2] * m[4]
+    ];
+    const invDet = 1.0 / det;
+    return inv.map(n => n * invDet);
+  };
+  const make_matrix3_translate = (x = 0, y = 0, z = 0) => identity3x3.concat(x, y, z);
+  const single_axis_rotate = (angle, origin, i0, i1, sgn) => {
+    const mat = identity3x3.concat([0, 1, 2].map(i => origin[i] || 0));
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    mat[i0*3 + i0] = cos;
+    mat[i0*3 + i1] = (sgn ? +1 : -1) * sin;
+    mat[i1*3 + i0] = (sgn ? -1 : +1) * sin;
+    mat[i1*3 + i1] = cos;
+    return mat;
+  };
+  const make_matrix3_rotateX = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 1, 2, true);
+  const make_matrix3_rotateY = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 0, 2, false);
+  const make_matrix3_rotateZ = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 0, 1, true);
+  const make_matrix3_rotate = (angle, vector = [0, 0, 1], origin = [0, 0, 0]) => {
+    const vec = normalize(vector);
+    const pos = [0, 1, 2].map(i => origin[i] || 0);
+    const [a, b, c] = vec;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const d = Math.sqrt((vec[1] * vec[1]) + (vec[2] * vec[2]));
+    const b_d = Math.abs(d) < 1e-6 ? 0 : b / d;
+    const c_d = Math.abs(d) < 1e-6 ? 1 : c / d;
+    const t     = identity3x3.concat(pos[0], pos[1], pos[2]);
+    const t_inv = identity3x3.concat(-pos[0], -pos[1], -pos[2]);
+    const rx     = [1, 0, 0, 0, c_d, b_d, 0, -b_d, c_d, 0, 0, 0];
+    const rx_inv = [1, 0, 0, 0, c_d, -b_d, 0, b_d, c_d, 0, 0, 0];
+    const ry     = [d, 0, a, 0, 1, 0, -a, 0, d, 0, 0, 0];
+    const ry_inv = [d, 0, -a, 0, 1, 0, a, 0, d, 0, 0, 0];
+    const rz     = [cos, sin, 0, -sin, cos, 0, 0, 0, 1, 0, 0, 0];
+    return multiply_matrices3(t_inv,
+      multiply_matrices3(rx_inv,
+        multiply_matrices3(ry_inv,
+          multiply_matrices3(rz,
+            multiply_matrices3(ry,
+              multiply_matrices3(rx, t))))));
+  };
+  const make_matrix3_scale = (scale, origin = [0, 0, 0]) => [
+    scale,
+    0,
+    0,
+    0,
+    scale,
+    0,
+    0,
+    0,
+    scale,
+    scale * -origin[0] + origin[0],
+    scale * -origin[1] + origin[1],
+    scale * -origin[2] + origin[2]
+  ];
+  const make_matrix3_reflectionZ = (vector, origin = [0, 0]) => {
+    const angle = Math.atan2(vector[1], vector[0]);
+    const cosAngle = Math.cos(angle);
+    const sinAngle = Math.sin(angle);
+    const cos_Angle = Math.cos(-angle);
+    const sin_Angle = Math.sin(-angle);
+    const a = cosAngle * cos_Angle + sinAngle * sin_Angle;
+    const b = cosAngle * -sin_Angle + sinAngle * cos_Angle;
+    const c = sinAngle * cos_Angle + -cosAngle * sin_Angle;
+    const d = sinAngle * -sin_Angle + -cosAngle * cos_Angle;
+    const tx = origin[0] + a * -origin[0] + -origin[1] * c;
+    const ty = origin[1] + b * -origin[0] + -origin[1] * d;
+    return [a, b, 0, c, d, 0, 0, 0, 0, tx, ty, 0];
+  };
+
+  var matrix3 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    identity3x3: identity3x3,
+    identity3x4: identity3x4,
+    is_identity3x4: is_identity3x4,
+    multiply_matrix3_vector3: multiply_matrix3_vector3,
+    multiply_matrix3_line3: multiply_matrix3_line3,
+    multiply_matrices3: multiply_matrices3,
+    determinant3: determinant3,
+    invert_matrix3: invert_matrix3,
+    make_matrix3_translate: make_matrix3_translate,
+    make_matrix3_rotateX: make_matrix3_rotateX,
+    make_matrix3_rotateY: make_matrix3_rotateY,
+    make_matrix3_rotateZ: make_matrix3_rotateZ,
+    make_matrix3_rotate: make_matrix3_rotate,
+    make_matrix3_scale: make_matrix3_scale,
+    make_matrix3_reflectionZ: make_matrix3_reflectionZ
+  });
+
+  const vector_origin_form = (vector, origin) => ({
+    vector: vector || [],
+    origin: origin || []
+  });
+  const get_vector = function () {
+    if (arguments[0] instanceof Constructors.vector) { return arguments[0]; }
+    let list = flatten_arrays(arguments);
+    if (list.length > 0
+      && typeof list[0] === "object"
+      && list[0] !== null
+      && !isNaN(list[0].x)) {
+      list = ["x", "y", "z"]
+        .map(c => list[0][c])
+        .filter(a => a !== undefined);
+    }
+    return list.filter(n => typeof n === "number");
+  };
+  const get_vector_of_vectors = function () {
+    return semi_flatten_arrays(arguments)
+      .map(el => get_vector(el));
+  };
+  const get_segment = function () {
+    if (arguments[0] instanceof Constructors.segment) {
+      return arguments[0];
+    }
+    const args = semi_flatten_arrays(arguments);
+    if (args.length === 4) {
+      return [
+        [args[0], args[1]],
+        [args[2], args[3]]
+      ];
+    }
+    return get_vector_of_vectors(args);
+  };
+  const get_line = function () {
+    const args = semi_flatten_arrays(arguments);
+    if (args.length === 0) { return vector_origin_form([], []); }
+    if (args[0] instanceof Constructors.line
+      || args[0] instanceof Constructors.ray
+      || args[0] instanceof Constructors.segment) { return args[0]; }
+    if (args[0].constructor === Object) {
+      return vector_origin_form(args[0].vector || [], args[0].origin || []);
+    }
+    return typeof args[0] === "number"
+      ? vector_origin_form(get_vector(args))
+      : vector_origin_form(...args.map(a => get_vector(a)));
+  };
+  const rect_form = (width = 0, height = 0, x = 0, y = 0) => ({
+    width, height, x, y
+  });
+  const get_rect = function () {
+    if (arguments[0] instanceof Constructors.rect) { return arguments[0]; }
+    const list = flatten_arrays(arguments);
+    if (list.length > 0
+      && typeof list[0] === "object"
+      && list[0] !== null
+      && !isNaN(list[0].width)) {
+      return rect_form(...["width", "height", "x", "y"]
+        .map(c => list[0][c])
+        .filter(a => a !== undefined));
+    }
+    return rect_form(...list.filter(n => typeof n === "number"));
+  };
+  const maps_3x4 = [
+    [0, 1, 3, 4, 9, 10],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    [0, 1, 2, undefined, 3, 4, 5, undefined, 6, 7, 8, undefined, 9, 10, 11]
+  ];
+  [11, 7, 3].forEach(i => delete maps_3x4[2][i]);
+  const matrix_map_3x4 = len => {
+    let i;
+    if (len < 8) i = 0;
+    else if (len < 13) i = 1;
+    else i = 2;
+    return maps_3x4[i];
+  };
+  const get_matrix_3x4 = function () {
+    const mat = flatten_arrays(arguments);
+    const matrix = [...identity3x4];
+    matrix_map_3x4(mat.length)
+      .forEach((n, i) => { if (mat[i] != null) { matrix[n] = mat[i]; } });
+    return matrix;
+  };
+  const get_matrix2 = function () {
+    const m = get_vector(arguments);
+    if (m.length === 6) { return m; }
+    if (m.length > 6) { return [m[0], m[1], m[2], m[3], m[4], m[5]]; }
+    if (m.length < 6) {
+      return identity2x3.map((n, i) => m[i] || n);
+    }
+  };
+
+  var getters = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    get_vector: get_vector,
+    get_vector_of_vectors: get_vector_of_vectors,
+    get_segment: get_segment,
+    get_line: get_line,
+    rect_form: rect_form,
+    get_rect: get_rect,
+    get_matrix_3x4: get_matrix_3x4,
+    get_matrix2: get_matrix2
+  });
+
+  const include_l = () => true;
+  const include_r = (t, e=EPSILON) => t > -e;
+  const include_s = (t, e=EPSILON) => t > -e && t < 1 + e;
+  const exclude_l = () => true;
+  const exclude_r = (t, e=EPSILON) => t > e;
+  const exclude_s = (t, e=EPSILON) => t > e && t < 1 - e;
+  const include_l_l = () => true;
+  const include_l_r = (t0, t1, e=EPSILON) => t1 > -e;
+  const include_l_s = (t0, t1, e=EPSILON) => t1 > -e && t1 < 1 + e;
+  const include_r_r = (t0, t1, e=EPSILON) => t0 > -e && t1 > -e;
+  const include_r_s = (t0, t1, e=EPSILON) => t0 > -e && t1 > -e && t1 < 1 + e;
+  const include_s_s = (t0, t1, e=EPSILON) => t0 > -e && t0 < 1 + e && t1 > -e
+    && t1 < 1 + e;
+  const exclude_l_r = (t0, t1, e=EPSILON) => t1 > e;
+  const exclude_l_s = (t0, t1, e=EPSILON) => t1 > e && t1 < 1 - e;
+  const exclude_r_r = (t0, t1, e=EPSILON) => t0 > e && t1 > e;
+  const exclude_r_s = (t0, t1, e=EPSILON) => t0 > e && t1 > e && t1 < 1 - e;
+  const exclude_s_s = (t0, t1, e=EPSILON) => t0 > e && t0 < 1 - e && t1 > e
+    && t1 < 1 - e;
+  const intersect_lines = (aVector, aOrigin, bVector, bOrigin, compFunc, epsilon = EPSILON) => {
+    const denominator0 = cross2(aVector, bVector);
+    if (Math.abs(denominator0) < epsilon) { return undefined; }
+    const denominator1 = -denominator0;
+    const aOriX = aOrigin[0];
+    const aOriY = aOrigin[1];
+    const bOriX = bOrigin[0];
+    const bOriY = bOrigin[1];
+    const numerator0 = cross2([bOriX - aOriX, bOriY - aOriY], bVector);
+    const numerator1 = cross2([aOriX - bOriX, aOriY - bOriY], aVector);
+    const t0 = numerator0 / denominator0;
+    const t1 = numerator1 / denominator1;
+    if (compFunc(t0, t1, epsilon)) {
+      return [aOriX + aVector[0] * t0, aOriY + aVector[1] * t0];
+    }
+    return undefined;
+  };
+
+  var intersect_lines$1 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    include_l: include_l,
+    include_r: include_r,
+    include_s: include_s,
+    exclude_l: exclude_l,
+    exclude_r: exclude_r,
+    exclude_s: exclude_s,
+    include_l_l: include_l_l,
+    include_l_r: include_l_r,
+    include_l_s: include_l_s,
+    include_r_r: include_r_r,
+    include_r_s: include_r_s,
+    include_s_s: include_s_s,
+    exclude_l_r: exclude_l_r,
+    exclude_l_s: exclude_l_s,
+    exclude_r_r: exclude_r_r,
+    exclude_r_s: exclude_r_s,
+    exclude_s_s: exclude_s_s,
+    intersect_lines: intersect_lines
+  });
+
+  const collinear = (point, vector, origin, compFunc, epsilon = EPSILON) => {
+    const p2p = subtract(point, origin);
+    const lineMagSq = mag_squared(vector);
+    const p2pMagSq = mag_squared(p2p);
+    if (p2pMagSq < epsilon) { return compFunc(p2pMagSq, epsilon); }
+    if (lineMagSq < epsilon) { return false; }
+    const cross = cross2(p2p, vector);
+    const proj = dot(p2p, vector) / lineMagSq;
+    return Math.abs(cross) < epsilon && compFunc(proj, epsilon);
+  };
+  const point_on_line = (point, vector, origin, epsilon = EPSILON) => {
+    const pointToPoint = subtract(point, origin);
+    return Math.abs(cross2(pointToPoint, vector)) < epsilon;
+  };
+  const point_on_ray_inclusive = (point, vector, origin, epsilon = EPSILON) => collinear(point, vector, origin, include_r, epsilon);
+  const point_on_ray_exclusive = (point, vector, origin, epsilon = EPSILON) => collinear(point, vector, origin, exclude_r, epsilon);
+  const point_on_segment_inclusive = (point, pt0, pt1, epsilon = EPSILON) => collinear(point, subtract(pt1, pt0), pt0, include_s, epsilon);
+  const point_on_segment_exclusive = (point, pt0, pt1, epsilon = EPSILON) => collinear(point, subtract(pt1, pt0), pt0, exclude_s, epsilon);
+
+  var overlap_point = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    collinear: collinear,
+    point_on_line: point_on_line,
+    point_on_ray_inclusive: point_on_ray_inclusive,
+    point_on_ray_exclusive: point_on_ray_exclusive,
+    point_on_segment_inclusive: point_on_segment_inclusive,
+    point_on_segment_exclusive: point_on_segment_exclusive
+  });
+
+  const R2D = 180 / Math.PI;
+  const D2R = Math.PI / 180;
+  const TWO_PI = Math.PI * 2;
+  const is_counter_clockwise_between = (angle, angleA, angleB) => {
+    while (angleB < angleA) { angleB += TWO_PI; }
+    while (angle > angleA) { angle -= TWO_PI; }
+    while (angle < angleA) { angle += TWO_PI; }
+    return angle < angleB;
+  };
+  const clockwise_angle2_radians = (a, b) => {
+    while (a < 0) { a += TWO_PI; }
+    while (b < 0) { b += TWO_PI; }
+    while (a > TWO_PI) { a -= TWO_PI; }
+    while (b > TWO_PI) { b -= TWO_PI; }
+    const a_b = a - b;
+    return (a_b >= 0)
+      ? a_b
+      : TWO_PI - (b - a);
+  };
+  const counter_clockwise_angle2_radians = (a, b) => {
+    while (a < 0) { a += TWO_PI; }
+    while (b < 0) { b += TWO_PI; }
+    while (a > TWO_PI) { a -= TWO_PI; }
+    while (b > TWO_PI) { b -= TWO_PI; }
+    const b_a = b - a;
+    return (b_a >= 0)
+      ? b_a
+      : TWO_PI - (a - b);
+  };
+  const clockwise_angle2 = (a, b) => {
+    const dotProduct = b[0] * a[0] + b[1] * a[1];
+    const determinant = b[0] * a[1] - b[1] * a[0];
+    let angle = Math.atan2(determinant, dotProduct);
+    if (angle < 0) { angle += TWO_PI; }
+    return angle;
+  };
+  const counter_clockwise_angle2 = (a, b) => {
+    const dotProduct = a[0] * b[0] + a[1] * b[1];
+    const determinant = a[0] * b[1] - a[1] * b[0];
+    let angle = Math.atan2(determinant, dotProduct);
+    if (angle < 0) { angle += TWO_PI; }
+    return angle;
+  };
+  const counter_clockwise_vector_order = (...vectors) => {
+    const vectors_radians = vectors.map(v => Math.atan2(v[1], v[0]));
+    const counter_clockwise = Array.from(Array(vectors_radians.length))
+      .map((_, i) => i)
+      .sort((a, b) => vectors_radians[a] - vectors_radians[b]);
+    return counter_clockwise
+      .slice(counter_clockwise.indexOf(0), counter_clockwise.length)
+      .concat(counter_clockwise.slice(0, counter_clockwise.indexOf(0)));
+  };
+  const interior_angles = (...vecs) => vecs
+    .map((v, i, ar) => counter_clockwise_angle2(v, ar[(i + 1) % ar.length]));
+  const bisect_vectors = (a, b) => {
+    const aV = normalize(a);
+    const bV = normalize(b);
+    return dot(aV, bV) < (-1 + EPSILON)
+      ? [-aV[1], aV[0]]
+      : normalize(add(aV, bV));
+  };
+  const bisect_lines2 = (vectorA, pointA, vectorB, pointB) => {
+    const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
+    if (Math.abs(denominator) < EPSILON) {
+      const solution = [[vectorA[0], vectorA[1]], midpoint(pointA, pointB)];
+      const array = [solution, solution];
+      const dt = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
+      delete array[(dt > 0 ? 1 : 0)];
+      return array;
+    }
+    const numerator = (pointB[0] - pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1] - pointA[1]);
+    const t = numerator / denominator;
+    const origin = [
+      pointA[0] + vectorA[0] * t,
+      pointA[1] + vectorA[1] * t,
+    ];
+    const bisects = [bisect_vectors(vectorA, vectorB)];
+    bisects[1] = rotate90(bisects[0]);
+    return bisects.map(vector => ({ vector, origin }));
+  };
+  const subsect_radians = (divisions, angleA, angleB) => {
+    const angle = counter_clockwise_angle2_radians(angleA, angleB) / divisions;
+    return Array.from(Array(divisions - 1))
+      .map((_, i) => angleA + angle * i);
+  };
+  const subsect = (divisions, vectorA, vectorB) => {
+    const angleA = Math.atan2(vectorA[1], vectorA[0]);
+    const angleB = Math.atan2(vectorB[1], vectorB[0]);
+    return subsect_radians(divisions, angleA, angleB)
+      .map(rad => [Math.cos(rad), Math.sin(rad)]);
+  };
+  const circumcircle = function (a, b, c) {
+    const A = b[0] - a[0];
+    const B = b[1] - a[1];
+    const C = c[0] - a[0];
+    const D = c[1] - a[1];
+    const E = A * (a[0] + b[0]) + B * (a[1] + b[1]);
+    const F = C * (a[0] + c[0]) + D * (a[1] + c[1]);
+    const G = 2 * (A * (c[1] - b[1]) - B * (c[0] - b[0]));
+    if (Math.abs(G) < EPSILON) {
+      const minx = Math.min(a[0], b[0], c[0]);
+      const miny = Math.min(a[1], b[1], c[1]);
+      const dx = (Math.max(a[0], b[0], c[0]) - minx) * 0.5;
+      const dy = (Math.max(a[1], b[1], c[1]) - miny) * 0.5;
+      return {
+        origin: [minx + dx, miny + dy],
+        radius: Math.sqrt(dx * dx + dy * dy),
+      };
+    }
+    const origin = [(D * E - B * F) / G, (A * F - C * E) / G];
+    const dx = origin[0] - a[0];
+    const dy = origin[1] - a[1];
+    return {
+      origin,
+      radius: Math.sqrt(dx * dx + dy * dy),
+    };
+  };
+  const signed_area = points => 0.5 * points
+    .map((el, i, arr) => {
+      const next = arr[(i + 1) % arr.length];
+      return el[0] * next[1] - next[0] * el[1];
+    }).reduce((a, b) => a + b, 0);
+  const centroid = (points) => {
+    const sixthArea = 1 / (6 * signed_area(points));
+    return points.map((el, i, arr) => {
+      const next = arr[(i + 1) % arr.length];
+      const mag = el[0] * next[1] - next[0] * el[1];
+      return [(el[0] + next[0]) * mag, (el[1] + next[1]) * mag];
+    }).reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0])
+      .map(c => c * sixthArea);
+  };
+  const enclosing_rectangle = (points) => {
+    const mins = Array(points[0].length).fill(Infinity);
+    const maxs = Array(points[0].length).fill(-Infinity);
+    points.forEach(point => point
+      .forEach((c, i) => {
+        if (c < mins[i]) { mins[i] = c; }
+        if (c > maxs[i]) { maxs[i] = c; }
+      }));
+    const lengths = maxs.map((max, i) => max - mins[i]);
+    return rect_form(...lengths, ...mins);
+  };
+  const make_regular_polygon = (sides, radius = 1, x = 0, y = 0) => {
+    const halfwedge = TWO_PI / sides / 2;
+    const r = radius / 2 / Math.cos(halfwedge);
+    return Array.from(Array(Math.floor(sides)))
+      .map((_, i) => TWO_PI * (i / sides))
+      .map(a => [x + r * Math.cos(a), y + r * Math.sin(a)])
+      .map(p => p.map(n => clean_number(n, 14)));
+  };
+  const line_segment_exclusive = function (lineVector, linePoint, segmentA, segmentB) {
+    const pt = segmentA;
+    const vec = [segmentB[0] - segmentA[0], segmentB[1] - segmentA[1]];
+    return intersect_lines(lineVector, linePoint, vec, pt, exclude_l_s);
+  };
+  const split_polygon = () => console.warn("split polygon not done");
+  const split_convex_polygon = (poly, lineVector, linePoint) => {
+    let vertices_intersections = poly.map((v, i) => {
+      let intersection = point_on_line(v, lineVector, linePoint);
+      return { point: intersection ? v : null, at_index: i };
+    }).filter(el => el.point != null);
+    let edges_intersections = poly.map((v, i, arr) => {
+      let intersection = line_segment_exclusive(lineVector, linePoint, v, arr[(i + 1) % arr.length]);
+      return { point: intersection, at_index: i };
+    }).filter(el => el.point != null);
+    if (edges_intersections.length == 2) {
+      let sorted_edges = edges_intersections.slice()
+        .sort((a,b) => a.at_index - b.at_index);
+      let face_a = poly
+        .slice(sorted_edges[1].at_index+1)
+        .concat(poly.slice(0, sorted_edges[0].at_index+1));
+      face_a.push(sorted_edges[0].point);
+      face_a.push(sorted_edges[1].point);
+      let face_b = poly
+        .slice(sorted_edges[0].at_index+1, sorted_edges[1].at_index+1);
+      face_b.push(sorted_edges[1].point);
+      face_b.push(sorted_edges[0].point);
+      return [face_a, face_b];
+    } else if (edges_intersections.length == 1 && vertices_intersections.length == 1) {
+      vertices_intersections[0]["type"] = "v";
+      edges_intersections[0]["type"] = "e";
+      let sorted_geom = vertices_intersections.concat(edges_intersections)
+        .sort((a,b) => a.at_index - b.at_index);
+      let face_a = poly.slice(sorted_geom[1].at_index+1)
+        .concat(poly.slice(0, sorted_geom[0].at_index+1));
+      if (sorted_geom[0].type === "e") { face_a.push(sorted_geom[0].point); }
+      face_a.push(sorted_geom[1].point);
+      let face_b = poly
+        .slice(sorted_geom[0].at_index+1, sorted_geom[1].at_index+1);
+      if (sorted_geom[1].type === "e") { face_b.push(sorted_geom[1].point); }
+      face_b.push(sorted_geom[0].point);
+      return [face_a, face_b];
+    } else if (vertices_intersections.length == 2) {
+      let sorted_vertices = vertices_intersections.slice()
+        .sort((a,b) => a.at_index - b.at_index);
+      let face_a = poly
+        .slice(sorted_vertices[1].at_index)
+        .concat(poly.slice(0, sorted_vertices[0].at_index+1));
+      let face_b = poly
+        .slice(sorted_vertices[0].at_index, sorted_vertices[1].at_index+1);
+      return [face_a, face_b];
+    }
+    return [poly.slice()];
+  };
+  const convex_hull = (points, include_collinear = false, epsilon = EPSILON) => {
+    let INFINITE_LOOP = 10000;
+    let sorted = points.slice().sort((a, b) =>
+      (Math.abs(a[1] - b[1]) < epsilon
+        ? a[0] - b[0]
+        : a[1] - b[1]));
+    let hull = [];
+    hull.push(sorted[0]);
+    let ang = 0;
+    let infiniteLoop = 0;
+    do {
+      infiniteLoop += 1;
+      let h = hull.length - 1;
+      let angles = sorted
+        .filter(el => !(Math.abs(el[0] - hull[h][0]) < epsilon
+          && Math.abs(el[1] - hull[h][1]) < epsilon))
+        .map((el) => {
+          let angle = Math.atan2(hull[h][1] - el[1], hull[h][0] - el[0]);
+          while (angle < ang) { angle += Math.PI * 2; }
+          return { node: el, angle, distance: undefined };
+        })
+        .sort((a, b) => ((a.angle < b.angle) ? -1 : (a.angle > b.angle) ? 1 : 0));
+      if (angles.length === 0) { return undefined; }
+      let rightTurn = angles[0];
+      angles = angles.filter(el => Math.abs(rightTurn.angle - el.angle) < epsilon)
+        .map((el) => {
+          let distance = Math.sqrt(((hull[h][0] - el.node[0]) ** 2) + ((hull[h][1] - el.node[1]) ** 2));
+          el.distance = distance;
+          return el;
+        })
+        .sort((a, b) => ((a.distance < b.distance) ? 1 : (a.distance > b.distance) ? -1 : 0));
+      if (hull.filter(el => el === angles[0].node).length > 0) {
+        return hull;
+      }
+      hull.push(angles[0].node);
+      ang = Math.atan2(hull[h][1] - angles[0].node[1], hull[h][0] - angles[0].node[0]);
+    } while (infiniteLoop < INFINITE_LOOP);
+  };
+
+  var geometry = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    R2D: R2D,
+    D2R: D2R,
+    TWO_PI: TWO_PI,
+    is_counter_clockwise_between: is_counter_clockwise_between,
+    clockwise_angle2_radians: clockwise_angle2_radians,
+    counter_clockwise_angle2_radians: counter_clockwise_angle2_radians,
+    clockwise_angle2: clockwise_angle2,
+    counter_clockwise_angle2: counter_clockwise_angle2,
+    counter_clockwise_vector_order: counter_clockwise_vector_order,
+    interior_angles: interior_angles,
+    bisect_vectors: bisect_vectors,
+    bisect_lines2: bisect_lines2,
+    subsect_radians: subsect_radians,
+    subsect: subsect,
+    circumcircle: circumcircle,
+    signed_area: signed_area,
+    centroid: centroid,
+    enclosing_rectangle: enclosing_rectangle,
+    make_regular_polygon: make_regular_polygon,
+    split_polygon: split_polygon,
+    split_convex_polygon: split_convex_polygon,
+    convex_hull: convex_hull
+  });
+
+  const smallest_comparison_search = (obj, array, compare_func) => {
+    const objs = array.map((o, i) => ({ o, i, d: compare_func(obj, o) }));
+    let index;
+    let smallest_value = Infinity;
+    for (let i = 0; i < objs.length; i += 1) {
+      if (objs[i].d < smallest_value) {
+        index = i;
+        smallest_value = objs[i].d;
+      }
+    }
+    return index;
+  };
+  const nearest_point2 = (point, array_of_points) => {
+    const index = smallest_comparison_search(point, array_of_points, distance2);
+    return index === undefined ? undefined : array_of_points[index];
+  };
+  const nearest_point = (point, array_of_points) => {
+    const index = smallest_comparison_search(point, array_of_points, distance);
+    return index === undefined ? undefined : array_of_points[index];
+  };
+  const nearest_point_on_line = (lineVec, linePoint, point, limiterFunc, epsilon = EPSILON) => {
+    const magSquared = (lineVec[0] ** 2) + (lineVec[1] ** 2);
+    const vectorToPoint = [0, 1].map((_, i) => point[i] - linePoint[i]);
+    const dot = [0, 1].map((_, i) => lineVec[i] * vectorToPoint[i])
+      .reduce((a, b) => a + b, 0);
+    const dist = dot / magSquared;
+    const d = limiterFunc(dist, epsilon);
+    return [0, 1].map((_, i) => linePoint[i] + lineVec[i] * d);
+  };
+  const segment_limiter = (dist) => {
+    if (dist < -EPSILON) { return 0; }
+    if (dist > 1 + EPSILON) { return 1; }
+    return dist;
+  };
+  const nearest_point_on_polygon = (polygon, point) => {
+    const v = polygon
+      .map((p, i, arr) => subtract(arr[(i + 1) % arr.length], p));
+    return polygon
+      .map((p, i) => nearest_point_on_line(v[i], p, point, segment_limiter))
+      .map((p, i) => ({ point: p, i, distance: distance(p, point) }))
+      .sort((a, b) => a.distance - b.distance)
+      .shift();
+  };
+  const nearest_point_on_circle = (radius, origin, point) => add(
+    origin, scale(normalize(subtract(point, origin)), radius)
+  );
+  const nearest_point_on_ellipse = () => false;
+
+  var nearest = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    nearest_point2: nearest_point2,
+    nearest_point: nearest_point,
+    nearest_point_on_line: nearest_point_on_line,
+    segment_limiter: segment_limiter,
+    nearest_point_on_polygon: nearest_point_on_polygon,
+    nearest_point_on_circle: nearest_point_on_circle,
+    nearest_point_on_ellipse: nearest_point_on_ellipse
+  });
+
+  const overlap_lines = (aVec, aPt, bVec, bPt, compA, compB, epsilon = EPSILON) => {
+    const denominator0 = cross2(aVec, bVec);
+    const denominator1 = -denominator0;
+    const numerator0 = cross2(subtract(bPt, aPt), bVec);
+    const numerator1 = cross2(subtract(aPt, bPt), aVec);
+    if (Math.abs(denominator0) < epsilon) {
+      return false;
+    }
+    const t0 = numerator0 / denominator0;
+    const t1 = numerator1 / denominator1;
+    return compA(t0, epsilon) && compB(t1, epsilon);
+  };
+  const overlap_line_line_inclusive = (aV, aP, bV, bP, ep = EPSILON) =>
+    overlap_lines(aV, aP, bV, bP, include_l, include_l, ep);
+  const overlap_line_ray_inclusive = (aV, aP, bV, bP, ep = EPSILON) =>
+    overlap_lines(aV, aP, bV, bP, include_l, include_r, ep);
+  const overlap_line_segment_inclusive = (aV, aP, b0, b1, ep = EPSILON) =>
+    overlap_lines(aV, aP, subtract(b1, b0), b0, include_l, include_s, ep);
+  const overlap_ray_ray_inclusive = (aV, aP, bV, bP, ep = EPSILON) =>
+    overlap_lines(aV, aP, bV, bP, include_r, include_r, ep);
+  const overlap_ray_segment_inclusive = (aV, aP, b0, b1, ep = EPSILON) =>
+    overlap_lines(aV, aP, subtract(b1, b0), b0, include_r, include_s, ep);
+  const overlap_segment_segment_inclusive = (a0, a1, b0, b1, ep = EPSILON) =>
+    overlap_lines(subtract(a1, a0), a0, subtract(b1, b0), b0, include_s, include_s, ep);
+  const overlap_line_line_exclusive = (aV, aP, bV, bP, ep = EPSILON) =>
+    overlap_lines(aV, aP, bV, bP, exclude_l, exclude_l, ep);
+  const overlap_line_ray_exclusive = (aV, aP, bV, bP, ep = EPSILON) =>
+    overlap_lines(aV, aP, bV, bP, exclude_l, exclude_r, ep);
+  const overlap_line_segment_exclusive = (aV, aP, b0, b1, ep = EPSILON) =>
+    overlap_lines(aV, aP, subtract(b1, b0), b0, exclude_l, exclude_s, ep);
+  const overlap_ray_ray_exclusive = (aV, aP, bV, bP, ep = EPSILON) =>
+    overlap_lines(aV, aP, bV, bP, exclude_r, exclude_r, ep);
+  const overlap_ray_segment_exclusive = (aV, aP, b0, b1, ep = EPSILON) =>
+    overlap_lines(aV, aP, subtract(b1, b0), b0, exclude_r, exclude_s, ep);
+  const overlap_segment_segment_exclusive = (a0, a1, b0, b1, ep = EPSILON) =>
+    overlap_lines(subtract(a1, a0), a0, subtract(b1, b0), b0, exclude_s, exclude_s, ep);
+
+  var overlap_lines$1 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    overlap_lines: overlap_lines,
+    overlap_line_line_inclusive: overlap_line_line_inclusive,
+    overlap_line_ray_inclusive: overlap_line_ray_inclusive,
+    overlap_line_segment_inclusive: overlap_line_segment_inclusive,
+    overlap_ray_ray_inclusive: overlap_ray_ray_inclusive,
+    overlap_ray_segment_inclusive: overlap_ray_segment_inclusive,
+    overlap_segment_segment_inclusive: overlap_segment_segment_inclusive,
+    overlap_line_line_exclusive: overlap_line_line_exclusive,
+    overlap_line_ray_exclusive: overlap_line_ray_exclusive,
+    overlap_line_segment_exclusive: overlap_line_segment_exclusive,
+    overlap_ray_ray_exclusive: overlap_ray_ray_exclusive,
+    overlap_ray_segment_exclusive: overlap_ray_segment_exclusive,
+    overlap_segment_segment_exclusive: overlap_segment_segment_exclusive
+  });
+
+  const point_in_convex_poly_inclusive = (point, poly, epsilon = EPSILON) => poly
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
+    .map(s => cross2(subtract(s[1], s[0]), subtract(point, s[0])) > -epsilon)
+    .map((s, _, arr) => s === arr[0])
+    .reduce((prev, curr) => prev && curr, true);
+  const point_in_convex_poly_exclusive = (point, poly, epsilon = EPSILON) => poly
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
+    .map(s => cross2(subtract(s[1], s[0]), subtract(point, s[0])) > epsilon)
+    .map((s, _, arr) => s === arr[0])
+    .reduce((prev, curr) => prev && curr, true);
+  const point_in_poly = (point, poly) => {
+    let isInside = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      if ((poly[i][1] > point[1]) != (poly[j][1] > point[1])
+        && point[0] < (poly[j][0] - poly[i][0])
+        * (point[1] - poly[i][1]) / (poly[j][1] - poly[i][1])
+        + poly[i][0]) {
+        isInside = !isInside;
+      }
+    }
+    return isInside;
+  };
+  const overlap_convex_polygons = (poly1, poly2, seg_seg, pt_in_poly) => {
+    const e1 = poly1.map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
+    const e2 = poly2.map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
+    for (let i = 0; i < e1.length; i += 1) {
+      for (let j = 0; j < e2.length; j += 1) {
+        if (seg_seg(e1[i][0], e1[i][1], e2[j][0], e2[j][1])) {
+          return true;
+        }
+      }
+    }
+    if (pt_in_poly(poly2[0], poly1)) { return true; }
+    if (pt_in_poly(poly1[0], poly2)) { return true; }
+    return false;
+  };
+  const overlap_convex_polygons_inclusive = (poly1, poly2) => overlap_convex_polygons(
+    poly1,
+    poly2,
+    overlap_segment_segment_inclusive,
+    point_in_convex_poly_inclusive
+  );
+  const overlap_convex_polygons_exclusive = (poly1, poly2) => overlap_convex_polygons(
+    poly1,
+    poly2,
+    overlap_segment_segment_exclusive,
+    point_in_convex_poly_exclusive
+  );
+  const enclose_convex_polygons_inclusive = (outer, inner) => {
+    const outerGoesInside = outer
+      .map(p => point_in_convex_poly_inclusive(p, inner))
+      .reduce((a, b) => a || b, false);
+    const innerGoesOutside = inner
+      .map(p => point_in_convex_poly_inclusive(p, inner))
+      .reduce((a, b) => a && b, true);
+    return (!outerGoesInside && innerGoesOutside);
+  };
+
+  var overlap_polygon = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    point_in_convex_poly_inclusive: point_in_convex_poly_inclusive,
+    point_in_convex_poly_exclusive: point_in_convex_poly_exclusive,
+    point_in_poly: point_in_poly,
+    overlap_convex_polygons_inclusive: overlap_convex_polygons_inclusive,
+    overlap_convex_polygons_exclusive: overlap_convex_polygons_exclusive,
+    enclose_convex_polygons_inclusive: enclose_convex_polygons_inclusive
+  });
+
+  const overlap = Object.assign(Object.create(null),
+    overlap_lines$1,
+    overlap_point,
+    overlap_polygon,
+  );
+
+  const type_of = function (obj) {
+    switch (obj.constructor.name) {
+      case "vector":
+      case "matrix":
+      case "segment":
+      case "ray":
+      case "line":
+      case "circle":
+      case "ellipse":
+      case "rect":
+      case "polygon": return obj.constructor.name;
+    }
+    if (typeof obj === "object") {
+      if (obj.radius != null) { return "circle"; }
+      if (obj.width != null) { return "rect"; }
+      if (obj.x != null || typeof obj[0] === "number") { return "vector"; }
+      if (obj[0] != null && obj[0].length && (typeof obj[0].x === "number" || typeof obj[0][0] === "number")) { return "segment"; }
+      if (obj.vector != null && obj.origin != null) { return "line"; }
+    }
+    return undefined;
+  };
+
+  const acossafe = function (x) {
+    if (x >= 1.0) return 0;
+    if (x <= -1.0) return Math.PI;
+    return Math.acos(x);
+  };
+  const rotatePoint = function (fp, pt, a) {
+    const x = pt[0] - fp[0];
+    const y = pt[1] - fp[1];
+    const xRot = x * Math.cos(a) + y * Math.sin(a);
+    const yRot = y * Math.cos(a) - x * Math.sin(a);
+    return [fp[0] + xRot, fp[1] + yRot];
+  };
+  const circle_circle = function (c1, c2, epsilon = EPSILON) {
+    const r = (c1.radius < c2.radius) ? c1.radius : c2.radius;
+    const R = (c1.radius < c2.radius) ? c2.radius : c1.radius;
+    const smCenter = (c1.radius < c2.radius) ? c1.origin : c2.origin;
+    const bgCenter = (c1.radius < c2.radius) ? c2.origin : c1.origin;
+    const vec = [smCenter[0] - bgCenter[0], smCenter[1] - bgCenter[1]];
+    const d = Math.sqrt((vec[0] ** 2) + (vec[1] ** 2));
+    if (d < epsilon) { return undefined; }
+    const point = vec.map((v, i) => v / d * R + bgCenter[i]);
+    if (Math.abs((R + r) - d) < epsilon
+      || Math.abs(R - (r + d)) < epsilon) { return [point]; }
+    if ((d + r) < R || (R + r < d)) { return undefined; }
+    const angle = acossafe((r * r - d * d - R * R) / (-2.0 * d * R));
+    const pt1 = rotatePoint(bgCenter, point, +angle);
+    const pt2 = rotatePoint(bgCenter, point, -angle);
+    return [pt1, pt2];
+  };
+  const circle_line_func = function (circleRadius, circleOrigin, vector, origin, func, epsilon = EPSILON) {
+    const magSq = vector[0] ** 2 + vector[1] ** 2;
+    const mag = Math.sqrt(magSq);
+    const norm = mag === 0 ? vector : vector.map(c => c / mag);
+    const rot90 = [-norm[1], norm[0]];
+    const bvec = [origin[0] - circleOrigin[0], origin[1] - circleOrigin[1]];
+    const det = bvec[0] * norm[1] - norm[0] * bvec[1];
+    if (Math.abs(det) > circleRadius + epsilon) { return undefined; }
+    const side = Math.sqrt((circleRadius ** 2) - (det ** 2));
+    const f = (s, i) => circleOrigin[i] - rot90[i] * det + norm[i] * s;
+    const results = Math.abs(circleRadius - Math.abs(det)) < epsilon
+      ? [side].map((s) => [s, s].map(f))
+      : [-side, side].map((s) => [s, s].map(f));
+    const ts = results.map(res => res.map((n, i) => n - origin[i]))
+      .map(v => v[0] * vector[0] + vector[1] * v[1])
+      .map(d => d / magSq);
+    return results.filter((_, i) => func(ts[i], epsilon));
+  };
+  const line_func = () => true;
+  const ray_func = (n, epsilon) => n > -epsilon;
+  const segment_func = (n, epsilon) => n > -epsilon && n < 1 + epsilon;
+  const circle_line = (circle, line, epsilon = EPSILON) => circle_line_func(
+    circle.radius,
+    circle.origin,
+    line.vector,
+    line.origin,
+    line_func,
+    epsilon
+  );
+  const circle_ray = (circle, ray, epsilon = EPSILON) => circle_line_func(
+    circle.radius,
+    circle.origin,
+    ray.vector,
+    ray.origin,
+    ray_func,
+    epsilon
+  );
+  const circle_segment = (circle, segment, epsilon = EPSILON) => circle_line_func(
+    circle.radius,
+    circle.origin,
+    segment.vector,
+    segment.origin,
+    segment_func,
+    epsilon
+  );
+
+  var intersect_circle = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    circle_circle: circle_circle,
+    circle_line: circle_line,
+    circle_ray: circle_ray,
+    circle_segment: circle_segment
+  });
+
+  const intersect_line_seg = (vector, origin, pt0, pt1) => intersect_lines(
+    vector, origin,
+    subtract(pt1, pt0), pt0,
+    include_l_s
+  );
+  const intersect_ray_seg_include = (vector, origin, pt0, pt1) => intersect_lines(
+    vector, origin,
+    subtract(pt1, pt0), pt0,
+    include_r_s
+  );
+  const intersect_ray_seg_exclude = (vector, origin, pt0, pt1) => intersect_lines(
+    vector, origin,
+    subtract(pt1, pt0), pt0,
+    exclude_r_s
+  );
+  const intersect_seg_seg_exclude = (a0, a1, b0, b1) => intersect_lines(
+    subtract(a1, a0), a0,
+    subtract(b1, b0), b0,
+    exclude_s_s
+  );
+  const quick_equivalent_2 = function (a, b) {
+    return Math.abs(a[0] - b[0]) < EPSILON && Math.abs(a[1] - b[1]) < EPSILON;
+  };
+  const convex_poly_circle = function (poly, center, radius) {
+    return [];
+  };
+  const convex_poly_line = function (poly, lineVector, linePoint) {
+    const intersections = poly
+      .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
+      .map(el => intersect_line_seg(lineVector, linePoint, el[0], el[1]))
+      .filter(el => el != null);
+    switch (intersections.length) {
+      case 0: return undefined;
+      case 1: return [intersections[0], intersections[0]];
+      case 2: return intersections;
+      default:
+        for (let i = 1; i < intersections.length; i += 1) {
+          if (!quick_equivalent_2(intersections[0], intersections[i])) {
+            return [intersections[0], intersections[i]];
+          }
+        }
+        return undefined;
+    }
+  };
+  const convex_poly_ray_inclusive = function (poly, lineVector, linePoint) {
+    const intersections = poly
+      .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
+      .map(el => intersect_ray_seg_include(lineVector, linePoint, el[0], el[1]))
+      .filter(el => el != null);
+    switch (intersections.length) {
+      case 0: return undefined;
+      case 1: return intersections;
+      case 2:
+        return quick_equivalent_2(intersections[0], intersections[1])
+          ? [intersections[0]]
+          : intersections;
+      default:
+        for (let i = 1; i < intersections.length; i += 1) {
+          if (!quick_equivalent_2(intersections[0], intersections[i])) {
+            return [intersections[0], intersections[i]];
+          }
+        }
+        return undefined;
+    }
+  };
+  const convex_poly_ray_exclusive = function (poly, lineVector, linePoint) {
+    const intersections = poly
+      .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
+      .map(el => intersect_ray_seg_exclude(lineVector, linePoint, el[0], el[1]))
+      .filter(el => el != null);
+    switch (intersections.length) {
+      case 0: return undefined;
+      case 1: return intersections;
+      case 2:
+        return quick_equivalent_2(intersections[0], intersections[1])
+          ? [intersections[0]]
+          : intersections;
+      default:
+        for (let i = 1; i < intersections.length; i += 1) {
+          if (!quick_equivalent_2(intersections[0], intersections[i])) {
+            return [intersections[0], intersections[i]];
+          }
+        }
+        return undefined;
+    }
+  };
+  const convex_poly_segment_inclusive$1 = function (poly, segmentA, segmentB, epsilon = EPSILON) {
+    console.log("todo");
+  };
+  const convex_poly_segment_exclusive = function (poly, segmentA, segmentB, epsilon = EPSILON) {
+    const intersections = poly
+      .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
+      .map(el => intersect_seg_seg_exclude(segmentA, segmentB, el[0], el[1]))
+      .filter(el => el != null);
+    switch (intersections.length) {
+      case 0: return undefined;
+      case 1: return intersections;
+      case 2:
+        return quick_equivalent_2(intersections[0], intersections[1])
+          ? [intersections[0]]
+          : intersections;
+      default: throw new Error("clipping segment in a convex polygon resulting in 3 or more points");
+    }
+  };
+
+  var intersect_polygon = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    convex_poly_circle: convex_poly_circle,
+    convex_poly_line: convex_poly_line,
+    convex_poly_ray_inclusive: convex_poly_ray_inclusive,
+    convex_poly_ray_exclusive: convex_poly_ray_exclusive,
+    convex_poly_segment_inclusive: convex_poly_segment_inclusive$1,
+    convex_poly_segment_exclusive: convex_poly_segment_exclusive
+  });
+
+  const line = (a, b, compFunc, epsilon) => intersect_lines(
+    a.vector, a.origin, b.vector, b.origin, compFunc, epsilon
+  );
+  const convexPolyLine = (a, b) => convex_poly_line(
+    a.constructor === Array ? a : a.points, b.vector, b.origin);
+  const convexPolyRay = (a, b, fn) => fn(
+    a.constructor === Array ? a : a.points, b.vector, b.origin);
+  const convexPolySegment = (a, b, fn) => fn(
+    a.constructor === Array ? a : a.points, b[0], b[1]);
+  const intersect_func = {
+    polygon: {
+      line: convexPolyLine,
+      ray: (a, b, c) => convexPolyRay(a, b, c === false
+        ? convex_poly_ray_inclusive
+        : convex_poly_ray_exclusive),
+      segment: (a, b, c) => convexPolySegment(a, b, c === false
+        ? convex_poly_segment_inclusive
+        : convex_poly_segment_exclusive),
+    },
+    circle: {
+      circle: circle_circle,
+      line: circle_line,
+      ray: circle_ray,
+      segment: circle_segment,
+    },
+    line: {
+      polygon: (a, b) => convexPolyLine(b, a),
+      circle: (a, b) => circle_line(b, a),
+      line: (a, b) => line(a, b, include_l_l),
+      ray: (a, b, c) => line(a, b, c === false ? exclude_l_r : include_l_r),
+      segment: (a, b, c) => line(a, b, c === false ? exclude_l_s : include_l_s),
+    },
+    ray: {
+      polygon: (a, b, c) => convexPolyRay(b, a, c === false
+        ? convex_poly_ray_inclusive
+        : convex_poly_ray_exclusive),
+      circle: (a, b) => circle_ray(b, a),
+      line: (a, b, c) => line(b, a, c === false ? exclude_l_r : include_l_r),
+      ray: (a, b, c) => line(a, b, c === false ? exclude_r_r : include_r_r),
+      segment: (a, b, c) => line(a, b, c === false ? exclude_r_s : include_r_s),
+    },
+    segment: {
+      polygon: (a, b, c) => convexPolySegment(b, a, c === false
+        ? convex_poly_segment_inclusive
+        : convex_poly_segment_exclusive),
+      circle: (a, b) => circle_segment(b, a),
+      line: (a, b, c) => line(b, a, c === false ? exclude_l_s : include_l_s),
+      ray: (a, b, c) => line(b, a, c === false ? exclude_r_s : include_r_s),
+      segment: (a, b, c) => line(a, b, c === false ? exclude_s_s : include_s_s),
+    },
+  };
+  const intersect = function (a, b) {
+    const aT = type_of(a);
+    const bT = type_of(b);
+    return intersect_func[aT][bT](...arguments);
+  };
+
+  const VectorArgs = function () {
+    get_vector(arguments).forEach(n => this.push(n));
+  };
+
+  const VectorGetters = {
+    x: function () { return this[0]; },
+    y: function () { return this[1]; },
+    z: function () { return this[2]; },
+  };
+
+  const table = {
+    preserve: {
+      magnitude: function () { return magnitude(this); },
+      isEquivalent: function () {
+        return equivalent_vectors(this, get_vector(arguments));
+      },
+      isParallel: function () {
+        return parallel(...resize_up(this, get_vector(arguments)));
+      },
+      dot: function () {
+        return dot(...resize_up(this, get_vector(arguments)));
+      },
+      distanceTo: function () {
+        return distance(...resize_up(this, get_vector(arguments)));
+      },
+    },
+    vector: {
+      copy: function () { return [...this]; },
+      normalize: function () { return normalize(this); },
+      scale: function () { return scale(this, arguments[0]); },
+      flip: function () { return flip(this); },
+      rotate90: function () { return rotate90(this); },
+      rotate270: function () { return rotate270(this); },
+      cross: function () {
+        return cross3(
+          resize(3, this),
+          resize(3, get_vector(arguments))
+        );
+      },
+      transform: function () {
+        return multiply_matrix3_vector3(
+          get_matrix_3x4(arguments),
+          resize(3, this)
+        );
+      },
+      add: function () {
+        return add(this, resize(this.length, get_vector(arguments)));
+      },
+      subtract: function () {
+        return subtract(this, resize(this.length, get_vector(arguments)));
+      },
+      rotateZ: function (angle, origin) {
+        return multiply_matrix3_vector3(
+          get_matrix_3x4(make_matrix2_rotate(angle, origin)),
+          resize(3, this)
+        );
+      },
+      lerp: function (vector, pct) {
+        return lerp(this, resize(this.length, get_vector(vector)), pct);
+      },
+      midpoint: function () {
+        return midpoint(...resize_up(this, get_vector(arguments)));
+      },
+      bisect: function () {
+        return bisect_vectors(this, get_vector(arguments));
+      },
+    }
+  };
+  const VectorMethods = {};
+  Object.keys(table.preserve).forEach(key => {
+    VectorMethods[key] = table.preserve[key];
+  });
+  Object.keys(table.vector).forEach(key => {
+    VectorMethods[key] = function () {
+      return Constructors.vector(...table.vector[key].apply(this, arguments));
+    };
+  });
+
+  const VectorStatic = {
+    fromAngle: function (angle) {
+      return Constructors.vector(Math.cos(angle), Math.sin(angle));
+    },
+    fromAngleDegrees: function (angle) {
+      return Constructors.vector.fromAngle(angle * D2R);
+    },
+  };
+
+  var Vector = {
+    vector: {
+      P: Array.prototype,
+      A: VectorArgs,
+      G: VectorGetters,
+      M: VectorMethods,
+      S: VectorStatic,
+    }
+  };
+
+  const LineProto = {};
+  LineProto.prototype = Object.create(Object.prototype);
+  LineProto.prototype.constructor = LineProto;
+  LineProto.prototype.isParallel = function () {
+    const arr = resize_up(this.vector, get_line(...arguments).vector);
+    return parallel(...arr);
+  };
+  LineProto.prototype.isDegenerate = function (epsilon = EPSILON) {
+    return degenerate(this.vector);
+  };
+  LineProto.prototype.reflection = function () {
+    return Constructors.matrix(make_matrix2_reflection(this.vector, this.origin));
+  };
+  LineProto.prototype.nearestPoint = function () {
+    const point = get_vector(arguments);
+    return Constructors.vector(
+      nearest_point_on_line(this.vector, this.origin, point, this.clip_function)
+    );
+  };
+  LineProto.prototype.transform = function () {
+    const dim = this.dimension;
+    const r = multiply_matrix3_line3(
+      get_matrix_3x4(arguments),
+      resize(3, this.vector),
+      resize(3, this.origin)
+    );
+    return this.constructor(resize(dim, r.vector), resize(dim, r.origin));
+  };
+  LineProto.prototype.intersect = function (other) {
+    return intersect(this, other);
+  };
+  LineProto.prototype.bisect = function () {
+    const line = get_line(arguments);
+    return bisect_lines2(this.vector, this.origin, line.vector, line.origin);
+  };
+  Object.defineProperty(LineProto.prototype, "dimension", {
+    get: function () {
+      return [this.vector, this.origin]
+        .map(p => p.length)
+        .reduce((a, b) => Math.max(a, b), 0);
+    }
+  });
+
+  var Static = {
+    fromPoints: function () {
+      const points = get_vector_of_vectors(arguments);
+      return this.constructor({
+        vector: subtract(points[1], points[0]),
+        origin: points[0],
+      });
+    },
+    perpendicularBisector: function () {
+      const points = get_vector_of_vectors(arguments);
+      return this.constructor({
+        vector: rotate90(subtract(points[1], points[0])),
+        origin: average(points[0], points[1]),
+      });
+    },
+  };
+
+  var Line = {
+    line: {
+      P: LineProto.prototype,
+      A: function () {
+        const l = get_line(...arguments);
+        this.vector = Constructors.vector(l.vector);
+        this.origin = Constructors.vector(resize(this.vector.length, l.origin));
+      },
+      G: {
+        length: () => Infinity,
+      },
+      M: {
+        clip_function: dist => dist,
+        svgPath: function (length = 20000) {
+          const start = this.origin.add(this.vector.scale(-length / 2));
+          const end = this.vector.scale(length);
+          return `M${start[0]} ${start[1]}l${end[0]} ${end[1]}`;
+        },
+      },
+      S: Static
+    }
+  };
+
+  var Ray = {
+    ray: {
+      P: LineProto.prototype,
+      A: function () {
+        const ray = get_line(...arguments);
+        this.vector = Constructors.vector(ray.vector);
+        this.origin = Constructors.vector(resize(this.vector.length, ray.origin));
+      },
+      G: {
+        length: () => Infinity,
+      },
+      M: {
+        rotate180: function () {
+          return Constructors.ray(flip(this.vector), this.origin);
+        },
+        clip_function: dist => (dist < -EPSILON ? 0 : dist),
+        svgPath: function (length = 10000) {
+          const end = this.vector.scale(length);
+          return `M${this.origin[0]} ${this.origin[1]}l${end[0]} ${end[1]}`;
+        },
+      },
+      S: Static
+    }
+  };
+
+  var Segment = {
+    segment: {
+      P: LineProto.prototype,
+      A: function () {
+        const args = get_segment(...arguments);
+        this.points = [
+          Constructors.vector(args[0]),
+          Constructors.vector(args[1])
+        ];
+        this.vector = this.points[1].subtract(this.points[0]);
+        this.origin = this.points[0];
+      },
+      G: {
+        0: function () { return this.points[0]; },
+        1: function () { return this.points[1]; },
+        length: function () { return this.vector.magnitude(); }
+      },
+      M: {
+        clip_function: segment_limiter,
+        transform: function (...innerArgs) {
+          const dim = this.points[0].length;
+          const mat = get_matrix_3x4(innerArgs);
+          const transformed_points = this.points
+            .map(point => resize(3, point))
+            .map(point => multiply_matrix3_vector3(mat, point))
+            .map(point => resize(dim, point));
+          return Constructors.segment(transformed_points);
+        },
+        midpoint: function () {
+          return Constructors.vector(average(this.points[0], this.points[1]));
+        },
+        svgPath: function () {
+          const pointStrings = this.points.map(p => `${p[0]} ${p[1]}`);
+          return ["M", "L"].map((cmd, i) => `${cmd}${pointStrings[i]}`)
+            .join("");
+        },
+      },
+      S: {
+        fromPoints: function () {
+          return this.constructor(...arguments);
+        }
+      }
+    }
+  };
+
+  const CircleArgs = function () {
+    const vectors = get_vector_of_vectors(arguments);
+    const numbers = resize(3, flatten_arrays(arguments));
+    if (vectors.length === 2) {
+      this.radius = vectors[0].length === 1
+        ? vectors[0][0] : distance2(...vectors);
+      this.origin = vectors[0].length === 1
+        ? Constructors.vector(...vectors[1])
+        : Constructors.vector(...vectors[0]);
+    } else {
+      this.radius = numbers[0];
+      this.origin = Constructors.vector(numbers[1], numbers[2]);
+    }
+  };
+
+  const CircleGetters = {
+    x: function () { return this.origin[0]; },
+    y: function () { return this.origin[1]; },
+  };
+
+  const pointOnEllipse = function (cx, cy, rx, ry, zRotation, arcAngle) {
+    const cos_rotate = Math.cos(zRotation);
+    const sin_rotate = Math.sin(zRotation);
+    const cos_arc = Math.cos(arcAngle);
+    const sin_arc = Math.sin(arcAngle);
+    return [
+      cx + cos_rotate * rx * cos_arc + -sin_rotate * ry * sin_arc,
+      cy + sin_rotate * rx * cos_arc + cos_rotate * ry * sin_arc
+    ];
+  };
+  const pathInfo = function (cx, cy, rx, ry, zRotation, arcStart_, deltaArc_) {
+    let arcStart = arcStart_;
+    if (arcStart < 0 && !isNaN(arcStart)) {
+      while (arcStart < 0) {
+        arcStart += Math.PI * 2;
+      }
+    }
+    const deltaArc = deltaArc_ > Math.PI * 2 ? Math.PI * 2 : deltaArc_;
+    const start = pointOnEllipse(cx, cy, rx, ry, zRotation, arcStart);
+    const middle = pointOnEllipse(cx, cy, rx, ry, zRotation, arcStart + deltaArc / 2);
+    const end = pointOnEllipse(cx, cy, rx, ry, zRotation, arcStart + deltaArc);
+    const fa = ((deltaArc / 2) > Math.PI) ? 1 : 0;
+    const fs = ((deltaArc / 2) > 0) ? 1 : 0;
+    return {
+      x1: start[0],
+      y1: start[1],
+      x2: middle[0],
+      y2: middle[1],
+      x3: end[0],
+      y3: end[1],
+      fa,
+      fs
+    };
+  };
+  const cln = n => clean_number(n, 4);
+  const ellipticalArcTo = (rx, ry, phi_degrees, fa, fs, endX, endY) =>
+    `A${cln(rx)} ${cln(ry)} ${cln(phi_degrees)} ${cln(fa)} ${cln(fs)} ${cln(endX)} ${cln(endY)}`;
+
+  const CircleMethods = {
+    nearestPoint: function () {
+      return Constructors.vector(nearest_point_on_circle(
+        this.radius,
+        this.origin,
+        get_vector(arguments)
+      ));
+    },
+    intersect: function (object) {
+      return intersect(this, object);
+    },
+    svgPath: function (arcStart = 0, deltaArc = Math.PI * 2) {
+      const info = pathInfo(this.origin[0], this.origin[1], this.radius, this.radius, 0, arcStart, deltaArc);
+      const arc1 = ellipticalArcTo(this.radius, this.radius, 0, info.fa, info.fs, info.x2, info.y2);
+      const arc2 = ellipticalArcTo(this.radius, this.radius, 0, info.fa, info.fs, info.x3, info.y3);
+      return `M${info.x1} ${info.y1}${arc1}${arc2}`;
+    },
+    points: function (count = 128) {
+      return Array.from(Array(count))
+        .map((_, i) => ((2 * Math.PI) / count) * i)
+        .map(angle => [
+          this.origin[0] + this.radius * Math.cos(angle),
+          this.origin[1] + this.radius * Math.sin(angle)
+        ]);
+    },
+    polygon: function () {
+      return Constructors.polygon(this.points(arguments[0]));
+    },
+    segments: function () {
+      const points = this.points(arguments[0]);
+      return points.map((point, i) => {
+        const nextI = (i + 1) % points.length;
+        return [point, points[nextI]];
+      });
+    }
+  };
+
+  const CircleStatic = {
+    fromPoints: function () {
+      return this.constructor(...arguments);
+    },
+    fromThreePoints: function () {
+      const result = circumcircle(...arguments);
+      return this.constructor(result.radius, ...result.origin);
+    }
+  };
+
+  var Circle = {
+    circle: { A: CircleArgs, G: CircleGetters, M: CircleMethods, S: CircleStatic }
+  };
+
+  const getFoci = function (center, rx, ry, spin) {
+    const order = rx > ry;
+    const lsq = order ? (rx ** 2) - (ry ** 2) : (ry ** 2) - (rx ** 2);
+    const l = Math.sqrt(lsq);
+    const trigX = order ? Math.cos(spin) : Math.sin(spin);
+    const trigY = order ? Math.sin(spin) : Math.cos(spin);
+    return [
+      Constructors.vector(center[0] + l * trigX, center[1] + l * trigY),
+      Constructors.vector(center[0] - l * trigX, center[1] - l * trigY),
+    ];
+  };
+  var Ellipse = {
+    ellipse: {
+      A: function () {
+        const numbers = flatten_arrays(arguments).filter(a => !isNaN(a));
+        const params = resize(5, numbers);
+        this.rx = params[0];
+        this.ry = params[1];
+        this.origin = Constructors.vector(params[2], params[3]);
+        this.spin = params[4];
+        this.foci = getFoci(this.origin, this.rx, this.ry, this.spin);
+      },
+      G: {
+        x: function () { return this.origin[0]; },
+        y: function () { return this.origin[1]; },
+      },
+      M: {
+        nearestPoint: function () {
+          return Constructors.vector(nearest_point_on_ellipse(
+            this.origin,
+            this.radius,
+            get_vector(arguments)
+          ));
+        },
+        intersect: function (object) {
+          return intersect(this, object);
+        },
+        svgPath: function (arcStart = 0, deltaArc = Math.PI * 2) {
+          const info = pathInfo(this.origin[0], this.origin[1], this.rx, this.ry, this.spin, arcStart, deltaArc);
+          const arc1 = ellipticalArcTo(this.rx, this.ry, (this.spin / Math.PI) * 180, info.fa, info.fs, info.x2, info.y2);
+          const arc2 = ellipticalArcTo(this.rx, this.ry, (this.spin / Math.PI) * 180, info.fa, info.fs, info.x3, info.y3);
+          return `M${info.x1} ${info.y1}${arc1}${arc2}`;
+        },
+        points: function (count = 128) {
+          return Array.from(Array(count))
+            .map((_, i) => ((2 * Math.PI) / count) * i)
+            .map(angle => pointOnEllipse(
+              this.origin.x, this.origin.y,
+              this.rx, this.ry,
+              this.spin, angle
+            ));
+        },
+        polygon: function () {
+          return Constructors.polygon(this.points(arguments[0]));
+        },
+        segments: function () {
+          const points = this.points(arguments[0]);
+          return points.map((point, i) => {
+            const nextI = (i + 1) % points.length;
+            return [point, points[nextI]];
+          });
+        }
+      },
+      S: {
+      }
+    }
+  };
+
+  const makeClip = (e) => {
+    if (e === undefined) { return undefined; }
+    switch (e.length) {
+      case undefined: break;
+      case 1: return Constructors.vector(e);
+      case 2: return Constructors.segment(e);
+      default: return e;
+    }
+  };
+  const methods = {
+    area: function () {
+      return signed_area(this);
+    },
+    centroid: function () {
+      return Constructors.vector(centroid(this));
+    },
+    enclosingRectangle: function () {
+      return Constructors.rect(enclosing_rectangle(this));
+    },
+    contains: function () {
+      return point_in_poly(get_vector(arguments), this);
+    },
+    scale: function (magnitude, center = centroid(this)) {
+      const newPoints = this
+        .map(p => [0, 1].map((_, i) => p[i] - center[i]))
+        .map(vec => vec.map((_, i) => center[i] + vec[i] * magnitude));
+      return this.constructor.fromPoints(newPoints);
+    },
+    rotate: function (angle, centerPoint = centroid(this)) {
+      const newPoints = this.map((p) => {
+        const vec = [p[0] - centerPoint[0], p[1] - centerPoint[1]];
+        const mag = Math.sqrt((vec[0] ** 2) + (vec[1] ** 2));
+        const a = Math.atan2(vec[1], vec[0]);
+        return [
+          centerPoint[0] + Math.cos(a + angle) * mag,
+          centerPoint[1] + Math.sin(a + angle) * mag,
+        ];
+      });
+      return Constructors.polygon(newPoints);
+    },
+    translate: function () {
+      const vec = get_vector(...arguments);
+      const newPoints = this.map(p => p.map((n, i) => n + vec[i]));
+      return this.constructor.fromPoints(newPoints);
+    },
+    transform: function () {
+      const m = get_matrix_3x4(...arguments);
+      const newPoints = this
+        .map(p => multiply_matrix3_vector3(m, resize(3, p)));
+      return Constructors.polygon(newPoints);
+    },
+    nearest: function () {
+      const point = get_vector(...arguments);
+      const result = nearest_point_on_polygon(this, point);
+      return result === undefined
+        ? undefined
+        : Object.assign(result, { edge: this.sides[result.i] });
+    },
+    overlaps: function () {
+      const poly2Points = semi_flatten_arrays(arguments);
+      return overlap_convex_polygons_exclusive(this, poly2Points);
+    },
+    split: function () {
+      const line = get_line(...arguments);
+      const split_func = this.isConvex ? split_convex_polygon : split_polygon;
+      return split_func(this, line.vector, line.origin)
+        .map(poly => Constructors.polygon(poly));
+    },
+    intersectLine: function () {
+      const line = get_line(...arguments);
+      const e = convex_poly_line(this, line.vector, line.origin);
+      return makeClip(e);
+    },
+    intersectRay: function () {
+      const line = get_line(...arguments);
+      const e = convex_poly_ray_exclusive(this, line.vector, line.origin);
+      return makeClip(e);
+    },
+    intersectSegment: function () {
+      const edge = get_segment(...arguments);
+      const e = convex_poly_segment_exclusive(this, edge[0], edge[1]);
+      return makeClip(e);
+    },
+    svgPath: function () {
+      const pre = Array(this.length).fill("L");
+      pre[0] = "M";
+      return `${this.map((p, i) => `${pre[i]}${p[0]} ${p[1]}`).join("")}z`;
+    },
+    intersect: function (other) {
+      return intersect(this, other);
+    },
+  };
+  const PolygonProto = {};
+  PolygonProto.prototype = Object.create(Array.prototype);
+  PolygonProto.prototype.constructor = PolygonProto;
+  Object.keys(methods).forEach((key) => {
+    PolygonProto.prototype[key] = methods[key];
+  });
+
+  const rectToPoints = r => [
+    [r.x, r.y],
+    [r.x + r.width, r.y],
+    [r.x + r.width, r.y + r.height],
+    [r.x, r.y + r.height]
+  ];
+  const rectToSides = r => [
+    [[r.x, r.y], [r.x + r.width, r.y]],
+    [[r.x + r.width, r.y], [r.x + r.width, r.y + r.height]],
+    [[r.x + r.width, r.y + r.height], [r.x, r.y + r.height]],
+    [[r.x, r.y + r.height], [r.x, r.y]],
+  ];
+  var Rect = {
+    rect: {
+      P: PolygonProto.prototype,
+      A: function () {
+        const r = get_rect(...arguments);
+        this.width = r.width;
+        this.height = r.height;
+        this.origin = Constructors.vector(r.x, r.y);
+        this.push(...rectToPoints(this));
+      },
+      G: {
+        x: function () { return this.origin[0]; },
+        y: function () { return this.origin[1]; },
+      },
+      M: {
+        area: function () { return this.width * this.height; },
+        segments: function () { return rectToSides(this); },
+      },
+      S: {
+        fromPoints: function () {
+          return Constructors.rect(enclosing_rectangle(get_vector_of_vectors(arguments)));
+        }
+      }
+    }
+  };
+
+  var Polygon = {
+    polygon: {
+      P: PolygonProto.prototype,
+      A: function () {
+        this.push(...semi_flatten_arrays(arguments));
+        this.sides = this
+          .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
+        this.vectors = this.sides.map(side => subtract(side[1], side[0]));
+      },
+      G: {
+        isConvex: function () {
+          return true;
+        },
+        points: function () {
+          return this;
+        },
+        edges: function () {
+          return this.sides;
+        },
+      },
+      M: {
+        segments: function () {
+          return this.sides;
+        },
+      },
+      S: {
+        fromPoints: function () {
+          return this.constructor(...arguments);
+        },
+        regularPolygon: function (sides, radius = 1, x = 0, y = 0) {
+          return this.constructor(make_regular_polygon(sides, radius, x, y));
+        },
+        convexHull: function (points, includeCollinear = false) {
+          return this.constructor(convex_hull(points, includeCollinear));
+        },
+      }
+    }
+  };
+
+  const assign = (thisMat, mat) => {
+    for (let i = 0; i < 12; i += 1) {
+      thisMat[i] = mat[i];
+    }
+    return thisMat;
+  };
+  var Matrix = {
+    matrix: {
+      P: Array.prototype,
+      A: function () {
+        get_matrix_3x4(arguments).forEach(m => this.push(m));
+      },
+      G: {
+      },
+      M: {
+        copy: function () { return Constructors.matrix(...Array.from(this)); },
+        set: function () {
+          return assign(this, get_matrix_3x4(arguments));
+        },
+        isIdentity: function () { return is_identity3x4(this); },
+        multiply: function (mat) {
+          return assign(this, multiply_matrices3(this, mat));
+        },
+        determinant: function () {
+          return determinant3(this);
+        },
+        inverse: function () {
+          return assign(this, invert_matrix3(this));
+        },
+        translate: function (x, y, z) {
+          return assign(this,
+            multiply_matrices3(this, make_matrix3_translate(x, y, z)));
+        },
+        rotateX: function (radians) {
+          return assign(this,
+            multiply_matrices3(this, make_matrix3_rotateX(radians)));
+        },
+        rotateY: function (radians) {
+          return assign(this,
+            multiply_matrices3(this, make_matrix3_rotateY(radians)));
+        },
+        rotateZ: function (radians) {
+          return assign(this,
+            multiply_matrices3(this, make_matrix3_rotateZ(radians)));
+        },
+        rotate: function (radians, vector, origin) {
+          const transform = make_matrix3_rotate(radians, vector, origin);
+          return assign(this, multiply_matrices3(this, transform));
+        },
+        scale: function (amount) {
+          return assign(this,
+            multiply_matrices3(this, make_matrix3_scale(amount)));
+        },
+        reflectZ: function (vector, origin) {
+          const transform = make_matrix3_reflectionZ(vector, origin);
+          return assign(this, multiply_matrices3(this, transform));
+        },
+        transform: function (...innerArgs) {
+          return Constructors.vector(
+            multiply_matrix3_vector3(get_vector(innerArgs), this)
+          );
+        },
+        transformVector: function (vector) {
+          return Constructors.vector(multiply_matrix3_vector3(this, vector));
+        },
+        transformLine: function (...innerArgs) {
+          const l = get_line(innerArgs);
+          return Constructors.line(multiply_matrix3_line3(this, l.vector, l.origin));
+        },
+      },
+      S: {
+      }
+    }
+  };
+
+  const Definitions = Object.assign({},
+    Vector,
+    Line,
+    Ray,
+    Segment,
+    Circle,
+    Ellipse,
+    Rect,
+    Polygon,
+    Matrix,
+  );
+  const create = function (primitiveName, args) {
+    const a = Object.create(Definitions[primitiveName].proto);
+    Definitions[primitiveName].A.apply(a, args);
+    return a;
+  };
+  const vector = function () { return create("vector", arguments); };
+  const circle = function () { return create("circle", arguments); };
+  const ellipse = function () { return create("ellipse", arguments); };
+  const rect = function () { return create("rect", arguments); };
+  const polygon = function () { return create("polygon", arguments); };
+  const line$1 = function () { return create("line", arguments); };
+  const ray = function () { return create("ray", arguments); };
+  const segment = function () { return create("segment", arguments); };
+  const matrix = function () { return create("matrix", arguments); };
+  Object.assign(Constructors, {
+    vector,
+    circle,
+    ellipse,
+    rect,
+    polygon,
+    line: line$1,
+    ray,
+    segment,
+    matrix,
+  });
+  Object.keys(Definitions).forEach(primitiveName => {
+    const Proto = {};
+    Proto.prototype = Definitions[primitiveName].P != null
+      ? Object.create(Definitions[primitiveName].P)
+      : Object.create(Object.prototype);
+    Proto.prototype.constructor = Proto;
+    Constructors[primitiveName].prototype = Proto.prototype;
+    Constructors[primitiveName].prototype.constructor = Constructors[primitiveName];
+    Object.keys(Definitions[primitiveName].G)
+      .forEach(key => Object.defineProperty(Proto.prototype, key, {
+        get: Definitions[primitiveName].G[key],
+      }));
+    Object.keys(Definitions[primitiveName].M)
+      .forEach(key => Object.defineProperty(Proto.prototype, key, {
+        value: Definitions[primitiveName].M[key],
+      }));
+    Object.keys(Definitions[primitiveName].S)
+      .forEach(key => Object.defineProperty(Constructors[primitiveName], key, {
+        value: Definitions[primitiveName].S[key]
+          .bind(Constructors[primitiveName].prototype),
+      }));
+    Definitions[primitiveName].proto = Proto.prototype;
+  });
+
+  const math = Constructors;
+  math.core = Object.assign(Object.create(null),
+    algebra,
+    equal,
+    geometry,
+    matrix2,
+    matrix3,
+    nearest,
+    overlap,
+    getters,
+    resizers,
+    intersect_circle,
+    intersect_lines$1,
+    intersect_polygon,
+  );
+  math.typeof = type_of;
+  math.intersect = intersect;
+
+  return math;
+
+})));

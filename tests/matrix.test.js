@@ -122,6 +122,11 @@ test("matrix core invert", () => {
   expect(math.core.invert_matrix3([0,1,1,0,1,1,0,1,1,1,1,1])).toBe(undefined);
 });
 
+test("matrix 3, init with parameters", () => {
+  const result1 = math.matrix(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0);
+  testEqual(result1, [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]);
+});
+
 // todo: test matrix3 methods (invert) with the translation component to make sure it carries over
 test("matrix 3 core, transforms", () => {
   const result1 = math.core.make_matrix3_translate();
@@ -166,6 +171,7 @@ test("matrix 3 core", () => {
     math.core.multiply_matrices3([5, -52, 85, 15, -9, -2, 32, 2, -50, 0, 0, 0],
       [-77, 25, -21, 3, 53, 42, 63, 2, 19, 0, 0, 0]));
 });
+
 
 
 // test("matrices", () => {

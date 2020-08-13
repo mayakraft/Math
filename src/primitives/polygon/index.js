@@ -11,9 +11,10 @@ export default {
   polygon: {
     P: Prototype.prototype,
     A: function () {
-      this.points = semi_flatten_arrays(arguments);
+      this.push(...semi_flatten_arrays(arguments));
+      // this.points = semi_flatten_arrays(arguments);
         // .map(v => Constructors.vector(v));
-      this.sides = this.points
+      this.sides = this
         .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
         // .map(ps => Constructors.segment(ps[0][0], ps[0][1], ps[1][0], ps[1][1]));
       this.vectors = this.sides.map(side => subtract(side[1], side[0]));
@@ -22,6 +23,9 @@ export default {
     G: {
       isConvex: function () {
         return true;
+      },
+      points: function () {
+        return this;
       },
       edges: function () {
         return this.sides;

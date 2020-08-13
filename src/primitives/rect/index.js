@@ -32,7 +32,7 @@ export default {
       this.width = r.width;
       this.height = r.height;
       this.origin = Constructors.vector(r.x, r.y);
-      this.points = rectToPoints(this);
+      this.push(...rectToPoints(this));
     },
     G: {
       x: function () { return this.origin[0]; },
