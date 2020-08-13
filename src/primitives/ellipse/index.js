@@ -1,11 +1,11 @@
 import Constructors from "../constructors";
-import { nearest_point_on_ellipse } from "../../core/nearest";
+// import { nearest_point_on_ellipse } from "../../core/nearest";
 import {
   resize,
   flatten_arrays,
 } from "../../arguments/resize";
 import { get_vector } from "../../arguments/get";
-import Intersect from "../../intersection/index";
+// import Intersect from "../../intersection/index";
 
 import {
   pathInfo,
@@ -54,16 +54,16 @@ export default {
       y: function () { return this.origin[1]; },
     },
     M: {
-      nearestPoint: function () {
-        return Constructors.vector(nearest_point_on_ellipse(
-          this.origin,
-          this.radius,
-          get_vector(arguments)
-        ));
-      },
-      intersect: function (object) {
-        return Intersect(this, object);
-      },
+      // nearestPoint: function () {
+      //   return Constructors.vector(nearest_point_on_ellipse(
+      //     this.origin,
+      //     this.radius,
+      //     get_vector(arguments)
+      //   ));
+      // },
+      // intersect: function (object) {
+      //   return Intersect(this, object);
+      // },
       svgPath: function (arcStart = 0, deltaArc = Math.PI * 2) {
         const info = pathInfo(this.origin[0], this.origin[1], this.rx, this.ry, this.spin, arcStart, deltaArc);
         const arc1 = ellipticalArcTo(this.rx, this.ry, (this.spin / Math.PI) * 180, info.fa, info.fs, info.x2, info.y2);

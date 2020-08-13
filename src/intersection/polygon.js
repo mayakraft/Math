@@ -44,9 +44,9 @@ const quick_equivalent_2 = function (a, b) {
   return Math.abs(a[0] - b[0]) < EPSILON && Math.abs(a[1] - b[1]) < EPSILON;
 };
 
-export const convex_poly_circle = function (poly, center, radius) {
-  return [];
-};
+// export const convex_poly_circle = function (poly, center, radius) {
+//   return [];
+// };
 
 /**
  * generalized line-ray-segment intersection with convex polygon function
@@ -60,7 +60,7 @@ const convex_poly_line_intersect = (intersect_func, poly, line1, line2) => {
     .filter(el => el != null);
   switch (intersections.length) {
     case 0: return undefined;
-    case 1: return intersections;
+    case 1: return [intersections];
     default:
       // for two intersection points or more, in the case of vertex-
       // collinear intersections the same point from 2 polygon sides

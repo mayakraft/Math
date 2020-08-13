@@ -38,15 +38,15 @@ import {
 // this.sides - array edge pairs of points
 // this.vectors - non-normalized vectors relating to this.sides.
 
-const makeClip = (e) => {
-  if (e === undefined) { return undefined; }
-  switch (e.length) {
-    case undefined: break;
-    case 1: return Constructors.vector(e);
-    case 2: return Constructors.segment(e);
-    default: return e;
-  }
-};
+// const makeClip = (e) => {
+//   if (e === undefined) { return undefined; }
+//   switch (e.length) {
+//     case undefined: break;
+//     case 1: return Constructors.vector(e);
+//     case 2: return Constructors.segment(e);
+//     default: return e;
+//   }
+// };
 
 const methods = {
   area: function () {
@@ -123,18 +123,18 @@ const methods = {
   // todo: need non-convex clipping functions returns an array of edges
   intersectLine: function () {
     const line = get_line(...arguments);
-    const e = PolyIntersect.convex_poly_line(this, line.vector, line.origin);
-    return makeClip(e);
+    return PolyIntersect.convex_poly_line(this, line.vector, line.origin);
+    // return makeClip(e);
   },
   intersectRay: function () {
     const line = get_line(...arguments);
-    const e = PolyIntersect.convex_poly_ray_exclusive(this, line.vector, line.origin);
-    return makeClip(e);
+    return PolyIntersect.convex_poly_ray_exclusive(this, line.vector, line.origin);
+    // return makeClip(e);
   },
   intersectSegment: function () {
     const edge = get_segment(...arguments);
-    const e = PolyIntersect.convex_poly_segment_exclusive(this, edge[0], edge[1]);
-    return makeClip(e);
+    return PolyIntersect.convex_poly_segment_exclusive(this, edge[0], edge[1]);
+    // return makeClip(e);
   },
   // clipLine: function () {
   //   const line = get_line(...arguments);

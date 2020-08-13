@@ -150,8 +150,8 @@ test("intersectLine", () => {
   const poly = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]);
   const line = math.line([1,0], [0, 0.5]);
   const result = poly.intersectLine(line);
-  expect(result.points[0][0]).toBeCloseTo(0.5);
-  expect(result.points[0][1]).toBeCloseTo(0.5);
+  expect(result[0][0]).toBeCloseTo(0.5);
+  expect(result[0][1]).toBeCloseTo(0.5);
 });
 test("intersectRay", () => {
   const poly = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]);
@@ -162,10 +162,10 @@ test("intersectSegment", () => {
   const poly = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]);
   const segment = math.segment([-2, 0.5], [2, 0.5]);
   const result = poly.intersectSegment(segment);
-  expect(result.points[0][0]).toBeCloseTo(0.5);
-  expect(result.points[0][1]).toBeCloseTo(0.5);
-  expect(result.points[1][0]).toBeCloseTo(-0.5);
-  expect(result.points[1][1]).toBeCloseTo(0.5);
+  expect(result[0][0]).toBeCloseTo(0.5);
+  expect(result[0][1]).toBeCloseTo(0.5);
+  expect(result[1][0]).toBeCloseTo(-0.5);
+  expect(result[1][1]).toBeCloseTo(0.5);
 });
 // test("svgPath", () => {
 //   svgPath: function () 
