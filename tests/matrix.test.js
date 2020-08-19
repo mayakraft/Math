@@ -162,8 +162,8 @@ test("matrix 3 core", () => {
     math.core.invert_matrix3([0, 1, -3, -3, -4, 4, -2, -2, 1, 0, 0, 0]));
   testEqual([0.2, -0.2, 0.2, 0.2, 0.3, -0.3, 0, 1, 0, 0, 0, 0],
     math.core.invert_matrix3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
-  const mat_3d_ref = math.core.make_matrix3_reflectionZ([1, -2], [12, 13]);
-  testEqual(math.core.make_matrix2_reflection([1, -2], [12, 13]),
+  const mat_3d_ref = math.core.make_matrix3_reflectZ([1, -2], [12, 13]);
+  testEqual(math.core.make_matrix2_reflect([1, -2], [12, 13]),
     [mat_3d_ref[0], mat_3d_ref[1], mat_3d_ref[3], mat_3d_ref[4], mat_3d_ref[9], mat_3d_ref[10]]);
 
   // source wolfram alpha

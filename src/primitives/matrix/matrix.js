@@ -19,7 +19,7 @@ import {
   make_matrix3_rotateZ,
   make_matrix3_rotate,
   make_matrix3_scale,
-  make_matrix3_reflectionZ
+  make_matrix3_reflectZ
 } from "../../core/matrix3";
 
 /**
@@ -94,7 +94,7 @@ export default {
           multiply_matrices3(this, make_matrix3_scale(amount)));
       },
       reflectZ: function (vector, origin) {
-        const transform = make_matrix3_reflectionZ(vector, origin);
+        const transform = make_matrix3_reflectZ(vector, origin);
         return assign(this, multiply_matrices3(this, transform));
       },
       // todo, do type checking

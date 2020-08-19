@@ -16,7 +16,7 @@ import {
   make_matrix2_translate,
   make_matrix2_scale,
   make_matrix2_rotate,
-  make_matrix2_reflection,
+  make_matrix2_reflect,
 } from "../../core/matrix2";
 
 /**
@@ -72,7 +72,7 @@ export default {
       },
       reflect: function () {
         return Constructors.matrix2(
-          multiply_matrices2(this, make_matrix2_reflection(arguments))
+          multiply_matrices2(this, make_matrix2_reflect(arguments))
             .map(n => clean_number(n, 13))
         );
       },
@@ -107,7 +107,7 @@ export default {
         make_matrix2_scale(x, y, origin).map(n => clean_number(n, 13))
       ),
       makeReflection: (vector, origin) => Constructors.matrix2(
-        make_matrix2_reflection(vector, origin).map(n => clean_number(n, 13))
+        make_matrix2_reflect(vector, origin).map(n => clean_number(n, 13))
       ),
     }
   }

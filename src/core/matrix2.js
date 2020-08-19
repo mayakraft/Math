@@ -97,7 +97,7 @@ export const make_matrix2_rotate = (angle, origin = [0, 0]) => {
  * @param line in vector-origin form
  * @returns matrix
  */
-export const make_matrix2_reflection = (vector, origin = [0, 0]) => {
+export const make_matrix2_reflect = (vector, origin = [0, 0]) => {
   // the line of reflection passes through origin, runs along vector
   const angle = Math.atan2(vector[1], vector[0]);
   const cosAngle = Math.cos(angle);

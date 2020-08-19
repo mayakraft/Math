@@ -17,7 +17,7 @@ import {
   degenerate,
 } from "../../core/algebra";
 
-import { make_matrix2_reflection } from "../../core/matrix2";
+import { make_matrix2_reflect } from "../../core/matrix2";
 import { multiply_matrix3_line3 } from "../../core/matrix3";
 
 import Intersect from "../../intersection/index";
@@ -54,7 +54,7 @@ LineProto.prototype.isDegenerate = function (epsilon = EPSILON) {
 // todo: convert this to matrix 3x4
 LineProto.prototype.reflection = function () {
   // return Constructors.matrix2.makeReflection(this.vector, this.origin);
-  return Constructors.matrix(make_matrix2_reflection(this.vector, this.origin));
+  return Constructors.matrix(make_matrix2_reflect(this.vector, this.origin));
 };
 
 LineProto.prototype.nearestPoint = function () {

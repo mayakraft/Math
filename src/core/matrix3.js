@@ -5,9 +5,10 @@
 
 import { EPSILON } from "./equal";
 import { normalize } from "./algebra";
+import { resize } from "../arguments/resize";
 
-export const identity3x3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
-export const identity3x4 = identity3x3.concat(0, 0, 0);
+export const identity3x3 = Object.freeze([1, 0, 0, 0, 1, 0, 0, 0, 1]);
+export const identity3x4 = Object.freeze(identity3x3.concat(0, 0, 0));
 /**
  * @param {number[]} is a 3x4 matrix the identity matrix
  * with a translation component of 0, 0, 0
@@ -117,7 +118,7 @@ export const make_matrix3_rotateY = (angle, origin = [0, 0, 0]) => single_axis_r
 export const make_matrix3_rotateZ = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 0, 1, true);
 export const make_matrix3_rotate = (angle, vector = [0, 0, 1], origin = [0, 0, 0]) => {
   // normalize inputs
-  const vec = normalize(vector);
+  const vec = resize(3, normalize(vector));
   const pos = [0, 1, 2].map(i => origin[i] || 0);
   const [a, b, c] = vec;
   const cos = Math.cos(angle);
@@ -132,12 +133,12 @@ export const make_matrix3_rotate = (angle, vector = [0, 0, 1], origin = [0, 0, 0
   const ry     = [d, 0, a, 0, 1, 0, -a, 0, d, 0, 0, 0];
   const ry_inv = [d, 0, -a, 0, 1, 0, a, 0, d, 0, 0, 0];
   const rz     = [cos, sin, 0, -sin, cos, 0, 0, 0, 1, 0, 0, 0];
-  return multiply_matrices3(t_inv,
-    multiply_matrices3(rx_inv,
-      multiply_matrices3(ry_inv,
+  return multiply_matrices3(t,
+    multiply_matrices3(rx,
+      multiply_matrices3(ry,
         multiply_matrices3(rz,
-          multiply_matrices3(ry,
-            multiply_matrices3(rx, t))))));
+          multiply_matrices3(ry_inv,
+            multiply_matrices3(rx_inv, t_inv))))));
 };
 
 export const make_matrix3_scale = (scale, origin = [0, 0, 0]) => [
@@ -160,7 +161,7 @@ export const make_matrix3_scale = (scale, origin = [0, 0, 0]) => [
  * @param line in vector-origin form
  * @returns matrix3
  */
-export const make_matrix3_reflectionZ = (vector, origin = [0, 0]) => {
+export const make_matrix3_reflectZ = (vector, origin = [0, 0]) => {
   // the line of reflection passes through origin, runs along vector
   const angle = Math.atan2(vector[1], vector[0]);
   const cosAngle = Math.cos(angle);
@@ -181,7 +182,7 @@ export const make_matrix3_reflectionZ = (vector, origin = [0, 0]) => {
  * @param line in vector-origin form
  * @returns matrix3
  */
-// export const make_matrix3_reflection = (vector, origin = [0, 0, 0]) => {
+// export const make_matrix3_reflect = (vector, origin = [0, 0, 0]) => {
 //   // the line of reflection passes through origin, runs along vector
 //   return [];
 // };
