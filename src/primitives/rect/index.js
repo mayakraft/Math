@@ -42,18 +42,9 @@ export default {
       area: function () { return this.width * this.height; },
       // points: function () { return rectToPoints(this); },
       segments: function () { return rectToSides(this); },
-      // svgPath: function () {
-      //   return ["M", "L", "L", "L"]
-      //     .map((c, i) => `${c}${this.points[i].join(",")}`)
-      //     .join("");
-      // },
-      // svg: function () {
-      //   console.log("INER this", this);
-      //   console.log("Constructors", Constructors);
-      //   // return Constructors.svg
-      //   // ? Constructors.svg.
-      //   // : }
-      // },
+      svgPath: function () {
+        return `M${this.origin.join(" ")}h${this.width}v${this.height}h${-this.width}Z`;
+      },
     },
     S: {
       fromPoints: function () {

@@ -8,7 +8,7 @@ test("intersections", () => {
   const segment = math.segment([-2, 0.5], [2, 0.5]);
 
   const polygon2 = math.polygon([0, -1.15], [1, 0.577], [-1, 0.577]);
-  const circle2 = math.circle(1, 0.5, 0);
+  const circle2 = math.circle(1, [0.5, 0]);
   const line2 = math.line([-1, 2], [0.5, 0]);
   const ray2 = math.ray([1, 2], [-0.5, 0]);
   const segment2 = math.segment([0.5, -2], [0.5, 2]);

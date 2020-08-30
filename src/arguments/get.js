@@ -76,8 +76,8 @@ export const get_line = function () {
     : vector_origin_form(...args.map(a => get_vector(a)));
 };
 
-export const rect_form = (width = 0, height = 0, x = 0, y = 0) => ({
-  width, height, x, y
+export const rect_form = (x = 0, y = 0, width = 0, height = 0) => ({
+  x, y, width, height
 });
 
 export const get_rect = function () {
@@ -87,11 +87,15 @@ export const get_rect = function () {
     && typeof list[0] === "object"
     && list[0] !== null
     && !isNaN(list[0].width)) {
-    return rect_form(...["width", "height", "x", "y"]
+    return rect_form(...["x", "y", "width", "height"]
       .map(c => list[0][c])
       .filter(a => a !== undefined));
   }
-  return rect_form(...list.filter(n => typeof n === "number"));
+  const numbers = list.filter(n => typeof n === "number");
+  const rect_params = numbers.length < 4
+    ? [, , ...numbers]
+    : numbers;
+  return rect_form(...rect_params);
 };
 
 const maps_3x4 = [

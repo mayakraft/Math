@@ -7,6 +7,13 @@ import {
   point_in_poly,
   overlap_convex_polygons_exclusive,
 } from "../../overlap/polygon";
+import {
+  clip_line_in_convex_poly,
+  clip_ray_in_convex_poly_exclusive,
+  clip_ray_in_convex_poly_inclusive,
+  clip_segment_in_convex_poly_exclusive,
+  clip_segment_in_convex_poly_inclusive,
+} from "../../clip/polygon";
 import { multiply_matrix3_vector3 } from "../../core/matrix3";
 import {
   signed_area,
@@ -38,15 +45,15 @@ import {
 // this.sides - array edge pairs of points
 // this.vectors - non-normalized vectors relating to this.sides.
 
-// const makeClip = (e) => {
-//   if (e === undefined) { return undefined; }
-//   switch (e.length) {
-//     case undefined: break;
-//     case 1: return Constructors.vector(e);
-//     case 2: return Constructors.segment(e);
-//     default: return e;
-//   }
-// };
+const makeClip = (e) => {
+  if (e === undefined) { return undefined; }
+  switch (e.length) {
+    case undefined: break;
+    case 1: return Constructors.vector(e);
+    case 2: return Constructors.segment(e);
+    default: return e;
+  }
+};
 
 const methods = {
   area: function () {
@@ -124,33 +131,32 @@ const methods = {
   intersectLine: function () {
     const line = get_line(...arguments);
     return PolyIntersect.convex_poly_line(this, line.vector, line.origin);
-    // return makeClip(e);
   },
   intersectRay: function () {
     const line = get_line(...arguments);
     return PolyIntersect.convex_poly_ray_exclusive(this, line.vector, line.origin);
-    // return makeClip(e);
   },
   intersectSegment: function () {
-    const edge = get_segment(...arguments);
-    return PolyIntersect.convex_poly_segment_exclusive(this, edge[0], edge[1]);
-    // return makeClip(e);
+    const seg = get_segment(...arguments);
+    return PolyIntersect.convex_poly_segment_exclusive(this, seg[0], seg[1]);
   },
-  // clipLine: function () {
-  //   const line = get_line(...arguments);
-  //   const e = PolyIntersect.convex_poly_line(this, line.vector, line.origin);
-  //   return makeClip(e);
-  // },
-  // clipRay: function () {
-  //   const line = get_line(...arguments);
-  //   const e = PolyIntersect.convex_poly_ray_exclusive(this, line.vector, line.origin);
-  //   return makeClip(e);
-  // },
-  // clipSegment: function () {
-  //   const edge = get_segment(...arguments);
-  //   const e = PolyIntersect.convex_poly_segment_exclusive(this, edge[0], edge[1]);
-  //   return makeClip(e);
-  // },
+  clipLine: function () {
+    const line = get_line(...arguments);
+    const clip = clip_line_in_convex_poly(this, line.vector, line.origin);
+    return makeClip(clip);
+  },
+  clipRay: function () {
+    const ray = get_line(...arguments);
+    const clip = clip_ray_in_convex_poly_exclusive(this, ray.vector, ray.origin);
+    // const clip = clip_ray_in_convex_poly_inclusive(this, ray.vector, ray.origin);
+    return makeClip(clip);
+  },
+  clipSegment: function () {
+    const seg = get_segment(...arguments);
+    const clip = clip_segment_in_convex_poly_exclusive(this, seg[0], seg[1]);
+    // const clip = clip_segment_in_convex_poly_inclusive(this, seg[0], seg[1]);
+    return makeClip(clip);
+  },
   svgPath: function () {
     // make every point a Move or Line command, append with a "z" (close path)
     const pre = Array(this.length).fill("L");

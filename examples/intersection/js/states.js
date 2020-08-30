@@ -1,5 +1,5 @@
 // infinity box
-const infinityBox = math.rect(2000, 2000, -1000, -1000);
+const infinityBox = math.rect(-1000, -1000, 2000, 2000);
 
 const states = {
   select: {
@@ -18,13 +18,20 @@ const states = {
   line: {
     svg: (...pts) => {
       const p = infinityBox.clipLine(math.line.fromPoints(...pts));
-      return SVG.line(p.points);
+      return p === undefined
+        ? undefined
+        : SVG.line(p.points);
     },
     math: math.line.fromPoints,
   },
   ray: {
-    svg: SVG.g,
-    math: math.ray,
+    svg: (...pts) => {
+      const p = infinityBox.clipRay(math.ray.fromPoints(...pts));
+      return p === undefined
+        ? undefined
+        : SVG.line(p.points);
+    },
+    math: math.ray.fromPoints,
   },
   segment: {
     svg: SVG.line,
