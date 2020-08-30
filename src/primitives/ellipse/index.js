@@ -49,10 +49,11 @@ export default {
       // }
     },
 
+    // todo, ellipse is not ready to have a Z yet. figure out arguments first
     G: {
       x: function () { return this.origin[0]; },
       y: function () { return this.origin[1]; },
-      z: function () { return this.origin[2]; },
+      // z: function () { return this.origin[2]; },
     },
     M: {
       // nearestPoint: function () {

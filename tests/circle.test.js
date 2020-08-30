@@ -31,10 +31,12 @@ test("x, y", () => {
   const result = math.circle(1, [2,3]);
   expect(result.x).toBe(2);
   expect(result.y).toBe(3);
+  expect(result.z).toBe(undefined);
 
   const result1 = math.circle(1);
   expect(result1.x).toBe(0);
   expect(result1.y).toBe(0);
+  expect(result1.z).toBe(0);
 });
 
 test("circle nearest point", () => {

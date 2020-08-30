@@ -1,115 +1,55 @@
 import { EPSILON } from "../core/equal";
-import { subtract } from "../core/algebra";
 import {
   point_in_convex_poly_inclusive,
   point_in_convex_poly_exclusive,
 } from "../overlap/polygon";
 import {
-  intersect_lines,
-  include_l_s,
-  include_r_s,
-  exclude_r_s,
-  include_s_s,
-  exclude_s_s,
-} from "../intersection/lines";
-
-// todo: ALL OF THIS is duplicated in intersection/polygon
-// equivalency test for 2d-vectors
-const quick_equivalent_2 = function (a, b) {
-  return Math.abs(a[0] - b[0]) < EPSILON && Math.abs(a[1] - b[1]) < EPSILON;
-};
-
-const intersect_line_seg = (vector, origin, pt0, pt1) => intersect_lines(
-  vector, origin,
-  subtract(pt1, pt0), pt0,
-  include_l_s
-);
-const intersect_ray_seg_include = (vector, origin, pt0, pt1) => intersect_lines(
-  vector, origin,
-  subtract(pt1, pt0), pt0,
-  include_r_s
-);
-const intersect_ray_seg_exclude = (vector, origin, pt0, pt1) => intersect_lines(
-  vector, origin,
-  subtract(pt1, pt0), pt0,
-  exclude_r_s
-);
-const intersect_seg_seg_include = (a0, a1, b0, b1) => intersect_lines(
-  subtract(a1, a0), a0,
-  subtract(b1, b0), b0,
-  include_s_s
-);
-const intersect_seg_seg_exclude = (a0, a1, b0, b1) => intersect_lines(
-  subtract(a1, a0), a0,
-  subtract(b1, b0), b0,
-  exclude_s_s
-);
-
-
-
-
-// /** clip an infinite line in a polygon, returns a segment or undefined if no intersection */
-// export const clip_line_in_convex_poly = (poly, lineVector, lineOrigin) => {
-//   const intersections = poly
-//     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // into segment pairs
-//     .map(el => intersect_line_seg(lineVector, lineOrigin, el[0], el[1]))
-//     .filter(el => el != null);
-//   switch (intersections.length) {
-//     case 0: return undefined;
-//     case 1: return [intersections[0], intersections[0]]; // degenerate segment
-//     case 2: return intersections;
-//     default:
-//       // special case: line intersects directly on a poly point (2 segments, same point)
-//       //  filter to unique points by [x,y] comparison.
-//       for (let i = 1; i < intersections.length; i += 1) {
-//         if (!quick_equivalent_2(intersections[0], intersections[i])) {
-//           return [intersections[0], intersections[i]];
-//         }
-//       }
-//       return undefined;
-//   }
-// };
+  quick_equivalent_2,
+  intersect_line_seg,
+  intersect_ray_seg_include,
+  intersect_ray_seg_exclude,
+  intersect_seg_seg_include,
+  intersect_seg_seg_exclude,
+} from "../intersection/helpers";
 
 const clip_intersections = (intersect_func, poly, line1, line2) => poly
   .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // into segment pairs
   .map(el => intersect_func(line1, line2, el[0], el[1]))
   .filter(el => el != null);
 
+const get_unique_pair = (intersections) => {
+  for (let i = 1; i < intersections.length; i += 1) {
+    if (!quick_equivalent_2(intersections[0], intersections[i])) {
+      return [intersections[0], intersections[i]];
+    }
+  }
+}
+
 const finish_line = (intersections) => {
   switch (intersections.length) {
-    case 0: return undefined;
+    case 0:
     case 1: return undefined; // make sure this matches below.
     // case 1: return [intersections[0], intersections[0]]; // degenerate segment
     default:
       // for two intersection points or more, in the case of vertex-
       // collinear intersections the same point from 2 polygon sides
       // can be returned. we need to filter for unique points.
-      for (let i = 1; i < intersections.length; i += 1) {
-        if (!quick_equivalent_2(intersections[0], intersections[i])) {
-          return [intersections[0], intersections[i]];
-        }
-      }
+      return get_unique_pair(intersections);
+      // if no unique,
       // there was only one unique intersection point after all.
       // degenerate segment, again. make sure this matches above.
-      return undefined;
+      // return undefined;
   }
 };
 const finish_ray = (intersections, origin) => {
-  switch (intersections.length) {
-    case 0: return undefined;
-    case 1: return [origin, intersections[0]];
-    default:
-      // for two intersection points or more, in the case of vertex-
-      // collinear intersections the same point from 2 polygon sides
-      // can be returned. we need to filter for unique points.
-      for (let i = 1; i < intersections.length; i += 1) {
-        if (!quick_equivalent_2(intersections[0], intersections[i])) {
-          return [intersections[0], intersections[i]];
-        }
-      }
-      // there was only one unique intersection point after all.
-      return [origin, intersections[0]];
-  }
+  if (intersections.length === 0) { return undefined; }
+  //   case 1: return [origin, intersections[0]];
+  // for two intersection points or more, in the case of vertex-
+  // collinear intersections the same point from 2 polygon sides
+  // can be returned. we need to filter for unique points.
+  return get_unique_pair(intersections) || [origin, intersections[0]];
+  // if get_unique_pair returns undefined, there was only one unique
+  // point after all, build the segment from the origin to the point.
 };
 const finish_segment = (intersections, poly, seg0, seg1, epsilon = EPSILON) => {
   const aInsideExclusive = point_in_convex_poly_exclusive(seg0, poly, epsilon);
@@ -157,6 +97,30 @@ export const clip_segment_in_convex_poly_inclusive = (poly, seg0, seg1) => {
   const p = clip_intersections(intersect_seg_seg_include, poly, seg0, seg1);
   return finish_segment(p, poly, seg0, seg1);
 };
+
+
+
+// /** clip an infinite line in a polygon, returns a segment or undefined if no intersection */
+// export const clip_line_in_convex_poly = (poly, lineVector, lineOrigin) => {
+//   const intersections = poly
+//     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // into segment pairs
+//     .map(el => intersect_line_seg(lineVector, lineOrigin, el[0], el[1]))
+//     .filter(el => el != null);
+//   switch (intersections.length) {
+//     case 0: return undefined;
+//     case 1: return [intersections[0], intersections[0]]; // degenerate segment
+//     case 2: return intersections;
+//     default:
+//       // special case: line intersects directly on a poly point (2 segments, same point)
+//       //  filter to unique points by [x,y] comparison.
+//       for (let i = 1; i < intersections.length; i += 1) {
+//         if (!quick_equivalent_2(intersections[0], intersections[i])) {
+//           return [intersections[0], intersections[i]];
+//         }
+//       }
+//       return undefined;
+//   }
+// };
 
 // export const convex_poly_ray_inclusive = function (poly, lineVector, lineOrigin) {
 //   const intersections = poly
