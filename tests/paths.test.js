@@ -15,7 +15,7 @@ test("ray", () => {
 });
 
 test("rect", () => {
-  expect(math.rect(1, 2).svgPath()).toBe("M0 0L1 0L1 2L0 2z");
+  expect(math.rect(1, 2).svgPath()).toBe("M0 0h1v2h-1Z");
 });
 
 test("circle", () => {
@@ -26,4 +26,9 @@ test("ellipse", () => {
   expect(math.ellipse(1, 2).svgPath()).toBe("M1 0A1 2 0 0 1 -1 0A1 2 0 0 1 1 0");
   expect(math.ellipse(1, 2).svgPath(-Math.PI).slice(0,4)).toBe("M-1 ");
   expect(math.ellipse(1, 2).svgPath(-Math.PI*2)).toBe("M1 0A1 2 0 0 1 -1 0A1 2 0 0 1 1 0");
+});
+
+test("polygon", () => {
+  expect(math.polygon([1, 0], [0, 1], [-1, 0], [0, -1]).svgPath())
+    .toBe("M1 0L0 1L-1 0L0 -1z");
 });

@@ -50,7 +50,7 @@ const app = new Vue({
         this.uiLayer.appendChild(states[this.function].svg([this.pressPoint, point]));
       }
       this.nearestPoints = NearestPoints(this.history, point);
-      this.nearestPoints.forEach(p => this.uiLayer.circle(0.01, p.x, p.y).stroke("none").fill("#fb4"));
+      this.nearestPoints.forEach(p => this.uiLayer.circle(0.01).origin(p).stroke("none").fill("#fb4"));
     },
     bigUpdate: function () {
       this.drawLayer.removeChildren();

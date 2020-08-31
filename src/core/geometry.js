@@ -55,6 +55,7 @@ export const counter_clockwise_angle2_radians = (a, b) => {
 };
 /** There are 2 angles between 2 vectors, from A to B return the clockwise one.
  * @param {[number, number]} vector
+ * @param {[number, number]} vector
  * @returns {number} clockwise angle (from a to b) in radians
  */
 export const clockwise_angle2 = (a, b) => {
@@ -262,7 +263,7 @@ export const enclosing_rectangle = (points) => {
       if (c > maxs[i]) { maxs[i] = c; }
     }));
   const lengths = maxs.map((max, i) => max - mins[i]);
-  return rect_form(...lengths, ...mins);
+  return rect_form(...mins, ...lengths);
 };
 /**
  * the radius parameter measures from the center to the midpoint of the edge

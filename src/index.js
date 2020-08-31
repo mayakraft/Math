@@ -16,7 +16,6 @@ import * as matrix2 from "./core/matrix2";
 import * as matrix3 from "./core/matrix3";
 import * as nearest from "./core/nearest";
 // import * as origami from "./core/origami";
-import overlap from "./overlap/index";
 import * as getters from "./arguments/get";
 import * as resizers from "./arguments/resize";
 import Typeof from "./arguments/typeof";
@@ -25,6 +24,8 @@ import intersect from "./intersection/index";
 import * as intersect_circle from "./intersection/circle";
 import * as intersect_lines from "./intersection/lines";
 import * as intersect_polygon from "./intersection/polygon";
+import overlap from "./overlap/index";
+import * as clip_polygon from "./clip/polygon";
 
 import primitives from "./primitives/index";
 
@@ -59,6 +60,7 @@ math.core = Object.assign(Object.create(null),
   intersect_circle,
   intersect_lines,
   intersect_polygon,
+  clip_polygon,
 );
 
 math.typeof = Typeof;

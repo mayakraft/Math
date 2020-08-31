@@ -78,14 +78,13 @@ const table = {
     subtract: function () {
       return subtract(this, resize(this.length, get_vector(arguments)));
     },
-    // todo, this is a very meandering implementation
+    // todo, can this be improved?
     rotateZ: function (angle, origin) {
       return multiply_matrix3_vector3(
         get_matrix_3x4(make_matrix2_rotate(angle, origin)),
         resize(3, this)
       );
     },
-    // these are implicitly 2D functions, and will convert the vector into 2D
     lerp: function (vector, pct) {
       return lerp(this, resize(this.length, get_vector(vector)), pct);
     },
