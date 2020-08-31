@@ -45,15 +45,19 @@ import {
 // this.sides - array edge pairs of points
 // this.vectors - non-normalized vectors relating to this.sides.
 
-const makeClip = (e) => {
-  if (e === undefined) { return undefined; }
-  switch (e.length) {
-    case undefined: break;
-    case 1: return Constructors.vector(e);
-    case 2: return Constructors.segment(e);
-    default: return e;
-  }
-};
+// const makeClip = (e) => {
+//   if (e === undefined) { return undefined; }
+//   switch (e.length) {
+//     case undefined: break;
+//     case 1: return Constructors.vector(e);
+//     case 2: return Constructors.segment(e);
+//     default: return e;
+//   }
+// };
+
+const makeClip = e => (e === undefined
+  ? undefined
+  : Constructors.segment(e));
 
 const methods = {
   area: function () {
