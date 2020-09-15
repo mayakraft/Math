@@ -4,7 +4,7 @@ const equalTest = (a, b) => expect(JSON.stringify(a))
   .toBe(JSON.stringify(b));
 
 test("prototype member variables accessing 'this'", () => {
-  expect(math.polygon.regularPolygon(4).edges.length).toBe(4);
+  expect(math.polygon.regularPolygon(4).sides.length).toBe(4);
   expect(math.polygon.regularPolygon(4).area()).toBeCloseTo(1);
 });
 
@@ -17,25 +17,14 @@ test(".segments", () => {
   const segments = polygon.segments();
   expect(segments.length).toBe(4);
   expect(polygon.sides[0]).toBe(polygon.segments()[0]);
-  expect(polygon.sides[0]).toBe(polygon.edges[0]);
 });
 
-test("polygon", () => {
-  // equalTest(
-  //   math.polygon.regularPolygon(4).clipLine(math.line(0.5, 0.5, 6, -11)),
-  //   math.convexPolygon.regularPolygon(4).clipLine(math.line(0.5, 0.5, 6, -11))
-  // );
-  const segment = math.polygon.regularPolygon(4).intersectLine(math.line(1, 0));
-  expect(Math.abs(segment[0][0])).toBeCloseTo(Math.sqrt(2)/2);
-  expect(segment[0][1]).toBeCloseTo(0);
-  expect(Math.abs(segment[1][0])).toBeCloseTo(Math.sqrt(2)/2);
-  expect(segment[1][1]).toBeCloseTo(0);
-
-  // equalTest(true, math.convexPolygon([1, 0], [0, 1.87], [-1, 0]).sides);
-  // equalTest(true, math.convexPolygon([1, 0], [0, 1.87], [-1, 0]).split);
-  // equalTest(true, math.convexPolygon([1, 0], [0, 1.87], [-1, 0]).overlaps);
-  // equalTest(true, math.convexPolygon([1, 0], [0, 1.87], [-1, 0]).scale);
-  // equalTest(true, math.convexPolygon([1, 0], [0, 1.87], [-1, 0]).rotate);
+test("intersect", () => {
+  const segment = math.polygon.regularPolygon(4).intersectLine(math.line([1, 1]));
+  expect(Math.abs(segment[0][0])).toBeCloseTo(Math.sqrt(2)/4);
+  expect(Math.abs(segment[0][1])).toBeCloseTo(Math.sqrt(2)/4);
+  expect(Math.abs(segment[1][0])).toBeCloseTo(Math.sqrt(2)/4);
+  expect(Math.abs(segment[1][1])).toBeCloseTo(Math.sqrt(2)/4);
 });
 
 

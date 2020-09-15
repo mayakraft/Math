@@ -27,9 +27,9 @@ export default {
       points: function () {
         return this;
       },
-      edges: function () {
-        return this.sides;
-      },
+      // edges: function () {
+      //   return this.sides;
+      // },
     },
     M: {
       segments: function () {

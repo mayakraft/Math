@@ -139,12 +139,12 @@ export const distance = (a, b) => Math.sqrt(a
 export const flip = v => v.map(n => -n);
 /**
  * @param {number[]} one 2D vector
- * @returns {number[]} one 2D vector
+ * @returns {number[]} one 2D vector, counter-clockwise rotation
  */
 export const rotate90 = v => [-v[1], v[0]];
 /**
  * @param {number[]} one 2D vector
- * @returns {number[]} one 2D vector
+ * @returns {number[]} one 2D vector, counter-clockwise rotation
  */
 export const rotate270 = v => [v[1], -v[0]];
 

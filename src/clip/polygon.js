@@ -5,7 +5,8 @@ import {
 } from "../overlap/polygon";
 import {
   quick_equivalent_2,
-  intersect_line_seg,
+  intersect_line_seg_include,
+  intersect_line_seg_exclude,
   intersect_ray_seg_include,
   intersect_ray_seg_exclude,
   intersect_seg_seg_include,
@@ -80,8 +81,12 @@ const finish_segment = (intersections, poly, seg0, seg1, epsilon = EPSILON) => {
   }
 };
 
-export const clip_line_in_convex_poly = (poly, vector, origin, epsilon = EPSILON) => {
-  const p = clip_intersections(intersect_line_seg, poly, vector, origin);
+export const clip_line_in_convex_poly_exclusive = (poly, vector, origin, epsilon = EPSILON) => {
+  const p = clip_intersections(intersect_line_seg_exclude, poly, vector, origin);
+  return finish_line(p);
+};
+export const clip_line_in_convex_poly_inclusive = (poly, vector, origin, epsilon = EPSILON) => {
+  const p = clip_intersections(intersect_line_seg_include, poly, vector, origin);
   return finish_line(p);
 };
 export const clip_ray_in_convex_poly_exclusive = (poly, vector, origin, epsilon = EPSILON) => {

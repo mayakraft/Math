@@ -35,8 +35,7 @@ export const circle_circle = function (c1, c2, epsilon = EPSILON) {
   return [pt1, pt2];
 };
 
-
-const circle_line_func = function (circleRadius, circleOrigin, vector, origin, func, epsilon = EPSILON) {
+export const intersect_circle_line = function (circleRadius, circleOrigin, vector, origin, func, epsilon = EPSILON) {
   const magSq = vector[0] ** 2 + vector[1] ** 2;
   const mag = Math.sqrt(magSq);
   const norm = mag === 0 ? vector : vector.map(c => c / mag);
@@ -61,7 +60,7 @@ const line_func = () => true;
 const ray_func = (n, epsilon) => n > -epsilon;
 const segment_func = (n, epsilon) => n > -epsilon && n < 1 + epsilon;
 
-export const circle_line = (circle, line, epsilon = EPSILON) => circle_line_func(
+export const circle_line = (circle, line, epsilon = EPSILON) => intersect_circle_line(
   circle.radius,
   circle.origin,
   line.vector,
@@ -70,7 +69,7 @@ export const circle_line = (circle, line, epsilon = EPSILON) => circle_line_func
   epsilon
 );
 
-export const circle_ray = (circle, ray, epsilon = EPSILON) => circle_line_func(
+export const circle_ray = (circle, ray, epsilon = EPSILON) => intersect_circle_line(
   circle.radius,
   circle.origin,
   ray.vector,
@@ -79,7 +78,7 @@ export const circle_ray = (circle, ray, epsilon = EPSILON) => circle_line_func(
   epsilon
 );
 
-export const circle_segment = (circle, segment, epsilon = EPSILON) => circle_line_func(
+export const circle_segment = (circle, segment, epsilon = EPSILON) => intersect_circle_line(
   circle.radius,
   circle.origin,
   segment.vector,

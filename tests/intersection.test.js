@@ -42,12 +42,6 @@ test("intersections", () => {
   ].forEach(intersect => expect(intersect).not.toBe(undefined));
 });
 
-
-
-// test("core polygon intersection circle", () => {
-//   convex_poly_circle(poly, center, radius)  
-// })
-
 test("core polygon intersection lines", () => {
   const poly = [[0,0], [1,0], [0.5, 0.866]];
   const vector = [1, 1];
@@ -55,7 +49,7 @@ test("core polygon intersection lines", () => {
   const segmentA = [...point];
   const segmentB = [point[0] + 4, point[1] + 4];
 
-  expect(math.core.convex_poly_line(poly, vector, point).length)
+  expect(math.core.convex_poly_line_exclusive(poly, vector, point).length)
     .toBe(2);
   expect(math.core.convex_poly_ray_inclusive(poly, vector, point).length)
     .toBe(1);
@@ -67,7 +61,6 @@ test("core polygon intersection lines", () => {
     .toBe(1);
 });
 
-
 test("core polygon intersection lines, collinear to edge", () => {
   const poly = [[0,0], [1,0], [0.5, 0.866]];
   const vector = [1, 0];
@@ -75,8 +68,10 @@ test("core polygon intersection lines, collinear to edge", () => {
   const segmentA = [0, 0];
   const segmentB = [1, 0];
 
-  expect(math.core.convex_poly_line(poly, vector, point).length)
+  expect(math.core.convex_poly_line_inclusive(poly, vector, point).length)
     .toBe(2);
+  expect(math.core.convex_poly_line_exclusive(poly, vector, point))
+    .toBe(undefined);
   expect(math.core.convex_poly_ray_inclusive(poly, vector, point).length)
     .toBe(2);
   expect(math.core.convex_poly_ray_exclusive(poly, vector, point))
@@ -86,7 +81,6 @@ test("core polygon intersection lines, collinear to edge", () => {
   expect(math.core.convex_poly_segment_exclusive(poly, segmentA, segmentB))
     .toBe(undefined);
 });
-
 
 test("core polygon intersection lines, collinear to vertex", () => {
   const poly = [[0,0], [1,0], [0.5, 0.866]];
@@ -95,8 +89,10 @@ test("core polygon intersection lines, collinear to vertex", () => {
   const segmentA = [0, 0.866];
   const segmentB = [1, 0.866];
 
-  expect(math.core.convex_poly_line(poly, vector, point).length)
+  expect(math.core.convex_poly_line_inclusive(poly, vector, point).length)
     .toBe(1);
+  expect(math.core.convex_poly_line_exclusive(poly, vector, point))
+    .toBe(undefined);
   expect(math.core.convex_poly_ray_inclusive(poly, vector, point).length)
     .toBe(1);
   expect(math.core.convex_poly_ray_exclusive(poly, vector, point))
@@ -107,6 +103,26 @@ test("core polygon intersection lines, collinear to vertex", () => {
     .toBe(undefined);
 });
 
+test("core polygon intersection lines, collinear to polygon vertices", () => {
+  const lineSeg = math.polygon.regularPolygon(4).intersectLine(math.line([1, 0]));
+  expect(Math.abs(lineSeg[0][0])).toBeCloseTo(Math.sqrt(2)/2);
+  expect(lineSeg[0][1]).toBeCloseTo(0);
+  expect(Math.abs(lineSeg[1][0])).toBeCloseTo(Math.sqrt(2)/2);
+  expect(lineSeg[1][1]).toBeCloseTo(0);
+
+  const raySeg1 = math.polygon.regularPolygon(4).intersectRay(math.ray([1, 0]));
+  expect(raySeg1.length).toBe(1);
+  expect(Math.abs(raySeg1[0][0])).toBeCloseTo(Math.sqrt(2)/2);
+  expect(raySeg1[0][1]).toBeCloseTo(0);
+  const raySeg2 = math.polygon.regularPolygon(4).intersectRay(math.ray([1, 0], [-10, 0]));
+  expect(raySeg2.length).toBe(2);
+  expect(Math.abs(raySeg2[0][0])).toBeCloseTo(Math.sqrt(2)/2);
+  expect(raySeg2[0][1]).toBeCloseTo(0);
+  expect(Math.abs(raySeg2[1][0])).toBeCloseTo(Math.sqrt(2)/2);
+  expect(raySeg2[1][1]).toBeCloseTo(0);
+  const raySeg3 = math.polygon.regularPolygon(4).intersectRay(math.ray([1, 0], [10, 0]));
+  expect(raySeg3).toBe(undefined);
+});
 
 test("core polygon intersection lines, no intersections", () => {
   const poly = [[0,0], [1,0], [0.5, 0.866]];
@@ -115,7 +131,7 @@ test("core polygon intersection lines, no intersections", () => {
   const segmentA = [0, 10];
   const segmentB = [1, 10];
 
-  expect(math.core.convex_poly_line(poly, vector, point))
+  expect(math.core.convex_poly_line_exclusive(poly, vector, point))
     .toBe(undefined);
   expect(math.core.convex_poly_ray_inclusive(poly, vector, point))
     .toBe(undefined);
@@ -125,4 +141,111 @@ test("core polygon intersection lines, no intersections", () => {
     .toBe(undefined);
   expect(math.core.convex_poly_segment_exclusive(poly, segmentA, segmentB))
     .toBe(undefined);
+});
+
+// test("core polygon intersection circle", () => {
+//   convex_poly_circle(poly, center, radius)  
+// });
+
+test("collinear line intersections", () => {
+  const intersect = math.core.intersect_lines;
+  [
+    // INCLUDE horizontal
+    intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.core.include_l_l),
+    intersect([1, 0], [2, 2], [-1, 0], [-1, 2], math.core.include_l_l),
+    intersect([-1, 0], [2, 2], [1, 0], [-1, 2], math.core.include_l_l),
+    // INCLUDE vertical
+    intersect([0, 1], [3, 0], [0, 1], [3, 3], math.core.include_l_l),
+    intersect([0, 1], [3, 0], [0, -1], [3, 3], math.core.include_l_l),
+    intersect([0, -1], [3, 0], [0, 1], [3, 3], math.core.include_l_l),
+    // INCLUDE diagonal
+    intersect([1, 1], [2, 2], [1, 1], [-1, -1], math.core.include_l_l),
+    intersect([-1, -1], [2, 2], [1, 1], [-1, -1], math.core.include_l_l),
+    intersect([1, 1], [2, 2], [-1, -1], [-1, -1], math.core.include_l_l),
+    // EXCLUDE horizontal
+    intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.core.exclude_l_l),
+    intersect([1, 0], [2, 2], [-1, 0], [-1, 2], math.core.exclude_l_l),
+    intersect([-1, 0], [2, 2], [1, 0], [-1, 2], math.core.exclude_l_l),
+    // EXCLUDE vertical
+    intersect([0, 1], [3, 0], [0, 1], [3, 3], math.core.exclude_l_l),
+    intersect([0, 1], [3, 0], [0, -1], [3, 3], math.core.exclude_l_l),
+    intersect([0, -1], [3, 0], [0, 1], [3, 3], math.core.exclude_l_l),
+    // EXCLUDE diagonal
+    intersect([1, 1], [2, 2], [1, 1], [-1, -1], math.core.exclude_l_l),
+    intersect([-1, -1], [2, 2], [1, 1], [-1, -1], math.core.exclude_l_l),
+    intersect([1, 1], [2, 2], [-1, -1], [-1, -1], math.core.exclude_l_l),
+  ].forEach(res => expect(res).toBe(undefined));
+});
+
+test("collinear ray intersections", () => {
+  const intersect = math.core.intersect_lines;
+  [
+    // INCLUDE horizontal
+    intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.core.include_r_r),
+    intersect([1, 0], [2, 2], [-1, 0], [-1, 2], math.core.include_r_r),
+    intersect([-1, 0], [2, 2], [1, 0], [-1, 2], math.core.include_r_r),
+    // INCLUDE vertical
+    intersect([0, 1], [3, 0], [0, 1], [3, 3], math.core.include_r_r),
+    intersect([0, 1], [3, 0], [0, -1], [3, 3], math.core.include_r_r),
+    intersect([0, -1], [3, 0], [0, 1], [3, 3], math.core.include_r_r),
+    // INCLUDE diagonal
+    intersect([1, 1], [2, 2], [1, 1], [-1, -1], math.core.include_r_r),
+    intersect([-1, -1], [2, 2], [1, 1], [-1, -1], math.core.include_r_r),
+    intersect([1, 1], [2, 2], [-1, -1], [-1, -1], math.core.include_r_r),
+    // EXCLUDE horizontal
+    intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.core.exclude_r_r),
+    intersect([1, 0], [2, 2], [-1, 0], [-1, 2], math.core.exclude_r_r),
+    intersect([-1, 0], [2, 2], [1, 0], [-1, 2], math.core.exclude_r_r),
+    // EXCLUDE vertical
+    intersect([0, 1], [3, 0], [0, 1], [3, 3], math.core.exclude_r_r),
+    intersect([0, 1], [3, 0], [0, -1], [3, 3], math.core.exclude_r_r),
+    intersect([0, -1], [3, 0], [0, 1], [3, 3], math.core.exclude_r_r),
+    // EXCLUDE diagonal
+    intersect([1, 1], [2, 2], [1, 1], [-1, -1], math.core.exclude_r_r),
+    intersect([-1, -1], [2, 2], [1, 1], [-1, -1], math.core.exclude_r_r),
+    intersect([1, 1], [2, 2], [-1, -1], [-1, -1], math.core.exclude_r_r),
+  ].forEach(res => expect(res).toBe(undefined));
+});
+
+test("collinear segment intersections", () => {
+  const intersect = math.core.intersect_lines;
+  [
+    // INCLUDE horizontal
+    intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.core.include_s_s),
+    intersect([1, 0], [2, 2], [-1, 0], [-1, 2], math.core.include_s_s),
+    intersect([-1, 0], [2, 2], [1, 0], [-1, 2], math.core.include_s_s),
+    // INCLUDE vertical
+    intersect([0, 1], [3, 0], [0, 1], [3, 3], math.core.include_s_s),
+    intersect([0, 1], [3, 0], [0, -1], [3, 3], math.core.include_s_s),
+    intersect([0, -1], [3, 0], [0, 1], [3, 3], math.core.include_s_s),
+    // INCLUDE diagonal
+    intersect([1, 1], [2, 2], [1, 1], [-1, -1], math.core.include_s_s),
+    intersect([-1, -1], [2, 2], [1, 1], [-1, -1], math.core.include_s_s),
+    intersect([1, 1], [2, 2], [-1, -1], [-1, -1], math.core.include_s_s),
+    // EXCLUDE horizontal
+    intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.core.exclude_s_s),
+    intersect([1, 0], [2, 2], [-1, 0], [-1, 2], math.core.exclude_s_s),
+    intersect([-1, 0], [2, 2], [1, 0], [-1, 2], math.core.exclude_s_s),
+    // EXCLUDE vertical
+    intersect([0, 1], [3, 0], [0, 1], [3, 3], math.core.exclude_s_s),
+    intersect([0, 1], [3, 0], [0, -1], [3, 3], math.core.exclude_s_s),
+    intersect([0, -1], [3, 0], [0, 1], [3, 3], math.core.exclude_s_s),
+    // EXCLUDE diagonal
+    intersect([1, 1], [2, 2], [1, 1], [-1, -1], math.core.exclude_s_s),
+    intersect([-1, -1], [2, 2], [1, 1], [-1, -1], math.core.exclude_s_s),
+    intersect([1, 1], [2, 2], [-1, -1], [-1, -1], math.core.exclude_s_s),
+  ].forEach(res => expect(res).toBe(undefined));
+});
+
+test("collinear segment intersections, types not core", () => {
+  [ // horizontal
+    math.segment([0, 2], [2, 2]).intersect(math.segment([-1, 2], [10, 2])),
+    math.segment([0, 2], [2, 2]).intersect(math.segment([10, 2], [-1, 2])),
+    // vertical
+    math.segment([2, 0], [2, 2]).intersect(math.segment([2, -1], [2, 10])),
+    math.segment([2, 0], [2, 2]).intersect(math.segment([2, 10], [2, -1])),
+    // diagonal
+    math.segment([0, 0], [2, 2]).intersect(math.segment([-1, -1], [5, 5])),
+    math.segment([0, 0], [2, 2]).intersect(math.segment([5, 5], [-1, -1])),
+  ].forEach(res => expect(res).toBe(undefined));
 });

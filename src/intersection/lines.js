@@ -19,7 +19,7 @@ export const include_s_s = (t0, t1, e=EPSILON) => t0 > -e && t0 < 1 + e && t1 > 
   && t1 < 1 + e;
 
 // todo this has not been tested yet
-// export const exclude_l_l = function () { return true; } // redundant
+export const exclude_l_l = include_l_l; // redundant
 export const exclude_l_r = (t0, t1, e=EPSILON) => t1 > e;
 export const exclude_l_s = (t0, t1, e=EPSILON) => t1 > e && t1 < 1 - e;
 export const exclude_r_r = (t0, t1, e=EPSILON) => t0 > e && t1 > e;

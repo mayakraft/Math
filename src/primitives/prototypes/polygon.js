@@ -8,11 +8,12 @@ import {
   overlap_convex_polygons_exclusive,
 } from "../../overlap/polygon";
 import {
-  clip_line_in_convex_poly,
+  clip_line_in_convex_poly_exclusive,
+  // clip_line_in_convex_poly_inclusive,
   clip_ray_in_convex_poly_exclusive,
-  clip_ray_in_convex_poly_inclusive,
+  // clip_ray_in_convex_poly_inclusive,
   clip_segment_in_convex_poly_exclusive,
-  clip_segment_in_convex_poly_inclusive,
+  // clip_segment_in_convex_poly_inclusive,
 } from "../../clip/polygon";
 import { multiply_matrix3_vector3 } from "../../core/matrix3";
 import {
@@ -134,7 +135,7 @@ const methods = {
   // todo: need non-convex clipping functions returns an array of edges
   intersectLine: function () {
     const line = get_line(...arguments);
-    return PolyIntersect.convex_poly_line(this, line.vector, line.origin);
+    return PolyIntersect.convex_poly_line_exclusive(this, line.vector, line.origin);
   },
   intersectRay: function () {
     const line = get_line(...arguments);
@@ -146,7 +147,8 @@ const methods = {
   },
   clipLine: function () {
     const line = get_line(...arguments);
-    const clip = clip_line_in_convex_poly(this, line.vector, line.origin);
+    const clip = clip_line_in_convex_poly_exclusive(this, line.vector, line.origin);
+    // const clip = clip_line_in_convex_poly_inclusive(this, line.vector, line.origin);
     return makeClip(clip);
   },
   clipRay: function () {
