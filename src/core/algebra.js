@@ -153,7 +153,7 @@ export const rotate270 = v => [v[1], -v[0]];
  * @returns boolean
  */
 export const degenerate = (v) => Math
-  .abs(v.reduce((a, b) => a + b, 0)) < EPSILON;
+  .abs(v.reduce(fn_add, 0)) < EPSILON;
 
 // todo: should we use cross product to determine parallel?
 

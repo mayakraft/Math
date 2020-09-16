@@ -1,4 +1,5 @@
 import { EPSILON } from "../core/equal";
+import { midpoint } from "../core/algebra";
 import {
   point_in_convex_poly_inclusive,
   point_in_convex_poly_exclusive,
@@ -13,11 +14,16 @@ import {
   intersect_seg_seg_exclude,
 } from "../intersection/helpers";
 
-const clip_intersections = (intersect_func, poly, line1, line2) => poly
+const clip_intersections = (intersect_func, poly, line1, line2, epsilon = EPSILON) => poly
   .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // into segment pairs
-  .map(el => intersect_func(line1, line2, el[0], el[1]))
-  .filter(el => el != null);
+  .map(el => intersect_func(line1, line2, el[0], el[1], epsilon))
+  .filter(el => el !== undefined);
 
+/**
+ * this returns undefined when "intersections" contains 0 or 1 items
+ * or when intersections contains only copies of the same point.
+ * it only returns a point pair when there are two unique points.
+ */
 const get_unique_pair = (intersections) => {
   for (let i = 1; i < intersections.length; i += 1) {
     if (!quick_equivalent_2(intersections[0], intersections[i])) {
@@ -81,35 +87,78 @@ const finish_segment = (intersections, poly, seg0, seg1, epsilon = EPSILON) => {
   }
 };
 
-export const clip_line_in_convex_poly_exclusive = (poly, vector, origin, epsilon = EPSILON) => {
-  const p = clip_intersections(intersect_line_seg_exclude, poly, vector, origin);
-  return finish_line(p);
-};
 export const clip_line_in_convex_poly_inclusive = (poly, vector, origin, epsilon = EPSILON) => {
-  const p = clip_intersections(intersect_line_seg_include, poly, vector, origin);
+  const p = clip_intersections(intersect_line_seg_include, poly, vector, origin, epsilon);
   return finish_line(p);
 };
-export const clip_ray_in_convex_poly_exclusive = (poly, vector, origin, epsilon = EPSILON) => {
-  const func = point_in_convex_poly_exclusive(origin, poly, epsilon)
-    ? intersect_ray_seg_include
-    : intersect_ray_seg_exclude;
-  const p = clip_intersections(func, poly, vector, origin);
-  return finish_ray(p, poly, origin);
+export const clip_line_in_convex_poly_exclusive = (poly, vector, origin, epsilon = EPSILON) => {
+  const pEx = clip_intersections(intersect_line_seg_exclude, poly, vector, origin, epsilon);
+  const pIn = clip_intersections(intersect_line_seg_include, poly, vector, origin, epsilon);
+  if (pIn === undefined) { return undefined; }
+  const uniqueIn = get_unique_pair(pIn);
+  if (uniqueIn === undefined) { return undefined; }
+  return point_in_convex_poly_exclusive(midpoint(...uniqueIn), poly, epsilon)
+    ? uniqueIn
+    : undefined;
 };
 export const clip_ray_in_convex_poly_inclusive = (poly, vector, origin, epsilon = EPSILON) => {
-  const p = clip_intersections(intersect_ray_seg_include, poly, vector, origin);
+  const p = clip_intersections(intersect_ray_seg_include, poly, vector, origin, epsilon);
   return finish_ray(p, poly, origin);
 };
+export const clip_ray_in_convex_poly_exclusive = (poly, vector, origin, epsilon = EPSILON) => {
+  const pEx = clip_intersections(intersect_ray_seg_exclude, poly, vector, origin, epsilon);
+  const pIn = clip_intersections(intersect_ray_seg_include, poly, vector, origin, epsilon);
+  if (pIn === undefined) { return undefined; }
+  const uniqueIn = get_unique_pair(pIn);
+  if (uniqueIn === undefined) {
+    // this basically means pIn.length === 1
+    return point_in_convex_poly_exclusive(origin, poly, epsilon)
+      ? [origin, pIn[0]]
+      : undefined;
+  }
+  return point_in_convex_poly_exclusive(midpoint(...uniqueIn), poly, epsilon)
+    ? uniqueIn
+    : undefined;
+  // return finish_ray(p, poly, origin);
+};
+export const clip_segment_in_convex_poly_inclusive = (poly, seg0, seg1, epsilon = EPSILON) => {
+  const p = clip_intersections(intersect_seg_seg_include, poly, seg0, seg1, epsilon);
+  return finish_segment(p, poly, seg0, seg1);
+};
 export const clip_segment_in_convex_poly_exclusive = (poly, seg0, seg1, epsilon = EPSILON) => {
+  // const pEx = clip_intersections(intersect_seg_seg_exclude, poly, seg0, seg1, epsilon);
+  // const pIn = clip_intersections(intersect_seg_seg_include, poly, seg0, seg1, epsilon);
+
+  // const seg = [seg0, seg1];
+  // const exclusive_in = seg
+  //   .map(s => point_in_convex_poly_exclusive(s, poly, epsilon));
+  // const inclusive_in = seg
+  //   .map(s => point_in_convex_poly_inclusive(s, poly, epsilon));
+  // switch (pIn.length) { // must be inclusive test
+  //   // both are inside, OR, one is inside and the other is collinear to poly
+  //   case 0: {
+  //     if (exclusive_in[0] || exclusive_in[1]) { return [[...seg0], [...seg1]]; }
+  //     if (inclusive_in[0] && inclusive_in[1]) { return [[...seg0], [...seg1]]; }
+  //     return undefined;
+  //   }
+  //   case 1:
+  //     if (exclusive_in[0]) { return [[...seg0], intersections[0]]; }
+  //     if (exclusive_in[1]) { return [[...seg1], intersections[0]]; }
+  //     return undefined;
+  //   default: {
+  //     const unique = get_unique_pair(intersections);
+  //     if (unique !== undefined) { return unique; }
+  //     return (inclusive_in[0]
+  //       ? [[...seg0], intersections[0]]
+  //       : [[...seg1], intersections[0]]);
+  //   }
+  // }
+
   const func = point_in_convex_poly_inclusive(seg0, poly, epsilon)
     || point_in_convex_poly_inclusive(seg1, poly, epsilon)
     ? intersect_seg_seg_include
     : intersect_seg_seg_exclude;
   const p = clip_intersections(func, poly, seg0, seg1);
-  return finish_segment(p, poly, seg0, seg1);
-};
-export const clip_segment_in_convex_poly_inclusive = (poly, seg0, seg1, epsilon = EPSILON) => {
-  const p = clip_intersections(intersect_seg_seg_include, poly, seg0, seg1);
   return finish_segment(p, poly, seg0, seg1);
 };
 

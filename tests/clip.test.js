@@ -45,9 +45,9 @@ test("collinear core, segment", () => {
 
 test("math types, clip line in rect", () => {
   const rect = math.rect(-1, -1, 2, 2);
-  expect(rect.clipLine(math.line(1, 1))).toBe(undefined);
+  expect(rect.clipLine(math.line(1, 1))).not.toBe(undefined);
   expect(rect.clipLine(math.line([1, 0], [0, 1]))).toBe(undefined);
-  expect(rect.clipLine(math.line(1, -1))).toBe(undefined);
+  expect(rect.clipLine(math.line(1, -1))).not.toBe(undefined);
 
   // same as above, but inclusive test.
   const result1 = math.core.clip_line_in_convex_poly_inclusive(
