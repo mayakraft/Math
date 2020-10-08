@@ -24,6 +24,14 @@ import intersect from "./intersection/index";
 import * as intersect_circle from "./intersection/circle";
 import * as intersect_lines from "./intersection/lines";
 import * as intersect_polygon from "./intersection/polygon";
+import {
+  intersect_line_seg_include,
+  intersect_line_seg_exclude,
+  intersect_ray_seg_include,
+  intersect_ray_seg_exclude,
+  intersect_seg_seg_include,
+  intersect_seg_seg_exclude,
+} from "./intersection/helpers";
 import overlap from "./overlap/index";
 import * as clip_polygon from "./clip/polygon";
 
@@ -61,6 +69,14 @@ math.core = Object.assign(Object.create(null),
   intersect_lines,
   intersect_polygon,
   clip_polygon,
+  {
+    intersect_line_seg_include,
+    intersect_line_seg_exclude,
+    intersect_ray_seg_include,
+    intersect_ray_seg_exclude,
+    intersect_seg_seg_include,
+    intersect_seg_seg_exclude,
+  },
 );
 
 math.typeof = Typeof;

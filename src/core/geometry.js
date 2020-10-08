@@ -75,6 +75,24 @@ export const counter_clockwise_angle2 = (a, b) => {
   return angle;
 };
 /**
+ * this calculates an angle bisection between the pair of vectors
+ * clockwise from the first vector to the second
+ *
+ *     a  x
+ *       /     . bisection
+ *      /   .
+ *     / .
+ *     --------x  b
+ */
+export const clockwise_bisect2 = (a, b) => {
+  const radians = Math.atan2(a[1], a[0]) - clockwise_angle2(a, b) / 2;
+  return [Math.cos(radians), Math.sin(radians)];
+};
+export const counter_clockwise_bisect2 = (a, b) => {
+  const radians = Math.atan2(a[1], a[0]) - counter_clockwise_angle2(a, b) / 2;
+  return [Math.cos(radians), Math.sin(radians)];
+};
+/**
  * given vectors, make a separate array of radially-sorted vector indices
  *
  * maybe there is such thing as an absolute radial origin (x axis?)
