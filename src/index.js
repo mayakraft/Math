@@ -22,7 +22,7 @@ import Typeof from "./arguments/typeof";
 
 import intersect from "./intersection/index";
 import * as intersect_circle from "./intersection/circle";
-import * as intersect_lines from "./intersection/lines";
+import * as intersect_line_types from "./intersection/lines";
 import * as intersect_polygon from "./intersection/polygon";
 import {
   intersect_line_seg_include,
@@ -66,7 +66,7 @@ math.core = Object.assign(Object.create(null),
   resizers,
   // origami,
   intersect_circle,
-  intersect_lines,
+  intersect_line_types,
   intersect_polygon,
   clip_polygon,
   {

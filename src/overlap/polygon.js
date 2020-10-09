@@ -39,6 +39,9 @@ export const point_in_convex_poly_exclusive = (point, poly, epsilon = EPSILON) =
  * @returns {boolean} whether the point is inside the polygon or not
  * @example
  * var isInside = point_in_poly([0.5, 0.5], polygonPoints)
+ *
+ * unfortunately this has inconsistencies for when a point lies collinear along
+ * an edge of the polygon, depending on the location or direction of the edge in space
  */
 export const point_in_poly = (point, poly) => {
   // W. Randolph Franklin

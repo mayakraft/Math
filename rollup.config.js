@@ -7,8 +7,8 @@ module.exports = [{
   output: {
     name: "math",
     file: "math.js",
-    // format: "umd",
-    format: "es",
+    format: "umd",
+    // format: "es",
     banner: "/* Math (c) Robby Kraft, MIT License */",
   },
   plugins: [
@@ -16,10 +16,10 @@ module.exports = [{
       comments: "none",
       maxEmptyLines: 0,
     }),
-    // babel({
-    //   babelrc: false,
-    //   presets: [["@babel/env", { modules: false }]],
-    // }),
-    // terser(),
+    babel({
+      babelrc: false,
+      presets: [["@babel/env", { modules: false }]],
+    }),
+    terser(),
   ]
 }];

@@ -1,6 +1,9 @@
 import { EPSILON } from "./equal";
 import { clean_number } from "../arguments/resize";
 import { rect_form } from "../arguments/get";
+import {
+  fn_add,
+} from "../arguments/functions";
 import { point_on_line } from "../overlap/points";
 import {
   dot,
@@ -89,7 +92,7 @@ export const clockwise_bisect2 = (a, b) => {
   return [Math.cos(radians), Math.sin(radians)];
 };
 export const counter_clockwise_bisect2 = (a, b) => {
-  const radians = Math.atan2(a[1], a[0]) - counter_clockwise_angle2(a, b) / 2;
+  const radians = Math.atan2(a[1], a[0]) + counter_clockwise_angle2(a, b) / 2;
   return [Math.cos(radians), Math.sin(radians)];
 };
 /**
@@ -251,7 +254,7 @@ export const signed_area = points => 0.5 * points
   .map((el, i, arr) => {
     const next = arr[(i + 1) % arr.length];
     return el[0] * next[1] - next[0] * el[1];
-  }).reduce((a, b) => a + b, 0);
+  }).reduce(fn_add, 0);
 
 /** Calculates the centroid or the center of mass of the polygon.
  * @returns {XY} the location of the centroid

@@ -2,7 +2,7 @@ import Constructors from "../primitives/constructors";
 import { identity2x3 } from "../core/matrix2";
 import { identity3x4 } from "../core/matrix3";
 import { flatten_arrays, semi_flatten_arrays } from "./resize";
-
+import { fn_not_undefined } from "./functions";
 /**
  * @returns ({ point:[], vector:[] })
 */
@@ -20,14 +20,14 @@ const vector_origin_form = (vector, origin) => ({
 export const get_vector = function () {
   // todo, incorporate constructors.vector check to all indices. and below
   if (arguments[0] instanceof Constructors.vector) { return arguments[0]; }
-  let list = flatten_arrays(arguments); // .filter(a => a !== undefined);
+  let list = flatten_arrays(arguments); // .filter(fn_not_undefined);
   if (list.length > 0
     && typeof list[0] === "object"
     && list[0] !== null
     && !isNaN(list[0].x)) {
     list = ["x", "y", "z"]
       .map(c => list[0][c])
-      .filter(a => a !== undefined);
+      .filter(fn_not_undefined);
   }
   return list.filter(n => typeof n === "number");
 };
@@ -82,14 +82,14 @@ export const rect_form = (x = 0, y = 0, width = 0, height = 0) => ({
 
 export const get_rect = function () {
   if (arguments[0] instanceof Constructors.rect) { return arguments[0]; }
-  const list = flatten_arrays(arguments); // .filter(a => a !== undefined);
+  const list = flatten_arrays(arguments); // .filter(fn_not_undefined);
   if (list.length > 0
     && typeof list[0] === "object"
     && list[0] !== null
     && !isNaN(list[0].width)) {
     return rect_form(...["x", "y", "width", "height"]
       .map(c => list[0][c])
-      .filter(a => a !== undefined));
+      .filter(fn_not_undefined));
   }
   const numbers = list.filter(n => typeof n === "number");
   const rect_params = numbers.length < 4

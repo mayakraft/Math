@@ -109,6 +109,28 @@ test("interior_angles", () => {
   expect(math.core.interior_angles([1,0], [-1,0], [0,-1])[2]).toBeCloseTo(Math.PI/2);
 });
 
+test("clockwise bisect", () => {
+  expect(math.core.clockwise_bisect2([1,0], [0,-1])[0]).toBeCloseTo(Math.sqrt(2)/2);
+  expect(math.core.clockwise_bisect2([1,0], [0,-1])[1]).toBeCloseTo(-Math.sqrt(2)/2);
+  expect(math.core.clockwise_bisect2([1,0], [-1,0])[0]).toBeCloseTo(0);
+  expect(math.core.clockwise_bisect2([1,0], [-1,0])[1]).toBeCloseTo(-1);
+  expect(math.core.clockwise_bisect2([1,0], [0,1])[0]).toBeCloseTo(-Math.sqrt(2)/2);
+  expect(math.core.clockwise_bisect2([1,0], [0,1])[1]).toBeCloseTo(-Math.sqrt(2)/2);
+  expect(math.core.clockwise_bisect2([1,0], [1,0])[0]).toBeCloseTo(1);
+  expect(math.core.clockwise_bisect2([1,0], [1,0])[1]).toBeCloseTo(0);
+});
+
+test("counter-clockwise bisect", () => {
+  expect(math.core.counter_clockwise_bisect2([1,0], [0,1])[0]).toBeCloseTo(Math.sqrt(2)/2);
+  expect(math.core.counter_clockwise_bisect2([1,0], [0,1])[1]).toBeCloseTo(Math.sqrt(2)/2);
+  expect(math.core.counter_clockwise_bisect2([1,0], [-1,0])[0]).toBeCloseTo(0);
+  expect(math.core.counter_clockwise_bisect2([1,0], [-1,0])[1]).toBeCloseTo(1);
+  expect(math.core.counter_clockwise_bisect2([1,0], [0,-1])[0]).toBeCloseTo(-Math.sqrt(2)/2);
+  expect(math.core.counter_clockwise_bisect2([1,0], [0,-1])[1]).toBeCloseTo(Math.sqrt(2)/2);
+  expect(math.core.counter_clockwise_bisect2([1,0], [1,0])[0]).toBeCloseTo(1);
+  expect(math.core.counter_clockwise_bisect2([1,0], [1,0])[1]).toBeCloseTo(0);
+});
+
 test("bisect_vectors", () => {
   expect(math.core.bisect_vectors([1,0], [0,1])[0])
     .toBeCloseTo(Math.sqrt(2)/2);

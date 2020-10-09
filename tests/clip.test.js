@@ -170,8 +170,8 @@ test("core clip segments exclusive", () => {
   // inside and collinear
   const seg4 = [[-1, 0], [1, 0]];
   const result4 = math.core.clip_segment_in_convex_poly_exclusive(poly, ...seg4);
-  expect(math.core.equivalent(seg4[1], result4[0])).toBe(true);
-  expect(math.core.equivalent(seg4[0], result4[1])).toBe(true);
+  expect(math.core.equivalent(seg4[0], result4[0])).toBe(true);
+  expect(math.core.equivalent(seg4[1], result4[1])).toBe(true);
 });
 
 test("core clip segments inclusive", () => {
@@ -197,6 +197,6 @@ test("core clip segments inclusive", () => {
   // inside and collinear
   const seg4 = [[-1, 0], [1, 0]];
   const result4 = math.core.clip_segment_in_convex_poly_inclusive(poly, ...seg4);
-  expect(math.core.equivalent(seg4[1], result4[0])).toBe(true);
-  expect(math.core.equivalent(seg4[0], result4[1])).toBe(true);
+  expect(math.core.equivalent(seg4[0], result4[0])).toBe(true);
+  expect(math.core.equivalent(seg4[1], result4[1])).toBe(true);
 });

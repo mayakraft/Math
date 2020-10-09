@@ -1,3 +1,4 @@
+import { fn_not_undefined } from "../arguments/functions";
 import { EPSILON } from "../core/equal";
 import { subtract, midpoint, parallel } from "../core/algebra";
 import {
@@ -24,7 +25,7 @@ const collinear_check = (poly, vector, origin) => {
     .map(seg => subtract(...seg));
   return polyvecs
     .map((vec, i) => parallel(vec, vector) ? i : undefined)
-    .filter(a => a !== undefined) // filter only sides that are parallel
+    .filter(fn_not_undefined) // filter only sides that are parallel
     .map(i => point_on_line(origin, polyvecs[i], poly[i])) // is the point along edge
     .reduce((a, b) => a || b, false);
 };
@@ -32,7 +33,7 @@ const collinear_check = (poly, vector, origin) => {
 const clip_intersections = (intersect_func, poly, line1, line2, epsilon = EPSILON) => poly
   .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into segments
   .map(el => intersect_func(line1, line2, el[0], el[1], epsilon))
-  .filter(el => el !== undefined);
+  .filter(fn_not_undefined);
 
 /**
  * this returns undefined when "intersections" contains 0 or 1 items
@@ -47,7 +48,8 @@ const get_unique_pair = (intersections) => {
   }
 }
 
-const finish_line = (intersections) => {
+export const clip_line_in_convex_poly_inclusive = (poly, vector, origin, epsilon = EPSILON) => {
+  const intersections = clip_intersections(intersect_line_seg_include, poly, vector, origin, epsilon);
   switch (intersections.length) {
     case 0:
     case 1: return undefined; // make sure this matches below.
@@ -64,48 +66,7 @@ const finish_line = (intersections) => {
       // return undefined;
   }
 };
-const finish_ray = (intersections, poly, origin) => {
-  if (intersections.length === 0) { return undefined; }
-  //   case 1: return [origin, intersections[0]];
-  // for two intersection points or more, in the case of vertex-
-  // collinear intersections the same point from 2 polygon sides
-  // can be returned. we need to filter for unique points.
-  const origin_inside = point_in_convex_poly_inclusive(origin, poly);
-  return get_unique_pair(intersections) || [origin, intersections[0]];
-  // if get_unique_pair returns undefined, there was only one unique
-  // point after all, build the segment from the origin to the point.
-};
-const finish_segment = (intersections, poly, seg0, seg1, epsilon = EPSILON) => {
-  const seg = [seg0, seg1];
-  const exclusive_in = seg
-    .map(s => point_in_convex_poly_exclusive(s, poly, epsilon));
-  const inclusive_in = seg
-    .map(s => point_in_convex_poly_inclusive(s, poly, epsilon));
-  switch (intersections.length) {
-    // both are inside, OR, one is inside and the other is collinear to poly
-    case 0: {
-      if (exclusive_in[0] || exclusive_in[1]) { return [[...seg0], [...seg1]]; }
-      if (inclusive_in[0] && inclusive_in[1]) { return [[...seg0], [...seg1]]; }
-      return undefined;
-    }
-    case 1:
-      if (exclusive_in[0]) { return [[...seg0], intersections[0]]; }
-      if (exclusive_in[1]) { return [[...seg1], intersections[0]]; }
-      return undefined;
-    default: {
-      const unique = get_unique_pair(intersections);
-      if (unique !== undefined) { return unique; }
-      return (inclusive_in[0]
-        ? [[...seg0], intersections[0]]
-        : [[...seg1], intersections[0]]);
-    }
-  }
-};
 
-export const clip_line_in_convex_poly_inclusive = (poly, vector, origin, epsilon = EPSILON) => {
-  const p = clip_intersections(intersect_line_seg_include, poly, vector, origin, epsilon);
-  return finish_line(p);
-};
 export const clip_line_in_convex_poly_exclusive = (poly, vector, origin, epsilon = EPSILON) => {
   const pEx = clip_intersections(intersect_line_seg_exclude, poly, vector, origin, epsilon);
   const pIn = clip_intersections(intersect_line_seg_include, poly, vector, origin, epsilon);
@@ -116,10 +77,20 @@ export const clip_line_in_convex_poly_exclusive = (poly, vector, origin, epsilon
     ? uniqueIn
     : undefined;
 };
+
 export const clip_ray_in_convex_poly_inclusive = (poly, vector, origin, epsilon = EPSILON) => {
-  const p = clip_intersections(intersect_ray_seg_include, poly, vector, origin, epsilon);
-  return finish_ray(p, poly, origin);
+  const intersections = clip_intersections(intersect_ray_seg_include, poly, vector, origin, epsilon);
+  if (intersections.length === 0) { return undefined; }
+  //   case 1: return [origin, intersections[0]];
+  // for two intersection points or more, in the case of vertex-
+  // collinear intersections the same point from 2 polygon sides
+  // can be returned. we need to filter for unique points.
+  const origin_inside = point_in_convex_poly_inclusive(origin, poly);
+  return get_unique_pair(intersections) || [origin, intersections[0]];
+  // if get_unique_pair returns undefined, there was only one unique
+  // point after all, build the segment from the origin to the point.
 };
+
 export const clip_ray_in_convex_poly_exclusive = (poly, vector, origin, epsilon = EPSILON) => {
   const pEx = clip_intersections(intersect_ray_seg_exclude, poly, vector, origin, epsilon);
   const pIn = clip_intersections(intersect_ray_seg_include, poly, vector, origin, epsilon);
@@ -136,28 +107,27 @@ export const clip_ray_in_convex_poly_exclusive = (poly, vector, origin, epsilon 
     : undefined;
   // return finish_ray(p, poly, origin);
 };
-export const clip_segment_in_convex_poly_inclusive = (poly, seg0, seg1, epsilon = EPSILON) => {
-  const p = clip_intersections(intersect_seg_seg_include, poly, seg0, seg1, epsilon);
-  return finish_segment(p, poly, seg0, seg1);
-};
-export const clip_segment_in_convex_poly_exclusive = (poly, seg0, seg1, epsilon = EPSILON) => {
-  const segVec = subtract(seg1, seg0);
-  if (collinear_check(poly, segVec, seg0)) {
-    // if this is inclusive, we want to do some more tests.
-    return undefined;
-  }
+
+const clip_segment_func = (poly, seg0, seg1, epsilon = EPSILON) => {
   const seg = [seg0, seg1];
+  // if both endpoints are inclusive inside the polygon, return original segment
   const inclusive_inside = seg
     .map(s => point_in_convex_poly_inclusive(s, poly, epsilon));
   if (inclusive_inside[0] === true && inclusive_inside[1] === true) {
     return [[...seg0], [...seg1]];
   }
+  // clip segment against every polygon edge
   const clip_inclusive = clip_intersections(intersect_seg_seg_include, poly, seg0, seg1, epsilon);
   const clip_inclusive_unique = get_unique_pair(clip_inclusive);
+  // if the number of unique points is 2 or more (2), return this segment.
+  // this only works in the exclusive case because we already removed cases
+  // where the segment is collinear along an edge of the polygon.
   if (clip_inclusive_unique) {  // 3 or 4
     return clip_inclusive_unique;
   }
-
+  // if we have one unique intersection point, combine it with whichever segment
+  // point is inside the polygon, and if none are inside it means the segment
+  // intersects with a point along the outer edge, and we return undefined.
   if (clip_inclusive.length > 0) {
     const exclusive_inside = seg
       .map(s => point_in_convex_poly_exclusive(s, poly, epsilon));
@@ -170,107 +140,14 @@ export const clip_segment_in_convex_poly_exclusive = (poly, seg0, seg1, epsilon 
   }
 };
 
+export const clip_segment_in_convex_poly_inclusive = (poly, seg0, seg1, epsilon = EPSILON) => {
+  return clip_segment_func(poly, seg0, seg1, epsilon);
+};
 
-
-// /** clip an infinite line in a polygon, returns a segment or undefined if no intersection */
-// export const clip_line_in_convex_poly = (poly, lineVector, lineOrigin) => {
-//   const intersections = poly
-//     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // into segment pairs
-//     .map(el => intersect_line_seg(lineVector, lineOrigin, el[0], el[1]))
-//     .filter(el => el != null);
-//   switch (intersections.length) {
-//     case 0: return undefined;
-//     case 1: return [intersections[0], intersections[0]]; // degenerate segment
-//     case 2: return intersections;
-//     default:
-//       // special case: line intersects directly on a poly point (2 segments, same point)
-//       //  filter to unique points by [x,y] comparison.
-//       for (let i = 1; i < intersections.length; i += 1) {
-//         if (!quick_equivalent_2(intersections[0], intersections[i])) {
-//           return [intersections[0], intersections[i]];
-//         }
-//       }
-//       return undefined;
-//   }
-// };
-
-// export const convex_poly_ray_inclusive = function (poly, lineVector, lineOrigin) {
-//   const intersections = poly
-//     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // into segment pairs
-//     .map(el => intersect_ray_seg_include(lineVector, lineOrigin, el[0], el[1]))
-//     .filter(el => el != null);
-//   switch (intersections.length) {
-//     case 0: return undefined;
-//     case 1: return [lineOrigin, intersections[0]];
-//     case 2:
-//       return quick_equivalent_2(intersections[0], intersections[1])
-//         ? [lineOrigin, intersections[0]]
-//         : intersections;
-//     // default: throw "clipping ray in a convex polygon resulting in 3 or more points";
-//     default:
-//       for (let i = 1; i < intersections.length; i += 1) {
-//         if (!quick_equivalent_2(intersections[0], intersections[i])) {
-//           return [intersections[0], intersections[i]];
-//         }
-//       }
-//       return undefined;
-//   }
-// };
-
-// export const convex_poly_ray_exclusive = function (poly, lineVector, lineOrigin) {
-//   const intersections = poly
-//     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into segment pairs
-//     .map(el => intersect_ray_seg_exclude(lineVector, lineOrigin, el[0], el[1]))
-//     .filter(el => el != null);
-//   switch (intersections.length) {
-//     case 0: return undefined;
-//     case 1: return [lineOrigin, intersections[0]];
-//     case 2: return intersections;
-//     // default: throw "clipping ray in a convex polygon resulting in 3 or more points";
-//     default:
-//       for (let i = 1; i < intersections.length; i += 1) {
-//         if (!quick_equivalent_2(intersections[0], intersections[i])) {
-//           return [intersections[0], intersections[i]];
-//         }
-//       }
-//       return undefined;
-//   }
-// };
-
-// export const convex_poly_segment_inclusive = function (poly, segmentA, segmentB, epsilon = EPSILON) {
-//   console.log("todo")
-// };
-
-// // todo: double check that this is segment method is exclusive
-// export const convex_poly_segment_exclusive = function (poly, segmentA, segmentB, epsilon = EPSILON) {
-//   const intersections = poly
-//     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // polygon into segment pairs
-//     .map(el => intersect_seg_seg_exclude(segmentA, segmentB, el[0], el[1]))
-//     .filter(el => el != null);
-
-//   const aInsideExclusive = point_in_convex_poly_exclusive(segmentA, poly, epsilon);
-//   const bInsideExclusive = point_in_convex_poly_exclusive(segmentB, poly, epsilon);
-//   const aInsideInclusive = point_in_convex_poly_inclusive(segmentA, poly, epsilon);
-//   const bInsideInclusive = point_in_convex_poly_inclusive(segmentB, poly, epsilon);
-
-//   // both are inside, OR, one is inside and the other is collinear to poly
-//   if (intersections.length === 0
-//     && (aInsideExclusive || bInsideExclusive)) {
-//     return [segmentA, segmentB];
-//   }
-//   if (intersections.length === 0
-//     && (aInsideInclusive && bInsideInclusive)) {
-//     return [segmentA, segmentB];
-//   }
-//   switch (intersections.length) {
-//     case 0: return (aInsideExclusive
-//       ? [[...segmentA], [...segmentB]]
-//       : undefined);
-//     case 1: return (aInsideInclusive
-//       ? [[...segmentA], intersections[0]]
-//       : [[...segmentB], intersections[0]]);
-//     case 2: return intersections;
-//     default: throw new Error("clipping segment in a convex polygon resulting in 3 or more points");
-//   }
-// };
-
+export const clip_segment_in_convex_poly_exclusive = (poly, seg0, seg1, epsilon = EPSILON) => {
+  const segVec = subtract(seg1, seg0);
+  if (collinear_check(poly, segVec, seg0)) {
+    return undefined;
+  }
+  return clip_segment_func(poly, seg0, seg1, epsilon);
+};

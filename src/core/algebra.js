@@ -1,4 +1,8 @@
 import { EPSILON } from "./equal";
+import {
+  fn_square,
+  fn_add,
+} from "../arguments/functions";
 
 /**
  * algebra operations on vectors (mostly).
@@ -7,8 +11,7 @@ import { EPSILON } from "./equal";
  * but wherever it specifies "dimensions match first parameter"
  * you should verify that the second parameter is at least as long as the first
  */
-const fn_square = n => n * n;
-const fn_add = (a, b) => a + b;
+
 /**
  * @param {number[]} one vector, n-dimensions
  * @returns {number} one scalar
