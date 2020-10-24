@@ -7,6 +7,10 @@ import {
 } from "../../arguments/get";
 
 import {
+  resize
+} from "../../arguments/resize";
+
+import {
   is_identity3x4,
   multiply_matrix3_vector3,
   multiply_matrix3_line3,
@@ -100,11 +104,13 @@ export default {
       // todo, do type checking
       transform: function (...innerArgs) {
         return Constructors.vector(
-          multiply_matrix3_vector3(get_vector(innerArgs), this)
+          multiply_matrix3_vector3(this, resize(3, get_vector(innerArgs)))
         );
       },
       transformVector: function (vector) {
-        return Constructors.vector(multiply_matrix3_vector3(this, vector));
+        return Constructors.vector(
+          multiply_matrix3_vector3(this, resize(3, get_vector(vector)))
+        );
       },
       transformLine: function (...innerArgs) {
         const l = get_line(innerArgs);

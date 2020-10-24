@@ -1,12 +1,15 @@
 import { EPSILON } from "../core/equal";
 import {
   cross2,
+  add,
   subtract,
+  parallel,
 } from "../core/algebra";
 import {
   include_l, include_r, include_s,
   exclude_l, exclude_r, exclude_s,
 } from "../intersection/lines";
+import { collinear } from "./points";
 
 /**
  * lines(
@@ -85,3 +88,39 @@ export const overlap_ray_segment_exclusive = (aV, aP, b0, b1, ep = EPSILON) =>
   overlap_lines(aV, aP, subtract(b1, b0), b0, exclude_r, exclude_s, ep);
 export const overlap_segment_segment_exclusive = (a0, a1, b0, b1, ep = EPSILON) =>
   overlap_lines(subtract(a1, a0), a0, subtract(b1, b0), b0, exclude_s, exclude_s, ep);
+
+export const collinear_lines = (aVec, aPt, bVec, bPt, compA, compB, epsilon = EPSILON) => {
+  const aPt2 = add(aPt, aVec);
+  const bPt2 = add(bPt, bVec);
+  return parallel(aVec, bVec, epsilon) && (
+    collinear(bPt, aVec, aPt, compA, epsilon)
+    || collinear(bPt2, aVec, aPt, compA, epsilon)
+    || collinear(aPt, bVec, bPt, compB, epsilon)
+    || collinear(aPt2, bVec, bPt, compB, epsilon));
+};
+
+export const collinear_line_line_inclusive = (aV, aP, bV, bP, ep = EPSILON) =>
+  collinear_lines(aV, aP, bV, bP, include_l, include_l, ep);
+export const collinear_line_ray_inclusive = (aV, aP, bV, bP, ep = EPSILON) =>
+  collinear_lines(aV, aP, bV, bP, include_l, include_r, ep);
+export const collinear_line_segment_inclusive = (aV, aP, b0, b1, ep = EPSILON) =>
+  collinear_lines(aV, aP, subtract(b1, b0), b0, include_l, include_s, ep);
+export const collinear_ray_ray_inclusive = (aV, aP, bV, bP, ep = EPSILON) =>
+  collinear_lines(aV, aP, bV, bP, include_r, include_r, ep);
+export const collinear_ray_segment_inclusive = (aV, aP, b0, b1, ep = EPSILON) =>
+  collinear_lines(aV, aP, subtract(b1, b0), b0, include_r, include_s, ep);
+export const collinear_segment_segment_inclusive = (a0, a1, b0, b1, ep = EPSILON) =>
+  collinear_lines(subtract(a1, a0), a0, subtract(b1, b0), b0, include_s, include_s, ep);
+
+export const collinear_line_line_exclusive = (aV, aP, bV, bP, ep = EPSILON) =>
+  collinear_lines(aV, aP, bV, bP, exclude_l, exclude_l, ep);
+export const collinear_line_ray_exclusive = (aV, aP, bV, bP, ep = EPSILON) =>
+  collinear_lines(aV, aP, bV, bP, exclude_l, exclude_r, ep);
+export const collinear_line_segment_exclusive = (aV, aP, b0, b1, ep = EPSILON) =>
+  collinear_lines(aV, aP, subtract(b1, b0), b0, exclude_l, exclude_s, ep);
+export const collinear_ray_ray_exclusive = (aV, aP, bV, bP, ep = EPSILON) =>
+  collinear_lines(aV, aP, bV, bP, exclude_r, exclude_r, ep);
+export const collinear_ray_segment_exclusive = (aV, aP, b0, b1, ep = EPSILON) =>
+  collinear_lines(aV, aP, subtract(b1, b0), b0, exclude_r, exclude_s, ep);
+export const collinear_segment_segment_exclusive = (a0, a1, b0, b1, ep = EPSILON) =>
+  collinear_lines(subtract(a1, a0), a0, subtract(b1, b0), b0, exclude_s, exclude_s, ep);

@@ -64,9 +64,19 @@ const intersect_func = {
   },
 };
 
+// convert "rect" to "polygon"
+const intersect_types = {
+  polygon: "polygon",
+  rect: "polygon",
+  circle: "circle",
+  line: "line",
+  ray: "ray",
+  segment: "segment",
+};
+
 const intersect = function (a, b) {
-  const aT = type_of(a);
-  const bT = type_of(b);
+  const aT = intersect_types[type_of(a)];
+  const bT = intersect_types[type_of(b)];
   return intersect_func[aT][bT](...arguments);
 };
 

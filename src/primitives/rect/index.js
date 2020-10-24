@@ -37,6 +37,11 @@ export default {
     G: {
       x: function () { return this.origin[0]; },
       y: function () { return this.origin[1]; },
+      center: function () { return Constructors.vector(
+        this.origin[0] + this.width / 2,
+        this.origin[1] + this.height / 2,
+      ); },
+      // points: function () { return rectToPoints(this); },  // the rect IS "points" now
     },
     M: {
       area: function () { return this.width * this.height; },
