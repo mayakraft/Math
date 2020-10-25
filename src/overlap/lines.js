@@ -2,6 +2,8 @@ import { EPSILON } from "../core/equal";
 import {
   cross2,
   add,
+  flip,
+  magnitude,
   subtract,
   parallel,
 } from "../core/algebra";
@@ -52,15 +54,17 @@ export const overlap_lines = (aVec, aPt, bVec, bPt, compA, compB, epsilon = EPSI
   const numerator0 = cross2(subtract(bPt, aPt), bVec);
   const numerator1 = cross2(subtract(aPt, bPt), aVec);
   if (Math.abs(denominator0) < epsilon) { // parallel
-    // todo:
     // if parallel and one point is inside another's vector (two are on top)
-    // return true
-    // else
-    return false;
+    // todo: make part much simpler
+    return collinear(bPt, aVec, aPt, compA, epsilon)
+     || collinear(bPt, flip(aVec), add(aPt, aVec), compA, epsilon)
+     || collinear(aPt, bVec, bPt, compB, epsilon)
+     || collinear(aPt, flip(bVec), add(bPt, bVec), compB, epsilon);
   }
   const t0 = numerator0 / denominator0;
   const t1 = numerator1 / denominator1;
-  return compA(t0, epsilon) && compB(t1, epsilon);
+  return compA(t0, epsilon / magnitude(aVec))
+    && compB(t1, epsilon / magnitude(bVec));
 };
 
 export const overlap_line_line_inclusive = (aV, aP, bV, bP, ep = EPSILON) =>

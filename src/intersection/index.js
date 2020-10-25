@@ -2,8 +2,8 @@ import type_of from "../arguments/typeof";
 
 import {
   intersect_lines,
-  include_l_l, include_l_r, include_l_s, include_r_r, include_r_s, include_s_s,
-  exclude_l_l, exclude_l_r, exclude_l_s, exclude_r_r, exclude_r_s, exclude_s_s,
+  include_l, include_r, include_s,
+  exclude_l, exclude_r, exclude_s,
 } from "./lines";
 
 import {
@@ -22,8 +22,8 @@ import {
 const convexPolyLine = (a, b) => convex_poly_line_exclusive(a, b.vector, b.origin);
 const convexPolyRay = (a, b) => convex_poly_ray_exclusive(a, b.vector, b.origin);
 const convexPolySegment = (a, b) => convex_poly_segment_exclusive(a, b[0], b[1]);
-const lineFunc = (a, b, compFunc, epsilon) => intersect_lines(
-  a.vector, a.origin, b.vector, b.origin, compFunc, epsilon
+const lineFunc = (a, b, compA, compB, epsilon) => intersect_lines(
+  a.vector, a.origin, b.vector, b.origin, compA, compB, epsilon
 );
 
 const intersect_func = {
@@ -44,23 +44,23 @@ const intersect_func = {
   line: {
     polygon: (a, b) => convexPolyLine(b, a),
     circle: (a, b) => circle_line(b, a),
-    line: (a, b) => lineFunc(a, b, include_l_l),
-    ray: (a, b, c) => lineFunc(a, b, c === false ? exclude_l_r : include_l_r),
-    segment: (a, b, c) => lineFunc(a, b, c === false ? exclude_l_s : include_l_s),
+    line: (a, b, ep) => lineFunc(a, b, exclude_l, exclude_l, ep),
+    ray: (a, b, ep) => lineFunc(a, b, exclude_l, exclude_r, ep),
+    segment: (a, b, ep) => lineFunc(a, b, exclude_l, exclude_s, ep),
   },
   ray: {
-    polygon: (a, b, c) => convexPolyRay(b, a),
+    polygon: (a, b) => convexPolyRay(b, a),
     circle: (a, b) => circle_ray(b, a),
-    line: (a, b, c) => lineFunc(b, a, c === false ? exclude_l_r : include_l_r),
-    ray: (a, b, c) => lineFunc(a, b, c === false ? exclude_r_r : include_r_r),
-    segment: (a, b, c) => lineFunc(a, b, c === false ? exclude_r_s : include_r_s),
+    line: (a, b, ep) => lineFunc(b, a, exclude_l, exclude_r, ep),
+    ray: (a, b, ep) => lineFunc(a, b, exclude_r, exclude_r, ep),
+    segment: (a, b, ep) => lineFunc(a, b, exclude_r, exclude_s, ep),
   },
   segment: {
-    polygon: (a, b, c) => convexPolySegment(b, a),
+    polygon: (a, b) => convexPolySegment(b, a),
     circle: (a, b) => circle_segment(b, a),
-    line: (a, b, c) => lineFunc(b, a, c === false ? exclude_l_s : include_l_s),
-    ray: (a, b, c) => lineFunc(b, a, c === false ? exclude_r_s : include_r_s),
-    segment: (a, b, c) => lineFunc(a, b, c === false ? exclude_s_s : include_s_s),
+    line: (a, b, ep) => lineFunc(b, a, exclude_l, exclude_s, ep),
+    ray: (a, b, ep) => lineFunc(b, a, exclude_r, exclude_s, ep),
+    segment: (a, b, ep) => lineFunc(a, b, exclude_s, exclude_s, ep),
   },
 };
 

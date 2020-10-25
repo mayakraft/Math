@@ -14,7 +14,8 @@ import {
 } from "./algebra";
 import {
   intersect_lines,
-  exclude_l_s,
+  exclude_l,
+  exclude_s,
 } from "../intersection/lines";
 
 export const R2D = 180 / Math.PI;
@@ -305,7 +306,7 @@ export const make_regular_polygon = (sides, radius = 1, x = 0, y = 0) => {
 const line_segment_exclusive = function (lineVector, linePoint, segmentA, segmentB) {
   const pt = segmentA;
   const vec = [segmentB[0] - segmentA[0], segmentB[1] - segmentA[1]];
-  return intersect_lines(lineVector, linePoint, vec, pt, exclude_l_s);
+  return intersect_lines(lineVector, linePoint, vec, pt, exclude_l, exclude_s);
 };
 
 export const split_polygon = () => console.warn("split polygon not done");
