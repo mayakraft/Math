@@ -16,8 +16,8 @@ export const exclude_s = (t, e=EPSILON) => t > e && t < 1 - e;
 */
 export const intersect_lines = (aVector, aOrigin, bVector, bOrigin, compA, compB, epsilon = EPSILON) => {
   const denominator0 = cross2(aVector, bVector);
-  if (Math.abs(denominator0) < epsilon) { return undefined; } /* parallel */
   const denominator1 = -denominator0;
+  if (Math.abs(denominator0) < epsilon) { return undefined; } /* parallel */
   const numerator0 = cross2(subtract(bOrigin, aOrigin), bVector);
   const numerator1 = cross2(subtract(aOrigin, bOrigin), aVector);
   const t0 = numerator0 / denominator0;
