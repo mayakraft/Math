@@ -1,6 +1,6 @@
 import {
   is_counter_clockwise_between,
-  counter_clockwise_angle2_radians
+  counter_clockwise_angle_radians
 } from "./geometry";
 
 import { clean_number } from "../arguments/resize";
@@ -42,7 +42,7 @@ export const kawasaki_sector_score = (...angles) => alternating_sum(...angles)
  *
  */
 export const kawasaki_solutions_radians = (...radians) => radians
-  .map((v, i, ar) => counter_clockwise_angle2_radians(
+  .map((v, i, ar) => counter_clockwise_angle_radians(
     v, ar[(i + 1) % ar.length]
   ))
   // for every sector, make an array of all the OTHER sectors

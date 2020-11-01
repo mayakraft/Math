@@ -25,14 +25,12 @@ import {
  */
 export const point_in_convex_poly_inclusive = (point, poly, epsilon = EPSILON) => poly
   .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
-  // .map(s => cross2(subtract(s[1], s[0]), subtract(point, s[0])) > -epsilon)
   .map(s => cross2(normalize(subtract(s[1], s[0])), subtract(point, s[0])) > -epsilon)
   .map((s, _, arr) => s === arr[0])
   .reduce((prev, curr) => prev && curr, true);
 
 export const point_in_convex_poly_exclusive = (point, poly, epsilon = EPSILON) => poly
   .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
-  // .map(s => cross2(subtract(s[1], s[0]), subtract(point, s[0])) > epsilon)
   .map(s => cross2(normalize(subtract(s[1], s[0])), subtract(point, s[0])) > epsilon)
   .map((s, _, arr) => s === arr[0])
   .reduce((prev, curr) => prev && curr, true);

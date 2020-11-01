@@ -53,33 +53,33 @@ test("counter-clockwise vector sorting", () => {
 //     math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).angles());
 // });
 
-test("clockwise_angle2_radians", () => {
-  expect(math.core.clockwise_angle2_radians(Math.PI, Math.PI/2))
+test("clockwise_angle_radians", () => {
+  expect(math.core.clockwise_angle_radians(Math.PI, Math.PI/2))
     .toBeCloseTo(Math.PI*1/2);
-  expect(math.core.clockwise_angle2_radians(Math.PI/2, Math.PI))
+  expect(math.core.clockwise_angle_radians(Math.PI/2, Math.PI))
     .toBeCloseTo(Math.PI*3/2);
   // same as above with negative numbers
-  expect(math.core.clockwise_angle2_radians(Math.PI + Math.PI*2*4, Math.PI/2 - Math.PI*2*8))
+  expect(math.core.clockwise_angle_radians(Math.PI + Math.PI*2*4, Math.PI/2 - Math.PI*2*8))
     .toBeCloseTo(Math.PI*1/2);
-  expect(math.core.clockwise_angle2_radians(Math.PI/2 - Math.PI*2*3, Math.PI + Math.PI*2*4))
+  expect(math.core.clockwise_angle_radians(Math.PI/2 - Math.PI*2*3, Math.PI + Math.PI*2*4))
     .toBeCloseTo(Math.PI*3/2);
-  expect(math.core.clockwise_angle2_radians(Math.PI - Math.PI*2*4, Math.PI/2 - Math.PI*2*8))
+  expect(math.core.clockwise_angle_radians(Math.PI - Math.PI*2*4, Math.PI/2 - Math.PI*2*8))
     .toBeCloseTo(Math.PI*1/2);
-  expect(math.core.clockwise_angle2_radians(Math.PI/2 - Math.PI*2*3, Math.PI - Math.PI*2*4))
+  expect(math.core.clockwise_angle_radians(Math.PI/2 - Math.PI*2*3, Math.PI - Math.PI*2*4))
     .toBeCloseTo(Math.PI*3/2);
 });
 
-test("counter_clockwise_angle2_radians", () => {
-  expect(math.core.counter_clockwise_angle2_radians(Math.PI, Math.PI/2))
+test("counter_clockwise_angle_radians", () => {
+  expect(math.core.counter_clockwise_angle_radians(Math.PI, Math.PI/2))
     .toBeCloseTo(Math.PI*3/2);
-  expect(math.core.counter_clockwise_angle2_radians(Math.PI/2, Math.PI))
+  expect(math.core.counter_clockwise_angle_radians(Math.PI/2, Math.PI))
     .toBeCloseTo(Math.PI*1/2);
   // same as above with negative numbers
-  expect(math.core.counter_clockwise_angle2_radians(Math.PI - Math.PI*2*4, Math.PI/2 - Math.PI*2*5))
+  expect(math.core.counter_clockwise_angle_radians(Math.PI - Math.PI*2*4, Math.PI/2 - Math.PI*2*5))
     .toBeCloseTo(Math.PI*3/2);
-  expect(math.core.counter_clockwise_angle2_radians(Math.PI + Math.PI*2*4, Math.PI/2 + Math.PI*2*5))
+  expect(math.core.counter_clockwise_angle_radians(Math.PI + Math.PI*2*4, Math.PI/2 + Math.PI*2*5))
     .toBeCloseTo(Math.PI*3/2);
-  expect(math.core.counter_clockwise_angle2_radians(Math.PI/2 - Math.PI*2*7, Math.PI - Math.PI*2*3))
+  expect(math.core.counter_clockwise_angle_radians(Math.PI/2 - Math.PI*2*7, Math.PI - Math.PI*2*3))
     .toBeCloseTo(Math.PI*1/2);
 });
 

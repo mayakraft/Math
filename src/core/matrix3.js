@@ -174,7 +174,7 @@ export const make_matrix3_reflectZ = (vector, origin = [0, 0]) => {
   const d = sinAngle * -sin_Angle + -cosAngle * cos_Angle;
   const tx = origin[0] + a * -origin[0] + -origin[1] * c;
   const ty = origin[1] + b * -origin[0] + -origin[1] * d;
-  return [a, b, 0, c, d, 0, 0, 0, 0, tx, ty, 0];
+  return [a, b, 0, c, d, 0, 0, 0, 1, tx, ty, 0];
 };
 
 /**
