@@ -2,9 +2,7 @@ import { EPSILON } from "./equal";
 import { nearest_point_on_line } from "./nearest";
 import { clean_number } from "../arguments/resize";
 import { rect_form } from "../arguments/get";
-import {
-  fn_add,
-} from "../arguments/functions";
+import { fn_add } from "../arguments/functions";
 import { point_on_line } from "../overlap/points";
 import {
   dot,
@@ -123,15 +121,16 @@ export const counter_clockwise_bisect2 = (a, b) => {
  *
  * @returns {number[]}, already c-cwise sorted would give [0,1,2,3,4]
  */
-export const counter_clockwise_vector_order = (...vectors) => {
-  const vectors_radians = vectors.map(v => Math.atan2(v[1], v[0]));
-  const counter_clockwise = Array.from(Array(vectors_radians.length))
+export const counter_clockwise_radians_order = (...radians) => {
+  const counter_clockwise = Array.from(Array(radians.length))
     .map((_, i) => i)
-    .sort((a, b) => vectors_radians[a] - vectors_radians[b]);
+    .sort((a, b) => radians[a] - radians[b]);
   return counter_clockwise
     .slice(counter_clockwise.indexOf(0), counter_clockwise.length)
     .concat(counter_clockwise.slice(0, counter_clockwise.indexOf(0)));
 };
+export const counter_clockwise_vector_order = (...vectors) =>
+  counter_clockwise_radians_order(...vectors.map(v => Math.atan2(v[1], v[0])))
 /** There are 2 interior angles between 2 vectors, return both,
  * (no longer the the smaller first, but counter-clockwise from the first)
  * @param {[number, number]} vector
@@ -311,6 +310,7 @@ export const enclosing_rectangle = (points) => {
  * todo: also possible to parameterize the radius as the center to the points
  * todo: can be edge-aligned
  */
+// a = 2r tan(π/n);
 export const make_regular_polygon = (sides, radius = 1, x = 0, y = 0) => {
   const halfwedge = TWO_PI / sides / 2;
   const r = radius / 2 / Math.cos(halfwedge);

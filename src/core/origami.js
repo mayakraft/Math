@@ -1,3 +1,4 @@
+import { alternating_sum } from "./algebra";
 import {
   is_counter_clockwise_between,
   counter_clockwise_angle_radians
@@ -16,20 +17,12 @@ import { clean_number } from "../arguments/resize";
  * angles.
  */
 
-/**
- *
- *
- */
-export const alternating_sum = (...angles) => [0, 1]
-  .map(even_odd => angles
-    .filter((_, i) => i % 2 === even_odd)
-    .reduce((a, b) => a + b, 0));
 
 /**
  * sums is 2 arrays, array filtered into even and odd, summed
  *
  */
-export const kawasaki_sector_score = (...angles) => alternating_sum(...angles)
+export const kawasaki_sector_score = (angles) => alternating_sum(angles)
   .map(a => (a < 0 ? a + Math.PI * 2 : a))
   .map(s => Math.PI - s);
 
@@ -41,14 +34,14 @@ export const kawasaki_sector_score = (...angles) => alternating_sum(...angles)
  *
  *
  */
-export const kawasaki_solutions_radians = (...radians) => radians
-  .map((v, i, ar) => counter_clockwise_angle_radians(
-    v, ar[(i + 1) % ar.length]
+export const kawasaki_solutions_radians = (radians) => radians
+  .map((v, i, arr) => counter_clockwise_angle_radians(
+    v, arr[(i + 1) % arr.length]
   ))
   // for every sector, make an array of all the OTHER sectors
   .map((_, i, arr) => arr.slice(i + 1, arr.length).concat(arr.slice(0, i)))
   // for every sector, use the sector score from the OTHERS two to split it
-  .map(opposite_sectors => kawasaki_sector_score(...opposite_sectors))
+  .map(opposite_sectors => kawasaki_sector_score(opposite_sectors))
   .map((kawasakis, i) => radians[i] + kawasakis[0])
   .map((angle, i) => (is_counter_clockwise_between(angle,
     radians[i], radians[(i + 1) % radians.length])
@@ -64,10 +57,10 @@ export const kawasaki_solutions_radians = (...radians) => radians
   // });
   // return solutions;
 
-export const kawasaki_solutions = (...vectors) => {
+export const kawasaki_solutions = (vectors) => {
   const vectors_radians = vectors.map(v => Math.atan2(v[1], v[0]));
-  return kawasaki_solutions_radians(...vectors_radians)
+  return kawasaki_solutions_radians(vectors_radians)
     .map(a => (a === undefined
       ? undefined
-      : [clean_number(Math.cos(a), 14), clean_number(Math.sin(a), 14)]));
+      : [Math.cos(a), Math.sin(a)]));
 };

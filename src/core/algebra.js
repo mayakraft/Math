@@ -45,20 +45,20 @@ export const scale = (v, s) => v.map(n => n * s);
  * @param {number[]} one vector, n-dimensions
  * @returns {number[]} one vector, dimension matching first parameter
  */
-export const add = (v, u) => v.map((n, i) => n + u[i]);
+export const add = (v, u) => v.map((n, i) => n + (u[i] || 0));
 /**
  * @param {number[]} one vector, n-dimensions
  * @param {number[]} one vector, n-dimensions
  * @returns {number[]} one vector, dimension matching first parameter
  */
-export const subtract = (v, u) => v.map((n, i) => n - u[i]);
+export const subtract = (v, u) => v.map((n, i) => n - (u[i] || 0));
 /**
  * @param {number[]} one vector, n-dimensions
  * @param {number[]} one vector, n-dimensions
  * @returns {number} one scalar
  */
 export const dot = (v, u) => v
-  .map((_, i) => v[i] * u[i])
+  .map((_, i) => v[i] * (u[i] || 1))
   .reduce(fn_add, 0);
 /**
  * @param {number[]} one vector, n-dimensions
@@ -88,7 +88,7 @@ export const average = function () {
  */
 export const lerp = (v, u, t) => {
   const inv = 1.0 - t;
-  return v.map((n, i) => n * inv + u[i] * t);
+  return v.map((n, i) => n * inv + (u[i] || 0) * t);
 };
 /**
  * @param {number[]} one 2D vector
@@ -150,7 +150,6 @@ export const rotate90 = v => [-v[1], v[0]];
  * @returns {number[]} one 2D vector, counter-clockwise rotation
  */
 export const rotate270 = v => [v[1], -v[0]];
-
 /**
  * @param {number[]} one vector, n-dimensions
  * @returns boolean
@@ -167,3 +166,13 @@ export const degenerate = (v, epsilon = EPSILON) => Math
  */
 export const parallel = (a, b, epsilon = EPSILON) => 1 - Math
   .abs(dot(normalize(a), normalize(b))) < epsilon;
+/**
+ * @description given a list of numbers this method will sort them by
+ *  even and odd indices and sum the two categories, returning two sums.
+ * @param {number[]} one list of numbers
+ * @returns {number[]} one array of two sums, even and odd indices
+ */
+export const alternating_sum = (numbers) => [0, 1]
+  .map(even_odd => numbers
+    .filter((_, i) => i % 2 === even_odd)
+    .reduce(fn_add, 0));

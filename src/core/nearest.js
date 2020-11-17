@@ -19,7 +19,7 @@ export const segment_limiter = (dist) => {
   return dist;
 };
 
-const smallest_comparison_search = (obj, array, compare_func) => {
+export const smallest_comparison_search = (obj, array, compare_func) => {
   const objs = array.map((o, i) => ({ o, i, d: compare_func(obj, o) }));
   let index;
   let smallest_value = Infinity;
@@ -48,18 +48,6 @@ export const nearest_point = (point, array_of_points) => {
   return index === undefined ? undefined : array_of_points[index];
 };
 
-// export const nearest_point_on_line = (lineVec, linePoint, point, limiterFunc, epsilon = EPSILON) => {
-//   const magSquared = (lineVec[0] ** 2) + (lineVec[1] ** 2);
-//   const vectorToPoint = [0, 1].map((_, i) => point[i] - linePoint[i]);
-//   // const pTo0 = [0, 1].map((_, i) => point[i] - linePoint[i]);
-//   const dot = [0, 1].map((_, i) => lineVec[i] * vectorToPoint[i])
-//     .reduce((a, b) => a + b, 0);
-//   const dist = dot / magSquared;
-//   // limit depending on line, ray, segment
-//   const d = limiterFunc(dist, epsilon);
-//   return [0, 1].map((_, i) => linePoint[i] + lineVec[i] * d);
-// };
-
 export const nearest_point_on_line = (vector, origin, point, limiterFunc, epsilon = EPSILON) => {
   origin = resize(vector.length, origin);
   point = resize(vector.length, point);
@@ -70,14 +58,6 @@ export const nearest_point_on_line = (vector, origin, point, limiterFunc, epsilo
   // limit depending on line, ray, segment
   const d = limiterFunc(dist, epsilon);
   return add(origin, scale(vector, d))
-  // const vectorToPoint = [0, 1].map((_, i) => point[i] - origin[i]);
-  // const pTo0 = [0, 1].map((_, i) => point[i] - origin[i]);
-  // const dot = [0, 1].map((_, i) => vector[i] * vectorToPoint[i])
-  //   .reduce((a, b) => a + b, 0);
-  // const dist = dot / magSquared;
-  // limit depending on line, ray, segment
-  // const d = limiterFunc(dist, epsilon);
-  // return [0, 1].map((_, i) => origin[i] + vector[i] * d);
 };
 
 export const nearest_point_on_polygon = (polygon, point) => {
