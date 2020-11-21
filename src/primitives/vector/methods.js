@@ -1,6 +1,6 @@
 import Constructors from "../constructors";
 import { equivalent_vectors } from "../../core/equal";
-import { bisect_vectors } from "../../core/geometry";
+import { counter_clockwise_bisect2 } from "../../core/geometry";
 
 import {
   resize,
@@ -92,7 +92,7 @@ const table = {
       return midpoint(...resize_up(this, get_vector(arguments)));
     },
     bisect: function () {
-      return bisect_vectors(this, get_vector(arguments));
+      return counter_clockwise_bisect2(this, get_vector(arguments));
     },
   }
 };

@@ -74,4 +74,5 @@ export const nearest_point_on_circle = (radius, origin, point) => add(
   origin, scale(normalize(subtract(point, origin)), radius)
 );
 
+// todo
 export const nearest_point_on_ellipse = () => false;

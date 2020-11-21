@@ -22,8 +22,14 @@ export default {
     },
 
     M: {
-      rotate180: function () {
+      flip: function () {
         return Constructors.ray(flip(this.vector), this.origin);
+      },
+      scale: function (scale) {
+        return Constructors.ray(this.vector.scale(scale), this.origin);
+      },
+      normalize: function () {
+        return Constructors.ray(this.vector.normalize(), this.origin);
       },
       // distance is between 0 and 1, representing the vector between start and end. cap accordingly
       clip_function: ray_limiter,
