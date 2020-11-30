@@ -1,5 +1,5 @@
+import { EPSILON } from "../core/constants";
 import { midpoint } from "../core/algebra";
-import { EPSILON } from "../core/equal";
 import {
   quick_equivalent_2,
   intersect_line_seg_include,

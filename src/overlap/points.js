@@ -1,4 +1,4 @@
-import { EPSILON } from "../core/equal";
+import { EPSILON } from "../core/constants";
 import {
   dot,
   cross2,

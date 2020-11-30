@@ -1,5 +1,5 @@
+import { EPSILON } from "../core/constants";
 import { fn_not_undefined } from "../arguments/functions";
-import { EPSILON } from "../core/equal";
 import { subtract, midpoint, parallel } from "../core/algebra";
 import {
   point_on_line,

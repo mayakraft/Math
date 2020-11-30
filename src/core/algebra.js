@@ -1,4 +1,4 @@
-import { EPSILON } from "./equal";
+import { EPSILON } from "./constants";
 import {
   fn_square,
   fn_add,
@@ -58,7 +58,7 @@ export const subtract = (v, u) => v.map((n, i) => n - (u[i] || 0));
  * @returns {number} one scalar
  */
 export const dot = (v, u) => v
-  .map((_, i) => v[i] * (u[i] || 1))
+  .map((_, i) => v[i] * u[i])
   .reduce(fn_add, 0);
 /**
  * @param {number[]} one vector, n-dimensions
@@ -176,3 +176,19 @@ export const alternating_sum = (numbers) => [0, 1]
   .map(even_odd => numbers
     .filter((_, i) => i % 2 === even_odd)
     .reduce(fn_add, 0));
+/**
+ * @description alternating_sum, filter odd and even into two categories, then
+ *  then set them to be the deviation from the average of the sum.
+ * @param {number[]} one list of numbers
+ * @returns {number[]} one array of two numbers. if both alternating sets sum
+ *  to the same, the result will be [0, 0]. if the first set is 2 more than the
+ *  second, the result will be [1, -1]. (not [2, 0] or something with a 2 in it)
+ */
+export const alternating_deviation = (sectors) => {
+  const halfsum = sectors.reduce(fn_add, 0) / 2;
+  return alternating_sum(sectors).map(s => s - halfsum);
+};
+
+// export const kawasaki_from_even_vectors = function (...vectors) {
+//   return alternating_deviation(...interior_angles(...vectors));
+// };

@@ -6,7 +6,7 @@ import {
   counter_clockwise_angle2,
   counter_clockwise_bisect2,
   subsect,
-} from "../../core/geometry";
+} from "../../core/radial";
 
 export default {
   sector: {

@@ -1,8 +1,8 @@
 import Constructors from "../constructors";
 import LinePrototype from "../prototypes/line";
+import { EPSILON } from "../../core/constants";
 import { resize } from "../../arguments/resize";
 import { get_line } from "../../arguments/get";
-import { EPSILON } from "../../core/equal";
 import { flip } from "../../core/algebra";
 import { ray_limiter } from "../../core/nearest";
 import Static from "./static";

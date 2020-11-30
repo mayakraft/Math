@@ -5,9 +5,10 @@ import {
 import {
   counter_clockwise_angle_radians,
   counter_clockwise_radians_order
-} from "../../core/geometry";
+} from "../../core/radial";
 import {
-  get_vector_of_vectors
+  get_vector,
+  get_vector_of_vectors,
 } from "../../arguments/get";
 
 const invert_order_array = (arr) => {

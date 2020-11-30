@@ -411,21 +411,21 @@ testEqual([Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
 /*
 testName("kawasaki's theorem math");
 testEqual([16, 20], math.core.alternating_sum(1, 2, 3, 4, 5, 6, 7, 8));
-testEqual([0, 0], math.core.kawasaki_sector_score(Math.PI, Math.PI));
-testEqual([0, 0], math.core.kawasaki_sector_score(
+testEqual([0, 0], math.core.alternating_deviation(Math.PI, Math.PI));
+testEqual([0, 0], math.core.alternating_deviation(
   Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2
 ));
 testEqual([1, -1],
-  math.core.kawasaki_sector_score(Math.PI - 1, Math.PI + 1));
+  math.core.alternating_deviation(Math.PI - 1, Math.PI + 1));
 testEqual([1, -1],
-  math.core.kawasaki_sector_score(
+  math.core.alternating_deviation(
     Math.PI / 2 - 0.5,
     Math.PI / 2 + 0.5,
     Math.PI / 2 - 0.5,
     Math.PI / 2 + 0.5
   ));
 testEqual([0, 0],
-  math.core.kawasaki_sector_score(...math.core.interior_angles([1, 0], [0, 1], [-1, 0], [0, -1])));
+  math.core.alternating_deviation(...math.core.interior_angles([1, 0], [0, 1], [-1, 0], [0, -1])));
 testEqual(
   [undefined, undefined, 1.25 * Math.PI],
   math.core.kawasaki_solutions_radians(

@@ -1,4 +1,4 @@
-import { EPSILON } from "../core/equal";
+import { EPSILON } from "../core/constants";
 import { add, subtract, magnitude, scale, cross2 } from "../core/algebra";
 
 export const include_l = () => true;

@@ -1,4 +1,4 @@
-import { EPSILON } from "../core/equal";
+import { EPSILON } from "../core/constants";
 
 const acossafe = function (x) {
   if (x >= 1.0) return 0;

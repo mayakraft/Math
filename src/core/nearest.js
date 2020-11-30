@@ -1,4 +1,4 @@
-import { EPSILON } from "./equal";
+import { EPSILON } from "./constants";
 import { resize } from "../arguments/resize";
 import {
   mag_squared,

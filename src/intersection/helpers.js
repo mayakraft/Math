@@ -1,4 +1,4 @@
-import { EPSILON } from "../core/equal";
+import { EPSILON } from "../core/constants";
 import { subtract } from "../core/algebra";
 import {
   point_in_convex_poly_inclusive,

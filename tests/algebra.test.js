@@ -7,6 +7,13 @@ const testEqual = function (...args) {
 /**
  * algebra core
  */
+test("dot", () => {
+  expect(math.core.dot([3, 1000], [1, 0])).toBe(3);
+  expect(math.core.dot([3, 1000], [1, 0])).toBe(3);
+  expect(math.core.dot([1, 1000], [400])).toBe(400);
+  expect(math.core.dot([1, 1000], [])).toBe(0);
+});
+
 test("average function", () => {
   // improper use
   expect(math.core.average().length).toBe(0);

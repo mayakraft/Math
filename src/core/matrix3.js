@@ -3,7 +3,7 @@
  * these methods depend on arrays of 12 items, 3x3 matrices won't work.
  */
 
-import { EPSILON } from "./equal";
+import { EPSILON } from "./constants";
 import { normalize } from "./algebra";
 import { resize } from "../arguments/resize";
 
