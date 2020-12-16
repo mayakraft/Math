@@ -1,5 +1,5 @@
-import { EPSILON } from "../../core/equal";
-import { bisect_lines2 } from "../../core/geometry";
+import { EPSILON } from "../../core/constants";
+import { bisect_lines2 } from "../../core/radial";
 import { nearest_point_on_line } from "../../core/nearest";
 import {
   resize,
@@ -17,8 +17,10 @@ import {
   degenerate,
 } from "../../core/algebra";
 
-import { make_matrix2_reflect } from "../../core/matrix2";
-import { multiply_matrix3_line3 } from "../../core/matrix3";
+import {
+  multiply_matrix3_line3,
+  make_matrix3_reflectZ
+} from "../../core/matrix3";
 
 import Intersect from "../../intersection/index";
 
@@ -47,14 +49,18 @@ LineProto.prototype.isParallel = function () {
   return parallel(...arr);
 };
 
+// LineProto.prototype.isCollinear = function () {
+//   const line = get_line(...arguments);
+//   return point_on_line(line.origin, this.vector, this.origin)
+//     && parallel(...resize_up(this.vector, line.vector));
+// };
+
 LineProto.prototype.isDegenerate = function (epsilon = EPSILON) {
   return degenerate(this.vector, epsilon);
 };
 
-// todo: convert this to matrix 3x4
-LineProto.prototype.reflection = function () {
-  // return Constructors.matrix2.makeReflection(this.vector, this.origin);
-  return Constructors.matrix(make_matrix2_reflect(this.vector, this.origin));
+LineProto.prototype.reflectionMatrix = function () {
+  return Constructors.matrix(make_matrix3_reflectZ(this.vector, this.origin));
 };
 
 LineProto.prototype.nearestPoint = function () {

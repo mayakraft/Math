@@ -17,7 +17,8 @@ const type_of = function (obj) {
     case "circle":
     case "ellipse":
     case "rect":
-    case "polygon": return obj.constructor.name;
+    case "polygon": 
+		case "junction": return obj.constructor.name;
     default: break;
   }
   if (typeof obj === "object") {

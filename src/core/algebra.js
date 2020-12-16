@@ -1,4 +1,4 @@
-import { EPSILON } from "./equal";
+import { EPSILON } from "./constants";
 import {
   fn_square,
   fn_add,
@@ -45,13 +45,13 @@ export const scale = (v, s) => v.map(n => n * s);
  * @param {number[]} one vector, n-dimensions
  * @returns {number[]} one vector, dimension matching first parameter
  */
-export const add = (v, u) => v.map((n, i) => n + u[i]);
+export const add = (v, u) => v.map((n, i) => n + (u[i] || 0));
 /**
  * @param {number[]} one vector, n-dimensions
  * @param {number[]} one vector, n-dimensions
  * @returns {number[]} one vector, dimension matching first parameter
  */
-export const subtract = (v, u) => v.map((n, i) => n - u[i]);
+export const subtract = (v, u) => v.map((n, i) => n - (u[i] || 0));
 /**
  * @param {number[]} one vector, n-dimensions
  * @param {number[]} one vector, n-dimensions
@@ -88,7 +88,7 @@ export const average = function () {
  */
 export const lerp = (v, u, t) => {
   const inv = 1.0 - t;
-  return v.map((n, i) => n * inv + u[i] * t);
+  return v.map((n, i) => n * inv + (u[i] || 0) * t);
 };
 /**
  * @param {number[]} one 2D vector
@@ -150,13 +150,12 @@ export const rotate90 = v => [-v[1], v[0]];
  * @returns {number[]} one 2D vector, counter-clockwise rotation
  */
 export const rotate270 = v => [v[1], -v[0]];
-
 /**
  * @param {number[]} one vector, n-dimensions
  * @returns boolean
  */
-export const degenerate = (v) => Math
-  .abs(v.reduce(fn_add, 0)) < EPSILON;
+export const degenerate = (v, epsilon = EPSILON) => Math
+  .abs(v.reduce(fn_add, 0)) < epsilon;
 
 // todo: should we use cross product to determine parallel?
 
@@ -165,5 +164,31 @@ export const degenerate = (v) => Math
  * @param {number[]} one vector, n-dimensions
  * @returns boolean
  */
-export const parallel = (a, b) => 1 - Math
-  .abs(dot(normalize(a), normalize(b))) < EPSILON;
+export const parallel = (a, b, epsilon = EPSILON) => 1 - Math
+  .abs(dot(normalize(a), normalize(b))) < epsilon;
+/**
+ * @description given a list of numbers this method will sort them by
+ *  even and odd indices and sum the two categories, returning two sums.
+ * @param {number[]} one list of numbers
+ * @returns {number[]} one array of two sums, even and odd indices
+ */
+export const alternating_sum = (numbers) => [0, 1]
+  .map(even_odd => numbers
+    .filter((_, i) => i % 2 === even_odd)
+    .reduce(fn_add, 0));
+/**
+ * @description alternating_sum, filter odd and even into two categories, then
+ *  then set them to be the deviation from the average of the sum.
+ * @param {number[]} one list of numbers
+ * @returns {number[]} one array of two numbers. if both alternating sets sum
+ *  to the same, the result will be [0, 0]. if the first set is 2 more than the
+ *  second, the result will be [1, -1]. (not [2, 0] or something with a 2 in it)
+ */
+export const alternating_deviation = (sectors) => {
+  const halfsum = sectors.reduce(fn_add, 0) / 2;
+  return alternating_sum(sectors).map(s => s - halfsum);
+};
+
+// export const kawasaki_from_even_vectors = function (...vectors) {
+//   return alternating_deviation(...interior_angles(...vectors));
+// };

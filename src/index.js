@@ -8,17 +8,20 @@
                 |___/
  */
 
+import Typeof from "./arguments/typeof";
+import * as resizers from "./arguments/resize";
+import * as getters from "./arguments/get";
+
+import * as constants from "./core/constants";
 import * as algebra from "./core/algebra";
 import * as equal from "./core/equal";
 import * as geometry from "./core/geometry";
+import * as radial from "./core/radial";
 // import * as interpolation from "./core/interpolation";
 import * as matrix2 from "./core/matrix2";
 import * as matrix3 from "./core/matrix3";
 import * as nearest from "./core/nearest";
-// import * as origami from "./core/origami";
-import * as getters from "./arguments/get";
-import * as resizers from "./arguments/resize";
-import Typeof from "./arguments/typeof";
+import * as axioms from "./core/axioms";
 
 import intersect from "./intersection/index";
 import * as intersect_circle from "./intersection/circle";
@@ -54,17 +57,19 @@ const math = primitives;
  */
 
 math.core = Object.assign(Object.create(null),
+  constants,
   algebra,
   equal,
   geometry,
+  radial,
   // interpolation,
   matrix2,
   matrix3,
   nearest,
+  axioms,
   overlap,
   getters,
   resizers,
-  // origami,
   intersect_circle,
   intersect_line_types,
   intersect_polygon,

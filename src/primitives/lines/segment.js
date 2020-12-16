@@ -1,4 +1,5 @@
 import Constructors from "../constructors";
+import { EPSILON } from "../../core/constants";
 import { average } from "../../core/algebra";
 import { segment_limiter } from "../../core/nearest";
 import { multiply_matrix3_vector3 } from "../../core/matrix3";
@@ -8,7 +9,6 @@ import {
   get_segment,
 } from "../../arguments/get";
 import LinePrototype from "../prototypes/line";
-import { EPSILON } from "../../core/equal";
 
 export default {
   segment: {

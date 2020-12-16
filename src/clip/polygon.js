@@ -1,5 +1,5 @@
+import { EPSILON } from "../core/constants";
 import { fn_not_undefined } from "../arguments/functions";
-import { EPSILON } from "../core/equal";
 import { subtract, midpoint, parallel } from "../core/algebra";
 import {
   point_on_line,
@@ -18,6 +18,38 @@ import {
   intersect_seg_seg_exclude,
 } from "../intersection/helpers";
 
+/**
+ * this returns undefined when "intersections" contains 0 or 1 items
+ * or when intersections contains only copies of the same point.
+ * it only returns a point pair when there are two unique points.
+ */
+const get_unique_pair = (intersections) => {
+  for (let i = 1; i < intersections.length; i += 1) {
+    if (!quick_equivalent_2(intersections[0], intersections[i])) {
+      return [intersections[0], intersections[i]];
+    }
+  }
+};
+
+const get_unique_points = (points, epsilon = EPSILON) => {
+  const unique = [];
+  for (let i = 0; i < points.length; i += 1) {
+    let match = false;
+    for (let j = 0; j < unique.length; j += 1) {
+      if (quick_equivalent_2(points[i], unique[j], epsilon)) {
+        match = true;
+      }
+    }
+    if (!match) { unique.push(points[i]); }
+  }
+  return unique;
+};
+
+const sortPointsAlongVector = (points, vector) => points
+  .map(point => ({ point, d: point[0] * vector[0] + point[1] * vector[1] }))
+  .sort((a, b) => a.d - b.d)
+  .map(a => a.point);
+
 // convert segments to vector origin
 const collinear_check = (poly, vector, origin) => {
   const polyvecs = poly
@@ -34,19 +66,6 @@ const clip_intersections = (intersect_func, poly, line1, line2, epsilon = EPSILO
   .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // poly points into segments
   .map(el => intersect_func(line1, line2, el[0], el[1], epsilon))
   .filter(fn_not_undefined);
-
-/**
- * this returns undefined when "intersections" contains 0 or 1 items
- * or when intersections contains only copies of the same point.
- * it only returns a point pair when there are two unique points.
- */
-const get_unique_pair = (intersections) => {
-  for (let i = 1; i < intersections.length; i += 1) {
-    if (!quick_equivalent_2(intersections[0], intersections[i])) {
-      return [intersections[0], intersections[i]];
-    }
-  }
-}
 
 export const clip_line_in_convex_poly_inclusive = (poly, vector, origin, epsilon = EPSILON) => {
   const intersections = clip_intersections(intersect_line_seg_include, poly, vector, origin, epsilon);
@@ -118,12 +137,19 @@ const clip_segment_func = (poly, seg0, seg1, epsilon = EPSILON) => {
   }
   // clip segment against every polygon edge
   const clip_inclusive = clip_intersections(intersect_seg_seg_include, poly, seg0, seg1, epsilon);
-  const clip_inclusive_unique = get_unique_pair(clip_inclusive);
-  // if the number of unique points is 2 or more (2), return this segment.
-  // this only works in the exclusive case because we already removed cases
-  // where the segment is collinear along an edge of the polygon.
-  if (clip_inclusive_unique) {  // 3 or 4
+  // const clip_inclusive_unique = get_unique_pair(clip_inclusive);
+  // // if the number of unique points is 2 or more (2), return this segment.
+  // // this only works in the exclusive case because we already removed cases
+  // // where the segment is collinear along an edge of the polygon.
+  // if (clip_inclusive_unique) {  // 3 or 4
+  //   return clip_inclusive_unique;
+  // }
+  const clip_inclusive_unique = get_unique_points(clip_inclusive, epsilon * 2);
+  if (clip_inclusive_unique.length === 2) {
     return clip_inclusive_unique;
+  } else if (clip_inclusive_unique.length > 2) {
+    const sorted = sortPointsAlongVector(clip_inclusive_unique, subtract(seg1, seg0));
+    return [sorted[0], sorted[sorted.length - 1]];
   }
   // if we have one unique intersection point, combine it with whichever segment
   // point is inside the polygon, and if none are inside it means the segment

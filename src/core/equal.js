@@ -3,8 +3,7 @@ import {
   resize_up,
   resize,
 } from "../arguments/resize";
-
-export const EPSILON = 1e-6;
+import { EPSILON } from "./constants";
 
 const fEqual = (a, b) => a === b;
 const fEpsilonEqual = (a, b) => Math.abs(a - b) < EPSILON;

@@ -21,6 +21,7 @@ export default {
       // this.sectors
     },
     G: {
+      // todo: convex test
       isConvex: function () {
         return true;
       },

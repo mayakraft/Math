@@ -76,6 +76,8 @@ export const get_line = function () {
     : vector_origin_form(...args.map(a => get_vector(a)));
 };
 
+export const get_ray = get_line;
+
 export const rect_form = (x = 0, y = 0, width = 0, height = 0) => ({
   x, y, width, height
 });

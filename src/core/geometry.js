@@ -1,222 +1,28 @@
-import { EPSILON } from "./equal";
+import { EPSILON, TWO_PI } from "./constants";
+import { nearest_point_on_line } from "./nearest";
 import { clean_number } from "../arguments/resize";
 import { rect_form } from "../arguments/get";
-import {
-  fn_add,
-} from "../arguments/functions";
+import { fn_add } from "../arguments/functions";
 import { point_on_line } from "../overlap/points";
 import {
   dot,
   normalize,
+  distance,
   midpoint,
   add,
+  subtract,
+  flip,
   rotate90,
 } from "./algebra";
 import {
   intersect_lines,
-  exclude_l_s,
+  exclude_l,
+  exclude_r,
+  exclude_s,
 } from "../intersection/lines";
-
-export const R2D = 180 / Math.PI;
-export const D2R = Math.PI / 180;
-export const TWO_PI = Math.PI * 2;
-
-export const is_counter_clockwise_between = (angle, angleA, angleB) => {
-  while (angleB < angleA) { angleB += TWO_PI; }
-  while (angle > angleA) { angle -= TWO_PI; }
-  while (angle < angleA) { angle += TWO_PI; }
-  return angle < angleB;
-};
-/** There are 2 interior angles between 2 absolute angle measurements, from A to B return the clock
-wise one
- * @param {number} angle in radians, angle PI/2 is along the +Y axis
- * @returns {number} clockwise interior angle (from a to b) in radians
- */
-export const clockwise_angle2_radians = (a, b) => {
-  // this is on average 50 to 100 times faster than clockwise_angle2
-  while (a < 0) { a += TWO_PI; }
-  while (b < 0) { b += TWO_PI; }
-  while (a > TWO_PI) { a -= TWO_PI; }
-  while (b > TWO_PI) { b -= TWO_PI; }
-  const a_b = a - b;
-  return (a_b >= 0)
-    ? a_b
-    : TWO_PI - (b - a);
-};
-
-// @returns {number}
-export const counter_clockwise_angle2_radians = (a, b) => {
-  // this is on average 50 to 100 times faster than counter_clockwise_angle2
-  while (a < 0) { a += TWO_PI; }
-  while (b < 0) { b += TWO_PI; }
-  while (a > TWO_PI) { a -= TWO_PI; }
-  while (b > TWO_PI) { b -= TWO_PI; }
-  const b_a = b - a;
-  return (b_a >= 0)
-    ? b_a
-    : TWO_PI - (a - b);
-};
-/** There are 2 angles between 2 vectors, from A to B return the clockwise one.
- * @param {[number, number]} vector
- * @param {[number, number]} vector
- * @returns {number} clockwise angle (from a to b) in radians
- */
-export const clockwise_angle2 = (a, b) => {
-  const dotProduct = b[0] * a[0] + b[1] * a[1];
-  const determinant = b[0] * a[1] - b[1] * a[0];
-  let angle = Math.atan2(determinant, dotProduct);
-  if (angle < 0) { angle += TWO_PI; }
-  return angle;
-};
-
-// @returns {number}
-export const counter_clockwise_angle2 = (a, b) => {
-  const dotProduct = a[0] * b[0] + a[1] * b[1];
-  const determinant = a[0] * b[1] - a[1] * b[0];
-  let angle = Math.atan2(determinant, dotProduct);
-  if (angle < 0) { angle += TWO_PI; }
-  return angle;
-};
-/**
- * this calculates an angle bisection between the pair of vectors
- * clockwise from the first vector to the second
- *
- *     a  x
- *       /     . bisection
- *      /   .
- *     / .
- *     --------x  b
- */
-export const clockwise_bisect2 = (a, b) => {
-  const radians = Math.atan2(a[1], a[0]) - clockwise_angle2(a, b) / 2;
-  return [Math.cos(radians), Math.sin(radians)];
-};
-export const counter_clockwise_bisect2 = (a, b) => {
-  const radians = Math.atan2(a[1], a[0]) + counter_clockwise_angle2(a, b) / 2;
-  return [Math.cos(radians), Math.sin(radians)];
-};
-/**
- * given vectors, make a separate array of radially-sorted vector indices
- *
- * maybe there is such thing as an absolute radial origin (x axis?)
- * but this chooses the first element as the first element
- * and sort everything else counter-clockwise around it.
- *
- * @returns {number[]}, already c-cwise sorted would give [0,1,2,3,4]
- */
-export const counter_clockwise_vector_order = (...vectors) => {
-  const vectors_radians = vectors.map(v => Math.atan2(v[1], v[0]));
-  const counter_clockwise = Array.from(Array(vectors_radians.length))
-    .map((_, i) => i)
-    .sort((a, b) => vectors_radians[a] - vectors_radians[b]);
-  return counter_clockwise
-    .slice(counter_clockwise.indexOf(0), counter_clockwise.length)
-    .concat(counter_clockwise.slice(0, counter_clockwise.indexOf(0)));
-};
-/** There are 2 interior angles between 2 vectors, return both,
- * (no longer the the smaller first, but counter-clockwise from the first)
- * @param {[number, number]} vector
- * @returns {[number, number]} 2 angle measurements between vectors
- */
-// export const interior_angles2 = (a, b) => {
-//   const interior1 = counter_clockwise_angle2(a, b);
-//   const interior2 = Math.PI * 2 - interior1;
-//   // return (interior1 < interior2)
-//   //   ? [interior1, interior2]
-//   //   : [interior2, interior1];
-//   return [interior1, interior2];
-// };
-/**
- * very important! this does not do any sorting. it calculates the interior
- * angle between each consecutive vector. if you need them to add up to 360deg,
- * you'll need to pre-sort your vectors with counter_clockwise_vector_order
- */
-export const interior_angles = (...vecs) => vecs
-  .map((v, i, ar) => counter_clockwise_angle2(v, ar[(i + 1) % ar.length]));
-
-const interior_angles_unsorted = function (...vectors) {
-};
-
-/**
- * This bisects 2 vectors into the smaller of their two angle bisections
- * technically this works in any dimension... unless the vectors are 180deg
- * from each other, there are an infinite number of solutions in 3D but
- * 2 solutions in 2D, this will return one of the 2D solutions.
- * todo: reconsider these assumptions
- * @param {[number, number]} vector
- * @returns {[[number, number],[number, number]]} 2 vectors, the smaller first
- */
-export const bisect_vectors = (a, b) => {
-  const aV = normalize(a);
-  const bV = normalize(b);
-  return dot(aV, bV) < (-1 + EPSILON)
-    ? [-aV[1], aV[0]]
-    : normalize(add(aV, bV));
-};
-/** This bisects 2 lines
- * @param {[number, number]} all vectors, lines defined by points and vectors
- * @returns [ [number,number], [number,number] ] // line, defined as
- * point then vector, in that order
- *
- * second entry is 90 degrees counter clockwise from first entry
- */
-export const bisect_lines2 = (vectorA, pointA, vectorB, pointB) => {
-  const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
-  if (Math.abs(denominator) < EPSILON) { /* parallel */
-    const solution = [[vectorA[0], vectorA[1]], midpoint(pointA, pointB)];
-    const array = [solution, solution];
-    const dt = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
-    delete array[(dt > 0 ? 1 : 0)];
-    return array;
-  }
-  // const vectorC = [pointB[0] - pointA[0], pointB[1] - pointA[1]];
-  const numerator = (pointB[0] - pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1] - pointA[1]);
-  const t = numerator / denominator;
-  const origin = [
-    pointA[0] + vectorA[0] * t,
-    pointA[1] + vectorA[1] * t,
-  ];
-  const bisects = [bisect_vectors(vectorA, vectorB)];
-  bisects[1] = rotate90(bisects[0]);
-  return bisects.map(vector => ({ vector, origin }));
-};
-/**
- * subsect the angle between two vectors already converted to radians
- */
-export const subsect_radians = (divisions, angleA, angleB) => {
-  const angle = counter_clockwise_angle2_radians(angleA, angleB) / divisions;
-  return Array.from(Array(divisions - 1))
-    .map((_, i) => angleA + angle * i);
-};
-/**
- * subsect the angle between two vectors (counter-clockwise from A to B)
- */
-export const subsect = (divisions, vectorA, vectorB) => {
-  const angleA = Math.atan2(vectorA[1], vectorA[0]);
-  const angleB = Math.atan2(vectorB[1], vectorB[0]);
-  return subsect_radians(divisions, angleA, angleB)
-    .map(rad => [Math.cos(rad), Math.sin(rad)]);
-};
-/**
- * subsect the angle between two lines, can handle parallel lines
- */
-// export const subsectLines = function (divisions, pointA, vectorA, pointB, vectorB) {
-//   const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
-//   if (Math.abs(denominator) < EPSILON) { /* parallel */
-//     const solution = [midpoint(pointA, pointB), [vectorA[0], vectorA[1]]];
-//     const array = [solution, solution];
-//     const dot = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
-//     delete array[(dot > 0 ? 1 : 0)];
-//     return array;
-//   }
-//   const numerator = (pointB[0] - pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1] - pointA[1]);
-//   const t = numerator / denominator;
-//   const x = pointA[0] + vectorA[0] * t;
-//   const y = pointA[1] + vectorA[1] * t;
-//   const bisects = bisect_vectors(vectorA, vectorB);
-//   bisects[1] = [-bisects[0][1], bisects[0][0]];
-//   return bisects.map(el => [[x, y], el]);
-// };
+import {
+	clockwise_bisect2,
+} from "./radial";
 
 export const circumcircle = function (a, b, c) {
   const A = b[0] - a[0];
@@ -292,6 +98,7 @@ export const enclosing_rectangle = (points) => {
  * todo: also possible to parameterize the radius as the center to the points
  * todo: can be edge-aligned
  */
+// a = 2r tan(π/n);
 export const make_regular_polygon = (sides, radius = 1, x = 0, y = 0) => {
   const halfwedge = TWO_PI / sides / 2;
   const r = radius / 2 / Math.cos(halfwedge);
@@ -305,7 +112,7 @@ export const make_regular_polygon = (sides, radius = 1, x = 0, y = 0) => {
 const line_segment_exclusive = function (lineVector, linePoint, segmentA, segmentB) {
   const pt = segmentA;
   const vec = [segmentB[0] - segmentA[0], segmentB[1] - segmentA[1]];
-  return intersect_lines(lineVector, linePoint, vec, pt, exclude_l_s);
+  return intersect_lines(lineVector, linePoint, vec, pt, exclude_l, exclude_s);
 };
 
 export const split_polygon = () => console.warn("split polygon not done");
@@ -454,4 +261,123 @@ export const convex_hull = (points, include_collinear = false, epsilon = EPSILON
     // update walking direction with the angle to the new point
     ang = Math.atan2(hull[h][1] - angles[0].node[1], hull[h][0] - angles[0].node[0]);
   } while (infiniteLoop < INFINITE_LOOP);
+};
+
+/**
+ * @description this recursive algorithm works outwards-to-inwards, each repeat
+ * decreases the size of the polygon by one point/side. (removes 2, adds 1)
+ * and repeating the algorithm on the smaller polygon.
+ *
+ * @param {number[][]} array of point objects (arrays of numbers, [x, y]). the
+ *   counter-clockwise sorted points of the polygon. as we recurse this list shrinks
+ *   by removing the points that are "finished".
+ *
+ * @returns {object[]} array of line segments as objects with keys:
+ *   "points": array of 2 points in array form [ [x, y], [x, y] ]
+ *   "type": "skeleton" or "kawasaki", the latter being the projected perpendicular
+ *   dropped edges down to the sides of the polygon.
+ */
+
+const recurseSkeleton = (points, lines, bisectors) => {
+  // every point has an interior angle bisector vector, this ray is
+  // tested for intersections with its neighbors on both sides.
+  // "intersects" is fencepost mapped (i) to "points" (i, i+1)
+  // because one point/ray intersects with both points on either side,
+  // so in reverse, every point (i) relates to intersection (i-1, i)
+  const intersects = points
+    // .map((p, i) => math.ray(bisectors[i], p))
+    // .map((ray, i, arr) => ray.intersect(arr[(i + 1) % arr.length]));
+    .map((origin, i) => ({ vector: bisectors[i], origin }))
+    .map((ray, i, arr) => intersect_lines(
+      ray.vector,
+      ray.origin,
+      arr[(i + 1) % arr.length].vector,
+      arr[(i + 1) % arr.length].origin,
+      exclude_r,
+      exclude_r));
+  // project each intersection point down perpendicular to the edge of the polygon
+  // const projections = lines.map((line, i) => line.nearestPoint(intersects[i]));
+  const projections = lines.map((line, i) => nearest_point_on_line(
+    line.vector, line.origin, intersects[i], a => a));
+  // when we reach only 3 points remaining, we are at the end. we can return early
+  // and skip unnecessary calculations, all 3 projection lengths will be the same.
+  if (points.length === 3) {
+    return points.map(p => ({ type:"skeleton", points: [p, intersects[0]] }))
+      .concat([{ type:"perpendicular", points: [projections[0], intersects[0]] }]);
+  }
+  // measure the lengths of the projected lines, these will be used to identify
+  // the smallest length, or the point we want to operate on this round.
+  const projectionLengths = intersects
+    .map((intersect, i) => distance(intersect, projections[i]));
+  let shortest = 0;
+  projectionLengths.forEach((len, i) => {
+    if (len < projectionLengths[shortest]) { shortest = i; }
+  });
+  // we have the shortest length, we now have the solution for this round
+  // (all that remains is to prepare the arguments for the next recursive call)
+  const solutions = [
+    { type:"skeleton", points: [points[shortest], intersects[shortest]] },
+    { type:"skeleton", points: [points[(shortest + 1) % points.length], intersects[shortest]] },
+    // perpendicular projection
+    // we could expand this algorithm here to include all three instead of just one.
+    // two more of the entries in "intersects" will have the same length as shortest
+    { type:"perpendicular", points: [projections[shortest], intersects[shortest]] }
+  ];
+  // our new smaller polygon, missing two points now, but gaining one more (the intersection)
+  // this is to calculate the new angle bisector at this new point.
+  // we are now operating on the inside of the polygon, the lines that will be built from
+  // this bisection will become interior skeleton lines.
+  // first, flip the first vector so that both of the vectors originate at the
+  // center point, and extend towards the neighbors.
+  const newVector = clockwise_bisect2(
+    flip(lines[(shortest + lines.length - 1) % lines.length].vector),
+    lines[(shortest + 1) % lines.length].vector
+  );
+  // delete 2 entries from "points" and "bisectors" and add each array's new element.
+  // delete 1 entry from lines.
+  const shortest_is_last_index = shortest === points.length - 1;
+  points.splice(shortest, 2, intersects[shortest]);
+  lines.splice(shortest, 1);
+  bisectors.splice(shortest, 2, newVector);
+  if (shortest_is_last_index) {
+    // in the case the index was at the end of the array,
+    // we tried to remove two elements but only removed one because
+    // it was the last element. remove the first element too.
+    points.splice(0, 1);
+    bisectors.splice(0, 1);
+    // also, the fencepost mapping of the lines array is off by one,
+    // move the first element to the end of the array.
+    lines.push(lines.shift());
+  }
+  return solutions.concat(recurseSkeleton(points, lines, bisectors));
+};
+
+/**
+ * @param {number[][]} array of arrays of numbers (array of points), where
+ *   each point is an array of numbers: [number, number].
+ *
+ * make sure:
+ *  - your polygon is convex (todo: make this algorithm work with non-convex)
+ *  - your polygon points are sorted counter-clockwise
+ */
+export const straight_skeleton = (points) => {
+  // first time running this function, create the 2nd and 3rd parameters
+  // convert the edges of the polygons into lines
+  const lines = points
+    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
+    // .map(side => math.line.fromPoints(...side));
+    .map(side => ({ vector: subtract(side[1], side[0]), origin: side[0] }))
+  // get the interior angle bisectors for every corner of the polygon
+  // index map match to "points"
+  const bisectors = points
+    // each element into 3 (previous, current, next)
+    .map((_, i, ar) => [(i - 1 + ar.length) % ar.length, i, (i + 1) % ar.length]
+      .map(i => ar[i]))
+    // make 2 vectors, from current point to previous/next neighbors
+    .map(p => [subtract(p[0], p[1]), subtract(p[2], p[1])])
+    // it is a little counter-intuitive but the interior angle between three
+    // consecutive points in a counter-clockwise wound polygon is measured
+    // in the clockwise direction
+    .map(v => clockwise_bisect2(...v));
+  return recurseSkeleton(points, lines, bisectors);
 };

@@ -4,7 +4,7 @@ test("intersections", () => {
   const polygon = math.polygon([0, 1.15], [-1, -0.577], [1, -0.577]);
   const circle = math.circle(1);
   const line = math.line([1, 2], [0.5, 0]);
-  const ray = math.ray([-1, 2], [0.5, 0]);
+  const ray = math.ray([-1, 2], [0.5, -0.1]);
   const segment = math.segment([-2, 0.5], [2, 0.5]);
 
   const polygon2 = math.polygon([0, -1.15], [1, 0.577], [-1, 0.577]);
@@ -151,29 +151,47 @@ test("collinear line intersections", () => {
   const intersect = math.core.intersect_lines;
   [
     // INCLUDE horizontal
-    intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.core.include_l_l),
-    intersect([1, 0], [2, 2], [-1, 0], [-1, 2], math.core.include_l_l),
-    intersect([-1, 0], [2, 2], [1, 0], [-1, 2], math.core.include_l_l),
+    intersect([1, 0], [2, 2], [1, 0], [-1, 2],
+      math.core.include_l, math.core.include_l),
+    intersect([1, 0], [2, 2], [-1, 0], [-1, 2],
+      math.core.include_l, math.core.include_l),
+    intersect([-1, 0], [2, 2], [1, 0], [-1, 2],
+      math.core.include_l, math.core.include_l),
     // INCLUDE vertical
-    intersect([0, 1], [3, 0], [0, 1], [3, 3], math.core.include_l_l),
-    intersect([0, 1], [3, 0], [0, -1], [3, 3], math.core.include_l_l),
-    intersect([0, -1], [3, 0], [0, 1], [3, 3], math.core.include_l_l),
+    intersect([0, 1], [3, 0], [0, 1], [3, 3],
+      math.core.include_l, math.core.include_l),
+    intersect([0, 1], [3, 0], [0, -1], [3, 3],
+      math.core.include_l, math.core.include_l),
+    intersect([0, -1], [3, 0], [0, 1], [3, 3],
+      math.core.include_l, math.core.include_l),
     // INCLUDE diagonal
-    intersect([1, 1], [2, 2], [1, 1], [-1, -1], math.core.include_l_l),
-    intersect([-1, -1], [2, 2], [1, 1], [-1, -1], math.core.include_l_l),
-    intersect([1, 1], [2, 2], [-1, -1], [-1, -1], math.core.include_l_l),
+    intersect([1, 1], [2, 2], [1, 1], [-1, -1],
+      math.core.include_l, math.core.include_l),
+    intersect([-1, -1], [2, 2], [1, 1], [-1, -1],
+      math.core.include_l, math.core.include_l),
+    intersect([1, 1], [2, 2], [-1, -1], [-1, -1],
+      math.core.include_l, math.core.include_l),
     // EXCLUDE horizontal
-    intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.core.exclude_l_l),
-    intersect([1, 0], [2, 2], [-1, 0], [-1, 2], math.core.exclude_l_l),
-    intersect([-1, 0], [2, 2], [1, 0], [-1, 2], math.core.exclude_l_l),
+    intersect([1, 0], [2, 2], [1, 0], [-1, 2],
+      math.core.exclude_l, math.core.exclude_l),
+    intersect([1, 0], [2, 2], [-1, 0], [-1, 2],
+      math.core.exclude_l, math.core.exclude_l),
+    intersect([-1, 0], [2, 2], [1, 0], [-1, 2],
+      math.core.exclude_l, math.core.exclude_l),
     // EXCLUDE vertical
-    intersect([0, 1], [3, 0], [0, 1], [3, 3], math.core.exclude_l_l),
-    intersect([0, 1], [3, 0], [0, -1], [3, 3], math.core.exclude_l_l),
-    intersect([0, -1], [3, 0], [0, 1], [3, 3], math.core.exclude_l_l),
+    intersect([0, 1], [3, 0], [0, 1], [3, 3],
+      math.core.exclude_l, math.core.exclude_l),
+    intersect([0, 1], [3, 0], [0, -1], [3, 3],
+      math.core.exclude_l, math.core.exclude_l),
+    intersect([0, -1], [3, 0], [0, 1], [3, 3],
+      math.core.exclude_l, math.core.exclude_l),
     // EXCLUDE diagonal
-    intersect([1, 1], [2, 2], [1, 1], [-1, -1], math.core.exclude_l_l),
-    intersect([-1, -1], [2, 2], [1, 1], [-1, -1], math.core.exclude_l_l),
-    intersect([1, 1], [2, 2], [-1, -1], [-1, -1], math.core.exclude_l_l),
+    intersect([1, 1], [2, 2], [1, 1], [-1, -1],
+      math.core.exclude_l, math.core.exclude_l),
+    intersect([-1, -1], [2, 2], [1, 1], [-1, -1],
+      math.core.exclude_l, math.core.exclude_l),
+    intersect([1, 1], [2, 2], [-1, -1], [-1, -1],
+      math.core.exclude_l, math.core.exclude_l),
   ].forEach(res => expect(res).toBe(undefined));
 });
 
@@ -181,29 +199,47 @@ test("collinear ray intersections", () => {
   const intersect = math.core.intersect_lines;
   [
     // INCLUDE horizontal
-    intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.core.include_r_r),
-    intersect([1, 0], [2, 2], [-1, 0], [-1, 2], math.core.include_r_r),
-    intersect([-1, 0], [2, 2], [1, 0], [-1, 2], math.core.include_r_r),
+    intersect([1, 0], [2, 2], [1, 0], [-1, 2],
+      math.core.include_r, math.core.include_r),
+    intersect([1, 0], [2, 2], [-1, 0], [-1, 2],
+      math.core.include_r, math.core.include_r),
+    intersect([-1, 0], [2, 2], [1, 0], [-1, 2],
+      math.core.include_r, math.core.include_r),
     // INCLUDE vertical
-    intersect([0, 1], [3, 0], [0, 1], [3, 3], math.core.include_r_r),
-    intersect([0, 1], [3, 0], [0, -1], [3, 3], math.core.include_r_r),
-    intersect([0, -1], [3, 0], [0, 1], [3, 3], math.core.include_r_r),
+    intersect([0, 1], [3, 0], [0, 1], [3, 3],
+      math.core.include_r, math.core.include_r),
+    intersect([0, 1], [3, 0], [0, -1], [3, 3],
+      math.core.include_r, math.core.include_r),
+    intersect([0, -1], [3, 0], [0, 1], [3, 3],
+      math.core.include_r, math.core.include_r),
     // INCLUDE diagonal
-    intersect([1, 1], [2, 2], [1, 1], [-1, -1], math.core.include_r_r),
-    intersect([-1, -1], [2, 2], [1, 1], [-1, -1], math.core.include_r_r),
-    intersect([1, 1], [2, 2], [-1, -1], [-1, -1], math.core.include_r_r),
+    intersect([1, 1], [2, 2], [1, 1], [-1, -1],
+      math.core.include_r, math.core.include_r),
+    intersect([-1, -1], [2, 2], [1, 1], [-1, -1],
+      math.core.include_r, math.core.include_r),
+    intersect([1, 1], [2, 2], [-1, -1], [-1, -1],
+      math.core.include_r, math.core.include_r),
     // EXCLUDE horizontal
-    intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.core.exclude_r_r),
-    intersect([1, 0], [2, 2], [-1, 0], [-1, 2], math.core.exclude_r_r),
-    intersect([-1, 0], [2, 2], [1, 0], [-1, 2], math.core.exclude_r_r),
+    intersect([1, 0], [2, 2], [1, 0], [-1, 2],
+      math.core.exclude_r, math.core.exclude_r),
+    intersect([1, 0], [2, 2], [-1, 0], [-1, 2],
+      math.core.exclude_r, math.core.exclude_r),
+    intersect([-1, 0], [2, 2], [1, 0], [-1, 2],
+      math.core.exclude_r, math.core.exclude_r),
     // EXCLUDE vertical
-    intersect([0, 1], [3, 0], [0, 1], [3, 3], math.core.exclude_r_r),
-    intersect([0, 1], [3, 0], [0, -1], [3, 3], math.core.exclude_r_r),
-    intersect([0, -1], [3, 0], [0, 1], [3, 3], math.core.exclude_r_r),
+    intersect([0, 1], [3, 0], [0, 1], [3, 3],
+      math.core.exclude_r, math.core.exclude_r),
+    intersect([0, 1], [3, 0], [0, -1], [3, 3],
+      math.core.exclude_r, math.core.exclude_r),
+    intersect([0, -1], [3, 0], [0, 1], [3, 3],
+      math.core.exclude_r, math.core.exclude_r),
     // EXCLUDE diagonal
-    intersect([1, 1], [2, 2], [1, 1], [-1, -1], math.core.exclude_r_r),
-    intersect([-1, -1], [2, 2], [1, 1], [-1, -1], math.core.exclude_r_r),
-    intersect([1, 1], [2, 2], [-1, -1], [-1, -1], math.core.exclude_r_r),
+    intersect([1, 1], [2, 2], [1, 1], [-1, -1],
+      math.core.exclude_r, math.core.exclude_r),
+    intersect([-1, -1], [2, 2], [1, 1], [-1, -1],
+      math.core.exclude_r, math.core.exclude_r),
+    intersect([1, 1], [2, 2], [-1, -1], [-1, -1],
+      math.core.exclude_r, math.core.exclude_r),
   ].forEach(res => expect(res).toBe(undefined));
 });
 
@@ -211,29 +247,47 @@ test("collinear segment intersections", () => {
   const intersect = math.core.intersect_lines;
   [
     // INCLUDE horizontal
-    intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.core.include_s_s),
-    intersect([1, 0], [2, 2], [-1, 0], [-1, 2], math.core.include_s_s),
-    intersect([-1, 0], [2, 2], [1, 0], [-1, 2], math.core.include_s_s),
+    intersect([1, 0], [2, 2], [1, 0], [-1, 2],
+      math.core.include_s, math.core.include_s),
+    intersect([1, 0], [2, 2], [-1, 0], [-1, 2],
+      math.core.include_s, math.core.include_s),
+    intersect([-1, 0], [2, 2], [1, 0], [-1, 2],
+      math.core.include_s, math.core.include_s),
     // INCLUDE vertical
-    intersect([0, 1], [3, 0], [0, 1], [3, 3], math.core.include_s_s),
-    intersect([0, 1], [3, 0], [0, -1], [3, 3], math.core.include_s_s),
-    intersect([0, -1], [3, 0], [0, 1], [3, 3], math.core.include_s_s),
+    intersect([0, 1], [3, 0], [0, 1], [3, 3],
+      math.core.include_s, math.core.include_s),
+    intersect([0, 1], [3, 0], [0, -1], [3, 3],
+      math.core.include_s, math.core.include_s),
+    intersect([0, -1], [3, 0], [0, 1], [3, 3],
+      math.core.include_s, math.core.include_s),
     // INCLUDE diagonal
-    intersect([1, 1], [2, 2], [1, 1], [-1, -1], math.core.include_s_s),
-    intersect([-1, -1], [2, 2], [1, 1], [-1, -1], math.core.include_s_s),
-    intersect([1, 1], [2, 2], [-1, -1], [-1, -1], math.core.include_s_s),
+    intersect([1, 1], [2, 2], [1, 1], [-1, -1],
+      math.core.include_s, math.core.include_s),
+    intersect([-1, -1], [2, 2], [1, 1], [-1, -1],
+      math.core.include_s, math.core.include_s),
+    intersect([1, 1], [2, 2], [-1, -1], [-1, -1],
+      math.core.include_s, math.core.include_s),
     // EXCLUDE horizontal
-    intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.core.exclude_s_s),
-    intersect([1, 0], [2, 2], [-1, 0], [-1, 2], math.core.exclude_s_s),
-    intersect([-1, 0], [2, 2], [1, 0], [-1, 2], math.core.exclude_s_s),
+    intersect([1, 0], [2, 2], [1, 0], [-1, 2],
+      math.core.exclude_s, math.core.exclude_s),
+    intersect([1, 0], [2, 2], [-1, 0], [-1, 2],
+      math.core.exclude_s, math.core.exclude_s),
+    intersect([-1, 0], [2, 2], [1, 0], [-1, 2],
+      math.core.exclude_s, math.core.exclude_s),
     // EXCLUDE vertical
-    intersect([0, 1], [3, 0], [0, 1], [3, 3], math.core.exclude_s_s),
-    intersect([0, 1], [3, 0], [0, -1], [3, 3], math.core.exclude_s_s),
-    intersect([0, -1], [3, 0], [0, 1], [3, 3], math.core.exclude_s_s),
+    intersect([0, 1], [3, 0], [0, 1], [3, 3],
+      math.core.exclude_s, math.core.exclude_s),
+    intersect([0, 1], [3, 0], [0, -1], [3, 3],
+      math.core.exclude_s, math.core.exclude_s),
+    intersect([0, -1], [3, 0], [0, 1], [3, 3],
+      math.core.exclude_s, math.core.exclude_s),
     // EXCLUDE diagonal
-    intersect([1, 1], [2, 2], [1, 1], [-1, -1], math.core.exclude_s_s),
-    intersect([-1, -1], [2, 2], [1, 1], [-1, -1], math.core.exclude_s_s),
-    intersect([1, 1], [2, 2], [-1, -1], [-1, -1], math.core.exclude_s_s),
+    intersect([1, 1], [2, 2], [1, 1], [-1, -1],
+      math.core.exclude_s, math.core.exclude_s),
+    intersect([-1, -1], [2, 2], [1, 1], [-1, -1],
+      math.core.exclude_s, math.core.exclude_s),
+    intersect([1, 1], [2, 2], [-1, -1], [-1, -1],
+      math.core.exclude_s, math.core.exclude_s),
   ].forEach(res => expect(res).toBe(undefined));
 });
 

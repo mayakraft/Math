@@ -67,16 +67,16 @@ test("overlap.point_on_segment_inclusive", () => {
   expect(math.core.point_on_segment_inclusive(
     [2.99999999, 3.000000001], [2, 2], [4, 4])
   ).toBe(true);
-  // degenerate edge still tests positive if the point is in common
+  // degenerate edge returns false
   expect(math.core.point_on_segment_inclusive(
     [2, 2], [2, 2], [2, 2])
-  ).toBe(true);
+  ).toBe(false);
   expect(math.core.point_on_segment_inclusive(
     [2.1, 2.1], [2, 2], [2, 2])
   ).toBe(false);
   expect(math.core.point_on_segment_inclusive(
     [2.000000001, 2.00000001], [2, 2], [2, 2])
-  ).toBe(true);
+  ).toBe(false);
 });
 
 
