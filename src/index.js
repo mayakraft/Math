@@ -12,6 +12,7 @@ import Typeof from "./arguments/typeof";
 import * as resizers from "./arguments/resize";
 import * as getters from "./arguments/get";
 
+import * as constants from "./core/constants";
 import * as algebra from "./core/algebra";
 import * as equal from "./core/equal";
 import * as geometry from "./core/geometry";
@@ -56,6 +57,7 @@ const math = primitives;
  */
 
 math.core = Object.assign(Object.create(null),
+  constants,
   algebra,
   equal,
   geometry,

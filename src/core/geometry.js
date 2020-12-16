@@ -20,6 +20,9 @@ import {
   exclude_r,
   exclude_s,
 } from "../intersection/lines";
+import {
+	clockwise_bisect2,
+} from "./radial";
 
 export const circumcircle = function (a, b, c) {
   const A = b[0] - a[0];

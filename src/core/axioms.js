@@ -42,33 +42,41 @@ export const axiom2 = (pointA, pointB) => Constructors.line(
   midpoint(pointA, pointB)
 );
 // make sure these all get a resize_up or whatever is necessary
-export const axiom3 = (vectorA, pointA, vectorB, pointB) => bisect_lines2(
-    vectorA, pointA, vectorB, pointB
-  ).map(l => Constructors.line(l.vector, l.origin));
-
-export const axiom4 = (vectorA, pointA, pointB) => Constructors.line(
-  rotate270(normalize(vectorA)),
-  pointB
+export const axiom3 = (vectorA, originA, vectorB, originB) => bisect_lines2(
+    vectorA, originA, vectorB, originB).map(Constructors.line);
+/**
+ * axiom 4
+ * @description create a line perpendicular to a vector through a point
+ * @param {number[]} the vector of the line
+ * @param {number[]} the point
+ * @returns {line} axiom 4 result
+ */
+export const axiom4 = (vector, point) => Constructors.line(
+  rotate270(normalize(vector)),
+  point
 );
 
-export const axiom5 = (vectorA, pointA, pointB, pointC) => (intersect_circle_line(
-    distance(pointB, pointC),
-    pointB,
-    vectorA,
+export const axiom5 = (vectorA, originA, pointA, pointB) => (intersect_circle_line(
+    distance(pointA, pointB),
     pointA,
+    vectorA,
+    originA,
     () => true
   ) || []).map(sect => Constructors.line(
-    normalize(rotate270(subtract(...resize_up(sect, pointC)))),
-    midpoint(pointC, sect)
+    normalize(rotate270(subtract(...resize_up(sect, pointB)))),
+    midpoint(pointB, sect)
   ));
 
 /**
- * make a crease by bringing a point (pointC) onto a line (pointA, vectorA)
- * that lies perpendicular to another line (pointB, vectorB)
- * (technically we don't need pointB, but it does go into "parameters")
+ * @description axiom 7: make a crease by bringing a point (pointC) onto a
+ *  line () perpendicular to another line ()
+ * @param {number[]} vector of the first line
+ * @param {number[]} origin of the first line
+ * @param {number[]} vector of the second line (origin is not needed)
+ * @param {number[]} point involved in the folding
  */
-export const axiom7 = (vectorA, pointA, vectorB, pointB, pointC) => {
-  const intersect = intersect_lines(vectorB, pointB, vectorA, pointC, include_l, include_l);
+export const axiom7 = (vectorA, originA, vectorB, pointC) => {
+  const intersect = intersect_lines(vectorA, originA, vectorB, pointC, include_l, include_l);
   return intersect === undefined
     ? undefined
     : Constructors.line(
@@ -78,7 +86,8 @@ export const axiom7 = (vectorA, pointA, vectorB, pointB, pointC) => {
 };
 
 // function (point1, point2, line1, line2){
-export const axiom6 = function (pointA, vecA, pointB, vecB, pointC, pointD) {
+// export const axiom6 = function (pointA, vecA, pointB, vecB, pointC, pointD) {
+export const axiom6 = function (vecA, pointA, vecB, pointB, pointC, pointD) {
   var p1 = pointC[0];
   var q1 = pointC[1];
   // find equation of line in form y = mx+h (or x = k)

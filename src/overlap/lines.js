@@ -93,6 +93,7 @@ export const overlap_ray_segment_exclusive = (aV, aP, b0, b1, ep = EPSILON) =>
 export const overlap_segment_segment_exclusive = (a0, a1, b0, b1, ep = EPSILON) =>
   overlap_lines(subtract(a1, a0), a0, subtract(b1, b0), b0, exclude_s, exclude_s, ep);
 
+/*
 export const collinear_lines = (aVec, aPt, bVec, bPt, compA, compB, epsilon = EPSILON) => {
   const aPt2 = add(aPt, aVec);
   const bPt2 = add(bPt, bVec);
@@ -128,3 +129,5 @@ export const collinear_ray_segment_exclusive = (aV, aP, b0, b1, ep = EPSILON) =>
   collinear_lines(aV, aP, subtract(b1, b0), b0, exclude_r, exclude_s, ep);
 export const collinear_segment_segment_exclusive = (a0, a1, b0, b1, ep = EPSILON) =>
   collinear_lines(subtract(a1, a0), a0, subtract(b1, b0), b0, exclude_s, exclude_s, ep);
+*/
+

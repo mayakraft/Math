@@ -122,6 +122,18 @@ test("flip", () => {
   expect(result.vector.x).toBe(-1);
   expect(result.vector.y).toBe(-2);
 });
+test("scale", () => {
+	const ray = math.ray([6, 2], [3, 4]);
+	const res = ray.scale(1 / 2);
+	expect(res.vector.x).toBe(3);
+	expect(res.vector.y).toBe(1);
+});
+test("normalize", () => {
+	const ray = math.ray([4, 4], [2, 3]);
+	const res = ray.normalize();
+	expect(res.vector.x).toBeCloseTo(Math.SQRT1_2);
+	expect(res.vector.y).toBeCloseTo(Math.SQRT1_2);
+});
 test("fromPoints", () => {
   const result = math.ray.fromPoints([1,2],[3,4]);
   expect(result.origin.x).toBe(1);

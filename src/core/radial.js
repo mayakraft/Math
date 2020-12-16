@@ -8,7 +8,7 @@ import {
   normalize,
   midpoint,
   rotate90,
-  alternating_deviation,
+  alternating_sum,
 } from "./algebra";
 import { fn_add } from "../arguments/functions";
 /**
@@ -161,7 +161,8 @@ const interior_angles_unsorted = function (...vectors) {
 
 /**
  * @param {number[]} the angle of the edges in radians, like vectors around a vertex
- * @returns {number[]} for every sector, 
+ * @returns {number[]} for every sector,
+ * this is hard coded to work for flat-plane, where sectors sum to 360deg
  */
 export const kawasaki_solutions_radians = (radians) => radians
   // counter clockwise angle between this index and the next
@@ -170,9 +171,9 @@ export const kawasaki_solutions_radians = (radians) => radians
   // for every sector, make an array of all the OTHER sectors
   .map((_, i, arr) => arr.slice(i + 1, arr.length).concat(arr.slice(0, i)))
   // for every sector, use the sector score from the OTHERS two to split it
-  .map(opposite_sectors => alternating_deviation(opposite_sectors))
+  .map(opposite_sectors => alternating_sum(opposite_sectors).map(s => Math.PI - s))
   // add the deviation to the edge to get the absolute position
-  .map((kawasakis, i) => radians[i] - kawasakis[0])
+  .map((kawasakis, i) => radians[i] + kawasakis[0])
   // sometimes this results in a solution OUTSIDE the sector. ignore these
   .map((angle, i) => (is_counter_clockwise_between(angle,
     radians[i], radians[(i + 1) % radians.length])
@@ -205,7 +206,10 @@ export const bisect_vectors = (a, b) => {
     ? [-aV[1], aV[0]]
     : normalize(add(aV, bV));
 };
-/** This bisects 2 lines
+/**
+ * This bisects two 2D lines, which means it first finds the intersection point,
+ *  then treats the lines as vectors, returning bisections. if the lines are
+ *  parallel, it returns one solution
  * @param {[number, number]} all vectors, lines defined by points and vectors
  * @returns [ [number,number], [number,number] ] // line, defined as
  * point then vector, in that order
@@ -235,20 +239,20 @@ export const bisect_lines2 = (vectorA, pointA, vectorB, pointB) => {
 /**
  * subsect the angle between two vectors already converted to radians
  */
-export const subsect_radians = (divisions, angleA, angleB) => {
-  const angle = counter_clockwise_angle_radians(angleA, angleB) / divisions;
-  return Array.from(Array(divisions - 1))
-    .map((_, i) => angleA + angle * i);
-};
+// export const subsect_radians = (divisions, angleA, angleB) => {
+//   const angle = counter_clockwise_angle_radians(angleA, angleB) / divisions;
+//   return Array.from(Array(divisions - 1))
+//     .map((_, i) => angleA + angle * i);
+// };
 /**
  * subsect the angle between two vectors (counter-clockwise from A to B)
  */
-export const subsect = (divisions, vectorA, vectorB) => {
-  const angleA = Math.atan2(vectorA[1], vectorA[0]);
-  const angleB = Math.atan2(vectorB[1], vectorB[0]);
-  return subsect_radians(divisions, angleA, angleB)
-    .map(rad => [Math.cos(rad), Math.sin(rad)]);
-};
+// export const subsect = (divisions, vectorA, vectorB) => {
+//   const angleA = Math.atan2(vectorA[1], vectorA[0]);
+//   const angleB = Math.atan2(vectorB[1], vectorB[0]);
+//   return subsect_radians(divisions, angleA, angleB)
+//     .map(rad => [Math.cos(rad), Math.sin(rad)]);
+// };
 /**
  * subsect the angle between two lines, can handle parallel lines
  */

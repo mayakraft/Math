@@ -1,3 +1,4 @@
+import Constructors from "../constructors";
 import {
   subtract,
   alternating_sum,
@@ -20,7 +21,8 @@ const invert_order_array = (arr) => {
 export default {
   junction: {
     A: function () {
-      const vectors = get_vector_of_vectors(arguments);
+      const vectors = get_vector_of_vectors(arguments)
+				.map(v => Constructors.vector(v));
       const radians = vectors.map(v => Math.atan2(v[1], v[0]));
       const order = counter_clockwise_radians_order(...radians);
       this.vectors = order.map(i => vectors[i]);
@@ -41,17 +43,19 @@ export default {
       },
     },
     S: {
-      fromVectors: function () {
-        return this.constructor(arguments);
-      },
-      fromPoints: function (center, edge_adjacent_points) {
-        return this.constructor(edge_adjacent_points.map(p => subtract(p, center)));
-      },
       fromRadians: function () {
         // todo, this duplicates work converting back to vector form
         const radians = get_vector(arguments);
         return this.constructor(radians.map(r => [Math.cos(r), Math.sin(r)]));
       },
+			// fromVectors: function () {
+      //   return this.constructor(arguments);
+      // },
+      // fromPoints: function (center, edge_adjacent_points) {
+      //   return this.constructor(edge_adjacent_points.map(p => subtract(p, center)));
+      // },
+			// // this probably won't exist. the first sector will be assumed to
+			// // begin at vector [1, 0]. i think it assumes too much
       // fromSectorAngles: function (...angles) {
       // },
     }
