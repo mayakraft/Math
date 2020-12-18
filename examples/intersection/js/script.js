@@ -122,7 +122,7 @@ const Intersections = function (history) {
 };
 
 SVG(1, 1, document.querySelectorAll(".canvas-container")[0], (svg) => {
-  svg.background("white");
+//  svg.background("white");
   app.svg = svg;
   app.drawLayer = svg.g().stroke("black").fill("none").strokeWidth(0.001);
   app.uiLayer = svg.g().stroke("black").fill("none").strokeWidth(0.001);

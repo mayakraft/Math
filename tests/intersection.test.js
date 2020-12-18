@@ -105,20 +105,20 @@ test("core polygon intersection lines, collinear to vertex", () => {
 
 test("core polygon intersection lines, collinear to polygon vertices", () => {
   const lineSeg = math.polygon.regularPolygon(4).intersectLine(math.line([1, 0]));
-  expect(Math.abs(lineSeg[0][0])).toBeCloseTo(Math.sqrt(2)/2);
+  expect(Math.abs(lineSeg[0][0])).toBeCloseTo(1);
   expect(lineSeg[0][1]).toBeCloseTo(0);
-  expect(Math.abs(lineSeg[1][0])).toBeCloseTo(Math.sqrt(2)/2);
+  expect(Math.abs(lineSeg[1][0])).toBeCloseTo(1);
   expect(lineSeg[1][1]).toBeCloseTo(0);
 
   const raySeg1 = math.polygon.regularPolygon(4).intersectRay(math.ray([1, 0]));
   expect(raySeg1.length).toBe(1);
-  expect(Math.abs(raySeg1[0][0])).toBeCloseTo(Math.sqrt(2)/2);
+  expect(Math.abs(raySeg1[0][0])).toBeCloseTo(1);
   expect(raySeg1[0][1]).toBeCloseTo(0);
   const raySeg2 = math.polygon.regularPolygon(4).intersectRay(math.ray([1, 0], [-10, 0]));
   expect(raySeg2.length).toBe(2);
-  expect(Math.abs(raySeg2[0][0])).toBeCloseTo(Math.sqrt(2)/2);
+  expect(Math.abs(raySeg2[0][0])).toBeCloseTo(1);
   expect(raySeg2[0][1]).toBeCloseTo(0);
-  expect(Math.abs(raySeg2[1][0])).toBeCloseTo(Math.sqrt(2)/2);
+  expect(Math.abs(raySeg2[1][0])).toBeCloseTo(1);
   expect(raySeg2[1][1]).toBeCloseTo(0);
   const raySeg3 = math.polygon.regularPolygon(4).intersectRay(math.ray([1, 0], [10, 0]));
   expect(raySeg3).toBe(undefined);
