@@ -4,6 +4,8 @@ import { clean_number } from "../arguments/resize";
 import { rect_form } from "../arguments/get";
 import { fn_add } from "../arguments/functions";
 import { point_on_line } from "../overlap/points";
+import { intersect_line_seg_exclude } from "../intersection/helpers";
+import { clockwise_bisect2 } from "./radial";
 import {
   dot,
   normalize,
@@ -16,13 +18,8 @@ import {
 } from "./algebra";
 import {
   intersect_lines,
-  exclude_l,
   exclude_r,
-  exclude_s,
 } from "../intersection/lines";
-import {
-	clockwise_bisect2,
-} from "./radial";
 
 export const circumcircle = function (a, b, c) {
   const A = b[0] - a[0];
@@ -98,22 +95,44 @@ export const enclosing_rectangle = (points) => {
  * todo: also possible to parameterize the radius as the center to the points
  * todo: can be edge-aligned
  */
-// a = 2r tan(π/n);
-export const make_regular_polygon = (sides, radius = 1, x = 0, y = 0) => {
-  const halfwedge = TWO_PI / sides / 2;
-  const r = radius / 2 / Math.cos(halfwedge);
-  return Array.from(Array(Math.floor(sides)))
-    // const a = -(TWO_PI * i) / sides + halfwedge; // edge-aligned
-    .map((_, i) => TWO_PI * (i / sides))
-    .map(a => [x + r * Math.cos(a), y + r * Math.sin(a)])
-    .map(p => p.map(n => clean_number(n, 14)));  // this step is costly!
+const angle_array = count => Array
+	.from(Array(Math.floor(count)))
+	.map((_, i) => TWO_PI * (i / count));
+
+const angles_to_vecs = (angles, radius) => angles
+	.map(a => [radius * Math.cos(a), radius * Math.sin(a)])
+	.map(pt => pt.map(n => clean_number(n, 14))); // this step is costly!
+
+// a = 2r tan(π/n)
+/**
+ * make regular polygon is circumradius by default
+ */
+export const make_regular_polygon = (sides = 3, radius = 1) =>
+	angles_to_vecs(angle_array(sides), radius);
+
+export const make_regular_polygon_side_aligned = (sides = 3, radius = 1) => {
+	const halfwedge = Math.PI / sides;
+	const angles = angle_array(sides).map(a => a + halfwedge);
+	return angles_to_vecs(angles, radius);
 };
 
-const line_segment_exclusive = function (lineVector, linePoint, segmentA, segmentB) {
-  const pt = segmentA;
-  const vec = [segmentB[0] - segmentA[0], segmentB[1] - segmentA[1]];
-  return intersect_lines(lineVector, linePoint, vec, pt, exclude_l, exclude_s);
-};
+export const make_regular_polygon_inradius = (sides = 3, radius = 1) => 
+	make_regular_polygon(sides, radius / Math.cos(Math.PI / sides));
+
+export const make_regular_polygon_inradius_side_aligned = (sides = 3, radius = 1) =>
+	make_regular_polygon_side_aligned(sides, radius / Math.cos(Math.PI / sides));
+
+export const make_regular_polygon_side_length = (sides = 3, length = 1) =>
+	make_regular_polygon(sides, (length / 2) / Math.sin(Math.PI / sides));
+
+export const make_regular_polygon_side_length_side_aligned = (sides = 3, length = 1) =>
+	make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
+
+	// const halfwedge = Math.PI / sides;
+	// const radius = length * 0.5 / Math.sin(Math.PI / sides);
+	// const angles = angle_array(sides).map(a => a + halfwedge);
+	// return angles_to_vecs(angles, radius);
+// };
 
 export const split_polygon = () => console.warn("split polygon not done");
 
@@ -125,7 +144,7 @@ export const split_polygon = () => console.warn("split polygon not done");
 //     return { type: "v", point: intersection ? v : null, at_index: i };
 //   }).filter(el => el.point != null);
 //   const edges_intersections = poly.map((v, i, arr) => {
-//     const intersection = line_segment_exclusive(
+//     const intersection = intersect_line_seg_exclude(
 //       lineVector,
 //       linePoint,
 //       v,
@@ -154,7 +173,7 @@ export const split_convex_polygon = (poly, lineVector, linePoint) => {
     return { point: intersection ? v : null, at_index: i };
   }).filter(el => el.point != null);
   let edges_intersections = poly.map((v, i, arr) => {
-    let intersection = line_segment_exclusive(lineVector, linePoint, v, arr[(i + 1) % arr.length])
+    let intersection = intersect_line_seg_exclude(lineVector, linePoint, v, arr[(i + 1) % arr.length])
     return { point: intersection, at_index: i };
   }).filter(el => el.point != null);
 

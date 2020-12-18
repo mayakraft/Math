@@ -41,11 +41,11 @@ export default {
       fromPoints: function () {
         return this.constructor(...arguments);
       },
-      regularPolygon: function (sides, radius = 1, x = 0, y = 0) {
-        return this.constructor(make_regular_polygon(sides, radius, x, y));
+      regularPolygon: function () {
+        return this.constructor(make_regular_polygon(...arguments));
       },
-      convexHull: function (points, includeCollinear = false) {
-        return this.constructor(convex_hull(points, includeCollinear));
+      convexHull: function () {
+        return this.constructor(convex_hull(...arguments));
       },
     }
   }
