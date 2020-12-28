@@ -16,9 +16,8 @@ const array_similarity_test = (list, compFunc) => Array
 export const equivalent_vec2 = (a, b) => Math.abs(a[0] - b[0]) < EPSILON
   && Math.abs(a[1] - b[1]) < EPSILON;
 
-export const equivalent_arrays_of_numbers = function () {
+// export const equivalent_arrays_of_numbers = function () { };
 
-};
 /**
  * @param {...number} a sequence of numbers
  * @returns boolean

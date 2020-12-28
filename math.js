@@ -231,7 +231,7 @@
   const cross2 = (a, b) => a[0] * b[1] - a[1] * b[0];
   const cross3 = (a, b) => [
     a[1] * b[2] - a[2] * b[1],
-    a[0] * b[2] - a[2] * b[0],
+    a[2] * b[0] - a[0] * b[2],
     a[0] * b[1] - a[1] * b[0],
   ];
   const distance2 = (a, b) => {
@@ -493,7 +493,7 @@
       : vector_origin_form(...args.map(a => get_vector(a)));
   };
   const get_ray = get_line;
-  const rect_form = (x = 0, y = 0, width = 0, height = 0) => ({
+  const get_rect_params = (x = 0, y = 0, width = 0, height = 0) => ({
     x, y, width, height
   });
   const get_rect = function () {
@@ -503,7 +503,7 @@
       && typeof list[0] === "object"
       && list[0] !== null
       && !isNaN(list[0].width)) {
-      return rect_form(...["x", "y", "width", "height"]
+      return get_rect_params(...["x", "y", "width", "height"]
         .map(c => list[0][c])
         .filter(fn_not_undefined));
     }
@@ -511,7 +511,7 @@
     const rect_params = numbers.length < 4
       ? [, , ...numbers]
       : numbers;
-    return rect_form(...rect_params);
+    return get_rect_params(...rect_params);
   };
   const maps_3x4 = [
     [0, 1, 3, 4, 9, 10],
@@ -533,14 +533,6 @@
       .forEach((n, i) => { if (mat[i] != null) { matrix[n] = mat[i]; } });
     return matrix;
   };
-  const get_matrix2 = function () {
-    const m = get_vector(arguments);
-    if (m.length === 6) { return m; }
-    if (m.length > 6) { return [m[0], m[1], m[2], m[3], m[4], m[5]]; }
-    if (m.length < 6) {
-      return identity2x3.map((n, i) => m[i] || n);
-    }
-  };
 
   var getters = /*#__PURE__*/Object.freeze({
     __proto__: null,
@@ -549,10 +541,9 @@
     get_segment: get_segment,
     get_line: get_line,
     get_ray: get_ray,
-    rect_form: rect_form,
+    get_rect_params: get_rect_params,
     get_rect: get_rect,
-    get_matrix_3x4: get_matrix_3x4,
-    get_matrix2: get_matrix2
+    get_matrix_3x4: get_matrix_3x4
   });
 
   const fEqual = (a, b) => a === b;
@@ -563,8 +554,6 @@
     .reduce((a, b) => a && b, true);
   const equivalent_vec2 = (a, b) => Math.abs(a[0] - b[0]) < EPSILON
     && Math.abs(a[1] - b[1]) < EPSILON;
-  const equivalent_arrays_of_numbers = function () {
-  };
   const equivalent_numbers = function () {
     if (arguments.length === 0) { return false; }
     if (arguments.length === 1 && arguments[0] !== undefined) {
@@ -603,7 +592,6 @@
   var equal = /*#__PURE__*/Object.freeze({
     __proto__: null,
     equivalent_vec2: equivalent_vec2,
-    equivalent_arrays_of_numbers: equivalent_arrays_of_numbers,
     equivalent_numbers: equivalent_numbers,
     equivalent_vectors: equivalent_vectors,
     equivalent: equivalent
@@ -948,6 +936,26 @@
     const radians = Math.atan2(a[1], a[0]) + counter_clockwise_angle2(a, b) / 2;
     return [Math.cos(radians), Math.sin(radians)];
   };
+  const bisect_lines2 = (vectorA, originA, vectorB, originB, epsilon = EPSILON) => {
+    const determinant = cross2(vectorA, vectorB);
+    const dotProd = dot(vectorA, vectorB);
+    const bisects = determinant > -epsilon
+      ? [counter_clockwise_bisect2(vectorA, vectorB)]
+      : [clockwise_bisect2(vectorA, vectorB)];
+    bisects[1] = determinant > -epsilon
+      ? rotate90(bisects[0])
+      : rotate270(bisects[0]);
+    const numerator = (originB[0] - originA[0]) * vectorB[1] - vectorB[0] * (originB[1] - originA[1]);
+    const t = numerator / determinant;
+    const normalized = [vectorA, vectorB].map(vec => normalize(vec));
+    const isParallel = Math.abs(cross2(...normalized)) < epsilon;
+    const origin = isParallel
+      ? midpoint(originA, originB)
+      : [originA[0] + vectorA[0] * t, originA[1] + vectorA[1] * t];
+    const solution = bisects.map(vector => ({ vector, origin }));
+    if (isParallel) { delete solution[(dotProd > -epsilon ? 1 : 0)]; }
+    return solution;
+  };
   const counter_clockwise_radians_order = (...radians) => {
     const counter_clockwise = radians
       .map((_, i) => i)
@@ -977,32 +985,6 @@
         ? undefined
         : [Math.cos(a), Math.sin(a)]));
   };
-  const bisect_vectors = (a, b) => {
-    const aV = normalize(a);
-    const bV = normalize(b);
-    return dot(aV, bV) < (-1 + EPSILON)
-      ? [-aV[1], aV[0]]
-      : normalize(add(aV, bV));
-  };
-  const bisect_lines2 = (vectorA, pointA, vectorB, pointB) => {
-    const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
-    if (Math.abs(denominator) < EPSILON) {
-      const solution = [[vectorA[0], vectorA[1]], midpoint(pointA, pointB)];
-      const array = [solution, solution];
-      const dt = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
-      delete array[(dt > 0 ? 1 : 0)];
-      return array;
-    }
-    const numerator = (pointB[0] - pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1] - pointA[1]);
-    const t = numerator / denominator;
-    const origin = [
-      pointA[0] + vectorA[0] * t,
-      pointA[1] + vectorA[1] * t,
-    ];
-    const bisects = [bisect_vectors(vectorA, vectorB)];
-    bisects[1] = rotate90(bisects[0]);
-    return bisects.map(vector => ({ vector, origin }));
-  };
 
   var radial = /*#__PURE__*/Object.freeze({
     __proto__: null,
@@ -1013,13 +995,12 @@
     counter_clockwise_angle2: counter_clockwise_angle2,
     clockwise_bisect2: clockwise_bisect2,
     counter_clockwise_bisect2: counter_clockwise_bisect2,
+    bisect_lines2: bisect_lines2,
     counter_clockwise_radians_order: counter_clockwise_radians_order,
     counter_clockwise_vector_order: counter_clockwise_vector_order,
     interior_angles: interior_angles,
     kawasaki_solutions_radians: kawasaki_solutions_radians,
-    kawasaki_solutions: kawasaki_solutions,
-    bisect_vectors: bisect_vectors,
-    bisect_lines2: bisect_lines2
+    kawasaki_solutions: kawasaki_solutions
   });
 
   const circumcircle = function (a, b, c) {
@@ -1071,7 +1052,7 @@
         if (c > maxs[i]) { maxs[i] = c; }
       }));
     const lengths = maxs.map((max, i) => max - mins[i]);
-    return rect_form(...mins, ...lengths);
+    return get_rect_params(...mins, ...lengths);
   };
   const angle_array = count => Array
   	.from(Array(Math.floor(count)))

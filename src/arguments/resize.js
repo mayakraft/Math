@@ -1,9 +1,4 @@
 /**
- * this is *filled* with heuristic methods, methods that make assumptions,
- * methods that take in user-input and infer a best match.
- */
-
-/**
  * sort two vectors by their lengths, returning the shorter one first
  *
  */
@@ -78,16 +73,10 @@ export const semi_flatten_arrays = function () {
   }
 };
 
-// /**
-//  * totally flatten, recursive
-//  * @returns an array, always.
-//  */
-// export const flatten_arrays = function () {
-//   const arr = semi_flatten_arrays(arguments);
-//   return arr.length > 1
-//     ? arr.reduce((a, b) => a.concat(b), [])
-//     : arr;
-// };
+/**
+ * totally flatten, recursive
+ * @returns an array, always.
+ */
 export const flatten_arrays = function () {
   switch (arguments.length) {
     case undefined:

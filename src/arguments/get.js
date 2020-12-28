@@ -78,7 +78,7 @@ export const get_line = function () {
 
 export const get_ray = get_line;
 
-export const rect_form = (x = 0, y = 0, width = 0, height = 0) => ({
+export const get_rect_params = (x = 0, y = 0, width = 0, height = 0) => ({
   x, y, width, height
 });
 
@@ -89,7 +89,7 @@ export const get_rect = function () {
     && typeof list[0] === "object"
     && list[0] !== null
     && !isNaN(list[0].width)) {
-    return rect_form(...["x", "y", "width", "height"]
+    return get_rect_params(...["x", "y", "width", "height"]
       .map(c => list[0][c])
       .filter(fn_not_undefined));
   }
@@ -97,7 +97,7 @@ export const get_rect = function () {
   const rect_params = numbers.length < 4
     ? [, , ...numbers]
     : numbers;
-  return rect_form(...rect_params);
+  return get_rect_params(...rect_params);
 };
 
 const maps_3x4 = [
@@ -134,11 +134,11 @@ export const get_matrix_3x4 = function () {
  *
  * @returns {number[]} array of 6 numbers, or undefined if bad inputs
 */
-export const get_matrix2 = function () {
-  const m = get_vector(arguments);
-  if (m.length === 6) { return m; }
-  if (m.length > 6) { return [m[0], m[1], m[2], m[3], m[4], m[5]]; }
-  if (m.length < 6) {
-    return identity2x3.map((n, i) => m[i] || n);
-  }
-};
+// export const get_matrix2 = function () {
+//   const m = get_vector(arguments);
+//   if (m.length === 6) { return m; }
+//   if (m.length > 6) { return [m[0], m[1], m[2], m[3], m[4], m[5]]; }
+//   if (m.length < 6) {
+//     return identity2x3.map((n, i) => m[i] || n);
+//   }
+// };

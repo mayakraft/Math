@@ -30,7 +30,7 @@ test("axiom 3", () => {
   const res = math.core.axiom3([0, 1], [0.5, 0.5], [1, 0], [0, 0.5]);
   const expected = [
     { origin: [0.5, 0.5], vector: [Math.SQRT1_2, Math.SQRT1_2] },
-    { origin: [0.5, 0.5], vector: [-Math.SQRT1_2, Math.SQRT1_2] },
+    { origin: [0.5, 0.5], vector: [Math.SQRT1_2, -Math.SQRT1_2] },
   ];
 	expect(math.core.equivalent(res[0].vector, expected[0].vector)).toBe(true);
 	expect(math.core.equivalent(res[0].origin, expected[0].origin)).toBe(true);
