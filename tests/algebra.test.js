@@ -14,6 +14,35 @@ test("dot", () => {
   expect(math.core.dot([1, 1000], [])).toBe(0);
 });
 
+test("magnitude", () => {
+	expect(math.core.magnitude([0, 0, 0, 0, 0, 1])).toBe(1);
+	expect(math.core.magnitude([1, 1])).toBeCloseTo(Math.sqrt(2));
+	expect(math.core.magnitude([0, 0, 0, 0, 0, 0])).toBe(0);
+	expect(math.core.magnitude([])).toBe(0);
+});
+
+test("mag sq", () => {
+	expect(math.core.mag_squared([1, 1, 1, 1])).toBe(4);
+	expect(math.core.mag_squared([])).toBe(0);
+	expect(math.core.mag_squared([1, -2, 3]))
+		.toBe((1 ** 2) + (2 ** 2) + (3 ** 2));
+	expect(math.core.mag_squared([-100])).toBe(100 * 100);
+});
+
+test("normalize", () => {
+	expect(math.core.normalize([]).length).toBe(0);
+	expect(math.core.normalize([1, 1])[0]).toBeCloseTo(Math.sqrt(2) / 2);
+	expect(math.core.normalize([1, 1])[1]).toBeCloseTo(Math.sqrt(2) / 2);
+	expect(math.core.normalize([1, -1, 1])[0]).toBeCloseTo(Math.sqrt(3) / 3);
+});
+
+test("scale", () => {
+	expect(math.core.scale([]).length).toBe(0);
+	expect(math.core.scale([1])[0]).toBe(NaN);
+	expect(math.core.scale([1], 2)[0]).toBe(2);
+	expect(math.core.scale([1], -2)[0]).toBe(-2);
+});
+
 test("average function", () => {
   // improper use
   expect(math.core.average().length).toBe(0);

@@ -1,7 +1,7 @@
 import { EPSILON, TWO_PI } from "./constants";
 import { nearest_point_on_line } from "./nearest";
 import { clean_number } from "../arguments/resize";
-import { rect_form } from "../arguments/get";
+import { get_rect_params } from "../arguments/get";
 import { fn_add } from "../arguments/functions";
 import { point_on_line } from "../overlap/points";
 import { intersect_line_seg_exclude } from "../intersection/helpers";
@@ -87,7 +87,7 @@ export const enclosing_rectangle = (points) => {
       if (c > maxs[i]) { maxs[i] = c; }
     }));
   const lengths = maxs.map((max, i) => max - mins[i]);
-  return rect_form(...mins, ...lengths);
+  return get_rect_params(...mins, ...lengths);
 };
 /**
  * the radius parameter measures from the center to the midpoint of the edge
@@ -127,12 +127,6 @@ export const make_regular_polygon_side_length = (sides = 3, length = 1) =>
 
 export const make_regular_polygon_side_length_side_aligned = (sides = 3, length = 1) =>
 	make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
-
-	// const halfwedge = Math.PI / sides;
-	// const radius = length * 0.5 / Math.sin(Math.PI / sides);
-	// const angles = angle_array(sides).map(a => a + halfwedge);
-	// return angles_to_vecs(angles, radius);
-// };
 
 export const split_polygon = () => console.warn("split polygon not done");
 

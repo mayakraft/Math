@@ -4,6 +4,7 @@ const math = require("../math");
  * queries
  */
 test("equivalent", () => {
+	expect(math.core.equivalent()).toBe(false);
   expect(math.core.equivalent(4, 4, 4)).toBe(true);
   expect(math.core.equivalent(4, 4, 5)).toBe(false);
   expect(math.core.equivalent([0], [0], [0])).toBe(true);
@@ -21,6 +22,9 @@ test("equivalent", () => {
   expect(math.core.equivalent(true, true, true, true)).toBe(true);
   expect(math.core.equivalent(false, false, false, false)).toBe(true);
   expect(math.core.equivalent(false, false, false, true)).toBe(false);
+	expect(math.core.equivalent([undefined, 1], [undefined, 1])).toBe(false);
+	expect(math.core.equivalent([undefined, undefined])).toBe(false);
+	expect(math.core.equivalent(undefined, undefined)).toBe(false);
 });
 
 // // equivalency has not yet been made to work with other types.
@@ -56,4 +60,9 @@ test("equivalent vectors", () => {
 	expect(math.core.equivalent_vectors([1, 2 + bgEp], [1, 2 - bgEp])).toBe(false);
 });
 
+test("equivalent_vec2", () => {
+	expect(math.core.equivalent_vec2([1, 2], [1, 2.0000000001])).toBe(true);
+	expect(math.core.equivalent_vec2([1, 2, 3, 4], [1, 2])).toBe(true);
+	expect(math.core.equivalent_vec2([], [])).toBe(false);
+});
 

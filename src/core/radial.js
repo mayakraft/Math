@@ -4,17 +4,17 @@ import {
 } from "./constants";
 import {
   dot,
+	cross2,
   add,
   normalize,
   midpoint,
   rotate90,
+	rotate270,
   alternating_sum,
 } from "./algebra";
 import { fn_add } from "../arguments/functions";
 /**
- * measurements involving vectors and radians, sometimes many at once.
- *
- *
+ * measurements involving vectors and radians
  */
 
 /**
@@ -105,6 +105,75 @@ export const counter_clockwise_bisect2 = (a, b) => {
   return [Math.cos(radians), Math.sin(radians)];
 };
 /**
+ * This bisects 2 vectors into the smaller of their two angle bisections
+ * technically this works in any dimension... unless the vectors are 180deg
+ * from each other, there are an infinite number of solutions in 3D but
+ * 2 solutions in 2D, this will return one of the 2D solutions.
+ * todo: reconsider these assumptions
+ * @param {[number, number]} vector
+ * @returns {[[number, number],[number, number]]} 2 vectors, the smaller first
+ */
+// const bisect_vectors = (a, b, epsilon = EPSILON) => {
+//   const aV = normalize(a);
+//   const bV = normalize(b);
+//   return dot(aV, bV) < (-1 + epsilon)
+//     ? [-aV[1], aV[0]]
+//     : normalize(add(aV, bV));
+// };
+/**
+ * This bisects two 2D lines, which means it first finds the intersection point,
+ *  then treats the lines as vectors, returning bisections. if the lines are
+ *  parallel, it returns one solution
+ * @param {[number, number]} all vectors, lines defined by points and vectors
+ * @returns [ [number,number], [number,number] ] // line, defined as
+ * point then vector, in that order
+ *
+ * second entry is 90 degrees counter clockwise from first entry
+ */
+// export const bisect_lines2 = (vectorA, pointA, vectorB, pointB, epsilon = EPSILON) => {
+//   const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
+//   if (Math.abs(denominator) < epsilon) { /* parallel */
+//     const solution = [[vectorA[0], vectorA[1]], midpoint(pointA, pointB)];
+//     const array = [solution, solution];
+//     const dt = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
+//     delete array[(dt > 0 ? 1 : 0)];
+//     return array;
+//   }
+//   // const vectorC = [pointB[0] - pointA[0], pointB[1] - pointA[1]];
+//   const numerator = (pointB[0] - pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1] - pointA[1]);
+//   const t = numerator / denominator;
+//   const origin = [
+//     pointA[0] + vectorA[0] * t,
+//     pointA[1] + vectorA[1] * t,
+//   ];
+//   const bisects = [bisect_vectors(vectorA, vectorB, epsilon)];
+//   bisects[1] = rotate90(bisects[0]);
+//   return bisects.map(vector => ({ vector, origin }));
+// };
+
+export const bisect_lines2 = (vectorA, originA, vectorB, originB, epsilon = EPSILON) => {
+  const determinant = cross2(vectorA, vectorB);
+  const dotProd = dot(vectorA, vectorB);
+  const bisects = determinant > -epsilon
+    ? [counter_clockwise_bisect2(vectorA, vectorB)]
+    : [clockwise_bisect2(vectorA, vectorB)];
+  bisects[1] = determinant > -epsilon
+    ? rotate90(bisects[0])
+    : rotate270(bisects[0]);
+  const numerator = (originB[0] - originA[0]) * vectorB[1] - vectorB[0] * (originB[1] - originA[1]);
+  const t = numerator / determinant;
+  const normalized = [vectorA, vectorB].map(vec => normalize(vec));
+  const isParallel = Math.abs(cross2(...normalized)) < epsilon;
+  const origin = isParallel
+    ? midpoint(originA, originB)
+    : [originA[0] + vectorA[0] * t, originA[1] + vectorA[1] * t];
+  const solution = bisects.map(vector => ({ vector, origin }));
+  if (isParallel) { delete solution[(dotProd > -epsilon ? 1 : 0)]; }
+  return solution;
+};
+
+
+/**
  * given vectors, make a separate array of radially-sorted vector indices
  *
  * maybe there is such thing as an absolute radial origin (x axis?)
@@ -147,7 +216,6 @@ export const interior_angles = (...vecs) => vecs
 const interior_angles_unsorted = function (...vectors) {
 };
 
-
 /**
  * two varieties: vectors, radians, with a very important difference!:
  *
@@ -187,54 +255,6 @@ export const kawasaki_solutions = (vectors) => {
     .map(a => (a === undefined
       ? undefined
       : [Math.cos(a), Math.sin(a)]));
-};
-
-
-/**
- * This bisects 2 vectors into the smaller of their two angle bisections
- * technically this works in any dimension... unless the vectors are 180deg
- * from each other, there are an infinite number of solutions in 3D but
- * 2 solutions in 2D, this will return one of the 2D solutions.
- * todo: reconsider these assumptions
- * @param {[number, number]} vector
- * @returns {[[number, number],[number, number]]} 2 vectors, the smaller first
- */
-export const bisect_vectors = (a, b) => {
-  const aV = normalize(a);
-  const bV = normalize(b);
-  return dot(aV, bV) < (-1 + EPSILON)
-    ? [-aV[1], aV[0]]
-    : normalize(add(aV, bV));
-};
-/**
- * This bisects two 2D lines, which means it first finds the intersection point,
- *  then treats the lines as vectors, returning bisections. if the lines are
- *  parallel, it returns one solution
- * @param {[number, number]} all vectors, lines defined by points and vectors
- * @returns [ [number,number], [number,number] ] // line, defined as
- * point then vector, in that order
- *
- * second entry is 90 degrees counter clockwise from first entry
- */
-export const bisect_lines2 = (vectorA, pointA, vectorB, pointB) => {
-  const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
-  if (Math.abs(denominator) < EPSILON) { /* parallel */
-    const solution = [[vectorA[0], vectorA[1]], midpoint(pointA, pointB)];
-    const array = [solution, solution];
-    const dt = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
-    delete array[(dt > 0 ? 1 : 0)];
-    return array;
-  }
-  // const vectorC = [pointB[0] - pointA[0], pointB[1] - pointA[1]];
-  const numerator = (pointB[0] - pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1] - pointA[1]);
-  const t = numerator / denominator;
-  const origin = [
-    pointA[0] + vectorA[0] * t,
-    pointA[1] + vectorA[1] * t,
-  ];
-  const bisects = [bisect_vectors(vectorA, vectorB)];
-  bisects[1] = rotate90(bisects[0]);
-  return bisects.map(vector => ({ vector, origin }));
 };
 /**
  * subsect the angle between two vectors already converted to radians
