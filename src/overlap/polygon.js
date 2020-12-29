@@ -58,32 +58,34 @@ export const point_in_poly = (point, poly) => {
   return isInside;
 };
 /** do two convex polygons overlap one another */
-const overlap_convex_polygons = (poly1, poly2, seg_seg, pt_in_poly) => {
+const overlap_convex_polygons = (poly1, poly2, seg_seg, pt_in_poly, epsilon) => {
   // convert array of points into segments [point, nextPoint]
   const e1 = poly1.map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
   const e2 = poly2.map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
   for (let i = 0; i < e1.length; i += 1) {
     for (let j = 0; j < e2.length; j += 1) {
-      if (seg_seg(e1[i][0], e1[i][1], e2[j][0], e2[j][1])) {
+      if (seg_seg(e1[i][0], e1[i][1], e2[j][0], e2[j][1], epsilon)) {
         return true;
       }
     }
   }
-  if (pt_in_poly(poly2[0], poly1)) { return true; }
-  if (pt_in_poly(poly1[0], poly2)) { return true; }
+  if (pt_in_poly(poly2[0], poly1, epsilon)) { return true; }
+  if (pt_in_poly(poly1[0], poly2, epsilon)) { return true; }
   return false;
 };
-export const overlap_convex_polygons_inclusive = (poly1, poly2) => overlap_convex_polygons(
+export const overlap_convex_polygons_inclusive = (poly1, poly2, epsilon = EPSILON) => overlap_convex_polygons(
   poly1,
   poly2,
   overlap_segment_segment_inclusive,
-  point_in_convex_poly_inclusive
+  point_in_convex_poly_inclusive,
+	epsilon
 );
-export const overlap_convex_polygons_exclusive = (poly1, poly2) => overlap_convex_polygons(
+export const overlap_convex_polygons_exclusive = (poly1, poly2, epsilon = EPSILON) => overlap_convex_polygons(
   poly1,
   poly2,
   overlap_segment_segment_exclusive,
-  point_in_convex_poly_exclusive
+  point_in_convex_poly_exclusive,
+	epsilon
 );
 
 /**

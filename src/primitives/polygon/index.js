@@ -5,6 +5,7 @@ import { subtract } from "../../core/algebra";
 import {
   convex_hull,
   make_regular_polygon,
+	straight_skeleton,
 } from "../../core/geometry";
 
 export default {
@@ -36,6 +37,9 @@ export default {
       segments: function () {
         return this.sides;
       },
+			straightSkeleton: function () {
+				return straight_skeleton(this);
+			},
     },
     S: {
       fromPoints: function () {

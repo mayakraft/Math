@@ -669,7 +669,9 @@
   const intersect_lines = (aVector, aOrigin, bVector, bOrigin, compA, compB, epsilon = EPSILON) => {
     const denominator0 = cross2(aVector, bVector);
     const denominator1 = -denominator0;
-    if (Math.abs(denominator0) < epsilon) { return undefined; }
+    if (Math.abs(cross2(normalize(aVector), normalize(bVector))) < epsilon) {
+  		return undefined;
+  	}
     const numerator0 = cross2(subtract(bOrigin, aOrigin), bVector);
     const numerator1 = cross2(subtract(aOrigin, bOrigin), aVector);
     const t0 = numerator0 / denominator0;
@@ -797,31 +799,33 @@
     }
     return isInside;
   };
-  const overlap_convex_polygons = (poly1, poly2, seg_seg, pt_in_poly) => {
+  const overlap_convex_polygons = (poly1, poly2, seg_seg, pt_in_poly, epsilon) => {
     const e1 = poly1.map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
     const e2 = poly2.map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
     for (let i = 0; i < e1.length; i += 1) {
       for (let j = 0; j < e2.length; j += 1) {
-        if (seg_seg(e1[i][0], e1[i][1], e2[j][0], e2[j][1])) {
+        if (seg_seg(e1[i][0], e1[i][1], e2[j][0], e2[j][1], epsilon)) {
           return true;
         }
       }
     }
-    if (pt_in_poly(poly2[0], poly1)) { return true; }
-    if (pt_in_poly(poly1[0], poly2)) { return true; }
+    if (pt_in_poly(poly2[0], poly1, epsilon)) { return true; }
+    if (pt_in_poly(poly1[0], poly2, epsilon)) { return true; }
     return false;
   };
-  const overlap_convex_polygons_inclusive = (poly1, poly2) => overlap_convex_polygons(
+  const overlap_convex_polygons_inclusive = (poly1, poly2, epsilon = EPSILON) => overlap_convex_polygons(
     poly1,
     poly2,
     overlap_segment_segment_inclusive,
-    point_in_convex_poly_inclusive
+    point_in_convex_poly_inclusive,
+  	epsilon
   );
-  const overlap_convex_polygons_exclusive = (poly1, poly2) => overlap_convex_polygons(
+  const overlap_convex_polygons_exclusive = (poly1, poly2, epsilon = EPSILON) => overlap_convex_polygons(
     poly1,
     poly2,
     overlap_segment_segment_exclusive,
-    point_in_convex_poly_exclusive
+    point_in_convex_poly_exclusive,
+  	epsilon
   );
   const enclose_convex_polygons_inclusive = (outer, inner) => {
     const outerGoesInside = outer
@@ -1373,13 +1377,13 @@
     pointA
   );
   const axiom2 = (pointA, pointB) => Constructors.line(
-    normalize(rotate270(subtract(...resize_up(pointB, pointA)))),
+    normalize(rotate90(subtract(...resize_up(pointB, pointA)))),
     midpoint(pointA, pointB)
   );
   const axiom3 = (vectorA, originA, vectorB, originB) => bisect_lines2(
       vectorA, originA, vectorB, originB).map(Constructors.line);
   const axiom4 = (vector, point) => Constructors.line(
-    rotate270(normalize(vector)),
+    rotate90(normalize(vector)),
     point
   );
   const axiom5 = (vectorA, originA, pointA, pointB) => (intersect_circle_line(
@@ -1389,7 +1393,7 @@
       originA,
       () => true
     ) || []).map(sect => Constructors.line(
-      normalize(rotate270(subtract(...resize_up(sect, pointB)))),
+      normalize(rotate90(subtract(...resize_up(sect, pointB)))),
       midpoint(pointB, sect)
     ));
   const axiom7 = (vectorA, originA, vectorB, pointC) => {
@@ -1397,7 +1401,7 @@
     return intersect === undefined
       ? undefined
       : Constructors.line(
-          normalize(rotate270(subtract(...resize_up(intersect, pointC)))),
+          normalize(rotate90(subtract(...resize_up(intersect, pointC)))),
           midpoint(pointC, intersect)
       );
   };
@@ -2396,6 +2400,9 @@
         segments: function () {
           return this.sides;
         },
+  			straightSkeleton: function () {
+  				return straight_skeleton(this);
+  			},
       },
       S: {
         fromPoints: function () {
