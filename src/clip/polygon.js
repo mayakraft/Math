@@ -177,3 +177,4 @@ export const clip_segment_in_convex_poly_exclusive = (poly, seg0, seg1, epsilon 
   }
   return clip_segment_func(poly, seg0, seg1, epsilon);
 };
+

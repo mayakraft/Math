@@ -9,7 +9,7 @@ import {
   midpoint,
   distance,
   subtract,
-  rotate270,
+  rotate90,
 } from "./algebra";
 import {
   bisect_lines2,
@@ -38,7 +38,7 @@ export const axiom1 = (pointA, pointB) => Constructors.line(
 );
 
 export const axiom2 = (pointA, pointB) => Constructors.line(
-  normalize(rotate270(subtract(...resize_up(pointB, pointA)))),
+  normalize(rotate90(subtract(...resize_up(pointB, pointA)))),
   midpoint(pointA, pointB)
 );
 // make sure these all get a resize_up or whatever is necessary
@@ -52,7 +52,7 @@ export const axiom3 = (vectorA, originA, vectorB, originB) => bisect_lines2(
  * @returns {line} axiom 4 result
  */
 export const axiom4 = (vector, point) => Constructors.line(
-  rotate270(normalize(vector)),
+  rotate90(normalize(vector)),
   point
 );
 
@@ -63,7 +63,7 @@ export const axiom5 = (vectorA, originA, pointA, pointB) => (intersect_circle_li
     originA,
     () => true
   ) || []).map(sect => Constructors.line(
-    normalize(rotate270(subtract(...resize_up(sect, pointB)))),
+    normalize(rotate90(subtract(...resize_up(sect, pointB)))),
     midpoint(pointB, sect)
   ));
 
@@ -80,7 +80,7 @@ export const axiom7 = (vectorA, originA, vectorB, pointC) => {
   return intersect === undefined
     ? undefined
     : Constructors.line(
-        normalize(rotate270(subtract(...resize_up(intersect, pointC)))),
+        normalize(rotate90(subtract(...resize_up(intersect, pointC)))),
         midpoint(pointC, intersect)
     );
 };
