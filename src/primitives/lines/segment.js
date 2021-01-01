@@ -43,6 +43,12 @@ export default {
           .map(point => resize(dim, point));
         return Constructors.segment(transformed_points);
       },
+			translate: function() {
+				const translate = get_vector(arguments);
+				const transformed_points = this.points
+					.map(point => add(...resize_up(point, translate)));
+        return Constructors.segment(transformed_points);
+			},
       midpoint: function () {
         return Constructors.vector(average(this.points[0], this.points[1]));
       },

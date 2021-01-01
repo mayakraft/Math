@@ -1,6 +1,6 @@
+import babel from "@rollup/plugin-babel";
 import cleanup from "rollup-plugin-cleanup";
-// import babel from "rollup-plugin-babel";
-// import { terser } from "rollup-plugin-terser";
+import { terser } from "rollup-plugin-terser";
 
 module.exports = [{
   input: "src/index.js",
@@ -12,14 +12,11 @@ module.exports = [{
     banner: "/* Math (c) Robby Kraft, MIT License */",
   },
   plugins: [
-    cleanup({
-      comments: "none",
-      maxEmptyLines: 0,
+    babel({
+			babelHelpers: "bundled",
+			presets: ["@babel/preset-env"]
     }),
-    // babel({
-    //   babelrc: false,
-    //   presets: [["@babel/env", { modules: false }]],
-    // }),
-    // terser(),
+    cleanup(),
+    terser(),
   ]
 }];
