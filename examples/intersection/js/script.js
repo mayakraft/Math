@@ -5,6 +5,9 @@ Vue.component("button-mode", {
   </div>`
 });
 
+const RADIUS1 = 0.005;
+const WEIGHT1 = 0.001;
+const WEIGHT2 = 0.005;
 // use colors from
 // https://kgolid.github.io/chromotome-site/
 
@@ -16,11 +19,14 @@ const app = new Vue({
     history: [],
     // these are calculated
     pressPoint: undefined,
+		pressLine: undefined,
     argPoints: [],
     intersections: [],
     nearestPoints: [],
+		nearestLine: undefined, // current nearest line
     svg: undefined,
-    uiLayer: undefined,
+    uiTop: undefined,
+		uiBottom: undefined,
     drawLayer: undefined
   },
   methods: {
@@ -32,12 +38,14 @@ const app = new Vue({
     onPress: function (point) {
       point = Snap(point);
       this.pressPoint = point;
+			this.pressLine = NearestLine(this.history, point);
     },
     onRelease: function (point) {
       point = Snap(point);
       this.history.push({
         function: this.function,
-        arguments: [this.pressPoint, point],
+        points: [this.pressPoint, point],
+				lines: [this.pressLine, this.nearestLine],
       });
       this.bigUpdate();
     },
@@ -45,30 +53,49 @@ const app = new Vue({
       this.function = args[0].target.className;
     },
     smallUpdate: function (point) {
-      this.uiLayer.removeChildren();
+      this.uiTop.removeChildren();
+      this.uiBottom.removeChildren();
+			this.nearestLine = NearestLine(this.history, point);
       if (point.buttons > 0) {
-        this.uiLayer.appendChild(states[this.function].svg([this.pressPoint, point]));
+				// convert pritmitive to SVG
+				const points = [this.pressPoint, point];
+				const lines = [this.pressLine, this.nearestLine];
+				const svg = states[this.function].svg(points, lines);
+				// sometimes fails if points are degenerate
+				if (svg) { this.uiTop.appendChild(svg); }
       }
+			if (this.nearestLine) {
+				const res = infinityBox.clipLine(this.nearestLine);
+				if (res) {
+					this.uiBottom.line(res[0], res[1])
+						.strokeWidth(WEIGHT2)
+						.stroke("#fb4");
+				}
+			}
       this.nearestPoints = NearestPoints(this.history, point);
-      this.nearestPoints.forEach(p => this.uiLayer.circle(0.01).origin(p).stroke("none").fill("#fb4"));
+      this.nearestPoints.forEach(p => this.uiTop
+				.circle(RADIUS1)
+					.origin(p)
+					.stroke("none")
+					.fill("#e53"));
     },
     bigUpdate: function () {
       this.drawLayer.removeChildren();
 
       // convert the history into svg shapes
-      this.history.map(entry => states[entry.function].svg(...entry.arguments))
+      this.history.map(entry => states[entry.function].svg(entry.points, entry.lines))
         .filter(el => el != null)
         .forEach(el => this.drawLayer.appendChild(el));
 
-      // snap-points are arguments + intersections
-      this.argPoints = this.history.map(h => h.arguments)
+      // snap-points are history.points + intersections
+      this.argPoints = this.history.map(h => h.points)
         .reduce((a, b) => a.concat(b), []);
       this.intersections = Intersections(this.history);
 
-      // draw all the arguments and intersection points
+      // draw all the argument points and intersection points
       [this.argPoints, this.intersections].forEach((arr, i) => arr
-        .forEach(p => this.drawLayer.circle(0.01).origin(p)
-          .fill(["#000", "#e53"][i])
+        .forEach(p => this.drawLayer.circle(RADIUS1).origin(p)
+          .fill(["#000", "#158"][i])
           .stroke("none")));
     },
   }
@@ -100,16 +127,28 @@ const Snap = (point) => {
   return point;
 };
 
-const NearestPoints = function (history, point) {
-  return history
-    .map(entry => states[entry.function].math(...entry.arguments))
-    .filter(el => el != null)
-    .map(p => p.nearestPoint(point));
+const NearestLine = (history, point) => {
+	const lines = history
+		.filter(entry => states[entry.function].isLine)
+		.map(entry => states[entry.function].math(entry.points, entry.lines))
+	if (!lines.length) { return undefined; }
+	const nearestPointDistances = lines
+		.map(line => math.core.distance2(line.nearestPoint(point), [point.x, point.y]));
+	const nearestIndex = lines
+		.map((_, i) => i)
+		.sort((a, b) => nearestPointDistances[a] - nearestPointDistances[b])
+		.shift();
+	return lines[nearestIndex];
 };
 
-const Intersections = function (history) {
+const NearestPoints = (history, point) => history
+	.map(entry => states[entry.function].math(entry.points, entry.lines))
+	.filter(el => el != null)
+	.map(p => p.nearestPoint(point));
+
+const Intersections = (history) => {
   const primitives = history
-    .map(entry => states[entry.function].math(...entry.arguments))
+    .map(entry => states[entry.function].math(entry.points, entry.lines))
     .filter(el => el != null);
 
   return Array.from(Array(primitives.length))
@@ -121,12 +160,17 @@ const Intersections = function (history) {
     .reduce((a, b) => a.concat(b), []);
 };
 
-SVG(1, 1, document.querySelectorAll(".canvas-container")[0], (svg) => {
-//  svg.background("white");
-  app.svg = svg;
-  app.drawLayer = svg.g().stroke("black").fill("none").strokeWidth(0.001);
-  app.uiLayer = svg.g().stroke("black").fill("none").strokeWidth(0.001);
-  svg.onMove = app.onMove;
-  svg.onPress = app.onPress;
-  svg.onRelease = app.onRelease;
+SVG(document.querySelectorAll(".canvas-container")[0], (svg) => {
+  svg.size(1, 1)
+		.fill("none")
+		.stroke("black")
+		.strokeWidth(WEIGHT1);
+	svg.onMove = app.onMove;
+	svg.onPress = app.onPress;
+	svg.onRelease = app.onRelease;
+	app.svg = svg;
+	app.uiBottom = svg.g();
+	app.drawLayer = svg.g();
+	app.uiTop = svg.g();
 });
+

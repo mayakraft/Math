@@ -13,6 +13,7 @@ import {
 } from "../../arguments/get";
 
 import {
+	add,
   parallel,
   degenerate,
 } from "../../core/algebra";
@@ -21,6 +22,8 @@ import {
   multiply_matrix3_line3,
   make_matrix3_reflectZ
 } from "../../core/matrix3";
+
+import { point_on_line } from "../../overlap/points";
 
 import Intersect from "../../intersection/index";
 
@@ -49,11 +52,11 @@ LineProto.prototype.isParallel = function () {
   return parallel(...arr);
 };
 
-// LineProto.prototype.isCollinear = function () {
-//   const line = get_line(...arguments);
-//   return point_on_line(line.origin, this.vector, this.origin)
-//     && parallel(...resize_up(this.vector, line.vector));
-// };
+LineProto.prototype.isCollinear = function () {
+  const line = get_line(arguments);
+  return point_on_line(line.origin, this.vector, this.origin)
+    && parallel(...resize_up(this.vector, line.vector));
+};
 
 LineProto.prototype.isDegenerate = function (epsilon = EPSILON) {
   return degenerate(this.vector, epsilon);
@@ -79,6 +82,11 @@ LineProto.prototype.transform = function () {
     resize(3, this.origin)
   );
   return this.constructor(resize(dim, r.vector), resize(dim, r.origin));
+};
+
+LineProto.prototype.translate = function() {
+	const origin = add(...resize_up(this.origin, get_vector(arguments)));
+	return this.constructor(this.vector, origin);
 };
 
 LineProto.prototype.intersect = function (other) {
