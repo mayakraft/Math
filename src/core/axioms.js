@@ -43,7 +43,7 @@ export const axiom2 = (pointA, pointB) => Constructors.line(
 );
 // make sure these all get a resize_up or whatever is necessary
 export const axiom3 = (vectorA, originA, vectorB, originB) => bisect_lines2(
-    vectorA, originA, vectorB, originB).map(Constructors.line);
+	vectorA, originA, vectorB, originB).map(Constructors.line);
 /**
  * axiom 4
  * @description create a line perpendicular to a vector through a point

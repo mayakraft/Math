@@ -3,6 +3,7 @@ import { identity2x3 } from "../core/matrix2";
 import { identity3x4 } from "../core/matrix3";
 import { flatten_arrays, semi_flatten_arrays } from "./resize";
 import { fn_not_undefined } from "./functions";
+import { distance2 } from "../core/algebra";
 /**
  * @returns ({ point:[], vector:[] })
 */
@@ -98,6 +99,38 @@ export const get_rect = function () {
     ? [, , ...numbers]
     : numbers;
   return get_rect_params(...rect_params);
+};
+
+/**
+ * radius is the first parameter so that the origin can be N-dimensional
+ * ...args is a list of numbers that become the origin.
+ */
+const get_circle_params = (radius = 1, ...args) => ({
+	radius,
+	origin: [...args],
+});
+
+export const get_circle = function () {
+	if (arguments[0] instanceof Constructors.circle) { return arguments[0]; }
+  const vectors = get_vector_of_vectors(arguments);
+  const numbers = flatten_arrays(arguments).filter(a => typeof a === "number");
+  if (arguments.length === 2) {
+    if (vectors[1].length === 1) {
+			return get_circle_params(vectors[1][0], ...vectors[0]);
+    } else if (vectors[0].length === 1) {
+			return get_circle_params(vectors[0][0], ...vectors[1]);
+    } else if (vectors[0].length > 1 && vectors[1].length > 1) {
+			return get_circle_params(distance2(...vectors), ...vectors[0]);
+    }
+  }
+  else {
+    switch (numbers.length) {
+      case 0: return get_circle_params(1, 0, 0, 0);
+      case 1: return get_circle_params(numbers[0], 0, 0, 0);
+      default: return get_circle_params(numbers.pop(), ...numbers);
+    }
+  }
+	return get_circle_params(1, 0, 0, 0);
 };
 
 const maps_3x4 = [
