@@ -23,6 +23,7 @@ import {
   split_polygon,
   split_convex_polygon,
 } from "../../core/geometry";
+import Typeof from "../../arguments/typeof";
 import {
   get_vector,
   get_matrix_3x4,
@@ -163,6 +164,14 @@ const methods = {
     // const clip = clip_segment_in_convex_poly_inclusive(this, seg[0], seg[1]);
     return makeClip(clip);
   },
+	clip: function (param) {
+		switch (Typeof(param)) {
+			case "segment": return this.clipSegment(param);
+			case "ray": return this.clipRay(param);
+			case "line": return this.clipLine(param);
+			default: return;
+		}
+	},
   svgPath: function () {
     // make every point a Move or Line command, append with a "z" (close path)
     const pre = Array(this.length).fill("L");
