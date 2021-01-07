@@ -10,9 +10,14 @@ import {
   midpoint,
   rotate90,
 	rotate270,
-  alternating_sum,
 } from "./algebra";
-import { fn_add } from "../arguments/functions";
+import { get_vector_of_vectors } from "../arguments/get";
+import { flatten_arrays } from "../arguments/resize";
+import {
+	fn_add,
+	fn_vec2_angle,
+	fn_to_vec2,
+} from "../arguments/functions";
 /**
  * measurements involving vectors and radians
  */
@@ -96,60 +101,13 @@ export const counter_clockwise_angle2 = (a, b) => {
  *     / .
  *     --------x  b
  */
-export const clockwise_bisect2 = (a, b) => {
-  const radians = Math.atan2(a[1], a[0]) - clockwise_angle2(a, b) / 2;
-  return [Math.cos(radians), Math.sin(radians)];
-};
-export const counter_clockwise_bisect2 = (a, b) => {
-  const radians = Math.atan2(a[1], a[0]) + counter_clockwise_angle2(a, b) / 2;
-  return [Math.cos(radians), Math.sin(radians)];
-};
-/**
- * This bisects 2 vectors into the smaller of their two angle bisections
- * technically this works in any dimension... unless the vectors are 180deg
- * from each other, there are an infinite number of solutions in 3D but
- * 2 solutions in 2D, this will return one of the 2D solutions.
- * todo: reconsider these assumptions
- * @param {[number, number]} vector
- * @returns {[[number, number],[number, number]]} 2 vectors, the smaller first
- */
-// const bisect_vectors = (a, b, epsilon = EPSILON) => {
-//   const aV = normalize(a);
-//   const bV = normalize(b);
-//   return dot(aV, bV) < (-1 + epsilon)
-//     ? [-aV[1], aV[0]]
-//     : normalize(add(aV, bV));
-// };
-/**
- * This bisects two 2D lines, which means it first finds the intersection point,
- *  then treats the lines as vectors, returning bisections. if the lines are
- *  parallel, it returns one solution
- * @param {[number, number]} all vectors, lines defined by points and vectors
- * @returns [ [number,number], [number,number] ] // line, defined as
- * point then vector, in that order
- *
- * second entry is 90 degrees counter clockwise from first entry
- */
-// export const bisect_lines2 = (vectorA, pointA, vectorB, pointB, epsilon = EPSILON) => {
-//   const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
-//   if (Math.abs(denominator) < epsilon) { /* parallel */
-//     const solution = [[vectorA[0], vectorA[1]], midpoint(pointA, pointB)];
-//     const array = [solution, solution];
-//     const dt = vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
-//     delete array[(dt > 0 ? 1 : 0)];
-//     return array;
-//   }
-//   // const vectorC = [pointB[0] - pointA[0], pointB[1] - pointA[1]];
-//   const numerator = (pointB[0] - pointA[0]) * vectorB[1] - vectorB[0] * (pointB[1] - pointA[1]);
-//   const t = numerator / denominator;
-//   const origin = [
-//     pointA[0] + vectorA[0] * t,
-//     pointA[1] + vectorA[1] * t,
-//   ];
-//   const bisects = [bisect_vectors(vectorA, vectorB, epsilon)];
-//   bisects[1] = rotate90(bisects[0]);
-//   return bisects.map(vector => ({ vector, origin }));
-// };
+export const clockwise_bisect2 = (a, b) => fn_to_vec2(
+	fn_vec2_angle(a) - clockwise_angle2(a, b) / 2
+);
+
+export const counter_clockwise_bisect2 = (a, b) => fn_to_vec2(
+  fn_vec2_angle(a) + counter_clockwise_angle2(a, b) / 2
+);
 
 export const bisect_lines2 = (vectorA, originA, vectorB, originB, epsilon = EPSILON) => {
   const determinant = cross2(vectorA, vectorB);
@@ -171,8 +129,6 @@ export const bisect_lines2 = (vectorA, originA, vectorB, originB, epsilon = EPSI
   if (isParallel) { delete solution[(dotProd > -epsilon ? 1 : 0)]; }
   return solution;
 };
-
-
 /**
  * given vectors, make a separate array of radially-sorted vector indices
  *
@@ -182,7 +138,8 @@ export const bisect_lines2 = (vectorA, originA, vectorB, originB, epsilon = EPSI
  *
  * @returns {number[]}, already c-cwise sorted would give [0,1,2,3,4]
  */
-export const counter_clockwise_radians_order = (...radians) => {
+export const counter_clockwise_order_radians = function () {
+	const radians = flatten_arrays(arguments);
   const counter_clockwise = radians
     .map((_, i) => i)
     .sort((a, b) => radians[a] - radians[b]);
@@ -190,89 +147,55 @@ export const counter_clockwise_radians_order = (...radians) => {
     .slice(counter_clockwise.indexOf(0), counter_clockwise.length)
     .concat(counter_clockwise.slice(0, counter_clockwise.indexOf(0)));
 };
-export const counter_clockwise_vector_order = (...vectors) =>
-  counter_clockwise_radians_order(...vectors.map(v => Math.atan2(v[1], v[0])))
-/** There are 2 interior angles between 2 vectors, return both,
- * (no longer the the smaller first, but counter-clockwise from the first)
- * @param {[number, number]} vector
- * @returns {[number, number]} 2 angle measurements between vectors
- */
-// export const interior_angles2 = (a, b) => {
-//   const interior1 = counter_clockwise_angle2(a, b);
-//   const interior2 = Math.PI * 2 - interior1;
-//   // return (interior1 < interior2)
-//   //   ? [interior1, interior2]
-//   //   : [interior2, interior1];
-//   return [interior1, interior2];
-// };
-/**
- * very important! this does not do any sorting. it calculates the interior
- * angle between each consecutive vector. if you need them to add up to 360deg,
- * you'll need to pre-sort your vectors with counter_clockwise_vector_order
- */
-export const interior_angles = (...vecs) => vecs
-  .map((v, i, ar) => counter_clockwise_angle2(v, ar[(i + 1) % ar.length]));
 
-const interior_angles_unsorted = function (...vectors) {
+export const counter_clockwise_order2 = function () {
+  return counter_clockwise_order_radians(
+		get_vector_of_vectors(arguments).map(fn_vec2_angle)
+	);
 };
-
 /**
- * two varieties: vectors, radians, with a very important difference!:
+ * @description given an array of angles, return the sector angles between
+ * consecutive parameters. if radially unsorted, this will sort them.
  *
- * 1. the vectors describe the direction of the segment (length doesn't matter)
- * 2. the angles in radians are the INTERIOR ANGLES between the segments, not
- * the radians form of the vectors in case 1.
- *
- * case 2. is generally the faster way, vectors have to be turned into interior
- * angles.
+ * @param {number[]} array of angles in radians
+ * @returns {number[]} array of sector angles in radians
  */
-
+export const counter_clockwise_sectors_radians = function () {
+	const radians = flatten_arrays(arguments);
+	const ordered = counter_clockwise_order_radians(radians)
+		.map(i => radians[i]);
+	return ordered.map((rad, i, arr) => [rad, arr[(i + 1) % arr.length]])
+		.map(pair => counter_clockwise_angle_radians(pair[0], pair[1]));
+};
 /**
- * @param {number[]} the angle of the edges in radians, like vectors around a vertex
- * @returns {number[]} for every sector,
- * this is hard coded to work for flat-plane, where sectors sum to 360deg
+ * @description given an array of vectors, return the sector angles between
+ * consecutive parameters. if radially unsorted, this will sort them.
+ *
+ * @param {number[][]} array of 2D vectors (higher dimensions will be ignored)
+ * @returns {number[]} array of sector angles in radians
  */
-export const kawasaki_solutions_radians = (radians) => radians
-  // counter clockwise angle between this index and the next
-  .map((v, i, arr) => [v, arr[(i + 1) % arr.length]])
-  .map(pair => counter_clockwise_angle_radians(...pair))
-  // for every sector, make an array of all the OTHER sectors
-  .map((_, i, arr) => arr.slice(i + 1, arr.length).concat(arr.slice(0, i)))
-  // for every sector, use the sector score from the OTHERS two to split it
-  .map(opposite_sectors => alternating_sum(opposite_sectors).map(s => Math.PI - s))
-  // add the deviation to the edge to get the absolute position
-  .map((kawasakis, i) => radians[i] + kawasakis[0])
-  // sometimes this results in a solution OUTSIDE the sector. ignore these
-  .map((angle, i) => (is_counter_clockwise_between(angle,
-    radians[i], radians[(i + 1) % radians.length])
-    ? angle
-    : undefined));
-// or should we remove the indices so the array reports [ empty x2, ...]
-
-export const kawasaki_solutions = (vectors) => {
-  const vectors_radians = vectors.map(v => Math.atan2(v[1], v[0]));
-  return kawasaki_solutions_radians(vectors_radians)
-    .map(a => (a === undefined
-      ? undefined
-      : [Math.cos(a), Math.sin(a)]));
+export const counter_clockwise_sectors2 = function () {
+	return counter_clockwise_sectors_radians(
+		get_vector_of_vectors(arguments).map(fn_vec2_angle)
+	);
 };
 /**
  * subsect the angle between two vectors already converted to radians
  */
-// export const subsect_radians = (divisions, angleA, angleB) => {
-//   const angle = counter_clockwise_angle_radians(angleA, angleB) / divisions;
-//   return Array.from(Array(divisions - 1))
-//     .map((_, i) => angleA + angle * i);
-// };
+export const counter_clockwise_subsect_radians = (divisions, angleA, angleB) => {
+  const angle = counter_clockwise_angle_radians(angleA, angleB) / divisions;
+  return Array.from(Array(divisions - 1))
+    .map((_, i) => angleA + angle * (i + 1));
+};
 /**
  * subsect the angle between two vectors (counter-clockwise from A to B)
  */
-// export const subsect = (divisions, vectorA, vectorB) => {
-//   const angleA = Math.atan2(vectorA[1], vectorA[0]);
-//   const angleB = Math.atan2(vectorB[1], vectorB[0]);
-//   return subsect_radians(divisions, angleA, angleB)
-//     .map(rad => [Math.cos(rad), Math.sin(rad)]);
-// };
+export const counter_clockwise_subsect2 = (divisions, vectorA, vectorB) => {
+  const angleA = Math.atan2(vectorA[1], vectorA[0]);
+  const angleB = Math.atan2(vectorB[1], vectorB[0]);
+  return counter_clockwise_subsect_radians(divisions, angleA, angleB)
+		.map(fn_to_vec2);
+};
 /**
  * subsect the angle between two lines, can handle parallel lines
  */

@@ -5,7 +5,7 @@ import {
 } from "../../core/algebra";
 import {
   counter_clockwise_angle_radians,
-  counter_clockwise_radians_order
+  counter_clockwise_order_radians,
 } from "../../core/radial";
 import {
   get_vector,
@@ -24,7 +24,7 @@ export default {
       const vectors = get_vector_of_vectors(arguments)
 				.map(v => Constructors.vector(v));
       const radians = vectors.map(v => Math.atan2(v[1], v[0]));
-      const order = counter_clockwise_radians_order(...radians);
+      const order = counter_clockwise_order_radians(...radians);
       this.vectors = order.map(i => vectors[i]);
       this.radians = order.map(i => radians[i]);
       this.order = invert_order_array(order);
