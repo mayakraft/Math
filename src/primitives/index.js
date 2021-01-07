@@ -8,7 +8,7 @@ import Ellipse from "./ellipse/index";
 import Rect from "./rect/index";
 import Polygon from "./polygon/index";
 import Matrix from "./matrix/matrix";
-import Junction from "./junction/index";
+// import Junction from "./junction/index";
 // import Plane from "./plane/index";
 // import Matrix2 from "./matrix/matrix2";
 
@@ -34,7 +34,7 @@ const Definitions = Object.assign({},
   Rect,
   Polygon,
   Matrix,
-  Junction,
+  // Junction,
   // Plane,
   // Matrix2,
 );

@@ -13,7 +13,7 @@ test("primitives Typeof", () => {
   const circle = math.circle();
   const rect = math.rect();
   const ellipse = math.ellipse();
-	const junction = math.junction();
+	// const junction = math.junction();
 
   expect(math.typeof(vector)).toBe("vector");
   expect(math.typeof(matrix)).toBe("matrix");
@@ -23,7 +23,7 @@ test("primitives Typeof", () => {
   expect(math.typeof(circle)).toBe("circle");
   expect(math.typeof(rect)).toBe("rect");
   expect(math.typeof(ellipse)).toBe("ellipse");
-	expect(math.typeof(junction)).toBe("junction");
+	// expect(math.typeof(junction)).toBe("junction");
 });
 
 test("primitives instanceof", () => {
@@ -35,7 +35,7 @@ test("primitives instanceof", () => {
   const circle = math.circle();
   const rect = math.rect();
   const ellipse = math.ellipse();
-	const junction = math.junction();
+	// const junction = math.junction();
 
   expect(vector instanceof math.vector).toBe(true);
   expect(matrix instanceof math.matrix).toBe(true);
@@ -45,7 +45,7 @@ test("primitives instanceof", () => {
   expect(circle instanceof math.circle).toBe(true);
   expect(rect instanceof math.rect).toBe(true);
   expect(ellipse instanceof math.ellipse).toBe(true);
-	expect(junction instanceof math.junction).toBe(true);
+	// expect(junction instanceof math.junction).toBe(true);
 });
 
 test("primitives constructor", () => {
@@ -57,7 +57,7 @@ test("primitives constructor", () => {
   const circle = math.circle();
   const rect = math.rect();
   const ellipse = math.ellipse();
-	const junction = math.junction();
+	// const junction = math.junction();
 
   expect(vector.constructor === math.vector).toBe(true);
   expect(matrix.constructor === math.matrix).toBe(true);
@@ -67,7 +67,7 @@ test("primitives constructor", () => {
   expect(circle.constructor === math.circle).toBe(true);
   expect(rect.constructor === math.rect).toBe(true);
   expect(ellipse.constructor === math.ellipse).toBe(true);
-	expect(junction.constructor === math.junction).toBe(true);
+	// expect(junction.constructor === math.junction).toBe(true);
 });
 
 test("type guessing", () => {

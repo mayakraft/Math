@@ -29,11 +29,11 @@ test("interior angles", () => {
 test("counter-clockwise vector sorting", () => {
   testEqualVectors(
     [0, 1, 2, 3],
-    math.core.counter_clockwise_vector_order([1, 1], [-1, 1], [-1, -1], [1, -1])
+    math.core.counter_clockwise_order2([1, 1], [-1, 1], [-1, -1], [1, -1])
   );
   testEqualVectors(
     [0, 3, 2, 1],
-    math.core.counter_clockwise_vector_order([1, -1], [-1, -1], [-1, 1], [1, 1])
+    math.core.counter_clockwise_order2([1, -1], [-1, -1], [-1, 1], [1, 1])
   );
 });
 
@@ -100,14 +100,14 @@ test("counter_clockwise_angle2", () => {
 //   math.core.counter_clockwise_vector_order(...vectors)
 // });
 
-test("interior_angles", () => {
-  expect(math.core.interior_angles([1,0], [0,1], [-1,0])[0]).toBeCloseTo(Math.PI/2);
-  expect(math.core.interior_angles([1,0], [0,1], [-1,0])[1]).toBeCloseTo(Math.PI/2);
-  expect(math.core.interior_angles([1,0], [0,1], [-1,0])[2]).toBeCloseTo(Math.PI);
+test("interior sector angles", () => {
+  expect(math.core.counter_clockwise_sectors2([1,0], [0,1], [-1,0])[0]).toBeCloseTo(Math.PI/2);
+  expect(math.core.counter_clockwise_sectors2([1,0], [0,1], [-1,0])[1]).toBeCloseTo(Math.PI/2);
+  expect(math.core.counter_clockwise_sectors2([1,0], [0,1], [-1,0])[2]).toBeCloseTo(Math.PI);
 
-  expect(math.core.interior_angles([1,0], [-1,0], [0,-1])[0]).toBeCloseTo(Math.PI);
-  expect(math.core.interior_angles([1,0], [-1,0], [0,-1])[1]).toBeCloseTo(Math.PI/2);
-  expect(math.core.interior_angles([1,0], [-1,0], [0,-1])[2]).toBeCloseTo(Math.PI/2);
+  expect(math.core.counter_clockwise_sectors2([1,0], [-1,0], [0,-1])[0]).toBeCloseTo(Math.PI);
+  expect(math.core.counter_clockwise_sectors2([1,0], [-1,0], [0,-1])[1]).toBeCloseTo(Math.PI/2);
+  expect(math.core.counter_clockwise_sectors2([1,0], [-1,0], [0,-1])[2]).toBeCloseTo(Math.PI/2);
 });
 
 test("clockwise bisect", () => {
@@ -169,12 +169,41 @@ test("bisect_lines2", () => {
 
 });
 
-// test("subsect_radians", () => {
-//   math.core.subsect_radians(2, 0, Math.PI/2)
-// });
-// 
-// test("subsect", () => {
-//   math.core.subsect(2, [1,0], [0,1]);
-// });
+test("counter_clockwise_subsect_radians", () => {
+	testEqualVectors(math.core.counter_clockwise_subsect_radians(3, 0, 3),
+		[1, 2]);
+	testEqualVectors(math.core.counter_clockwise_subsect_radians(3, -1, 2),
+		[0, 1]);
+	expect(math.core.counter_clockwise_subsect_radians(4, 0, -Math.PI)[0])
+		.toBeCloseTo(Math.PI * 1 / 4);
+	expect(math.core.counter_clockwise_subsect_radians(4, 0, -Math.PI)[1])
+		.toBeCloseTo(Math.PI * 2 / 4);
+	expect(math.core.counter_clockwise_subsect_radians(4, 0, -Math.PI)[2])
+		.toBeCloseTo(Math.PI * 3 / 4);
+	expect(math.core.counter_clockwise_subsect_radians(2, 0, -Math.PI)[0])
+		.toBeCloseTo(Math.PI / 2);
+	expect(math.core.counter_clockwise_subsect_radians(1, 0, -Math.PI).length)
+		.toBe(0);
+});
+ 
+test("counter_clockwise_subsect2", () => {
+	expect(math.core.counter_clockwise_subsect2(2, [1,0], [0,1])[0][0])
+		.toBeCloseTo(Math.sqrt(2) / 2);
+	expect(math.core.counter_clockwise_subsect2(2, [1,0], [0,1])[0][1])
+		.toBeCloseTo(Math.sqrt(2) / 2);
+
+	expect(math.core.counter_clockwise_subsect2(4, [1,0], [-1,0])[0][0])
+		.toBeCloseTo(Math.sqrt(2) / 2);
+	expect(math.core.counter_clockwise_subsect2(4, [1,0], [-1,0])[0][1])
+		.toBeCloseTo(Math.sqrt(2) / 2);
+	expect(math.core.counter_clockwise_subsect2(4, [1,0], [-1,0])[1][0])
+		.toBeCloseTo(0);
+	expect(math.core.counter_clockwise_subsect2(4, [1,0], [-1,0])[1][1])
+		.toBeCloseTo(1);
+	expect(math.core.counter_clockwise_subsect2(4, [1,0], [-1,0])[2][0])
+		.toBeCloseTo(-Math.sqrt(2) / 2);
+	expect(math.core.counter_clockwise_subsect2(4, [1,0], [-1,0])[2][1])
+		.toBeCloseTo(Math.sqrt(2) / 2);
+});
 
 

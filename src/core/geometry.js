@@ -75,8 +75,11 @@ export const centroid = (points) => {
 };
 
 /**
- * works in any n-dimension (enclosing cube, hypercube..)
- * @returns array of arrays: [[x, y], [width, height]]
+ * @returns { x:_, y:_, width:_, height:_ }
+ * this can easily be extended to work in any n-dimension
+ * (enclosing cube, hypercube..)
+ * if you remove the last line (convert to rect form)
+ * and instead return an array of arrays: [[x, y, z], [width, height, depth]]
  */
 export const enclosing_rectangle = (points) => {
   const mins = Array(points[0].length).fill(Infinity);
@@ -87,7 +90,7 @@ export const enclosing_rectangle = (points) => {
       if (c > maxs[i]) { maxs[i] = c; }
     }));
   const lengths = maxs.map((max, i) => max - mins[i]);
-  return get_rect_params(...mins, ...lengths);
+  return get_rect_params(mins[0], mins[1], lengths[0], lengths[1]);
 };
 /**
  * the radius parameter measures from the center to the midpoint of the edge
