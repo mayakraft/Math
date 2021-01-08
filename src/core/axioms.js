@@ -5,9 +5,11 @@ import { EPSILON } from "./constants";
 import Constructors from "../primitives/constructors";
 import { resize_up } from "../arguments/resize";
 import {
+	dot,
   normalize,
   midpoint,
   distance,
+	add,
   subtract,
   rotate90,
 } from "./algebra";
@@ -21,7 +23,6 @@ import {
   include_l,
   intersect_lines,
 } from "../intersection/lines";
-import { solveCubic } from "./solvers";
 
 /*           _                       _              _
             (_)                     (_)            (_)
@@ -67,6 +68,153 @@ export const axiom5 = (vectorA, originA, pointA, pointB) => (intersect_circle_li
     midpoint(pointB, sect)
   ));
 
+// counter-clockwise
+const line_to_ud = (vector, origin) => {
+	const mag = Math.sqrt((vector[0] ** 2) + (vector[1] ** 2));
+	const u = [-vector[1], vector[0]];
+	const d = (origin[0] * u[0] + origin[1] * u[1]) / mag;
+	// return { u, d };
+	return d < 0
+		? { u: [-u[0] / mag, -u[1] / mag], d: -d }
+		: { u: [u[0] / mag, u[1] / mag], d };
+};
+
+// clockwise (undo counter-clockwise)
+const ud_to_line = ({ u, d }) => ({
+	vector: [u[1], -u[0]],
+	origin: [d * u[0], d * u[1]],
+});
+
+// cube root that maintains sign
+const cubrt = n => n < 0
+	? -Math.pow(-n, 1/3)
+	: Math.pow(n, 1/3);
+
+
+// axiom 6 code from Robert Lang's Reference Finder
+// https://langorigami.com/article/referencefinder/
+
+/**
+ * @description axiom 6: make a crease by bringing pointA onto a
+ *  lineA and pointB onto lineB
+ * @param {number[]} vector of the first line
+ * @param {number[]} origin of the first line
+ * @param {number[]} vector of the second line
+ * @param {number[]} origin of the second line
+ * @param {number[]} point to bring to the first line
+ * @param {number[]} point to bring to the second line
+ */
+export const axiom6 = (vectorA, originA, vectorB, originB, pointA, pointB) => {
+	const lineA = line_to_ud(vectorA, originA);
+	const lineB = line_to_ud(vectorB, originB);
+	// at least pointA must not be on lineA
+	// for some reason this epsilon is much higher than 1e-6
+	if (Math.abs(1 - (dot(lineA.u, pointA) / lineA.d)) < 0.02) { return []; }
+	const lineAVec = [-lineA.u[1], lineA.u[0]];
+	const vec1 = [
+		pointA[0] + lineA.d * lineA.u[0] - 2 * pointB[0],
+		pointA[1] + lineA.d * lineA.u[1] - 2 * pointB[1],
+	];
+	const vec2 = [
+		lineA.d * lineA.u[0] - pointA[0],
+		lineA.d * lineA.u[1] - pointA[1],
+	];
+	const c1 = dot(pointB, lineB.u) - lineB.d;
+	const c2 = 2 * dot(vec2, lineAVec);
+	const c3 = dot(vec2, vec2);
+	const c4 = dot(add(vec1, vec2), lineAVec);
+	const c5 = dot(vec1, vec2);
+	const c6 = dot(lineAVec, lineB.u);
+	const c7 = dot(vec2, lineB.u);
+	const a = c6;
+	const b = c1 + c4 * c6 + c7;
+	const c = c1 * c2 + c5 * c6 + c4 * c7;
+	const d = c1 * c3 + c5 * c7;
+	// construct the solution from the root, the solution being the parameter
+	// point reflected across the fold line, lying on the parameter line
+	const make_point = root => [
+		lineA.d * lineA.u[0] + root * lineAVec[0],
+		lineA.d * lineA.u[1] + root * lineAVec[1],
+	];
+	let polynomial_degree = 0;
+	if (Math.abs(c) > EPSILON) { polynomial_degree = 1; }
+	if (Math.abs(b) > EPSILON) { polynomial_degree = 2; }
+	if (Math.abs(a) > EPSILON) { polynomial_degree = 3; }
+	const solutions = [];
+	switch (polynomial_degree) {
+		// linear
+		case 1: 
+		solutions.push(make_point(-d / c)); break;
+		// quadratic
+		case 2: {
+			const discriminant = (c ** 2) - (4 * b * d);
+			// no solution
+			if (discriminant < -EPSILON) { 
+				break; }
+			// one solution
+			const q1 = -c / (2 * b);
+			if (discriminant < EPSILON) {
+				solutions.push(make_point(q1));
+				break;
+			}
+			// two solutions
+			const q2 = Math.sqrt(discriminant) / (2 * b);
+			solutions.push(
+				make_point(q1 + q2),
+				make_point(q1 - q2),
+			);
+			break;
+		}
+		// cubic
+		case 3: {
+			// Cardano's formula. convert to depressed cubic
+			const a2 = b / a;
+			const a1 = c / a;
+			const a0 = d / a;
+			const Q = (3 * a1 - (a2 ** 2)) / 9;
+			const R = (9 * a2 * a1 - 27 * a0 - 2 * (a2 ** 3)) / 54;
+			const D = (Q ** 3) + (R ** 2);
+			const U = -a2 / 3;
+			// one solution
+			if (D > 0) {
+				const sqrtD = Math.sqrt(D);
+				const S = cubrt(R + sqrtD);
+				const T = cubrt(R - sqrtD);
+				solutions.push(make_point(U + S + T));
+				break;
+			}
+			// two solutions
+			if (Math.abs(D) < EPSILON) {
+				const S = Math.pow(R, 1/3);
+				// const S = cubrt(R);
+				if (isNaN(S)) { break; }
+				solutions.push(
+					make_point(U + 2 * S),
+					make_point(U - S),
+				);
+				break;
+			}
+			// three solutions
+			const sqrtD = Math.sqrt(-D);
+			const phi = Math.atan2(sqrtD, R) / 3;
+			const rS = Math.pow((R ** 2) - D, 1/6);
+			const Sr = rS * Math.cos(phi);
+			const Si = rS * Math.sin(phi);
+			solutions.push(
+				make_point(U + 2 * Sr),
+				make_point(U - Sr - Math.sqrt(3) * Si),
+				make_point(U - Sr + Math.sqrt(3) * Si),
+			);
+			break;
+		}
+	}
+	return solutions
+		.map(p => normalize(subtract(p, pointA)))
+		.map((u, i) => ({ u, d: dot(u, midpoint(solutions[i], pointA)) }))
+		.map(ud_to_line)
+		.map(Constructors.line);
+};
+
 /**
  * @description axiom 7: make a crease by bringing a point (pointC) onto a
  *  line () perpendicular to another line ()
@@ -85,258 +233,3 @@ export const axiom7 = (vectorA, originA, vectorB, pointC) => {
     );
 };
 
-// function (point1, point2, line1, line2){
-// export const axiom6 = function (pointA, vecA, pointB, vecB, pointC, pointD) {
-export const axiom6 = function (vecA, pointA, vecB, pointB, pointC, pointD) {
-  var p1 = pointC[0];
-  var q1 = pointC[1];
-  // find equation of line in form y = mx+h (or x = k)
-  if (Math.abs(vecA[0]) > EPSILON) {
-    var m1 = vecA[1] / vecA[0];
-    var h1 = pointA[1] - m1 * pointA[0];
-  }
-  else {
-    var k1 = pointA[0];
-  }
-
-  var p2 = pointD[0];
-  var q2 = pointD[1];
-  // find equation of line in form y = mx+h (or x = k)
-  if (Math.abs(vecB[0]) > EPSILON) {
-    var m2 = vecB[1] / vecB[0];
-    var h2 = pointB[1] - m2 * pointB[0];
-  }
-  else {
-    var k2 = pointB[0];
-  }
-
-  //equation of perpendicular bisector between (p,q) and (u, v)
-  //  {passes through ((u+p)/2,(v+q)/2) with slope -(u-p)/(v-q)}
-  //y = (-2(u-p)x + (v^2 -q^2 + u^2 - p^2))/2(v-q)
-
-  //equation of perpendicular bisector between (p,q) and (u, mu+h)
-  // y = (-2(u-p)x + (m^2+1)u^2 + 2mhu + h^2-p^2-q^2)/(2mu + 2(h-q))
-
-  //equation of perpendicular bisector between (p,q) and (k, v)
-  //y = (-2(k-p)x + (v^2 + k^2-p^2-q^2))/2(v-q)
-
-  // if the two bisectors are the same line,
-  // then the gradients and intersections of both lines are equal
-
-  //case 1: m1 and m2 both defined
-  if (m1 !== undefined && m2 !== undefined) {
-    //1: (u1-p1)/(m1u1+(h1 -q1)) = (u2-p2)/(m2u2+(h2-q2))
-    //and
-    //2: (a1u1^2+b1u1+ c1)/(d1u1+e1) = (a2u2^2+b2u2+c2)/(d2u2+e2)
-    //where
-    //an = mn^2+1
-    //bn = 2mnhn
-    //cn = hn^2-pn^2-qn^2
-    //dn = 2mn
-    //en = 2(hn-qn)
-
-    var a1 = m1*m1 + 1;
-    var b1 = 2*m1*h1;
-    var c1 = h1*h1 - p1*p1 - q1*q1;
-    //var d1 = 2*m1;
-    //var e1 = 2*(h1 - q1);
-
-    var a2 = m2*m2 + 1;
-    var b2 = 2*m2*h2;
-    var c2 =  h2*h2 - p2*p2 - q2*q2;
-    //var d2 = 2*m2;
-    //var e2 = 2*(h2 - q2);
-
-    //rearrange 1 to express u1 in terms of u2
-    //u1 = (a0u2+b0)/(c0u2+d0)
-    //where
-    //a0 = m2p1-(q1-h1)
-    //b0 = p2(q1-h1)-p1(q2-h2)
-    //c0= m2-m1
-    //d0= m1p2-(q2-h2)
-    var a0 = m2*p1 + (h1 - q1);
-    var b0 = p1*(h2 - q2) - p2*(h1 - q1);
-    var c0 = m2 - m1;
-    var d0 = m1*p2 + (h2 - q2);
-
-    var z = m1*p1 + (h1 - q1);
-    //subsitute u1 into 2 and solve for u2:
-  }
-  else if (m1 === undefined && m2 === undefined) {
-    //1: (k1-p1)/(v1 -q1)) = (k2-p2)/(v2-q2)
-    //and
-    //2: (v1^2+c1)/(d1v1+e1) = (v2^2+c2)/(d2u2+e2)
-    //where
-    //cn = kn^2-pn^2-qn^2
-    //dn = 2
-    //en = -2qn
-
-    a1 = 1;
-    b1 = 0;
-    c1 = k1*k1 - p1*p1 - q1*q1;
-    //d1 = 2;
-    //e1 = -2*q1;
-
-    a2 = 1;
-    b2 = 0;
-    c2 = k2*k2 - p2*p2 - q2*q2;
-    //d2 = 2;
-    //e2 = -2*q2;
-
-    //rearrange 1 to express v1 in terms of v2
-    //v1 = (a0v2+b0)/d0
-    //where
-    //a0 =k1-p1
-    //b0 = q1(k2-p2)-q1(k1-p1)
-    //d0= k2-p2
-    a0 = k1 - p1;
-    b0 = q1*(k2 - p2) - q2*(k1 - p1);
-    c0 = 0;
-    d0 = k2 - p2;
-
-    z = a0;
-    //subsitute v1 into 2 and solve for v2:
-  }
-  else {
-    if (m1 === undefined) {
-      //swap the order of the points and lines
-      var p3 = p1;
-      p1 = p2;
-      p2 = p3;
-      var q3 = q1;
-      q1 = q2;
-      q2 = q3;
-      m1 = m2;
-      m2 = undefined;
-      h1 = h2;
-      h2 = undefined;
-      k2 = k1;
-      k1 = undefined;
-    }
-
-    //1: (u1-p1)/(m1u1+(h1 -q1))  = (k2-p2)/(v2-q2)
-    //and
-    //2: (a1u1^2+b1u1+ c1)/(d1u1+e1) =  (v2^2+c2)/(d2u2+e2)
-    //where
-    //a1 = m1^2+1
-    //b1 = 2m1h1
-    //c1 = h1^2-p1^2-q1^2
-    //d1 = 2m1
-    //e1 = 2(h1-q1)
-    //c2 = k2^2-p2^2-q2^2
-    //d2 = 2
-    //e2 = -2q2
-
-    a1 = m1*m1 + 1;
-    b1 = 2*m1*h1;
-    c1 = h1*h1 - p1*p1 - q1*q1;
-    //d1 = 2*m1;
-    //e1 = 2*(h1 - q1);
-
-    a2 = 1;
-    b2 = 0;
-    c2 = k2*k2 - p2*p2 - q2*q2;
-    //d2 = 2;
-    //e2 = -2*q2;
-
-    //rearrange 1 to express u1 in terms of v2
-    //u1 = (a0v2+b0)/(v2+d0)
-    //where
-    //a0 = p1
-    //b0 = (h1-q1)(k2-p2) - p1q1
-    //d0= -m1(k2-p2)-q2
-    a0 = p1;
-    b0 = (h1 - q1)*(k2 - p2) - p1*q2;
-    c0 = 1;
-    d0 = -m1*(k2 - p2) - q2;
-
-    z = m1*p1 + (h1 - q1);
-    //subsitute u1 into 2 and solve for v2:
-  }
-
-  //subsitute into 3:
-  //4: (a3x^2 + b3x + c3)/(d3x^2 + e3x + f3) = (a2x^2 + b2x + c2)/(d2x + e2)
-  //where
-  //a3 = a1a0^2+b1a0c0+c1c0^2
-  //b3 = 2a1a0b0+b1(a0d0+b0c0)+2c1c0d0
-  //c3 = a1b0^2+b1b0d0+c1d0^2
-  //d3 =c0(d1a0+e1c0) = d2c0z
-  //e3 = d0(d1a0+e1c0)+c0(d1b+e1d) = (d2d0+e2c0)z
-  //f3 = d0(d1b0+e1d0) = e2d0z
-
-  var a3 = a1*a0*a0 + b1*a0*c0 + c1*c0*c0;
-  var b3 = 2*a1*a0*b0 + b1*(a0*d0 + b0*c0) + 2*c1*c0*d0;
-  var c3 = a1*b0*b0 + b1*b0*d0 + c1*d0*d0;
-  //var d3 = d2*c0*z
-  //var e3 = (d2*d0 + e2*c0)*z;
-  //var f3 = e2*d0*z;
-
-  //rearrange to gain the following quartic
-  //5: (d2x+e2)(a4x^3+b4x^2+c4x+d) = 0
-  //where
-  //a4 = a2c0z
-  //b4 = (a2d0+b2c0)z-a3
-  //c4 = (b2d0+c2c0)z-b3
-  //d4 = c2d0z-c3
-
-  var a4 = a2*c0*z;
-  var b4 = (a2*d0 + b2*c0) * z - a3;
-  var c4 = (b2*d0 + c2*c0) * z - b3;
-  var d4 =  c2*d0*z - c3;
-
-  //find the roots
-  var roots = solveCubic(a4,b4,c4,d4);
-
-  var solutions = [];
-  if (roots != undefined && roots.length > 0) {
-    for (var i = 0; i < roots.length; ++i) {
-      if (m1 !== undefined && m2 !== undefined) {
-        var u2 = roots[i];
-        var v2 = m2*u2 + h2;
-        //var u1 = (a0*u2 + b0)/(c0*u2 + d0);
-        //var v1 = m1*u1 + h1;
-      }
-      else if (m1 === undefined && m2 === undefined) {
-        v2 = roots[i];
-        u2 = k2;
-        //v1 = (a0*v2 + b0)/d0;
-        //u1 = k1;
-      }
-      else {
-        v2 = roots[i];
-        u2 = k2;
-        //u1 = (a0*v2 + b0)/(v2 + d0);
-        //v1 =  m1*u1 + h1;
-      }
-
-      //The midpoints may be the same point,
-      // so cannot be used to determine the crease
-      //solutions.push(this.axiom1(new M.XY((u1 + p1) / 2, (v1 + q1) / 2),
-      //   new M.XY((u2 + p2) / 2, (v2 + q2) / 2)));
-
-      if (v2 != q2) {
-        //F(x) = mx + h = -((u-p)/(v-q))x +(v^2 -q^2 + u^2 - p^2)/2(v-q)
-        var mF = -1*(u2 - p2)/(v2 - q2);
-        var hF = (v2*v2 - q2*q2 + u2*u2 - p2*p2) / (2 * (v2 - q2));
-
-        // solutions.push(this.axiom1(new M.XY(0, hF), new M.XY(1, mF + hF)));
-        // solutions.push(Constructors.line([0, hF], [1, mF]));
-        solutions.push(Constructors.line.fromPoints([0, hF], [1, mF]));
-      }
-      else {
-        //G(y) = k
-        var kG = (u2 + p2)/2;
-
-        // solutions.push(this.axiom1(new M.XY(kG, 0), new M.XY(kG, 1)));
-        // solutions.push(Constructors.line([kG, 0], [0, 1]));
-        solutions.push(Constructors.line.fromPoints([kG, 0], [0, 1]));
-      }
-    }
-  }
-  // we used to return this
-  // const parameters = {
-  //   points: [math.vector(pointC), math.vector(pointD)],
-  //   lines: [Constructors.line(pointA, vecA), Constructors.line(pointB, vecB)]
-  // };
-  return solutions;
-};

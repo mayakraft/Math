@@ -14,7 +14,7 @@ const WEIGHT2 = 0.005;
 const app = new Vue({
   el: "#app",
   data: {
-    function: "bisect",
+    function: "line",
     states,
     history: [],
     // these are calculated
