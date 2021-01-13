@@ -3,6 +3,7 @@ import LinePrototype from "../prototypes/line";
 import { resize } from "../../arguments/resize";
 import { get_line } from "../../arguments/get";
 import Static from "./static";
+import { exclude_l } from "../../intersection/lines";
 
 // distance is between 0 and 1, representing the vector between start and end. cap accordingly
 // const limit_line = dist => dist;
@@ -23,7 +24,7 @@ export default {
 
     M: {
       clip_function: dist => dist,
-      // compare_function: () => true,
+      comp_function: exclude_l,
       svgPath: function (length = 20000) {
         const start = this.origin.add(this.vector.scale(-length / 2));
         const end = this.vector.scale(length);

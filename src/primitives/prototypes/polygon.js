@@ -75,7 +75,10 @@ const methods = {
   contains: function () {
     return point_in_poly(get_vector(arguments), this);
   },
-  // scale will return a rect for rectangles, otherwise polygon
+ 	straightSkeleton: function () {
+		return straight_skeleton(this);
+	},
+ 	// scale will return a rect for rectangles, otherwise polygon
   scale: function (magnitude, center = centroid(this)) {
     const newPoints = this
       .map(p => [0, 1].map((_, i) => p[i] - center[i]))
@@ -198,3 +201,4 @@ Object.keys(methods).forEach((key) => {
 });
 
 export default PolygonProto;
+

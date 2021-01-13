@@ -5,9 +5,12 @@ import { EPSILON } from "./constants";
 import Constructors from "../primitives/constructors";
 import { resize_up } from "../arguments/resize";
 import {
+	mag_squared,
 	dot,
+	scale,
   normalize,
   midpoint,
+	flip,
   distance,
 	add,
   subtract,
@@ -73,7 +76,6 @@ const line_to_ud = (vector, origin) => {
 	const mag = Math.sqrt((vector[0] ** 2) + (vector[1] ** 2));
 	const u = [-vector[1], vector[0]];
 	const d = (origin[0] * u[0] + origin[1] * u[1]) / mag;
-	// return { u, d };
 	return d < 0
 		? { u: [-u[0] / mag, -u[1] / mag], d: -d }
 		: { u: [u[0] / mag, u[1] / mag], d };
@@ -84,6 +86,28 @@ const ud_to_line = ({ u, d }) => ({
 	vector: [u[1], -u[0]],
 	origin: [d * u[0], d * u[1]],
 });
+
+// export const axiom5 = (vectorA, originA, pointA, pointB) => {
+// 	const line = line_to_ud(vectorA, originA);
+// 	// project A down to the line, get the distance
+// 	const distA = line.d - dot(pointA, line.u);
+// 	// if pointB-pointA is shorter than pointB to the line, no solution
+// 	const base_sq = mag_squared(subtract(pointA, pointB)) - (distA ** 2);
+// 	if (base_sq < 0) { return []; }
+// 	// pythagoras with (a, b, c): distA, base, (pointA to pointB)
+// 	const base = Math.sqrt(base_sq);
+// 	// project pointA down to the line
+// 	const projection = add(pointA, scale(line.u, distA));
+// 	return [+1, -1]
+// 		.map(sign => scale(vectorA, sign * base))
+// 		.map(vec => add(projection, vec))
+// 		.map(point => ({
+// 			origin: midpoint(point, pointB),
+// 			vector: rotate90(normalize(subtract(point, pointB))),
+// 		}));
+// 		// .map(point => normalize(subtract(point, pointB)))
+// 		// .map(u => ud_to_line({ u, d: dot(pointA, u) }));
+// };
 
 // cube root that maintains sign
 const cubrt = n => n < 0

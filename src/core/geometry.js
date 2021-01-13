@@ -293,8 +293,7 @@ export const convex_hull = (points, include_collinear = false, epsilon = EPSILON
  *   "type": "skeleton" or "kawasaki", the latter being the projected perpendicular
  *   dropped edges down to the sides of the polygon.
  */
-
-const recurseSkeleton = (points, lines, bisectors) => {
+const recurse_skeleton = (points, lines, bisectors) => {
   // every point has an interior angle bisector vector, this ray is
   // tested for intersections with its neighbors on both sides.
   // "intersects" is fencepost mapped (i) to "points" (i, i+1)
@@ -332,12 +331,15 @@ const recurseSkeleton = (points, lines, bisectors) => {
   // we have the shortest length, we now have the solution for this round
   // (all that remains is to prepare the arguments for the next recursive call)
   const solutions = [
-    { type:"skeleton", points: [points[shortest], intersects[shortest]] },
-    { type:"skeleton", points: [points[(shortest + 1) % points.length], intersects[shortest]] },
+    { type:"skeleton",
+      points: [points[shortest], intersects[shortest]] },
+    { type:"skeleton",
+      points: [points[(shortest + 1) % points.length], intersects[shortest]] },
     // perpendicular projection
     // we could expand this algorithm here to include all three instead of just one.
     // two more of the entries in "intersects" will have the same length as shortest
     { type:"perpendicular", points: [projections[shortest], intersects[shortest]] }
+    // ...projections.map(p => ({ type: "perpendicular", points: [p, intersects[shortest]] }))
   ];
   // our new smaller polygon, missing two points now, but gaining one more (the intersection)
   // this is to calculate the new angle bisector at this new point.
@@ -365,7 +367,7 @@ const recurseSkeleton = (points, lines, bisectors) => {
     // move the first element to the end of the array.
     lines.push(lines.shift());
   }
-  return solutions.concat(recurseSkeleton(points, lines, bisectors));
+  return solutions.concat(recurse_skeleton(points, lines, bisectors));
 };
 
 /**
@@ -395,5 +397,6 @@ export const straight_skeleton = (points) => {
     // consecutive points in a counter-clockwise wound polygon is measured
     // in the clockwise direction
     .map(v => clockwise_bisect2(...v));
-  return recurseSkeleton(points, lines, bisectors);
+  return recurse_skeleton(points, lines, bisectors);
 };
+

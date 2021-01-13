@@ -1,6 +1,7 @@
 import { EPSILON } from "../../core/constants";
 import { bisect_lines2 } from "../../core/radial";
 import { nearest_point_on_line } from "../../core/nearest";
+import TypeOf from "../../arguments/typeof";
 import {
   resize,
   resize_up
@@ -24,8 +25,10 @@ import {
 } from "../../core/matrix3";
 
 import { point_on_line } from "../../overlap/points";
+import { overlap_lines } from "../../overlap/lines";
 
 import Intersect from "../../intersection/index";
+import { exclude_l, exclude_r, exclude_s } from "../../intersection/lines"
 
 import Constructors from "../constructors";
 
@@ -93,6 +96,17 @@ LineProto.prototype.intersect = function (other) {
   return Intersect(this, other);
 };
 
+LineProto.prototype.overlaps = function (other) {
+	let compB;
+	switch (TypeOf(other)) {
+		case "segment": compB = exclude_s; break;
+		case "ray": compB = exclude_r; break;
+		case "line": compB = exclude_l; break;
+		default: return;
+	}
+	return overlap_lines(this.vector, this.origin, other.vector, other.origin, this.comp_function, compB);
+};
+
 LineProto.prototype.bisect = function () {
   const line = get_line(arguments);
   return bisect_lines2(this.vector, this.origin, line.vector, line.origin);
@@ -110,3 +124,4 @@ Object.defineProperty(LineProto.prototype, "dimension", {
 // const equivalent = function (line, epsilon){}
 
 export default LineProto;
+

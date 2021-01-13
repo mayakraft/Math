@@ -9,6 +9,7 @@ import {
   get_segment,
 } from "../../arguments/get";
 import LinePrototype from "../prototypes/line";
+import { exclude_s } from "../../intersection/lines";
 
 export default {
   segment: {
@@ -34,6 +35,7 @@ export default {
       // distance is between 0 and 1, representing the vector between start and end. cap accordingly
       // todo. this is repeated in nearest_point_on_polygon
       clip_function: segment_limiter,
+			comp_function: exclude_s,
       transform: function (...innerArgs) {
         const dim = this.points[0].length;
         const mat = get_matrix_3x4(innerArgs);
