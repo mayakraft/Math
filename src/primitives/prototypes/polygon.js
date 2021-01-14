@@ -4,7 +4,8 @@ import {
   distance2,
 } from "../../core/algebra";
 import {
-  point_in_poly,
+  // point_in_poly,
+  point_in_convex_poly_inclusive,
   overlap_convex_polygons_exclusive,
 } from "../../overlap/polygon";
 import {
@@ -73,7 +74,7 @@ const methods = {
     return Constructors.rect(enclosing_rectangle(this));
   },
   contains: function () {
-    return point_in_poly(get_vector(arguments), this);
+    return point_in_convex_poly_inclusive(get_vector(arguments), this);
   },
  	straightSkeleton: function () {
 		return straight_skeleton(this);

@@ -24,7 +24,7 @@ import {
   make_matrix3_reflectZ
 } from "../../core/matrix3";
 
-import { point_on_line } from "../../overlap/points";
+import { collinear, point_on_line } from "../../overlap/points";
 import { overlap_lines } from "../../overlap/lines";
 
 import Intersect from "../../intersection/index";
@@ -39,7 +39,7 @@ import Constructors from "../constructors";
  * it's counting on each type having defined:
  * - an origin
  * - a vector
- * - compare_function which takes two inputs (t0, epsilon) and returns
+ * - comp_function which takes two inputs (t0, epsilon) and returns
  *   true if t0 lies inside the boundary of the line, t0 is scaled to vector
  * - similarly, clip_function, takes two inputs (d, epsilon)
  *   and returns a modified d for what is considered valid space between 0-1
@@ -59,6 +59,10 @@ LineProto.prototype.isCollinear = function () {
   const line = get_line(arguments);
   return point_on_line(line.origin, this.vector, this.origin)
     && parallel(...resize_up(this.vector, line.vector));
+};
+
+LineProto.prototype.onPoint = function () {
+	return collinear(get_vector(arguments), this.vector, this.origin, this.comp_function);
 };
 
 LineProto.prototype.isDegenerate = function (epsilon = EPSILON) {
