@@ -2,9 +2,13 @@ import { EPSILON, TWO_PI } from "./constants";
 import { nearest_point_on_line } from "./nearest";
 import { clean_number } from "../arguments/resize";
 import { get_rect_params } from "../arguments/get";
-import { fn_add } from "../arguments/functions";
-import { point_on_line } from "../overlap/points";
-import { intersect_line_seg_exclude } from "../intersection/helpers";
+import {
+  fn_add,
+  include_l,
+  exclude_l,
+  exclude_r,
+  exclude_s,
+} from "../arguments/functions";
 import { clockwise_bisect2 } from "./radial";
 import {
   dot,
@@ -16,10 +20,8 @@ import {
   flip,
   rotate90,
 } from "./algebra";
-import {
-  intersect_lines,
-  exclude_r,
-} from "../intersection/lines";
+import overlap_line_point from "../intersection/overlap-line-point";
+import intersect_line_line from "../intersection/intersect-line-line";
 
 export const circumcircle = function (a, b, c) {
   const A = b[0] - a[0];
@@ -131,33 +133,7 @@ export const make_regular_polygon_side_length = (sides = 3, length = 1) =>
 export const make_regular_polygon_side_length_side_aligned = (sides = 3, length = 1) =>
 	make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
 
-export const split_polygon = () => console.warn("split polygon not done");
-
-// export const split_polygon = (poly, lineVector, linePoint) => {
-//   //    point: intersection [x,y] point or null if no intersection
-//   // at_index: where in the polygon this occurs
-//   const vertices_intersections = poly.map((v, i) => {
-//     const intersection = point_line_overlap(linePoint, lineVector, v);
-//     return { type: "v", point: intersection ? v : null, at_index: i };
-//   }).filter(el => el.point != null);
-//   const edges_intersections = poly.map((v, i, arr) => {
-//     const intersection = intersect_line_seg_exclude(
-//       lineVector,
-//       linePoint,
-//       v,
-//       arr[(i + 1) % arr.length]
-//     );
-//     return { type: "e", point: intersection, at_index: i };
-//   }).filter(el => el.point != null);
-
-//   const sorted = vertices_intersections
-//     .concat(edges_intersections)
-//     .sort((a, b) => (Math.abs(a.point[0] - b.point[0]) < EPSILON
-//       ? a.point[1] - b.point[1]
-//       : a.point[0] - b.point[0]));
-//   console.log(sorted);
-//   return poly;
-// };
+// export const split_polygon = () => console.warn("split polygon not done");
 
 export const split_convex_polygon = (poly, lineVector, linePoint) => {
   // todo: should this return undefined if no intersection?
@@ -166,13 +142,19 @@ export const split_convex_polygon = (poly, lineVector, linePoint) => {
   //    point: intersection [x,y] point or null if no intersection
   // at_index: where in the polygon this occurs
   let vertices_intersections = poly.map((v, i) => {
-    let intersection = point_on_line(v, lineVector, linePoint);
+    let intersection = overlap_line_point(lineVector, linePoint, v, include_l);
     return { point: intersection ? v : null, at_index: i };
   }).filter(el => el.point != null);
-  let edges_intersections = poly.map((v, i, arr) => {
-    let intersection = intersect_line_seg_exclude(lineVector, linePoint, v, arr[(i + 1) % arr.length])
-    return { point: intersection, at_index: i };
-  }).filter(el => el.point != null);
+  let edges_intersections = poly.map((v, i, arr) => ({
+      point: intersect_line_line(
+        lineVector,
+        linePoint,
+        subtract(v, arr[(i + 1) % arr.length]),
+        arr[(i + 1) % arr.length],
+        exclude_l,
+        exclude_s),
+      at_index: i }))
+    .filter(el => el.point != null);
 
   // three cases: intersection at 2 edges, 2 points, 1 edge and 1 point
   if (edges_intersections.length == 2) {
@@ -293,8 +275,7 @@ export const convex_hull = (points, include_collinear = false, epsilon = EPSILON
  *   "type": "skeleton" or "kawasaki", the latter being the projected perpendicular
  *   dropped edges down to the sides of the polygon.
  */
-
-const recurseSkeleton = (points, lines, bisectors) => {
+const recurse_skeleton = (points, lines, bisectors) => {
   // every point has an interior angle bisector vector, this ray is
   // tested for intersections with its neighbors on both sides.
   // "intersects" is fencepost mapped (i) to "points" (i, i+1)
@@ -304,7 +285,7 @@ const recurseSkeleton = (points, lines, bisectors) => {
     // .map((p, i) => math.ray(bisectors[i], p))
     // .map((ray, i, arr) => ray.intersect(arr[(i + 1) % arr.length]));
     .map((origin, i) => ({ vector: bisectors[i], origin }))
-    .map((ray, i, arr) => intersect_lines(
+    .map((ray, i, arr) => intersect_line_line(
       ray.vector,
       ray.origin,
       arr[(i + 1) % arr.length].vector,
@@ -332,12 +313,15 @@ const recurseSkeleton = (points, lines, bisectors) => {
   // we have the shortest length, we now have the solution for this round
   // (all that remains is to prepare the arguments for the next recursive call)
   const solutions = [
-    { type:"skeleton", points: [points[shortest], intersects[shortest]] },
-    { type:"skeleton", points: [points[(shortest + 1) % points.length], intersects[shortest]] },
+    { type:"skeleton",
+      points: [points[shortest], intersects[shortest]] },
+    { type:"skeleton",
+      points: [points[(shortest + 1) % points.length], intersects[shortest]] },
     // perpendicular projection
     // we could expand this algorithm here to include all three instead of just one.
     // two more of the entries in "intersects" will have the same length as shortest
     { type:"perpendicular", points: [projections[shortest], intersects[shortest]] }
+    // ...projections.map(p => ({ type: "perpendicular", points: [p, intersects[shortest]] }))
   ];
   // our new smaller polygon, missing two points now, but gaining one more (the intersection)
   // this is to calculate the new angle bisector at this new point.
@@ -365,7 +349,7 @@ const recurseSkeleton = (points, lines, bisectors) => {
     // move the first element to the end of the array.
     lines.push(lines.shift());
   }
-  return solutions.concat(recurseSkeleton(points, lines, bisectors));
+  return solutions.concat(recurse_skeleton(points, lines, bisectors));
 };
 
 /**
@@ -395,5 +379,6 @@ export const straight_skeleton = (points) => {
     // consecutive points in a counter-clockwise wound polygon is measured
     // in the clockwise direction
     .map(v => clockwise_bisect2(...v));
-  return recurseSkeleton(points, lines, bisectors);
+  return recurse_skeleton(points, lines, bisectors);
 };
+

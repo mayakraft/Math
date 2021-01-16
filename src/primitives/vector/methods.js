@@ -37,6 +37,14 @@ import {
   multiply_matrix3_vector3,
 } from "../../core/matrix3";
 
+// import {
+// 	overlap_line_point,
+// } from "../../overlap/overlap-line-point";
+
+import {
+	exclude_l,
+} from "../../arguments/functions";
+
 const table = {
   preserve: { // don't transform the return type. preserve it
     magnitude: function () { return magnitude(this); },
@@ -52,6 +60,10 @@ const table = {
     distanceTo: function () {
       return distance(...resize_up(this, get_vector(arguments)));
     },
+		// onLine: function (line) {
+		// 	if (!line.comp_function) { line = get_line(arguments); }
+		// 	return overlap_line_point(line.vector, line.origin, this, line.comp_function || exclude_l);
+		// },
   },
   vector: { // return type
     copy: function () { return [...this]; },

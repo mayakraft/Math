@@ -1,82 +1,82 @@
 const math = require("../math");
 
 test("point on line", () => {
-  expect(math.core.point_on_line([2, 2], [5, 5], [0, 0])).toBe(true);
-  expect(math.core.point_on_line([2, 2], [1, 1], [0, 0])).toBe(true);
-  expect(math.core.point_on_line([2.1, 2.1], [2, 2], [0, 0])).toBe(true);
-  expect(math.core.point_on_line([2.000000001, 2.000000001], [2, 2], [0, 0])).toBe(true);
-  expect(math.core.point_on_line([2, 2], [-1, -1], [0, 0])).toBe(true);
+  expect(math.core.overlap_line_point([5, 5], [0, 0], [2, 2])).toBe(true);
+  expect(math.core.overlap_line_point([1, 1], [0, 0], [2, 2])).toBe(true);
+  expect(math.core.overlap_line_point([2, 2], [0, 0], [2.1, 2.1])).toBe(true);
+  expect(math.core.overlap_line_point([2, 2], [0, 0], [2.000000001, 2.000000001])).toBe(true);
+  expect(math.core.overlap_line_point([2, 2], [0, 0], [-1, -1])).toBe(true);
 
-  expect(math.core.point_on_ray_inclusive(
-    [2, 2], [5, 5], [0, 0])).toBe(true);
-  expect(math.core.point_on_ray_inclusive(
-    [2, 2], [1, 1], [0, 0])).toBe(true);
-  expect(math.core.point_on_ray_inclusive(
-    [2.1, 2.1], [2, 2], [0, 0])).toBe(true);
-  expect(math.core.point_on_ray_inclusive(
-    [2.000000001, 2.000000001], [2, 2], [0, 0])).toBe(true);
-  expect(math.core.point_on_ray_inclusive(
-    [2, 2], [-1, -1], [0, 0])).toBe(false);
-  expect(math.core.point_on_ray_inclusive(
-    [-0.1, -0.1], [1, 1], [0, 0])).toBe(false);
-  expect(math.core.point_on_ray_inclusive(
-    [-0.000000001, -0.000000001], [1, 1], [0, 0])).toBe(true);
-  expect(math.core.point_on_ray_exclusive(
-    [-0.000000001, -0.000000001], [1, 1], [0, 0])).toBe(false);
+  expect(math.core.overlap_line_point(
+    [5, 5], [0, 0], [2, 2], math.core.include_r)).toBe(true);
+  expect(math.core.overlap_line_point(
+    [1, 1], [0, 0], [2, 2], math.core.include_r)).toBe(true);
+  expect(math.core.overlap_line_point(
+    [2, 2], [0, 0], [2.1, 2.1], math.core.include_r)).toBe(true);
+  expect(math.core.overlap_line_point(
+    [2, 2], [0, 0], [2.000000001, 2.000000001], math.core.include_r)).toBe(true);
+  expect(math.core.overlap_line_point(
+    [-1, -1], [0, 0], [2, 2], math.core.include_r)).toBe(false);
+  expect(math.core.overlap_line_point(
+    [1, 1], [0, 0], [-0.1, -0.1], math.core.include_r)).toBe(false);
+  expect(math.core.overlap_line_point(
+    [1, 1], [0, 0], [-0.000000001, -0.000000001], math.core.include_r)).toBe(true);
+  expect(math.core.overlap_line_point(
+    [1, 1], [0, 0], [-0.000000001, -0.000000001], math.core.exclude_r)).toBe(false);
 
-  expect(math.core.point_on_segment_inclusive(
-    [2, 2], [5, 5], [0, 0])).toBe(true);
-  expect(math.core.point_on_segment_inclusive(
-    [2, 2], [1, 1], [0, 0])).toBe(false);
-  expect(math.core.point_on_segment_inclusive(
-    [2.1, 2.1], [2, 2], [0, 0])).toBe(false);
-  expect(math.core.point_on_segment_inclusive(
-    [2.000000001, 2.000000001], [2, 2], [0, 0])).toBe(true);
-  expect(math.core.point_on_segment_inclusive(
-    [2, 2], [-1, -1], [0, 0])).toBe(false);
-  expect(math.core.point_on_segment_exclusive(
-    [2.000000001, 2.000000001], [2, 2], [0, 0])).toBe(false);
+  expect(math.core.overlap_line_point(
+    [5, 5], [0, 0], [2, 2], math.core.include_s)).toBe(true);
+  expect(math.core.overlap_line_point(
+    [1, 1], [0, 0], [2, 2], math.core.include_s)).toBe(false);
+  expect(math.core.overlap_line_point(
+    [2, 2], [0, 0], [2.1, 2.1], math.core.include_s)).toBe(false);
+  expect(math.core.overlap_line_point(
+    [2, 2], [0, 0], [2.000000001, 2.000000001], math.core.include_s)).toBe(true);
+  expect(math.core.overlap_line_point(
+    [-1, -1], [0, 0], [2, 2], math.core.include_s)).toBe(false);
+  expect(math.core.overlap_line_point(
+    [2, 2], [0, 0], [2.000000001, 2.000000001], math.core.exclude_s)).toBe(false);
 });
 
 test("overlap.point_on_segment_inclusive", () => {
-  expect(math.core.point_on_segment_inclusive(
-    [4, 3], [3, 3], [6, 3])
-  ).toBe(true);
-  expect(math.core.point_on_segment_inclusive(
-    [3, 3], [3, 3], [6, 3])
-  ).toBe(true);
-  expect(math.core.point_on_segment_inclusive(
-    [2.9, 3], [3, 3], [6, 3])
-  ).toBe(false);
-  expect(math.core.point_on_segment_inclusive(
-    [2.9999999999, 3], [3, 3], [6, 3])
-  ).toBe(true);
-  expect(math.core.point_on_segment_inclusive(
-    [6.1, 3], [3, 3], [6, 3])
-  ).toBe(false);
-  expect(math.core.point_on_segment_inclusive(
-    [6.0000000001, 3], [3, 3], [6, 3])
-  ).toBe(true);
+  expect(math.core.overlap_line_point(
+    [3, 0], [3, 3], [4, 3], math.core.include_s
+  )).toBe(true);
+  expect(math.core.overlap_line_point(
+    [3, 0], [3, 3], [3, 3], math.core.include_s
+  )).toBe(true);
+  expect(math.core.overlap_line_point(
+    [3, 0], [3, 3], [2.9, 3], math.core.include_s
+  )).toBe(false);
+  expect(math.core.overlap_line_point(
+    [3, 0], [3, 3], [2.9999999999, 3], math.core.include_s
+  )).toBe(true);
+  expect(math.core.overlap_line_point(
+    [3, 0], [3, 3], [6.1, 3], math.core.include_s
+  )).toBe(false);
+  expect(math.core.overlap_line_point(
+    [3, 0], [3, 3], [6.0000000001, 3], math.core.include_s
+  )).toBe(true);
 
-  expect(math.core.point_on_segment_inclusive(
-    [3.5, 3.5], [2, 2], [4, 4])
-  ).toBe(true);
-  expect(math.core.point_on_segment_inclusive(
-    [2.9, 3.1], [2, 2], [4, 4])
-  ).toBe(false);
-  expect(math.core.point_on_segment_inclusive(
-    [2.99999999, 3.000000001], [2, 2], [4, 4])
-  ).toBe(true);
+  expect(math.core.overlap_line_point(
+    [2, 2], [2, 2], [3.5, 3.5], math.core.include_s
+  )).toBe(true);
+  expect(math.core.overlap_line_point(
+    [2, 2], [2, 2], [2.9, 3.1], math.core.include_s
+  )).toBe(false);
+  expect(math.core.overlap_line_point(
+    [2, 2], [2, 2], [2.99999999, 3.000000001], math.core.include_s
+  )).toBe(true);
   // degenerate edge returns false
-  expect(math.core.point_on_segment_inclusive(
-    [2, 2], [2, 2], [2, 2])
-  ).toBe(false);
-  expect(math.core.point_on_segment_inclusive(
-    [2.1, 2.1], [2, 2], [2, 2])
-  ).toBe(false);
-  expect(math.core.point_on_segment_inclusive(
-    [2.000000001, 2.00000001], [2, 2], [2, 2])
-  ).toBe(false);
+  expect(math.core.overlap_line_point(
+    [0, 0], [2, 2], [2, 2], math.core.include_s
+  )).toBe(false);
+  expect(math.core.overlap_line_point(
+    [0, 0], [2, 2], [2.1, 2.1], math.core.include_s
+  )).toBe(false);
+  expect(math.core.overlap_line_point(
+    [0, 0], [2, 2], [2.000000001, 2.00000001], math.core.include_s
+  )).toBe(false);
 });
 
 
@@ -86,95 +86,95 @@ test("point on line epsilon", () => {
 
 test("point in poly", () => {
   const poly = [[1,0], [0,1], [-1,0], [0,-1]];
-  expect(math.core.point_in_poly([0.0, 0.0], poly)).toBe(true);
-  expect(math.core.point_in_poly([0.999, 0.0], poly)).toBe(true);
-  expect(math.core.point_in_poly([0.9999999999, 0.0], poly)).toBe(true);
+  expect(math.core.overlap_convex_polygon_point(poly, [0.0, 0.0])).toBe(true);
+  expect(math.core.overlap_convex_polygon_point(poly, [0.999, 0.0])).toBe(true);
+  expect(math.core.overlap_convex_polygon_point(poly, [0.9999999999, 0.0])).toBe(false);
   // edge collinear
-  expect(math.core.point_in_poly([0.5, 0.5], poly)).toBe(false);
-  expect(math.core.point_in_poly([0.49, 0.49], poly)).toBe(true);
-  expect(math.core.point_in_poly([0.51, 0.51], poly)).toBe(false);
-  expect(math.core.point_in_poly([0.500000001, 0.500000001], poly)).toBe(false);
-  expect(math.core.point_in_poly([0.5, -0.5], poly)).toBe(false);
-  // expect(math.core.point_in_poly([-0.5, 0.5], poly)).toBe(false);
-  // expect(math.core.point_in_poly([-0.5, -0.5], poly)).toBe(false);
+  expect(math.core.overlap_convex_polygon_point(poly, [0.5, 0.5])).toBe(false);
+  expect(math.core.overlap_convex_polygon_point(poly, [0.49, 0.49])).toBe(true);
+  expect(math.core.overlap_convex_polygon_point(poly, [0.51, 0.51])).toBe(false);
+  expect(math.core.overlap_convex_polygon_point(poly, [0.500000001, 0.500000001])).toBe(false);
+  expect(math.core.overlap_convex_polygon_point(poly, [0.5, -0.5])).toBe(false);
+  // expect(math.core.overlap_convex_polygon_point(poly, [-0.5, 0.5])).toBe(false);
+  // expect(math.core.overlap_convex_polygon_point(poly, [-0.5, -0.5])).toBe(false);
   // polygon points
-  expect(math.core.point_in_poly([1.0, 0.0], poly)).toBe(false);
-  expect(math.core.point_in_poly([0.0, 1.0], poly)).toBe(false);
-  // expect(math.core.point_in_poly([-1.0, 0.0], poly)).toBe(false);
-  expect(math.core.point_in_poly([0.0, -1.0], poly)).toBe(false);
+  expect(math.core.overlap_convex_polygon_point(poly, [1.0, 0.0])).toBe(false);
+  expect(math.core.overlap_convex_polygon_point(poly, [0.0, 1.0])).toBe(false);
+  // expect(math.core.overlap_convex_polygon_point(poly, [-1.0, 0.0])).toBe(false);
+  expect(math.core.overlap_convex_polygon_point(poly, [0.0, -1.0])).toBe(false);
 });
 
 test("convex point in poly inclusive", () => {
   const poly = [[1,0], [0,1], [-1,0], [0,-1]];
-  expect(math.core.point_in_convex_poly_inclusive([0.0, 0.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.0, 0.0], math.core.include))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_inclusive([0.999, 0.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.999, 0.0], math.core.include))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_inclusive([0.9999999999, 0.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.9999999999, 0.0], math.core.include))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_inclusive([1.1, 0.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [1.1, 0.0], math.core.include))
     .toBe(false);
-  expect(math.core.point_in_convex_poly_inclusive([1.000000001, 0.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [1.000000001, 0.0], math.core.include))
     .toBe(true);
   // edge collinear
-  expect(math.core.point_in_convex_poly_inclusive([0.5, 0.5], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.5, 0.5], math.core.include))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_inclusive([0.49, 0.49], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.49, 0.49], math.core.include))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_inclusive([0.499999999, 0.499999999], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.499999999, 0.499999999], math.core.include))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_inclusive([0.51, 0.51], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.51, 0.51], math.core.include))
     .toBe(false);
-  expect(math.core.point_in_convex_poly_inclusive([0.500000001, 0.500000001], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.500000001, 0.500000001], math.core.include))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_inclusive([0.5, -0.5], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.5, -0.5], math.core.include))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_inclusive([-0.5, 0.5], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [-0.5, 0.5], math.core.include))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_inclusive([-0.5, -0.5], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [-0.5, -0.5], math.core.include))
     .toBe(true);
   // polygon points
-  expect(math.core.point_in_convex_poly_inclusive([1.0, 0.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [1.0, 0.0], math.core.include))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_inclusive([0.0, 1.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.0, 1.0], math.core.include))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_inclusive([-1.0, 0.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [-1.0, 0.0], math.core.include))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_inclusive([0.0, -1.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.0, -1.0], math.core.include))
     .toBe(true);
 });
 
 test("convex point in poly exclusive", () => {
   const poly = [[1,0], [0,1], [-1,0], [0,-1]];
-  expect(math.core.point_in_convex_poly_exclusive([0.0, 0.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.0, 0.0], math.core.exclude))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_exclusive([0.999, 0.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.999, 0.0], math.core.exclude))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_exclusive([0.9999999999, 0.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.9999999999, 0.0], math.core.exclude))
     .toBe(false);
   // edge collinear
-  expect(math.core.point_in_convex_poly_exclusive([0.5, 0.5], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.5, 0.5], math.core.exclude))
     .toBe(false);
-  expect(math.core.point_in_convex_poly_exclusive([0.49, 0.49], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.49, 0.49], math.core.exclude))
     .toBe(true);
-  expect(math.core.point_in_convex_poly_exclusive([0.499999999, 0.499999999], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.499999999, 0.499999999], math.core.exclude))
     .toBe(false);
-  expect(math.core.point_in_convex_poly_exclusive([0.51, 0.51], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.51, 0.51], math.core.exclude))
     .toBe(false);
-  expect(math.core.point_in_convex_poly_exclusive([0.5, -0.5], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.5, -0.5], math.core.exclude))
     .toBe(false);
-  expect(math.core.point_in_convex_poly_exclusive([-0.5, 0.5], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [-0.5, 0.5], math.core.exclude))
     .toBe(false);
-  expect(math.core.point_in_convex_poly_exclusive([-0.5, -0.5], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [-0.5, -0.5], math.core.exclude))
     .toBe(false);
   // polygon points
-  expect(math.core.point_in_convex_poly_exclusive([1.0, 0.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [1.0, 0.0], math.core.exclude))
     .toBe(false);
-  expect(math.core.point_in_convex_poly_exclusive([0.0, 1.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.0, 1.0], math.core.exclude))
     .toBe(false);
-  expect(math.core.point_in_convex_poly_exclusive([-1.0, 0.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [-1.0, 0.0], math.core.exclude))
     .toBe(false);
-  expect(math.core.point_in_convex_poly_exclusive([0.0, -1.0], poly))
+  expect(math.core.overlap_convex_polygon_point(poly, [0.0, -1.0], math.core.exclude))
     .toBe(false);
 });
 
@@ -189,28 +189,28 @@ test("overlap lines", () => {
   const b0 = [5, 0];
   const b1 = [2, 2];
 
-  expect(math.core.overlap_line_line_inclusive(aV, aP, bV, bP)).toBe(true);
-  expect(math.core.overlap_line_ray_inclusive(aV, aP, bV, bP)).toBe(true);
-  expect(math.core.overlap_line_segment_inclusive(aV, aP, b0, b1)).toBe(false);
-  expect(math.core.overlap_ray_ray_inclusive(aV, aP, bV, bP)).toBe(true);
-  expect(math.core.overlap_ray_segment_inclusive(aV, aP, b0, b1)).toBe(false);
-  expect(math.core.overlap_segment_segment_inclusive(a0, a1, b0, b1)).toBe(false);
-  expect(math.core.overlap_line_line_exclusive(aV, aP, bV, bP)).toBe(true);
-  expect(math.core.overlap_line_ray_exclusive(aV, aP, bV, bP)).toBe(true);
-  expect(math.core.overlap_line_segment_exclusive(aV, aP, b0, b1)).toBe(false);
-  expect(math.core.overlap_ray_ray_exclusive(aV, aP, bV, bP)).toBe(true);
-  expect(math.core.overlap_ray_segment_exclusive(aV, aP, b0, b1)).toBe(false);
-  expect(math.core.overlap_segment_segment_exclusive(a0, a1, b0, b1)).toBe(false);
+  expect(math.core.overlap_line_line(aV, aP, bV, bP, math.core.include_l, math.core.include_l)).toBe(true);
+  expect(math.core.overlap_line_line(aV, aP, bV, bP, math.core.include_l, math.core.include_r)).toBe(true);
+  expect(math.core.overlap_line_line(aV, aP, math.core.subtract(b1, b0), b0, math.core.include_l, math.core.include_s)).toBe(false);
+  expect(math.core.overlap_line_line(aV, aP, bV, bP, math.core.include_r, math.core.include_r)).toBe(true);
+  expect(math.core.overlap_line_line(aV, aP, math.core.subtract(b1, b0), b0, math.core.include_r, math.core.include_s)).toBe(false);
+  expect(math.core.overlap_line_line(math.core.subtract(a1, a0), a0, math.core.subtract(b1, b0), b0, math.core.include_s, math.core.include_s)).toBe(false);
+  expect(math.core.overlap_line_line(aV, aP, bV, bP, math.core.exclude_l, math.core.exclude_l)).toBe(true);
+  expect(math.core.overlap_line_line(aV, aP, bV, bP, math.core.exclude_l, math.core.exclude_r)).toBe(true);
+  expect(math.core.overlap_line_line(aV, aP, math.core.subtract(b1, b0), b0, math.core.exclude_l, math.core.exclude_s)).toBe(false);
+  expect(math.core.overlap_line_line(aV, aP, bV, bP, math.core.exclude_r, math.core.exclude_r)).toBe(true);
+  expect(math.core.overlap_line_line(aV, aP, math.core.subtract(b1, b0), b0, math.core.exclude_r, math.core.exclude_s)).toBe(false);
+  expect(math.core.overlap_line_line(math.core.subtract(a1, a0), a0, math.core.subtract(b1, b0), b0, math.core.exclude_s, math.core.exclude_s)).toBe(false);
 });
 
 test("convex polygons overlap with point inside each other", () => {
 	const poly1 = [[0, 0], [1, 0], [1, 1], [0, 1]];
 	const polyA = [[0.5, 0.5], [10, 10], [10, 0]];
 	const polyB = [[-10, -10], [10, -10], [10, 10], [-10, 10]];
-	expect(math.core.overlap_convex_polygons_inclusive(poly1, polyA)).toBe(true);
-	expect(math.core.overlap_convex_polygons_inclusive(poly1, polyB)).toBe(true);
-	expect(math.core.overlap_convex_polygons_inclusive(polyA, poly1)).toBe(true);
-	expect(math.core.overlap_convex_polygons_inclusive(polyB, poly1)).toBe(true);
+	expect(math.core.overlap_convex_polygons(poly1, polyA, math.core.include_s, math.core.include)).toBe(true);
+	expect(math.core.overlap_convex_polygons(poly1, polyB, math.core.include_s, math.core.include)).toBe(true);
+	expect(math.core.overlap_convex_polygons(polyA, poly1, math.core.include_s, math.core.include)).toBe(true);
+	expect(math.core.overlap_convex_polygons(polyB, poly1, math.core.include_s, math.core.include)).toBe(true);
 });
 
 test("convex polygons overlap", () => {
@@ -218,13 +218,13 @@ test("convex polygons overlap", () => {
   const poly2 = [[0,1], [-1,0], [0,-1]]; // left
   const poly3 = [[1,0], [0,1], [0,-1]];  // right
   // inclusive
-  expect(math.core.overlap_convex_polygons_inclusive(poly1, poly2)).toBe(true);
-  expect(math.core.overlap_convex_polygons_inclusive(poly2, poly3)).toBe(true);
-  expect(math.core.overlap_convex_polygons_inclusive(poly1, poly3)).toBe(true);
+  expect(math.core.overlap_convex_polygons(poly1, poly2, math.core.include_s, math.core.include)).toBe(true);
+  expect(math.core.overlap_convex_polygons(poly2, poly3, math.core.include_s, math.core.include)).toBe(true);
+  expect(math.core.overlap_convex_polygons(poly1, poly3, math.core.include_s, math.core.include)).toBe(true);
   // exclusive
-  expect(math.core.overlap_convex_polygons_exclusive(poly1, poly2)).toBe(true);
-  expect(math.core.overlap_convex_polygons_exclusive(poly2, poly3)).toBe(false);
-  expect(math.core.overlap_convex_polygons_exclusive(poly1, poly3)).toBe(true);
+  expect(math.core.overlap_convex_polygons(poly1, poly2, math.core.exclude_s, math.core.exclude)).toBe(true);
+  expect(math.core.overlap_convex_polygons(poly2, poly3, math.core.exclude_s, math.core.exclude)).toBe(false);
+  expect(math.core.overlap_convex_polygons(poly1, poly3, math.core.exclude_s, math.core.exclude)).toBe(true);
 });
 
 test("enclose_convex_polygons_inclusive", () => {
@@ -237,4 +237,5 @@ test("enclose_convex_polygons_inclusive", () => {
   // expect(math.core.enclose_convex_polygons_inclusive(poly2, poly3)).toBe(false);
   expect(math.core.enclose_convex_polygons_inclusive(poly1, poly2)).toBe(false);
   expect(math.core.enclose_convex_polygons_inclusive(poly1, poly3)).toBe(false);
-})
+});
+

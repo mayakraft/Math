@@ -60,9 +60,9 @@ test("equivalent vectors", () => {
 	expect(math.core.equivalent_vectors([1, 2 + bgEp], [1, 2 - bgEp])).toBe(false);
 });
 
-test("equivalent_vec2", () => {
-	expect(math.core.equivalent_vec2([1, 2], [1, 2.0000000001])).toBe(true);
-	expect(math.core.equivalent_vec2([1, 2, 3, 4], [1, 2])).toBe(true);
-	expect(math.core.equivalent_vec2([], [])).toBe(false);
+test("equivalent_vector2", () => {
+	expect(math.core.equivalent_vector2([1, 2], [1, 2.0000000001])).toBe(true);
+	expect(math.core.equivalent_vector2([1, 2, 3, 4], [1, 2])).toBe(true);
+	expect(math.core.equivalent_vector2([], [])).toBe(false);
 });
 

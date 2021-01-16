@@ -4,19 +4,19 @@ import {
 } from "./constants";
 import {
   dot,
-	cross2,
+  cross2,
   add,
   normalize,
   midpoint,
   rotate90,
-	rotate270,
+  rotate270,
 } from "./algebra";
 import { get_vector_of_vectors } from "../arguments/get";
 import { flatten_arrays } from "../arguments/resize";
 import {
-	fn_add,
-	fn_vec2_angle,
-	fn_to_vec2,
+  fn_add,
+  fn_vec2_angle,
+  fn_to_vec2,
 } from "../arguments/functions";
 /**
  * measurements involving vectors and radians
@@ -102,7 +102,7 @@ export const counter_clockwise_angle2 = (a, b) => {
  *     --------x  b
  */
 export const clockwise_bisect2 = (a, b) => fn_to_vec2(
-	fn_vec2_angle(a) - clockwise_angle2(a, b) / 2
+  fn_vec2_angle(a) - clockwise_angle2(a, b) / 2
 );
 
 export const counter_clockwise_bisect2 = (a, b) => fn_to_vec2(
@@ -139,7 +139,7 @@ export const bisect_lines2 = (vectorA, originA, vectorB, originB, epsilon = EPSI
  * @returns {number[]}, already c-cwise sorted would give [0,1,2,3,4]
  */
 export const counter_clockwise_order_radians = function () {
-	const radians = flatten_arrays(arguments);
+  const radians = flatten_arrays(arguments);
   const counter_clockwise = radians
     .map((_, i) => i)
     .sort((a, b) => radians[a] - radians[b]);
@@ -150,8 +150,8 @@ export const counter_clockwise_order_radians = function () {
 
 export const counter_clockwise_order2 = function () {
   return counter_clockwise_order_radians(
-		get_vector_of_vectors(arguments).map(fn_vec2_angle)
-	);
+    get_vector_of_vectors(arguments).map(fn_vec2_angle)
+  );
 };
 /**
  * @description given an array of angles, return the sector angles between
@@ -161,11 +161,11 @@ export const counter_clockwise_order2 = function () {
  * @returns {number[]} array of sector angles in radians
  */
 export const counter_clockwise_sectors_radians = function () {
-	const radians = flatten_arrays(arguments);
-	const ordered = counter_clockwise_order_radians(radians)
-		.map(i => radians[i]);
-	return ordered.map((rad, i, arr) => [rad, arr[(i + 1) % arr.length]])
-		.map(pair => counter_clockwise_angle_radians(pair[0], pair[1]));
+  const radians = flatten_arrays(arguments);
+  const ordered = counter_clockwise_order_radians(radians)
+    .map(i => radians[i]);
+  return ordered.map((rad, i, arr) => [rad, arr[(i + 1) % arr.length]])
+    .map(pair => counter_clockwise_angle_radians(pair[0], pair[1]));
 };
 /**
  * @description given an array of vectors, return the sector angles between
@@ -175,9 +175,9 @@ export const counter_clockwise_sectors_radians = function () {
  * @returns {number[]} array of sector angles in radians
  */
 export const counter_clockwise_sectors2 = function () {
-	return counter_clockwise_sectors_radians(
-		get_vector_of_vectors(arguments).map(fn_vec2_angle)
-	);
+  return counter_clockwise_sectors_radians(
+    get_vector_of_vectors(arguments).map(fn_vec2_angle)
+  );
 };
 /**
  * subsect the angle between two vectors already converted to radians
@@ -194,7 +194,7 @@ export const counter_clockwise_subsect2 = (divisions, vectorA, vectorB) => {
   const angleA = Math.atan2(vectorA[1], vectorA[0]);
   const angleB = Math.atan2(vectorB[1], vectorB[0]);
   return counter_clockwise_subsect_radians(divisions, angleA, angleB)
-		.map(fn_to_vec2);
+    .map(fn_to_vec2);
 };
 /**
  * subsect the angle between two lines, can handle parallel lines

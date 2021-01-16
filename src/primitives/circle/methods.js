@@ -74,3 +74,4 @@ const CircleMethods = {
 // give us two tangent lines that intersect a point (outside the circle)
 
 export default CircleMethods;
+

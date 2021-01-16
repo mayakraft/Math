@@ -3,8 +3,11 @@ import LinePrototype from "../prototypes/line";
 import { EPSILON } from "../../core/constants";
 import { resize } from "../../arguments/resize";
 import { get_line } from "../../arguments/get";
+import {
+  exclude_r,
+  ray_limiter,
+} from "../../arguments/functions";
 import { flip } from "../../core/algebra";
-import { ray_limiter } from "../../core/nearest";
 import Static from "./static";
 
 export default {
@@ -33,6 +36,7 @@ export default {
       },
       // distance is between 0 and 1, representing the vector between start and end. cap accordingly
       clip_function: ray_limiter,
+			comp_function: exclude_r,
       svgPath: function (length = 10000) {
         const end = this.vector.scale(length);
         return `M${this.origin[0]} ${this.origin[1]}l${end[0]} ${end[1]}`;
