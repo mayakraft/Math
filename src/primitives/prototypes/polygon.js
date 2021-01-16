@@ -3,11 +3,8 @@ import {
   subtract,
   distance2,
 } from "../../core/algebra";
-import {
-  // point_in_poly,
-  point_in_convex_poly_inclusive,
-  overlap_convex_polygons_exclusive,
-} from "../../overlap/polygon";
+import overlap_convex_polygons from "../../intersection/overlap-polygons";
+import overlap_convex_polygon_point from "../../intersection/overlap-polygon-point";
 import {
   clip_line_in_convex_poly_exclusive,
   // clip_line_in_convex_poly_inclusive,
@@ -21,8 +18,8 @@ import {
   signed_area,
   centroid,
   enclosing_rectangle,
-  split_polygon,
   split_convex_polygon,
+  straight_skeleton,
 } from "../../core/geometry";
 import Typeof from "../../arguments/typeof";
 import {
@@ -35,7 +32,7 @@ import {
   resize,
   semi_flatten_arrays,
 } from "../../arguments/resize";
-import * as PolyIntersect from "../../intersection/polygon";
+import * as PolyIntersect from "../../intersection/intersect-polygon-line";
 import Intersect from "../../intersection/index";
 import {
   nearest_point_on_line,
@@ -74,12 +71,12 @@ const methods = {
     return Constructors.rect(enclosing_rectangle(this));
   },
   contains: function () {
-    return point_in_convex_poly_inclusive(get_vector(arguments), this);
+    return overlap_convex_polygon_point(this, get_vector(arguments));
   },
- 	straightSkeleton: function () {
-		return straight_skeleton(this);
-	},
- 	// scale will return a rect for rectangles, otherwise polygon
+  straightSkeleton: function () {
+    return straight_skeleton(this);
+  },
+  // scale will return a rect for rectangles, otherwise polygon
   scale: function (magnitude, center = centroid(this)) {
     const newPoints = this
       .map(p => [0, 1].map((_, i) => p[i] - center[i]))
@@ -129,11 +126,12 @@ const methods = {
   // todo: non convex too
   overlaps: function () {
     const poly2Points = semi_flatten_arrays(arguments);
-    return overlap_convex_polygons_exclusive(this, poly2Points);
+    return overlap_convex_polygons(this, poly2Points);
   },
   split: function () {
     const line = get_line(...arguments);
-    const split_func = this.isConvex ? split_convex_polygon : split_polygon;
+    // const split_func = this.isConvex ? split_convex_polygon : split_polygon;
+    const split_func = split_convex_polygon;
     return split_func(this, line.vector, line.origin)
       .map(poly => Constructors.polygon(poly));
   },
@@ -168,14 +166,14 @@ const methods = {
     // const clip = clip_segment_in_convex_poly_inclusive(this, seg[0], seg[1]);
     return makeClip(clip);
   },
-	clip: function (param) {
-		switch (Typeof(param)) {
-			case "segment": return this.clipSegment(param);
-			case "ray": return this.clipRay(param);
-			case "line": return this.clipLine(param);
-			default: return;
-		}
-	},
+  clip: function (param) {
+    switch (Typeof(param)) {
+      case "segment": return this.clipSegment(param);
+      case "ray": return this.clipRay(param);
+      case "line": return this.clipLine(param);
+      default: return;
+    }
+  },
   svgPath: function () {
     // make every point a Move or Line command, append with a "z" (close path)
     const pre = Array(this.length).fill("L");

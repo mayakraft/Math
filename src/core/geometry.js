@@ -2,9 +2,13 @@ import { EPSILON, TWO_PI } from "./constants";
 import { nearest_point_on_line } from "./nearest";
 import { clean_number } from "../arguments/resize";
 import { get_rect_params } from "../arguments/get";
-import { fn_add } from "../arguments/functions";
-import { point_on_line } from "../overlap/points";
-import { intersect_line_seg_exclude } from "../intersection/helpers";
+import {
+  fn_add,
+  include_l,
+  exclude_l,
+  exclude_r,
+  exclude_s,
+} from "../arguments/functions";
 import { clockwise_bisect2 } from "./radial";
 import {
   dot,
@@ -16,10 +20,8 @@ import {
   flip,
   rotate90,
 } from "./algebra";
-import {
-  intersect_lines,
-  exclude_r,
-} from "../intersection/lines";
+import overlap_line_point from "../intersection/overlap-line-point";
+import intersect_line_line from "../intersection/intersect-line-line";
 
 export const circumcircle = function (a, b, c) {
   const A = b[0] - a[0];
@@ -131,33 +133,7 @@ export const make_regular_polygon_side_length = (sides = 3, length = 1) =>
 export const make_regular_polygon_side_length_side_aligned = (sides = 3, length = 1) =>
 	make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
 
-export const split_polygon = () => console.warn("split polygon not done");
-
-// export const split_polygon = (poly, lineVector, linePoint) => {
-//   //    point: intersection [x,y] point or null if no intersection
-//   // at_index: where in the polygon this occurs
-//   const vertices_intersections = poly.map((v, i) => {
-//     const intersection = point_line_overlap(linePoint, lineVector, v);
-//     return { type: "v", point: intersection ? v : null, at_index: i };
-//   }).filter(el => el.point != null);
-//   const edges_intersections = poly.map((v, i, arr) => {
-//     const intersection = intersect_line_seg_exclude(
-//       lineVector,
-//       linePoint,
-//       v,
-//       arr[(i + 1) % arr.length]
-//     );
-//     return { type: "e", point: intersection, at_index: i };
-//   }).filter(el => el.point != null);
-
-//   const sorted = vertices_intersections
-//     .concat(edges_intersections)
-//     .sort((a, b) => (Math.abs(a.point[0] - b.point[0]) < EPSILON
-//       ? a.point[1] - b.point[1]
-//       : a.point[0] - b.point[0]));
-//   console.log(sorted);
-//   return poly;
-// };
+// export const split_polygon = () => console.warn("split polygon not done");
 
 export const split_convex_polygon = (poly, lineVector, linePoint) => {
   // todo: should this return undefined if no intersection?
@@ -166,13 +142,19 @@ export const split_convex_polygon = (poly, lineVector, linePoint) => {
   //    point: intersection [x,y] point or null if no intersection
   // at_index: where in the polygon this occurs
   let vertices_intersections = poly.map((v, i) => {
-    let intersection = point_on_line(v, lineVector, linePoint);
+    let intersection = overlap_line_point(lineVector, linePoint, v, include_l);
     return { point: intersection ? v : null, at_index: i };
   }).filter(el => el.point != null);
-  let edges_intersections = poly.map((v, i, arr) => {
-    let intersection = intersect_line_seg_exclude(lineVector, linePoint, v, arr[(i + 1) % arr.length])
-    return { point: intersection, at_index: i };
-  }).filter(el => el.point != null);
+  let edges_intersections = poly.map((v, i, arr) => ({
+      point: intersect_line_line(
+        lineVector,
+        linePoint,
+        subtract(v, arr[(i + 1) % arr.length]),
+        arr[(i + 1) % arr.length],
+        exclude_l,
+        exclude_s),
+      at_index: i }))
+    .filter(el => el.point != null);
 
   // three cases: intersection at 2 edges, 2 points, 1 edge and 1 point
   if (edges_intersections.length == 2) {
@@ -303,7 +285,7 @@ const recurse_skeleton = (points, lines, bisectors) => {
     // .map((p, i) => math.ray(bisectors[i], p))
     // .map((ray, i, arr) => ray.intersect(arr[(i + 1) % arr.length]));
     .map((origin, i) => ({ vector: bisectors[i], origin }))
-    .map((ray, i, arr) => intersect_lines(
+    .map((ray, i, arr) => intersect_line_line(
       ray.vector,
       ray.origin,
       arr[(i + 1) % arr.length].vector,

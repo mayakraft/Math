@@ -1,15 +1,18 @@
 import Constructors from "../constructors";
 import { EPSILON } from "../../core/constants";
-import { average } from "../../core/algebra";
-import { segment_limiter } from "../../core/nearest";
+import { add, average } from "../../core/algebra";
 import { multiply_matrix3_vector3 } from "../../core/matrix3";
-import { resize } from "../../arguments/resize";
+import { get_vector } from "../../arguments/get";
+import { resize, resize_up } from "../../arguments/resize";
+import {
+  exclude_s,
+  segment_limiter,
+} from "../../arguments/functions";
 import {
   get_matrix_3x4,
   get_segment,
 } from "../../arguments/get";
 import LinePrototype from "../prototypes/line";
-import { exclude_s } from "../../intersection/lines";
 
 export default {
   segment: {
@@ -35,7 +38,7 @@ export default {
       // distance is between 0 and 1, representing the vector between start and end. cap accordingly
       // todo. this is repeated in nearest_point_on_polygon
       clip_function: segment_limiter,
-			comp_function: exclude_s,
+      comp_function: exclude_s,
       transform: function (...innerArgs) {
         const dim = this.points[0].length;
         const mat = get_matrix_3x4(innerArgs);
@@ -45,12 +48,12 @@ export default {
           .map(point => resize(dim, point));
         return Constructors.segment(transformed_points);
       },
-			translate: function() {
-				const translate = get_vector(arguments);
-				const transformed_points = this.points
-					.map(point => add(...resize_up(point, translate)));
+      translate: function() {
+        const translate = get_vector(arguments);
+        const transformed_points = this.points
+          .map(point => add(...resize_up(point, translate)));
         return Constructors.segment(transformed_points);
-			},
+      },
       midpoint: function () {
         return Constructors.vector(average(this.points[0], this.points[1]));
       },

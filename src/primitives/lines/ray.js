@@ -3,9 +3,11 @@ import LinePrototype from "../prototypes/line";
 import { EPSILON } from "../../core/constants";
 import { resize } from "../../arguments/resize";
 import { get_line } from "../../arguments/get";
+import {
+  exclude_r,
+  ray_limiter,
+} from "../../arguments/functions";
 import { flip } from "../../core/algebra";
-import { ray_limiter } from "../../core/nearest";
-import { exclude_r } from "../../intersection/lines";
 import Static from "./static";
 
 export default {

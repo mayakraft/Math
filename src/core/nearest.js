@@ -10,14 +10,10 @@ import {
   dot,
   scale
 } from "./algebra";
-
-export const ray_limiter = dist => (dist < -EPSILON ? 0 : dist);
-
-export const segment_limiter = (dist) => {
-  if (dist < -EPSILON) { return 0; }
-  if (dist > 1 + EPSILON) { return 1; }
-  return dist;
-};
+import {
+  ray_limiter,
+  segment_limiter,
+} from "../arguments/functions";
 
 export const smallest_comparison_search = (obj, array, compare_func) => {
   const objs = array.map((o, i) => ({ o, i, d: compare_func(obj, o) }));

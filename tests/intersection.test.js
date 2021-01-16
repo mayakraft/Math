@@ -148,7 +148,7 @@ test("core polygon intersection lines, no intersections", () => {
 // });
 
 test("collinear line intersections", () => {
-  const intersect = math.core.intersect_lines;
+  const intersect = math.core.intersect_line_line;
   [
     // INCLUDE horizontal
     intersect([1, 0], [2, 2], [1, 0], [-1, 2],
@@ -196,7 +196,7 @@ test("collinear line intersections", () => {
 });
 
 test("collinear ray intersections", () => {
-  const intersect = math.core.intersect_lines;
+  const intersect = math.core.intersect_line_line;
   [
     // INCLUDE horizontal
     intersect([1, 0], [2, 2], [1, 0], [-1, 2],
@@ -244,7 +244,7 @@ test("collinear ray intersections", () => {
 });
 
 test("collinear segment intersections", () => {
-  const intersect = math.core.intersect_lines;
+  const intersect = math.core.intersect_line_line;
   [
     // INCLUDE horizontal
     intersect([1, 0], [2, 2], [1, 0], [-1, 2],
