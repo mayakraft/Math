@@ -21,7 +21,7 @@ import { exclude } from "../arguments/functions";
 const overlap_convex_polygon_point = (poly, point, func = exclude, epsilon = EPSILON) => poly
   .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
   .map(s => cross2(normalize(subtract(s[1], s[0])), subtract(point, s[0])))
-  .map(side => func(side))
+  .map(side => func(side, epsilon))
   .map((s, _, arr) => s === arr[0])
   .reduce((prev, curr) => prev && curr, true);
 

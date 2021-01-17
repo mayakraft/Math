@@ -11,23 +11,19 @@ test("prototype member variables accessing 'this'", () => {
 test("isConvex", () => {
   expect(math.polygon.regularPolygon(4).isConvex).toBe(true);
 });
-
 test(".segments", () => {
   const polygon = math.polygon.regularPolygon(4);
   const segments = polygon.segments();
   expect(segments.length).toBe(4);
   expect(polygon.sides[0]).toBe(polygon.segments()[0]);
 });
-
 test("intersect", () => {
-  const segment = math.polygon.regularPolygon(4).intersectLine(math.line([1, 1]));
+  const segment = math.polygon.regularPolygon(4).intersect(math.line([1, 1]));
   expect(Math.abs(segment[0][0])).toBe(0.5);
   expect(Math.abs(segment[0][1])).toBe(0.5);
   expect(Math.abs(segment[1][0])).toBe(0.5);
   expect(Math.abs(segment[1][1])).toBe(0.5);
 });
-
-
 test("area", () => {
   expect(math.polygon([-0.5,-0.5], [0.5,-0.5], [0.5, 0.5], [-0.5, 0.5]).area()).toBeCloseTo(1);
 });
@@ -35,7 +31,6 @@ test("convex Hull", () => {
   const result = math.polygon.convexHull([[1,0], [0.5,0], [0,1], [0,-1]]);
   expect(result.points.length).toBe(3);
 });
-
 // test("midpoint", () => {
 //   const result = math.polygon([-0.5,-0.5], [0.5,-0.5], [0.5, 0.5], [-0.5, 0.5]).midpoint();
 //   expect(result[0]).toBeCloseTo(0);
@@ -54,11 +49,11 @@ test("enclosingRectangle", () => {
   expect(rect.height).toBe(2);
 });
 test("contains", () => {
-  expect(math.polygon([[1,0], [0,1], [-1,0], [0,-1]]).contains(0.49, 0.49))
+  expect(math.polygon([[1,0], [0,1], [-1,0], [0,-1]]).overlap(math.vector(0.49, 0.49)))
     .toBe(true);
-  expect(math.polygon([[1,0], [0,1], [-1,0], [0,-1]]).contains(0.5, 0.5))
+  expect(math.polygon([[1,0], [0,1], [-1,0], [0,-1]]).overlap(math.vector(0.5, 0.5)))
     .toBe(false);
-  expect(math.polygon([[1,0], [0,1], [-1,0], [0,-1]]).contains(0.51, 0.51))
+  expect(math.polygon([[1,0], [0,1], [-1,0], [0,-1]]).overlap(math.vector(0.51, 0.51)))
     .toBe(false);
 });
 test("scale", () => {
@@ -94,18 +89,18 @@ test("nearest", () => {
   expect(result.edge[0][1]).toBeCloseTo(0);
 });
 
-test("overlaps", () => {
+test("overlap", () => {
   const poly1 = math.polygon([[1,0], [0,1], [-1,0]]);  // top
   const poly2 = math.polygon([[0,1], [-1,0], [0,-1]]); // left
   const poly3 = math.polygon([[1,0], [0,1], [0,-1]]);  // right
   const poly4 = math.polygon([[1,0], [-1,0], [0,-1]]);  // bottom
-  expect(poly1.overlaps(poly2)).toBe(true);
-  expect(poly1.overlaps(poly3)).toBe(true);
-  expect(poly4.overlaps(poly2)).toBe(true);
-  expect(poly4.overlaps(poly3)).toBe(true);
+  expect(poly1.overlap(poly2)).toBe(true);
+  expect(poly1.overlap(poly3)).toBe(true);
+  expect(poly4.overlap(poly2)).toBe(true);
+  expect(poly4.overlap(poly3)).toBe(true);
 
-  expect(poly2.overlaps(poly3)).toBe(false);
-  expect(poly1.overlaps(poly4)).toBe(false);
+  expect(poly2.overlap(poly3)).toBe(false);
+  expect(poly1.overlap(poly4)).toBe(false);
 });
 test("split", () => {
   const poly = math.polygon([[1,0], [0,1], [-1,0]]);
@@ -138,19 +133,19 @@ test("split", () => {
 test("intersectLine", () => {
   const poly = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]);
   const line = math.line([1,0], [0, 0.5]);
-  const result = poly.intersectLine(line);
+  const result = poly.intersect(line);
   expect(result[0][0]).toBeCloseTo(0.5);
   expect(result[0][1]).toBeCloseTo(0.5);
 });
 test("intersectRay", () => {
   const poly = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]);
   const ray = math.ray([1,0], [0, 0.5]);
-  const result = poly.intersectRay(ray);
+  const result = poly.intersect(ray);
 });
 test("intersectSegment", () => {
   const poly = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]);
   const segment = math.segment([-2, 0.5], [2, 0.5]);
-  const result = poly.intersectSegment(segment);
+  const result = poly.intersect(segment);
   expect(result[0][0]).toBeCloseTo(0.5);
   expect(result[0][1]).toBeCloseTo(0.5);
   expect(result[1][0]).toBeCloseTo(-0.5);
@@ -159,6 +154,4 @@ test("intersectSegment", () => {
 // test("svgPath", () => {
 //   svgPath: function () 
 // });
-// test("intersect", () => {
-//   intersect: function (other
-// });{
+

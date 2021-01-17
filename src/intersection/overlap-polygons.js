@@ -1,16 +1,7 @@
 import { EPSILON } from "../core/constants";
+import { subtract } from "../core/algebra";
 import {
-  dot,
-  cross2,
-  subtract,
-  normalize,
-  magnitude,
-  mag_squared
-} from "../core/algebra";
-import {
-  include,
   exclude,
-  include_s,
   exclude_s,
 } from "../arguments/functions";
 import overlap_convex_polygon_point from "./overlap-polygon-point";
@@ -34,9 +25,4 @@ const overlap_convex_polygons = (poly1, poly2, fn_line = exclude_s, fn_point = e
 };
 
 export default overlap_convex_polygons;
-
-// export const overlap_convex_polygons_inclusive = (poly1, poly2, epsilon = EPSILON) =>
-//   overlap_convex_polygons(poly1, poly2, include_s, include, epsilon);
-// export const overlap_convex_polygons_exclusive = (poly1, poly2, epsilon = EPSILON) =>
-//   overlap_convex_polygons(poly1, poly2, exclude_s, exclude, epsilon);
 

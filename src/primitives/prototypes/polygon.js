@@ -3,8 +3,8 @@ import {
   subtract,
   distance2,
 } from "../../core/algebra";
-import overlap_convex_polygons from "../../intersection/overlap-polygons";
-import overlap_convex_polygon_point from "../../intersection/overlap-polygon-point";
+// import overlap_convex_polygons from "../../intersection/overlap-polygons";
+// import overlap_convex_polygon_point from "../../intersection/overlap-polygon-point";
 import {
   clip_line_in_convex_poly_exclusive,
   // clip_line_in_convex_poly_inclusive,
@@ -32,8 +32,9 @@ import {
   resize,
   semi_flatten_arrays,
 } from "../../arguments/resize";
-import * as PolyIntersect from "../../intersection/intersect-polygon-line";
-import Intersect from "../../intersection/index";
+import { exclude } from "../../arguments/functions";
+import Intersect from "../../intersection/intersect";
+import Overlap from "../../intersection/overlap";
 import {
   nearest_point_on_line,
   nearest_point_on_polygon,
@@ -70,9 +71,9 @@ const methods = {
   enclosingRectangle: function () {
     return Constructors.rect(enclosing_rectangle(this));
   },
-  contains: function () {
-    return overlap_convex_polygon_point(this, get_vector(arguments));
-  },
+  // contains: function () {
+  //   return overlap_convex_polygon_point(this, get_vector(arguments));
+  // },
   straightSkeleton: function () {
     return straight_skeleton(this);
   },
@@ -123,11 +124,6 @@ const methods = {
       ? undefined
       : Object.assign(result, { edge: this.sides[result.i] });
   },
-  // todo: non convex too
-  overlaps: function () {
-    const poly2Points = semi_flatten_arrays(arguments);
-    return overlap_convex_polygons(this, poly2Points);
-  },
   split: function () {
     const line = get_line(...arguments);
     // const split_func = this.isConvex ? split_convex_polygon : split_polygon;
@@ -135,18 +131,11 @@ const methods = {
     return split_func(this, line.vector, line.origin)
       .map(poly => Constructors.polygon(poly));
   },
-  // todo: need non-convex clipping functions returns an array of edges
-  intersectLine: function () {
-    const line = get_line(...arguments);
-    return PolyIntersect.convex_poly_line_exclusive(this, line.vector, line.origin);
+  overlap: function () {
+    return Overlap(this, ...arguments);
   },
-  intersectRay: function () {
-    const line = get_line(...arguments);
-    return PolyIntersect.convex_poly_ray_exclusive(this, line.vector, line.origin);
-  },
-  intersectSegment: function () {
-    const seg = get_segment(...arguments);
-    return PolyIntersect.convex_poly_segment_exclusive(this, seg[0], seg[1]);
+  intersect: function () {
+    return Intersect(this, ...arguments);
   },
   clipLine: function () {
     const line = get_line(...arguments);
@@ -180,9 +169,6 @@ const methods = {
     pre[0] = "M";
     return `${this.map((p, i) => `${pre[i]}${p[0]} ${p[1]}`).join("")}z`;
   },
-  intersect: function (other) {
-    return Intersect(this, other);
-  },
 };
 
 // todo: a ConvexPolygon ConvexPolygon overlap method that returns
@@ -194,6 +180,9 @@ const methods = {
 const PolygonProto = {};
 PolygonProto.prototype = Object.create(Array.prototype);
 PolygonProto.prototype.constructor = PolygonProto;
+
+// to be able to be overwritten in the subclass
+PolygonProto.prototype.domain_function = exclude;
 
 Object.keys(methods).forEach((key) => {
   PolygonProto.prototype[key] = methods[key];

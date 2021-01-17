@@ -6,7 +6,7 @@ import {
   ellipticalArcTo,
 } from "../ellipse/path";
 import { nearest_point_on_circle } from "../../core/nearest";
-import Intersect from "../../intersection/index";
+import Intersect from "../../intersection/intersect";
 import Constructors from "../constructors";
 
 // // (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+

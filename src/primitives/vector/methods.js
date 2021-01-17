@@ -37,13 +37,7 @@ import {
   multiply_matrix3_vector3,
 } from "../../core/matrix3";
 
-// import {
-// 	overlap_line_point,
-// } from "../../overlap/overlap-line-point";
-
-import {
-	exclude_l,
-} from "../../arguments/functions";
+import overlap from "../../intersection/overlap";
 
 const table = {
   preserve: { // don't transform the return type. preserve it
@@ -54,16 +48,18 @@ const table = {
     isParallel: function () {
       return parallel(...resize_up(this, get_vector(arguments)));
     },
+    isCollinear: function (line) {
+      return overlap(this, line);
+    },
     dot: function () {
       return dot(...resize_up(this, get_vector(arguments)));
     },
     distanceTo: function () {
       return distance(...resize_up(this, get_vector(arguments)));
     },
-		// onLine: function (line) {
-		// 	if (!line.comp_function) { line = get_line(arguments); }
-		// 	return overlap_line_point(line.vector, line.origin, this, line.comp_function || exclude_l);
-		// },
+    overlap: function (other) {
+      return overlap(this, other);
+    },
   },
   vector: { // return type
     copy: function () { return [...this]; },
@@ -123,3 +119,4 @@ Object.keys(table.vector).forEach(key => {
 });
 
 export default VectorMethods;
+
