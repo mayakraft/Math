@@ -5,6 +5,7 @@ import { multiply_matrix3_vector3 } from "../../core/matrix3";
 import { get_vector } from "../../arguments/get";
 import { resize, resize_up } from "../../arguments/resize";
 import {
+  include_s,
   exclude_s,
   segment_limiter,
 } from "../../arguments/functions";
@@ -26,6 +27,7 @@ export default {
       ];
       this.vector = this.points[1].subtract(this.points[0]);
       this.origin = this.points[0];
+      Object.defineProperty(this, "domain_function", { writable: true, value: exclude_s });
     },
 
     G: {
@@ -35,10 +37,9 @@ export default {
     },
 
     M: {
-      // distance is between 0 and 1, representing the vector between start and end. cap accordingly
-      // todo. this is repeated in nearest_point_on_polygon
+      inclusive: function () { this.domain_function = include_s; return this; },
+      exclusive: function () { this.domain_function = exclude_s; return this; },
       clip_function: segment_limiter,
-      comp_function: exclude_s,
       transform: function (...innerArgs) {
         const dim = this.points[0].length;
         const mat = get_matrix_3x4(innerArgs);
