@@ -174,9 +174,6 @@ const methods = {
 // todo: a ConvexPolygon ConvexPolygon overlap method that returns
 // the boolean space between them as another ConvexPolygon.
 // then, generalize for Polygon
-
-// const PolygonProto = () => {};
-
 const PolygonProto = {};
 PolygonProto.prototype = Object.create(Array.prototype);
 PolygonProto.prototype.constructor = PolygonProto;

@@ -6,7 +6,7 @@ import { subtract } from "../../core/algebra";
 import {
   convex_hull,
   make_regular_polygon,
-	straight_skeleton,
+  // straight_skeleton,
 } from "../../core/geometry";
 
 export default {
@@ -21,7 +21,7 @@ export default {
         // .map(ps => Constructors.segment(ps[0][0], ps[0][1], ps[1][0], ps[1][1]));
       this.vectors = this.sides.map(side => subtract(side[1], side[0]));
       // this.sectors
-      Object.defineProperty(this, "domain_function", { writable: true, value: exclude });
+      // Object.defineProperty(this, "domain_function", { writable: true, value: exclude });
     },
     G: {
       // todo: convex test
@@ -41,9 +41,9 @@ export default {
       segments: function () {
         return this.sides;
       },
-			straightSkeleton: function () {
-				return straight_skeleton(this);
-			},
+      // straightSkeleton: function () {
+      //   return straight_skeleton(this);
+      // },
     },
     S: {
       fromPoints: function () {

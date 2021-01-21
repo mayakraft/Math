@@ -6,6 +6,7 @@ import TypeOf from "../../arguments/typeof";
 import Constructors from "../constructors";
 import intersect from "../../intersection/intersect";
 import overlap from "../../intersection/overlap";
+import overlap_line_point from "../../intersection/overlap-line-point";
 
 import {
   resize,
@@ -54,14 +55,15 @@ LineProto.prototype.isParallel = function () {
   return parallel(...arr);
 };
 
-LineProto.prototype.isCollinear = function (lineOrPoint) {
-  return overlap(this, lineOrPoint);
-};
-// LineProto.prototype.isCollinear = function () {
-//   const line = get_line(arguments);
-//   return overlap_line_point(this.vector, this.origin, line.origin)
-//     && parallel(...resize_up(this.vector, line.vector));
+// LineProto.prototype.isCollinear = function (lineOrPoint) {
+//   return overlap(this, lineOrPoint);
 // };
+
+LineProto.prototype.isCollinear = function () {
+  const line = get_line(arguments);
+  return overlap_line_point(this.vector, this.origin, line.origin)
+    && parallel(...resize_up(this.vector, line.vector));
+};
 
 LineProto.prototype.isDegenerate = function (epsilon = EPSILON) {
   return degenerate(this.vector, epsilon);

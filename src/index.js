@@ -46,11 +46,10 @@ const math = primitives;
  * the logic is under ".core", the primitives are under the top level.
  * the primitives have arguments type inference. the logic core is strict:
  *
- * all points are array syntax [x,y]
- * all segments are array syntax [[x,y], [x,y]]
- * all infinite lines are defined as point and vector [[x,y], [x,y]]
- * all polygons are an ordered set of points [[x,y], ...]
- * (it might be the case that counter-clockwise winding direction is preferred)
+ * points are array syntax [x,y]
+ * segments are pairs of points [x,y], [x,y]
+ * lines/rays are point-array value objects { vector: [x,y], origin: [x,y] }
+ * polygons are an ordered set of points [[x,y], [x,y], ...]
  *
  * the primitives store object methods under their prototype,
  * the top level has properties like x, y, z.

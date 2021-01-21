@@ -31,6 +31,15 @@ test("convex Hull", () => {
   const result = math.polygon.convexHull([[1,0], [0.5,0], [0,1], [0,-1]]);
   expect(result.points.length).toBe(3);
 });
+test("skeleton", () => {
+  const hull = math.polygon.convexHull(Array.from(Array(10))
+    .map(() => [Math.random(), Math.random()]));
+  const skeleton = hull.straightSkeleton();
+  const skeletons = skeleton.filter(el => el.type === "skeleton");
+  const perpendiculars = skeleton.filter(el => el.type === "perpendicular");
+  expect(skeletons.length).toBe((hull.length - 3) * 2 + 3);
+  expect(perpendiculars.length).toBe(hull.length - 2);
+});
 // test("midpoint", () => {
 //   const result = math.polygon([-0.5,-0.5], [0.5,-0.5], [0.5, 0.5], [-0.5, 0.5]).midpoint();
 //   expect(result[0]).toBeCloseTo(0);

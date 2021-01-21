@@ -17,13 +17,13 @@ export default {
       origin: points[0],
     });
   },
-	fromAngle: function() {
-		const angle = arguments[0] || 0;
-		return this.constructor({
-			vector: [Math.cos(angle), Math.sin(angle)],
-			origin: [0, 0],
-		});
-	},
+  fromAngle: function() {
+    const angle = arguments[0] || 0;
+    return this.constructor({
+      vector: [Math.cos(angle), Math.sin(angle)],
+      origin: [0, 0],
+    });
+  },
   perpendicularBisector: function () {
     const points = get_vector_of_vectors(arguments);
     return this.constructor({

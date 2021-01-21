@@ -56,7 +56,7 @@ const line = function () { return create("line", arguments); };
 const ray = function () { return create("ray", arguments); };
 const segment = function () { return create("segment", arguments); };
 const matrix = function () { return create("matrix", arguments); };
-const junction = function () { return create("junction", arguments); };
+// const junction = function () { return create("junction", arguments); };
 // const plane = function () { return create("plane", arguments); };
 // const matrix2 = function () { return create("matrix2", arguments); };
 
@@ -70,7 +70,7 @@ Object.assign(Constructors, {
   ray,
   segment,
   matrix,
-  junction,
+  // junction,
   // plane,
   // matrix2,
 });
@@ -125,3 +125,4 @@ Object.keys(Definitions).forEach(primitiveName => {
 // });
 
 export default Constructors;
+

@@ -1,5 +1,62 @@
 const math = require("../math");
 
+test("overlap method", () => {
+  const polygon = math.polygon([0, 1.15], [-1, -0.577], [1, -0.577]);
+  const circle = math.circle(1);
+  const line = math.line([1, 2], [0.5, 0]);
+  const ray = math.ray([-1, 2], [0.5, -0.1]);
+  const segment = math.segment([-2, 0.5], [2, 0.5]);
+  const vector = math.vector(0.75, 0.5);
+
+  const polygon2 = math.polygon([0, -1.15], [1, 0.577], [-1, 0.577]);
+  const circle2 = math.circle(1, [0.5, 0]);
+  const line2 = math.line([-1, 2], [0.5, 0]);
+  const ray2 = math.ray([1, 2], [-0.5, 0]);
+  const segment2 = math.segment([0.5, -2], [0.5, 2]);
+  const vector2 = math.vector(0, 1);
+  const vector3 = math.vector(0, 1, 0);
+
+  [
+    polygon.overlap(polygon2),
+    // polygon.overlap(circle),
+    // polygon.overlap(line),
+    // polygon.overlap(ray),
+    // polygon.overlap(segment),
+    polygon.overlap(vector2),
+    // circle.overlap(polygon),
+    // circle.overlap(circle2),
+    // circle.overlap(line),
+    // circle.overlap(ray),
+    // circle.overlap(segment),
+    circle.overlap(vector),
+    // line.overlap(polygon),
+    // line.overlap(circle),
+    line.overlap(line2),
+    line.overlap(ray),
+    line.overlap(segment),
+    line.overlap(vector),
+    // ray.overlap(polygon),
+    // ray.overlap(circle),
+    ray.overlap(line),
+    ray.overlap(ray2),
+    ray.overlap(segment),
+    ray2.overlap(vector2),
+    // segment.overlap(polygon),
+    // segment.overlap(circle),
+    segment.overlap(line),
+    segment.overlap(ray),
+    segment.overlap(segment2),
+    segment.overlap(vector),
+    vector2.overlap(polygon),
+    vector.overlap(circle),
+    vector.overlap(line),
+    vector2.overlap(ray2),
+    vector.overlap(segment),
+    vector2.overlap(vector3),
+  ].forEach(overlap => expect(overlap).toBe(true));
+});
+
+
 test("point on line", () => {
   expect(math.core.overlap_line_point([5, 5], [0, 0], [2, 2])).toBe(true);
   expect(math.core.overlap_line_point([1, 1], [0, 0], [2, 2])).toBe(true);

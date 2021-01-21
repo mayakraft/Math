@@ -379,6 +379,9 @@ export const straight_skeleton = (points) => {
     // consecutive points in a counter-clockwise wound polygon is measured
     // in the clockwise direction
     .map(v => clockwise_bisect2(...v));
-  return recurse_skeleton(points, lines, bisectors);
+  // points is modified in place. create a copy
+  // const points_clone = JSON.parse(JSON.stringify(points));
+  // console.log("ss points", points_clone, points);
+  return recurse_skeleton([...points], lines, bisectors);
 };
 
