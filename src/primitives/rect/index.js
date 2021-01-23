@@ -1,5 +1,5 @@
 import Constructors from "../constructors";
-import Prototype from "../prototypes/polygon";
+import methods from "../shared/polygon";
 import { enclosing_rectangle } from "../../core/geometry";
 import { include, exclude } from "../../arguments/functions";
 import {
@@ -27,13 +27,14 @@ const rectToSides = r => [
 
 export default {
   rect: {
-    P: Prototype.prototype,
+    P: Array.prototype,
     A: function () {
       const r = get_rect(...arguments);
       this.width = r.width;
       this.height = r.height;
       this.origin = Constructors.vector(r.x, r.y);
       this.push(...rectToPoints(this));
+      Object.defineProperty(this, "domain_function", { writable: true, value: include });
     },
     G: {
       x: function () { return this.origin[0]; },
@@ -42,18 +43,16 @@ export default {
         this.origin[0] + this.width / 2,
         this.origin[1] + this.height / 2,
       ); },
-      // points: function () { return rectToPoints(this); },  // the rect IS "points" now
     },
-    M: {
+    M: Object.assign({}, methods, {
       inclusive: function () { this.domain_function = include; return this; },
       exclusive: function () { this.domain_function = exclude; return this; },
       area: function () { return this.width * this.height; },
-      // points: function () { return rectToPoints(this); },
       segments: function () { return rectToSides(this); },
       svgPath: function () {
         return `M${this.origin.join(" ")}h${this.width}v${this.height}h${-this.width}Z`;
       },
-    },
+    }),
     S: {
       fromPoints: function () {
         return Constructors.rect(enclosing_rectangle(get_vector_of_vectors(arguments)));

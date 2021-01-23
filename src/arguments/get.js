@@ -58,7 +58,7 @@ export const get_segment = function () {
       [args[2], args[3]]
     ];
   }
-  return get_vector_of_vectors(args);
+  return args.map(el => get_vector(el));
 };
 
 // this works for rays to interchangably except for that it will not

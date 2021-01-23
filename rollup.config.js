@@ -12,11 +12,11 @@ module.exports = [{
     banner: "/* Math (c) Robby Kraft, MIT License */",
   },
   plugins: [
-    // babel({
-			// babelHelpers: "bundled",
-			// presets: ["@babel/preset-env"]
-    // }),
+    babel({
+			babelHelpers: "bundled",
+			presets: ["@babel/preset-env"]
+    }),
     cleanup(),
-    // terser(),
+    terser(),
   ]
 }];

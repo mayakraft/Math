@@ -1,5 +1,4 @@
 import Constructors from "../constructors";
-import LinePrototype from "../prototypes/line";
 import { EPSILON } from "../../core/constants";
 import { resize } from "../../arguments/resize";
 import { get_line } from "../../arguments/get";
@@ -10,10 +9,13 @@ import {
 } from "../../arguments/functions";
 import { flip } from "../../core/algebra";
 import Static from "./static";
+import methods from "./methods";
+
+// LineProto.prototype.constructor = LineProto;
 
 export default {
   ray: {
-    P: LinePrototype.prototype,
+    P: Object.prototype,
 
     A: function () {
       const ray = get_line(...arguments);
@@ -23,10 +25,15 @@ export default {
     },
 
     G: {
-      length: () => Infinity,
+      // length: () => Infinity,
+      dimension: function () {
+        return [this.vector, this.origin]
+          .map(p => p.length)
+          .reduce((a, b) => Math.max(a, b), 0);
+      },
     },
 
-    M: {
+    M: Object.assign({}, methods, {
       inclusive: function () { this.domain_function = include_r; return this; },
       exclusive: function () { this.domain_function = exclude_r; return this; },
       flip: function () {
@@ -45,7 +52,7 @@ export default {
         return `M${this.origin[0]} ${this.origin[1]}l${end[0]} ${end[1]}`;
       },
 
-    },
+    }),
 
     S: Static
 
