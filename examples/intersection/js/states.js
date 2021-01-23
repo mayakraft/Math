@@ -25,7 +25,7 @@ const states = {
   line: {
 		isLine: true,
     svg: (points, lines) => {
-      const p = infinityBox.clipLine(math.line.fromPoints(...points));
+      const p = infinityBox.clip(math.line.fromPoints(...points));
       return p === undefined ? undefined : SVG.line(p[0], p[1]);
     },
     math: (points, lines) => math.line.fromPoints(...points),
@@ -33,7 +33,7 @@ const states = {
   ray: {
 		isLine: true,
     svg: (points, lines) => {
-      const p = infinityBox.clipRay(math.ray.fromPoints(...points));
+      const p = infinityBox.clip(math.ray.fromPoints(...points));
       return p === undefined ? undefined : SVG.line(p[0], p[1]);
     },
     math: (points, lines) => math.ray.fromPoints(...points),
@@ -50,7 +50,7 @@ const states = {
   "perpendicular-bisector": {
 		isLine: true,
     svg: (points, lines) => {
-      const p = infinityBox.clipLine(math.line.perpendicularBisector(...points));
+      const p = infinityBox.clip(math.line.perpendicularBisector(...points));
       return p ? SVG.line(p[0], p[1]) : SVG.g();
     },
     math: (points, lines) => math.line.perpendicularBisector(...points),
@@ -64,7 +64,7 @@ const states = {
 					lines[1].vector, lines[1].origin)
 				.filter(a => a !== undefined);
 			if (bisect) {
-				const seg = infinityBox.clipLine(bisect);
+				const seg = infinityBox.clip(math.line(bisect));
 				return SVG.line(seg[0], seg[1]);
 			}
 			return SVG.g();
@@ -82,7 +82,7 @@ const states = {
 		isLine: true,
     svg: (points, lines) => {
 			const l = math.line(lines[0].vector.rotate90(), points[points.length - 1]);
-			const seg = infinityBox.clipLine(l);
+			const seg = infinityBox.clip(l);
 			return seg ? SVG.line(seg[0], seg[1]) : SVG.g();
 		},
     math: (points, lines) => math.line(lines[0].vector.rotate90(), points[points.length - 1]),

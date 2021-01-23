@@ -61,7 +61,7 @@ test("contains", () => {
   expect(math.polygon([[1,0], [0,1], [-1,0], [0,-1]]).overlap(math.vector(0.49, 0.49)))
     .toBe(true);
   expect(math.polygon([[1,0], [0,1], [-1,0], [0,-1]]).overlap(math.vector(0.5, 0.5)))
-    .toBe(false);
+    .toBe(true);
   expect(math.polygon([[1,0], [0,1], [-1,0], [0,-1]]).overlap(math.vector(0.51, 0.51)))
     .toBe(false);
 });

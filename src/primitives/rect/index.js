@@ -34,7 +34,6 @@ export default {
       this.height = r.height;
       this.origin = Constructors.vector(r.x, r.y);
       this.push(...rectToPoints(this));
-      // Object.defineProperty(this, "domain_function", { writable: true, value: exclude });
     },
     G: {
       x: function () { return this.origin[0]; },

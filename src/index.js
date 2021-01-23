@@ -36,7 +36,7 @@ import overlap_convex_polygons from "./intersection/overlap-polygons";
 import overlap_convex_polygon_point from "./intersection/overlap-polygon-point";
 import overlap_line_line from "./intersection/overlap-line-line";
 import overlap_line_point from "./intersection/overlap-line-point";
-import * as clip_polygon from "./clip/polygon";
+import clip_line_in_convex_polygon from "./clip/polygon";
 
 import primitives from "./primitives/index";
 
@@ -70,7 +70,6 @@ math.core = Object.assign(Object.create(null),
   matrix3,
   nearest,
   axioms,
-  clip_polygon,
   {
     enclose_convex_polygons_inclusive,
     intersect_convex_polygon_line,
@@ -81,6 +80,7 @@ math.core = Object.assign(Object.create(null),
     overlap_convex_polygon_point,
     overlap_line_line,
     overlap_line_point,
+    clip_line_in_convex_polygon,
   }
 );
 

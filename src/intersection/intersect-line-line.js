@@ -6,7 +6,10 @@ import {
   scale,
   cross2,
 } from "../core/algebra";
-import { exclude_l } from "../arguments/functions";
+import {
+  include_l,
+  exclude_l,
+} from "../arguments/functions";
 /**
  * @description 2D line intersection function, generalized and works
  * for lines, rays, and segments by passing in a function for each line
@@ -20,8 +23,8 @@ import { exclude_l } from "../arguments/functions";
 const intersect_line_line = (
   aVector, aOrigin,
   bVector, bOrigin,
-  aFunction = exclude_l,
-  bFunction = exclude_l,
+  aFunction = include_l,
+  bFunction = include_l,
   epsilon = EPSILON
 ) => {
   // a normalized determinant gives consisten values across all epsilon ranges

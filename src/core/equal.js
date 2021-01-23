@@ -117,3 +117,4 @@ export const equivalent = function () {
     default: return undefined;
   }
 };
+

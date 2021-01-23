@@ -115,7 +115,7 @@
   const fn_epsilon_equal = (a, b) => Math.abs(a - b) < EPSILON;
   const include = (n, epsilon = EPSILON) => n > -epsilon;
   const exclude = (n, epsilon = EPSILON) => n > epsilon;
-  const include_l = fn_true;
+  const include_l$1 = fn_true;
   const exclude_l = fn_true;
   const include_r = include;
   const exclude_r = exclude;
@@ -143,7 +143,7 @@
     fn_epsilon_equal: fn_epsilon_equal,
     include: include,
     exclude: exclude,
-    include_l: include_l,
+    include_l: include_l$1,
     exclude_l: exclude_l,
     include_r: include_r,
     exclude_r: exclude_r,
@@ -860,8 +860,8 @@
   const intersect_line_line = (
     aVector, aOrigin,
     bVector, bOrigin,
-    aFunction = exclude_l,
-    bFunction = exclude_l,
+    aFunction = include_l$1,
+    bFunction = include_l$1,
     epsilon = EPSILON
   ) => {
     const det_norm = cross2(normalize(aVector), normalize(bVector));
@@ -931,29 +931,29 @@
     return get_rect_params(mins[0], mins[1], lengths[0], lengths[1]);
   };
   const angle_array = count => Array
-  	.from(Array(Math.floor(count)))
-  	.map((_, i) => TWO_PI * (i / count));
+    .from(Array(Math.floor(count)))
+    .map((_, i) => TWO_PI * (i / count));
   const angles_to_vecs = (angles, radius) => angles
-  	.map(a => [radius * Math.cos(a), radius * Math.sin(a)])
-  	.map(pt => pt.map(n => clean_number(n, 14)));
+    .map(a => [radius * Math.cos(a), radius * Math.sin(a)])
+    .map(pt => pt.map(n => clean_number(n, 14)));
   const make_regular_polygon = (sides = 3, radius = 1) =>
-  	angles_to_vecs(angle_array(sides), radius);
+    angles_to_vecs(angle_array(sides), radius);
   const make_regular_polygon_side_aligned = (sides = 3, radius = 1) => {
-  	const halfwedge = Math.PI / sides;
-  	const angles = angle_array(sides).map(a => a + halfwedge);
-  	return angles_to_vecs(angles, radius);
+    const halfwedge = Math.PI / sides;
+    const angles = angle_array(sides).map(a => a + halfwedge);
+    return angles_to_vecs(angles, radius);
   };
   const make_regular_polygon_inradius = (sides = 3, radius = 1) =>
-  	make_regular_polygon(sides, radius / Math.cos(Math.PI / sides));
+    make_regular_polygon(sides, radius / Math.cos(Math.PI / sides));
   const make_regular_polygon_inradius_side_aligned = (sides = 3, radius = 1) =>
-  	make_regular_polygon_side_aligned(sides, radius / Math.cos(Math.PI / sides));
+    make_regular_polygon_side_aligned(sides, radius / Math.cos(Math.PI / sides));
   const make_regular_polygon_side_length = (sides = 3, length = 1) =>
-  	make_regular_polygon(sides, (length / 2) / Math.sin(Math.PI / sides));
+    make_regular_polygon(sides, (length / 2) / Math.sin(Math.PI / sides));
   const make_regular_polygon_side_length_side_aligned = (sides = 3, length = 1) =>
-  	make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
+    make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
   const split_convex_polygon = (poly, lineVector, linePoint) => {
     let vertices_intersections = poly.map((v, i) => {
-      let intersection = overlap_line_point(lineVector, linePoint, v, include_l);
+      let intersection = overlap_line_point(lineVector, linePoint, v, include_l$1);
       return { point: intersection ? v : null, at_index: i };
     }).filter(el => el.point != null);
     let edges_intersections = poly.map((v, i, arr) => ({
@@ -1132,7 +1132,7 @@
   const intersect_circle_line = (
     circle_radius, circle_origin,
     line_vector, line_origin,
-    line_func = include_l,
+    line_func = include_l$1,
     epsilon = EPSILON
   ) => {
     const magSq = line_vector[0] ** 2 + line_vector[1] ** 2;
@@ -1172,7 +1172,7 @@
       pointA,
       vectorA,
       originA,
-      include_l
+      include_l$1
     ) || []).map(sect => Constructors.line(
       normalize(rotate90(subtract(...resize_up(sect, pointB)))),
       midpoint(pointB, sect)
@@ -1279,7 +1279,7 @@
     const intersect = intersect_line_line(
       vectorA, originA,
       vectorB, pointC,
-      include_l, include_l);
+      include_l$1, include_l$1);
     return intersect === undefined
       ? undefined
       : Constructors.line(
@@ -1347,7 +1347,7 @@
     poly,
     vector, origin,
     fn_poly = include_s,
-    fn_line = include_l,
+    fn_line = include_l$1,
     epsilon = EPSILON
   ) => {
     const intersections = poly
@@ -1596,160 +1596,59 @@
     return (!outerGoesInside && innerGoesOutside);
   };
 
-  const intersect_line_seg_include = (vector, origin, pt0, pt1, ep = EPSILON) => intersect_line_line(
-    vector, origin,
-    subtract(pt1, pt0), pt0,
-    include_l,
-    include_s,
-    ep
-  );
-  const intersect_line_seg_exclude = (vector, origin, pt0, pt1, ep = EPSILON) => intersect_line_line(
-    vector, origin,
-    subtract(pt1, pt0), pt0,
-    exclude_l,
-    exclude_s,
-    ep
-  );
-  const intersect_ray_seg_include = (vector, origin, pt0, pt1, ep = EPSILON) => intersect_line_line(
-    vector, origin,
-    subtract(pt1, pt0), pt0,
-    include_r,
-    include_s,
-    ep
-  );
-  const intersect_ray_seg_exclude = (vector, origin, pt0, pt1, ep = EPSILON) => intersect_line_line(
-    vector, origin,
-    subtract(pt1, pt0), pt0,
-    exclude_r,
-    exclude_s,
-    ep
-  );
-  const intersect_seg_seg_include = (a0, a1, b0, b1, ep = EPSILON) => intersect_line_line(
-    subtract(a1, a0), a0,
-    subtract(b1, b0), b0,
-    include_s,
-    include_s,
-    ep
-  );
-  const filter_two_unique_points = (intersections) => {
-    for (let i = 1; i < intersections.length; i += 1) {
-      if (!equivalent_vector2(intersections[0], intersections[i])) {
-        return [intersections[0], intersections[i]];
-      }
+  const line_line_parameter = (
+    line_vector, line_origin,
+    poly_vector, poly_origin,
+    poly_line_func = include_s,
+    epsilon = EPSILON
+  ) => {
+    const det_norm = cross2(normalize(line_vector), normalize(poly_vector));
+    if (Math.abs(det_norm) < epsilon) { return undefined; }
+    const determinant0 = cross2(line_vector, poly_vector);
+    const determinant1 = -determinant0;
+    const a2b = subtract(poly_origin, line_origin);
+    const b2a = flip(a2b);
+    const t0 = cross2(a2b, poly_vector) / determinant0;
+    const t1 = cross2(b2a, line_vector) / determinant1;
+    if (poly_line_func(t1, epsilon / magnitude(poly_vector))) {
+      return t0;
     }
+    return undefined;
   };
-  const get_unique_points = (points, epsilon = EPSILON) => {
-    const unique = [];
-    for (let i = 0; i < points.length; i += 1) {
-      let match = false;
-      for (let j = 0; j < unique.length; j += 1) {
-        if (equivalent_vector2(points[i], unique[j])) {
-          match = true;
-        }
-      }
-      if (!match) { unique.push(points[i]); }
-    }
-    return unique;
-  };
-  const collinear_check = (poly, vector, origin) => {
-    const polyvecs = poly
-      .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
-      .map(seg => subtract(...seg));
-    return polyvecs
-      .map((vec, i) => parallel(vec, vector) ? i : undefined)
+  const line_point_from_parameter = (vector, origin, t) => add(origin, scale(vector, t));
+  const get_intersect_parameters = (poly, vector, origin, poly_line_func, epsilon) => {
+    const numbers = poly
+      .map((p, i, arr) => [subtract(arr[(i + 1) % arr.length], p), p])
+      .map(side => line_line_parameter(
+        vector, origin,
+        side[0], side[1],
+        poly_line_func,
+        epsilon))
       .filter(fn_not_undefined)
-      .map(i => overlap_line_point(polyvecs[i], poly[i], origin))
-      .reduce((a, b) => a || b, false);
-  };
-  const clip_intersections = (intersect_func, poly, line1, line2, epsilon = EPSILON) => poly
-    .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
-    .map(el => intersect_func(line1, line2, el[0], el[1], epsilon))
-    .filter(fn_not_undefined);
-  const clip_line_in_convex_poly_inclusive = (poly, vector, origin, epsilon = EPSILON) => {
-    const intersections = clip_intersections(intersect_line_seg_include, poly, vector, origin, epsilon);
-    switch (intersections.length) {
-      case 0:
-      case 1: return undefined;
-      default:
-        return filter_two_unique_points(intersections);
-    }
-  };
-  const clip_line_in_convex_poly_exclusive = (poly, vector, origin, epsilon = EPSILON) => {
-    const pEx = clip_intersections(intersect_line_seg_exclude, poly, vector, origin, epsilon);
-    const pIn = clip_intersections(intersect_line_seg_include, poly, vector, origin, epsilon);
-    if (pIn === undefined) { return undefined; }
-    const uniqueIn = filter_two_unique_points(pIn);
-    if (uniqueIn === undefined) { return undefined; }
-    return overlap_convex_polygon_point(poly, midpoint(...uniqueIn), exclude, epsilon)
-      ? uniqueIn
+      .sort((a, b) => a - b);
+    if (numbers.length < 2) { return undefined; }
+    const ends = [numbers[0], numbers[numbers.length - 1]];
+    return (ends[1] - ends[0]) > epsilon * magnitude(vector)
+      ? ends
       : undefined;
   };
-  const clip_ray_in_convex_poly_inclusive = (poly, vector, origin, epsilon = EPSILON) => {
-    const intersections = clip_intersections(intersect_ray_seg_include, poly, vector, origin, epsilon);
-    if (intersections.length === 0) { return undefined; }
-    const origin_inside = overlap_convex_polygon_point(poly, origin, include);
-    return filter_two_unique_points(intersections) || [origin, intersections[0]];
-  };
-  const clip_ray_in_convex_poly_exclusive = (poly, vector, origin, epsilon = EPSILON) => {
-    const pEx = clip_intersections(intersect_ray_seg_exclude, poly, vector, origin, epsilon);
-    const pIn = clip_intersections(intersect_ray_seg_include, poly, vector, origin, epsilon);
-    if (pIn === undefined) { return undefined; }
-    const uniqueIn = filter_two_unique_points(pIn);
-    if (uniqueIn === undefined) {
-      return overlap_convex_polygon_point(poly, origin, exclude, epsilon)
-        ? [origin, pIn[0]]
-        : undefined;
-    }
-    return overlap_convex_polygon_point(poly, midpoint(...uniqueIn), exclude, epsilon)
-      ? uniqueIn
+  const clip_line_in_convex_polygon = (
+    poly,
+    vector,
+    origin,
+    fn_poly = include,
+    fn_line = include_l$1,
+    epsilon = EPSILON
+  ) => {
+    const ends = get_intersect_parameters(poly, vector, origin, include_s, epsilon);
+    if (ends === undefined) { return undefined; }
+    const ends_clip = ends.map((t, i) => fn_line(t) ? t : (t < 0.5 ? 0 : 1));
+    if (Math.abs(ends_clip[0] - ends_clip[1]) < epsilon) { return undefined; }
+    const mid = line_point_from_parameter(vector, origin, (ends_clip[0] + ends_clip[1]) / 2);
+    return overlap_convex_polygon_point(poly, mid, fn_poly, epsilon)
+      ? ends_clip.map(t => line_point_from_parameter(vector, origin, t))
       : undefined;
   };
-  const clip_segment_func = (poly, seg0, seg1, epsilon = EPSILON) => {
-    const seg = [seg0, seg1];
-    const inclusive_inside = seg
-      .map(s => overlap_convex_polygon_point(poly, s, include, epsilon));
-    if (inclusive_inside[0] === true && inclusive_inside[1] === true) {
-      return [[...seg0], [...seg1]];
-    }
-    const clip_inclusive = clip_intersections(intersect_seg_seg_include, poly, seg0, seg1, epsilon);
-    const clip_inclusive_unique = get_unique_points(clip_inclusive, epsilon * 2);
-    if (clip_inclusive_unique.length === 2) {
-      return clip_inclusive_unique;
-    } else if (clip_inclusive_unique.length > 2) {
-      const sorted = sort_points_along_vector2(clip_inclusive_unique, subtract(seg1, seg0));
-      return [sorted[0], sorted[sorted.length - 1]];
-    }
-    if (clip_inclusive.length > 0) {
-      const exclusive_inside = seg
-        .map(s => overlap_convex_polygon_point(poly, s, exclude, epsilon));
-      if (exclusive_inside[0] === true) {
-        return [[...seg0], clip_inclusive[0]];
-      }
-      if (exclusive_inside[1] === true) {
-        return [[...seg1], clip_inclusive[0]];
-      }
-    }
-  };
-  const clip_segment_in_convex_poly_inclusive = (poly, seg0, seg1, epsilon = EPSILON) => {
-    return clip_segment_func(poly, seg0, seg1, epsilon);
-  };
-  const clip_segment_in_convex_poly_exclusive = (poly, seg0, seg1, epsilon = EPSILON) => {
-    const segVec = subtract(seg1, seg0);
-    if (collinear_check(poly, segVec, seg0)) {
-      return undefined;
-    }
-    return clip_segment_func(poly, seg0, seg1, epsilon);
-  };
-
-  var clip_polygon = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    clip_line_in_convex_poly_inclusive: clip_line_in_convex_poly_inclusive,
-    clip_line_in_convex_poly_exclusive: clip_line_in_convex_poly_exclusive,
-    clip_ray_in_convex_poly_inclusive: clip_ray_in_convex_poly_inclusive,
-    clip_ray_in_convex_poly_exclusive: clip_ray_in_convex_poly_exclusive,
-    clip_segment_in_convex_poly_inclusive: clip_segment_in_convex_poly_inclusive,
-    clip_segment_in_convex_poly_exclusive: clip_segment_in_convex_poly_exclusive
-  });
 
   const VectorArgs = function () {
     get_vector(arguments).forEach(n => this.push(n));
@@ -1857,7 +1756,7 @@
   const LineProto = {};
   LineProto.prototype = Object.create(Object.prototype);
   LineProto.prototype.constructor = LineProto;
-  LineProto.prototype.domain_function = exclude_l;
+  LineProto.prototype.domain_function = include_l$1;
   LineProto.prototype.isParallel = function () {
     const arr = resize_up(this.vector, get_line(...arguments).vector);
     return parallel(...arr);
@@ -1941,13 +1840,13 @@
         const l = get_line(...arguments);
         this.vector = Constructors.vector(l.vector);
         this.origin = Constructors.vector(resize(this.vector.length, l.origin));
-        Object.defineProperty(this, "domain_function", { writable: true, value: exclude_l });
+        Object.defineProperty(this, "domain_function", { writable: true, value: include_l$1 });
       },
       G: {
         length: () => Infinity,
       },
       M: {
-        inclusive: function () { this.domain_function = include_l; return this; },
+        inclusive: function () { this.domain_function = include_l$1; return this; },
         exclusive: function () { this.domain_function = exclude_l; return this; },
         clip_function: dist => dist,
         svgPath: function (length = 20000) {
@@ -1967,7 +1866,7 @@
         const ray = get_line(...arguments);
         this.vector = Constructors.vector(ray.vector);
         this.origin = Constructors.vector(resize(this.vector.length, ray.origin));
-        Object.defineProperty(this, "domain_function", { writable: true, value: exclude_r });
+        Object.defineProperty(this, "domain_function", { writable: true, value: include_r });
       },
       G: {
         length: () => Infinity,
@@ -2005,7 +1904,7 @@
         ];
         this.vector = this.points[1].subtract(this.points[0]);
         this.origin = this.points[0];
-        Object.defineProperty(this, "domain_function", { writable: true, value: exclude_s });
+        Object.defineProperty(this, "domain_function", { writable: true, value: include_s });
       },
       G: {
         0: function () { return this.points[0]; },
@@ -2214,9 +2113,6 @@
     }
   };
 
-  const makeClip = e => (e === undefined
-    ? undefined
-    : Constructors.segment(e));
   const methods = {
     area: function () {
       return signed_area(this);
@@ -2278,28 +2174,15 @@
     intersect: function () {
       return intersect(this, ...arguments);
     },
-    clipLine: function () {
-      const line = get_line(...arguments);
-      const clip = clip_line_in_convex_poly_exclusive(this, line.vector, line.origin);
-      return makeClip(clip);
-    },
-    clipRay: function () {
-      const ray = get_line(...arguments);
-      const clip = clip_ray_in_convex_poly_exclusive(this, ray.vector, ray.origin);
-      return makeClip(clip);
-    },
-    clipSegment: function () {
-      const seg = get_segment(...arguments);
-      const clip = clip_segment_in_convex_poly_exclusive(this, seg[0], seg[1]);
-      return makeClip(clip);
-    },
-    clip: function (param) {
-      switch (type_of(param)) {
-        case "segment": return this.clipSegment(param);
-        case "ray": return this.clipRay(param);
-        case "line": return this.clipLine(param);
-        default: return;
-      }
+    clip: function (line_type, epsilon) {
+      const fn_line = line_type.domain_function ? line_type.domain_function : include_l;
+      const segment = clip_line_in_convex_polygon(this,
+        line_type.vector,
+        line_type.origin,
+        this.domain_function,
+        fn_line,
+        epsilon);
+      return segment ? Constructors.segment(segment) : undefined;
     },
     svgPath: function () {
       const pre = Array(this.length).fill("L");
@@ -2310,7 +2193,7 @@
   const PolygonProto = {};
   PolygonProto.prototype = Object.create(Array.prototype);
   PolygonProto.prototype.constructor = PolygonProto;
-  PolygonProto.prototype.domain_function = exclude;
+  PolygonProto.prototype.domain_function = include;
   Object.keys(methods).forEach((key) => {
     PolygonProto.prototype[key] = methods[key];
   });
@@ -2552,7 +2435,6 @@
     matrix3,
     nearest,
     axioms,
-    clip_polygon,
     {
       enclose_convex_polygons_inclusive,
       intersect_convex_polygon_line,
@@ -2563,6 +2445,7 @@
       overlap_convex_polygon_point,
       overlap_line_line,
       overlap_line_point,
+      clip_line_in_convex_polygon,
     }
   );
   math.typeof = type_of;

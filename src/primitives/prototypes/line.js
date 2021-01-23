@@ -1,7 +1,7 @@
 import { EPSILON } from "../../core/constants";
 import { bisect_lines2 } from "../../core/radial";
 import { nearest_point_on_line } from "../../core/nearest";
-import { exclude_l } from "../../arguments/functions";
+import { include_l } from "../../arguments/functions";
 import TypeOf from "../../arguments/typeof";
 import Constructors from "../constructors";
 import intersect from "../../intersection/intersect";
@@ -47,7 +47,7 @@ const LineProto = {};
 LineProto.prototype = Object.create(Object.prototype);
 LineProto.prototype.constructor = LineProto;
 
-LineProto.prototype.domain_function = exclude_l;
+LineProto.prototype.domain_function = include_l;
 
 // todo, this only takes line types. it should be able to take a vector
 LineProto.prototype.isParallel = function () {

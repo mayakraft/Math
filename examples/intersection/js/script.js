@@ -65,7 +65,7 @@ const app = new Vue({
 				if (svg) { this.uiTop.appendChild(svg); }
       }
 			if (this.nearestLine) {
-				const res = infinityBox.clipLine(this.nearestLine);
+				const res = infinityBox.clip(this.nearestLine);
 				if (res) {
 					this.uiBottom.line(res[0], res[1])
 						.strokeWidth(WEIGHT2)

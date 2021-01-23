@@ -19,7 +19,7 @@ export default {
       const ray = get_line(...arguments);
       this.vector = Constructors.vector(ray.vector);
       this.origin = Constructors.vector(resize(this.vector.length, ray.origin));
-      Object.defineProperty(this, "domain_function", { writable: true, value: exclude_r });
+      Object.defineProperty(this, "domain_function", { writable: true, value: include_r });
     },
 
     G: {
