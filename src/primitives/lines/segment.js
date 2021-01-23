@@ -1,6 +1,6 @@
 import Constructors from "../constructors";
 import { EPSILON } from "../../core/constants";
-import { add, average } from "../../core/algebra";
+import { add, subtract, average, magnitude } from "../../core/algebra";
 import { multiply_matrix3_vector3 } from "../../core/matrix3";
 import { get_vector } from "../../arguments/get";
 import { resize, resize_up } from "../../arguments/resize";
@@ -13,30 +13,34 @@ import {
   get_matrix_3x4,
   get_segment,
 } from "../../arguments/get";
-import LinePrototype from "../prototypes/line";
+import methods from "./methods";
 
 export default {
   segment: {
-    P: LinePrototype.prototype,
+    P: Array.prototype,
 
     A: function () {
-      const args = get_segment(...arguments);
-      this.points = [
-        Constructors.vector(args[0]),
-        Constructors.vector(args[1])
-      ];
-      this.vector = this.points[1].subtract(this.points[0]);
-      this.origin = this.points[0];
+      const a = get_segment(...arguments);
+      this.push(...[a[0], a[1]].map(v => Constructors.vector(v)));
+      this.vector = Constructors.vector(subtract(this[1], this[0]));
+      // the fast way, but i think we need the ability to call seg[0].x
+      // this.push(a[0], a[1]);
+      // this.vector = subtract(this[1], this[0]);
+      this.origin = this[0];
       Object.defineProperty(this, "domain_function", { writable: true, value: include_s });
     },
 
     G: {
-      0: function () { return this.points[0]; },
-      1: function () { return this.points[1]; },
-      length: function () { return this.vector.magnitude(); }
+      points: function () { return this; },
+      magnitude: function () { return magnitude(this.vector); },
+      dimension: function () {
+        return [this.vector, this.origin]
+          .map(p => p.length)
+          .reduce((a, b) => Math.max(a, b), 0);
+      },
     },
 
-    M: {
+    M: Object.assign({}, methods, {
       inclusive: function () { this.domain_function = include_s; return this; },
       exclusive: function () { this.domain_function = exclude_s; return this; },
       clip_function: segment_limiter,
@@ -63,7 +67,7 @@ export default {
         return ["M", "L"].map((cmd, i) => `${cmd}${pointStrings[i]}`)
           .join("");
       },
-    },
+    }),
 
     S: {
       fromPoints: function () {

@@ -131,19 +131,5 @@ const methods = {
   },
 };
 
-// todo: a ConvexPolygon ConvexPolygon overlap method that returns
-// the boolean space between them as another ConvexPolygon.
-// then, generalize for Polygon
-const PolygonProto = {};
-PolygonProto.prototype = Object.create(Array.prototype);
-PolygonProto.prototype.constructor = PolygonProto;
-
-// to be able to be overwritten in the subclass
-PolygonProto.prototype.domain_function = include;
-
-Object.keys(methods).forEach((key) => {
-  PolygonProto.prototype[key] = methods[key];
-});
-
-export default PolygonProto;
+export default methods;
 
