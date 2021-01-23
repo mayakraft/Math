@@ -77,7 +77,8 @@ export const average = function () {
   if (arguments.length === 0) { return []; }
   const dimension = (arguments[0].length > 0) ? arguments[0].length : 0;
   const sum = Array(dimension).fill(0);
-  Array.from(arguments).forEach(vec => sum.forEach((_, i) => { sum[i] += vec[i] || 0; }));
+  Array.from(arguments)
+    .forEach(vec => sum.forEach((_, i) => { sum[i] += vec[i] || 0; }));
   return sum.map(n => n / arguments.length);
 };
 /**
@@ -91,6 +92,8 @@ export const lerp = (v, u, t) => {
   return v.map((n, i) => n * inv + (u[i] || 0) * t);
 };
 /**
+ * @description technically cross product in 2D is undefined,
+ *  this returns the determinant of the matrix of the 2 vectors
  * @param {number[]} one 2D vector
  * @param {number[]} one 2D vector
  * @returns {number} one scalar; the determinant; the magnitude of the vector

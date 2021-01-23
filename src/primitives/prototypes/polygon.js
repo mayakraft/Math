@@ -3,16 +3,6 @@ import {
   subtract,
   distance2,
 } from "../../core/algebra";
-// import overlap_convex_polygons from "../../intersection/overlap-polygons";
-// import overlap_convex_polygon_point from "../../intersection/overlap-polygon-point";
-import {
-  clip_line_in_convex_poly_exclusive,
-  // clip_line_in_convex_poly_inclusive,
-  clip_ray_in_convex_poly_exclusive,
-  // clip_ray_in_convex_poly_inclusive,
-  clip_segment_in_convex_poly_exclusive,
-  // clip_segment_in_convex_poly_inclusive,
-} from "../../clip/polygon";
 import { multiply_matrix3_vector3 } from "../../core/matrix3";
 import {
   signed_area,
@@ -32,9 +22,10 @@ import {
   resize,
   semi_flatten_arrays,
 } from "../../arguments/resize";
-import { exclude } from "../../arguments/functions";
+import { include } from "../../arguments/functions";
 import Intersect from "../../intersection/intersect";
 import Overlap from "../../intersection/overlap";
+import clip_line_in_convex_polygon from "../../clip/polygon";
 import {
   nearest_point_on_line,
   nearest_point_on_polygon,
@@ -45,21 +36,6 @@ import {
 // this.points - same as above
 // this.sides - array edge pairs of points
 // this.vectors - non-normalized vectors relating to this.sides.
-
-// const makeClip = (e) => {
-//   if (e === undefined) { return undefined; }
-//   switch (e.length) {
-//     case undefined: break;
-//     case 1: return Constructors.vector(e);
-//     case 2: return Constructors.segment(e);
-//     default: return e;
-//   }
-// };
-
-const makeClip = e => (e === undefined
-  ? undefined
-  : Constructors.segment(e));
-
 const methods = {
   area: function () {
     return signed_area(this);
@@ -137,31 +113,15 @@ const methods = {
   intersect: function () {
     return Intersect(this, ...arguments);
   },
-  clipLine: function () {
-    const line = get_line(...arguments);
-    const clip = clip_line_in_convex_poly_exclusive(this, line.vector, line.origin);
-    // const clip = clip_line_in_convex_poly_inclusive(this, line.vector, line.origin);
-    return makeClip(clip);
-  },
-  clipRay: function () {
-    const ray = get_line(...arguments);
-    const clip = clip_ray_in_convex_poly_exclusive(this, ray.vector, ray.origin);
-    // const clip = clip_ray_in_convex_poly_inclusive(this, ray.vector, ray.origin);
-    return makeClip(clip);
-  },
-  clipSegment: function () {
-    const seg = get_segment(...arguments);
-    const clip = clip_segment_in_convex_poly_exclusive(this, seg[0], seg[1]);
-    // const clip = clip_segment_in_convex_poly_inclusive(this, seg[0], seg[1]);
-    return makeClip(clip);
-  },
-  clip: function (param) {
-    switch (Typeof(param)) {
-      case "segment": return this.clipSegment(param);
-      case "ray": return this.clipRay(param);
-      case "line": return this.clipLine(param);
-      default: return;
-    }
+  clip: function (line_type, epsilon) {
+    const fn_line = line_type.domain_function ? line_type.domain_function : include_l;
+    const segment = clip_line_in_convex_polygon(this,
+      line_type.vector,
+      line_type.origin,
+      this.domain_function,
+      fn_line,
+      epsilon);
+    return segment ? Constructors.segment(segment) : undefined;
   },
   svgPath: function () {
     // make every point a Move or Line command, append with a "z" (close path)
@@ -174,15 +134,12 @@ const methods = {
 // todo: a ConvexPolygon ConvexPolygon overlap method that returns
 // the boolean space between them as another ConvexPolygon.
 // then, generalize for Polygon
-
-// const PolygonProto = () => {};
-
 const PolygonProto = {};
 PolygonProto.prototype = Object.create(Array.prototype);
 PolygonProto.prototype.constructor = PolygonProto;
 
 // to be able to be overwritten in the subclass
-PolygonProto.prototype.domain_function = exclude;
+PolygonProto.prototype.domain_function = include;
 
 Object.keys(methods).forEach((key) => {
   PolygonProto.prototype[key] = methods[key];

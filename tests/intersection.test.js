@@ -42,6 +42,56 @@ test("intersections", () => {
   ].forEach(intersect => expect(intersect).not.toBe(undefined));
 });
 
+
+test("intersect_line_line include exclude", () => {
+  const res0 = math.core
+    .intersect_line_line([0, 1], [1, 0], [1, 0], [0, 1]);
+  const res1 = math.core
+    .intersect_line_line([0, 1], [1, 0], [1, 0], [0, 1], math.core.include_s, math.core.include_s);
+  const res2 = math.core
+    .intersect_line_line([0, 1], [1, 0], [1, 0], [0, 1], math.core.exclude_s, math.core.exclude_s);
+  expect(res0).not.toBe(undefined);
+  expect(res1).not.toBe(undefined);
+  expect(res2).toBe(undefined);
+});
+
+test("intersect_convex_polygon_line include exclude vertex aligned", () => {
+  const poly = [[1,0], [0,1], [-1,0], [0,-1]];
+  // two lines, vertex aligned
+  const res0 = math.core.intersect_convex_polygon_line(poly, [0,1], [1,-5],
+      math.core.include_s, math.core.include_l);
+  const res1 = math.core.intersect_convex_polygon_line(poly, [0,1], [1,-5],
+      math.core.exclude_s, math.core.exclude_l);
+  // two segements endpoint on vertex
+  const res2 = math.core.intersect_convex_polygon_line(poly, [0,1], [1,-1],
+      math.core.include_s, math.core.include_s);
+  const res3 = math.core.intersect_convex_polygon_line(poly, [0,1], [1,-1],
+      math.core.include_s, math.core.exclude_s);
+  const res4 = math.core.intersect_convex_polygon_line(poly, [0,1], [1,-1],
+      math.core.exclude_s, math.core.include_s);
+  const res5 = math.core.intersect_convex_polygon_line(poly, [0,1], [1,-1],
+      math.core.exclude_s, math.core.exclude_s);
+  // line works if polygon is inclusive
+  expect(res0).not.toBe(undefined);
+  expect(res1).toBe(undefined);
+  // segment vertex aligned works only if both are inclusive
+  // if either or both are exclusive, does not intersect
+  expect(res2).not.toBe(undefined);
+  expect(res3).toBe(undefined);
+  expect(res4).toBe(undefined);
+  expect(res5).toBe(undefined);
+});
+
+test("intersect_convex_polygon_line include exclude edge aligned", () => {
+  const poly = [[0,0], [1,0], [1,1], [0,1]];
+  const res0 = math.core.intersect_convex_polygon_line(poly, [0,1], [1,-5],
+      math.core.include_s, math.core.exclude_l);
+  const res1 = math.core.intersect_convex_polygon_line(poly, [0,1], [1,-5],
+      math.core.exclude_s, math.core.exclude_l);
+  expect(res0).not.toBe(undefined);
+  expect(res1).toBe(undefined);
+});
+
 const convex_poly_line_inclusive = (poly, vec, org, ep) =>
   math.core.intersect_convex_polygon_line(poly, vec, org, math.core.include_s, math.core.include_l, ep);
 const convex_poly_ray_inclusive = (poly, vec, org, ep) =>

@@ -18,6 +18,10 @@ import {
   rotate90,
 } from "./algebra";
 import {
+  vector_origin_to_ud,
+  ud_to_vector_origin,
+} from "./parameterize";
+import {
   bisect_lines2,
 } from "./radial";
 import intersect_circle_line from "../intersection/intersect-circle-line";
@@ -67,24 +71,8 @@ export const axiom5 = (vectorA, originA, pointA, pointB) => (intersect_circle_li
     midpoint(pointB, sect)
   ));
 
-// counter-clockwise
-const line_to_ud = (vector, origin) => {
-  const mag = Math.sqrt((vector[0] ** 2) + (vector[1] ** 2));
-  const u = [-vector[1], vector[0]];
-  const d = (origin[0] * u[0] + origin[1] * u[1]) / mag;
-  return d < 0
-    ? { u: [-u[0] / mag, -u[1] / mag], d: -d }
-    : { u: [u[0] / mag, u[1] / mag], d };
-};
-
-// clockwise (undo counter-clockwise)
-const ud_to_line = ({ u, d }) => ({
-  vector: [u[1], -u[0]],
-  origin: [d * u[0], d * u[1]],
-});
-
 // export const axiom5 = (vectorA, originA, pointA, pointB) => {
-//  const line = line_to_ud(vectorA, originA);
+//  const line = vector_origin_to_ud(vectorA, originA);
 //  // project A down to the line, get the distance
 //  const distA = line.d - dot(pointA, line.u);
 //  // if pointB-pointA is shorter than pointB to the line, no solution
@@ -102,7 +90,7 @@ const ud_to_line = ({ u, d }) => ({
 //      vector: rotate90(normalize(subtract(point, pointB))),
 //    }));
 //    // .map(point => normalize(subtract(point, pointB)))
-//    // .map(u => ud_to_line({ u, d: dot(pointA, u) }));
+//    // .map(u => ud_to_vector_origin({ u, d: dot(pointA, u) }));
 // };
 
 // cube root that maintains sign
@@ -124,8 +112,8 @@ const cubrt = n => n < 0
  * @param {number[]} point to bring to the second line
  */
 export const axiom6 = (vectorA, originA, vectorB, originB, pointA, pointB) => {
-  const lineA = line_to_ud(vectorA, originA);
-  const lineB = line_to_ud(vectorB, originB);
+  const lineA = vector_origin_to_ud({ vector: vectorA, origin: originA });
+  const lineB = vector_origin_to_ud({ vector: vectorB, origin: originB });
   // at least pointA must not be on lineA
   // for some reason this epsilon is much higher than 1e-6
   if (Math.abs(1 - (dot(lineA.u, pointA) / lineA.d)) < 0.02) { return []; }
@@ -230,7 +218,7 @@ export const axiom6 = (vectorA, originA, vectorB, originB, pointA, pointB) => {
   return solutions
     .map(p => normalize(subtract(p, pointA)))
     .map((u, i) => ({ u, d: dot(u, midpoint(solutions[i], pointA)) }))
-    .map(ud_to_line)
+    .map(ud_to_vector_origin)
     .map(Constructors.line);
 };
 

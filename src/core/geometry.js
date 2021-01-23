@@ -101,37 +101,37 @@ export const enclosing_rectangle = (points) => {
  * todo: can be edge-aligned
  */
 const angle_array = count => Array
-	.from(Array(Math.floor(count)))
-	.map((_, i) => TWO_PI * (i / count));
+  .from(Array(Math.floor(count)))
+  .map((_, i) => TWO_PI * (i / count));
 
 const angles_to_vecs = (angles, radius) => angles
-	.map(a => [radius * Math.cos(a), radius * Math.sin(a)])
-	.map(pt => pt.map(n => clean_number(n, 14))); // this step is costly!
+  .map(a => [radius * Math.cos(a), radius * Math.sin(a)])
+  .map(pt => pt.map(n => clean_number(n, 14))); // this step is costly!
 
 // a = 2r tan(π/n)
 /**
  * make regular polygon is circumradius by default
  */
 export const make_regular_polygon = (sides = 3, radius = 1) =>
-	angles_to_vecs(angle_array(sides), radius);
+  angles_to_vecs(angle_array(sides), radius);
 
 export const make_regular_polygon_side_aligned = (sides = 3, radius = 1) => {
-	const halfwedge = Math.PI / sides;
-	const angles = angle_array(sides).map(a => a + halfwedge);
-	return angles_to_vecs(angles, radius);
+  const halfwedge = Math.PI / sides;
+  const angles = angle_array(sides).map(a => a + halfwedge);
+  return angles_to_vecs(angles, radius);
 };
 
 export const make_regular_polygon_inradius = (sides = 3, radius = 1) => 
-	make_regular_polygon(sides, radius / Math.cos(Math.PI / sides));
+  make_regular_polygon(sides, radius / Math.cos(Math.PI / sides));
 
 export const make_regular_polygon_inradius_side_aligned = (sides = 3, radius = 1) =>
-	make_regular_polygon_side_aligned(sides, radius / Math.cos(Math.PI / sides));
+  make_regular_polygon_side_aligned(sides, radius / Math.cos(Math.PI / sides));
 
 export const make_regular_polygon_side_length = (sides = 3, length = 1) =>
-	make_regular_polygon(sides, (length / 2) / Math.sin(Math.PI / sides));
+  make_regular_polygon(sides, (length / 2) / Math.sin(Math.PI / sides));
 
 export const make_regular_polygon_side_length_side_aligned = (sides = 3, length = 1) =>
-	make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
+  make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
 
 // export const split_polygon = () => console.warn("split polygon not done");
 
@@ -379,6 +379,9 @@ export const straight_skeleton = (points) => {
     // consecutive points in a counter-clockwise wound polygon is measured
     // in the clockwise direction
     .map(v => clockwise_bisect2(...v));
-  return recurse_skeleton(points, lines, bisectors);
+  // points is modified in place. create a copy
+  // const points_clone = JSON.parse(JSON.stringify(points));
+  // console.log("ss points", points_clone, points);
+  return recurse_skeleton([...points], lines, bisectors);
 };
 

@@ -20,7 +20,7 @@ export default {
       const l = get_line(...arguments);
       this.vector = Constructors.vector(l.vector);
       this.origin = Constructors.vector(resize(this.vector.length, l.origin));
-      Object.defineProperty(this, "domain_function", { writable: true, value: exclude_l });
+      Object.defineProperty(this, "domain_function", { writable: true, value: include_l });
     },
 
     G: {
@@ -42,3 +42,4 @@ export default {
 
   }
 };
+

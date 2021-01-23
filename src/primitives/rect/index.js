@@ -1,6 +1,7 @@
 import Constructors from "../constructors";
 import Prototype from "../prototypes/polygon";
 import { enclosing_rectangle } from "../../core/geometry";
+import { include, exclude } from "../../arguments/functions";
 import {
   get_rect,
   get_vector_of_vectors,
@@ -44,6 +45,8 @@ export default {
       // points: function () { return rectToPoints(this); },  // the rect IS "points" now
     },
     M: {
+      inclusive: function () { this.domain_function = include; return this; },
+      exclusive: function () { this.domain_function = exclude; return this; },
       area: function () { return this.width * this.height; },
       // points: function () { return rectToPoints(this); },
       segments: function () { return rectToSides(this); },

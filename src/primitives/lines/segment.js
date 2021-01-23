@@ -27,7 +27,7 @@ export default {
       ];
       this.vector = this.points[1].subtract(this.points[0]);
       this.origin = this.points[0];
-      Object.defineProperty(this, "domain_function", { writable: true, value: exclude_s });
+      Object.defineProperty(this, "domain_function", { writable: true, value: include_s });
     },
 
     G: {
@@ -73,3 +73,4 @@ export default {
 
   }
 };
+

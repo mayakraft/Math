@@ -7,6 +7,7 @@ import {
 } from "../ellipse/path";
 import { nearest_point_on_circle } from "../../core/nearest";
 import Intersect from "../../intersection/intersect";
+import Overlap from "../../intersection/overlap";
 import Constructors from "../constructors";
 
 // // (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
@@ -33,6 +34,10 @@ const CircleMethods = {
 
   intersect: function (object) {
     return Intersect(this, object);
+  },
+
+  overlap: function (object) {
+    return Overlap(this, object);
   },
 
   svgPath: function (arcStart = 0, deltaArc = Math.PI * 2) {

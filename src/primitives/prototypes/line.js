@@ -1,11 +1,12 @@
 import { EPSILON } from "../../core/constants";
 import { bisect_lines2 } from "../../core/radial";
 import { nearest_point_on_line } from "../../core/nearest";
-import { exclude_l } from "../../arguments/functions";
+import { include_l } from "../../arguments/functions";
 import TypeOf from "../../arguments/typeof";
 import Constructors from "../constructors";
 import intersect from "../../intersection/intersect";
 import overlap from "../../intersection/overlap";
+import overlap_line_point from "../../intersection/overlap-line-point";
 
 import {
   resize,
@@ -46,7 +47,7 @@ const LineProto = {};
 LineProto.prototype = Object.create(Object.prototype);
 LineProto.prototype.constructor = LineProto;
 
-LineProto.prototype.domain_function = exclude_l;
+LineProto.prototype.domain_function = include_l;
 
 // todo, this only takes line types. it should be able to take a vector
 LineProto.prototype.isParallel = function () {
@@ -54,14 +55,15 @@ LineProto.prototype.isParallel = function () {
   return parallel(...arr);
 };
 
-LineProto.prototype.isCollinear = function (lineOrPoint) {
-  return overlap(this, lineOrPoint);
-};
-// LineProto.prototype.isCollinear = function () {
-//   const line = get_line(arguments);
-//   return overlap_line_point(this.vector, this.origin, line.origin)
-//     && parallel(...resize_up(this.vector, line.vector));
+// LineProto.prototype.isCollinear = function (lineOrPoint) {
+//   return overlap(this, lineOrPoint);
 // };
+
+LineProto.prototype.isCollinear = function () {
+  const line = get_line(arguments);
+  return overlap_line_point(this.vector, this.origin, line.origin)
+    && parallel(...resize_up(this.vector, line.vector));
+};
 
 LineProto.prototype.isDegenerate = function (epsilon = EPSILON) {
   return degenerate(this.vector, epsilon);

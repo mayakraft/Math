@@ -70,7 +70,7 @@ const intersect_convex_polygon_line_inclusive = (
 const intersect_convex_polygon_line = (
   poly,
   vector, origin,
-  fn_poly = exclude_s,
+  fn_poly = include_s,
   fn_line = exclude_l,
   epsilon = EPSILON
 ) => {

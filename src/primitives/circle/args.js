@@ -12,9 +12,9 @@ import { get_circle } from "../../arguments/get";
  */
 
 const CircleArgs = function () {
-	const circle = get_circle(...arguments);
-	this.radius = circle.radius;
-	this.origin = Constructors.vector(...circle.origin);
+  const circle = get_circle(...arguments);
+  this.radius = circle.radius;
+  this.origin = Constructors.vector(...circle.origin);
 };
 
 export default CircleArgs;

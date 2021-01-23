@@ -1,24 +1,26 @@
+import { EPSILON } from "./constants";
+import {
+  fn_and,
+  fn_equal,
+  fn_epsilon_equal,
+} from "../arguments/functions";
 import {
   semi_flatten_arrays,
   resize_up,
   resize,
 } from "../arguments/resize";
-import { EPSILON } from "./constants";
-
-const fEqual = (a, b) => a === b;
-const fEpsilonEqual = (a, b) => Math.abs(a - b) < EPSILON;
 
 const array_similarity_test = (list, compFunc) => Array
   .from(Array(list.length - 1))
   .map((_, i) => compFunc(list[0], list[i + 1]))
-  .reduce((a, b) => a && b, true);
+  .reduce(fn_and, true);
 
 // square bounding box for fast calculation
-export const equivalent_vector2 = (a, b) => Math.abs(a[0] - b[0]) < EPSILON
-  && Math.abs(a[1] - b[1]) < EPSILON;
-
-// export const equivalent_arrays_of_numbers = function () { };
-
+export const equivalent_vector2 = (a, b) => [0, 1]
+  .map(i => fn_epsilon_equal(a[i], b[i]))
+  .reduce(fn_and, true);
+// export const equivalent_vector2 = (a, b) => Math.abs(a[0] - b[0]) < EPSILON
+//   && Math.abs(a[1] - b[1]) < EPSILON;
 /**
  * @param {...number} a sequence of numbers
  * @returns boolean
@@ -28,7 +30,7 @@ export const equivalent_numbers = function () {
   if (arguments.length === 1 && arguments[0] !== undefined) {
     return equivalent_numbers(...arguments[0]);
   }
-  return array_similarity_test(arguments, fEpsilonEqual);
+  return array_similarity_test(arguments, fn_epsilon_equal);
 };
 /**
  * this method compares two vectors and is permissive with trailing zeros
@@ -51,8 +53,8 @@ export const equivalent_vectors = function () {
   return Array.from(Array(arguments.length - 1))
     .map((_, i) => vecs[0]
       .map((_, n) => Math.abs(vecs[0][n] - vecs[i + 1][n]) < EPSILON)
-      .reduce((u, v) => u && v, true))
-    .reduce((u, v) => u && v, true);
+      .reduce(fn_and, true))
+    .reduce(fn_and, true);
 };
 // export const equivalent_arrays = function (...args) {
 //   const list = semi_flatten_arrays(args);
@@ -105,13 +107,14 @@ export const equivalent = function () {
   if (typeofList === "undefined") { return false; }
   switch (typeofList) {
     case "number":
-      return array_similarity_test(list, fEpsilonEqual);
+      return array_similarity_test(list, fn_epsilon_equal);
     case "boolean":
     case "string":
-      return array_similarity_test(list, fEqual);
+      return array_similarity_test(list, fn_equal);
     case "object":
       if (list[0].constructor === Array) { return equivalent_vectors(...list); }
       return array_similarity_test(list, (a, b) => JSON.stringify(a) === JSON.stringify(b));
     default: return undefined;
   }
 };
+
