@@ -68,8 +68,10 @@ const get_intersect_parameters = (poly, vector, origin, poly_line_func, epsilon)
     .sort((a, b) => a - b);
   if (numbers.length < 2) { return undefined; }
   const ends = [numbers[0], numbers[numbers.length - 1]];
+    // .map((n, i) => [-epsilon, +epsilon][i] + n);
+
   // we still need to verify the two intersections are not the same point
-  return (ends[1] - ends[0]) > epsilon * magnitude(vector)
+  return (ends[1] - ends[0]) > (epsilon * 2) / magnitude(vector)
     ? ends
     : undefined;
 };
@@ -90,7 +92,9 @@ const clip_line_in_convex_polygon = (
   // their lowest point at 0 and highest (if segment) at 1
   const ends_clip = ends.map((t, i) => fn_line(t) ? t : (t < 0.5 ? 0 : 1));
   // if endpoints are the same, exit
-  if (Math.abs(ends_clip[0] - ends_clip[1]) < epsilon) { return undefined; }
+  if (Math.abs(ends_clip[0] - ends_clip[1]) < (epsilon * 2) / magnitude(vector)) {
+    return undefined;
+  }
   // test if the solution is collinear to an edge by getting the segment midpoint
   // then test inclusive or exclusive depending on user parameter
   const mid = line_point_from_parameter(vector, origin, (ends_clip[0] + ends_clip[1]) / 2);
