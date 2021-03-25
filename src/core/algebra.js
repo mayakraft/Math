@@ -157,6 +157,11 @@ export const rotate270 = v => [v[1], -v[0]];
  * @param {number[]} one vector, n-dimensions
  * @returns boolean
  */
+
+
+//////////////
+ // hold up this might be wrong!!! add then abs?
+ ////////////
 export const degenerate = (v, epsilon = EPSILON) => Math
   .abs(v.reduce(fn_add, 0)) < epsilon;
 

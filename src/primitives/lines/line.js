@@ -1,6 +1,6 @@
 import Constructors from "../constructors";
 import { resize } from "../../arguments/resize";
-import { get_line } from "../../arguments/get";
+import { get_vector, get_line } from "../../arguments/get";
 import {
   include_l,
   exclude_l,
@@ -9,10 +9,12 @@ import {
   add,
   scale,
 } from "../../core/algebra";
+import {
+  vector_origin_to_ud,
+  ud_to_vector_origin
+} from "../../core/parameterize";
 import Static from "./static";
 import methods from "./methods";
-
-// LineProto.prototype.constructor = LineProto;
 
 export default {
   line: {
@@ -22,6 +24,9 @@ export default {
       const l = get_line(...arguments);
       this.vector = Constructors.vector(l.vector);
       this.origin = Constructors.vector(resize(this.vector.length, l.origin));
+      const ud = vector_origin_to_ud({ vector: this.vector, origin: this.origin });
+      this.u = ud.u;
+      this.d = ud.d;
       Object.defineProperty(this, "domain_function", { writable: true, value: include_l });
     },
 
@@ -45,7 +50,13 @@ export default {
       },
     }),
 
-    S: Static
+    S: Object.assign({
+      fromUD: function() {
+        const u = get_vector(...Array.from(arguments).slice(0, arguments.length - 1));
+        const d = arguments[arguments.length - 1];
+        return this.constructor(ud_to_vector_origin({ u, d }));
+      },
+    }, Static)
 
   }
 };

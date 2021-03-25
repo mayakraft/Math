@@ -116,7 +116,23 @@ const single_axis_rotate = (angle, origin, i0, i1, sgn) => {
 export const make_matrix3_rotateX = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 1, 2, true);
 export const make_matrix3_rotateY = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 0, 2, false);
 export const make_matrix3_rotateZ = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 0, 1, true);
+
 export const make_matrix3_rotate = (angle, vector = [0, 0, 1], origin = [0, 0, 0]) => {
+  const pos = [0, 1, 2].map(i => origin[i] || 0);
+  const [x, y, z] = resize(3, normalize(vector));
+  const c = Math.cos(angle);
+  const s = Math.sin(angle);
+  const t = 1 - c;
+  const trans     = identity3x3.concat(-pos[0], -pos[1], -pos[2]);
+  const trans_inv = identity3x3.concat(pos[0], pos[1], pos[2]);
+  return multiply_matrices3(trans_inv, multiply_matrices3([
+    t * x * x + c,     t * y * x + z * s, t * z * x - y * s,
+    t * x * y - z * s, t * y * y + c,     t * z * y + x * s,
+    t * x * z + y * s, t * y * z - x * s, t * z * z + c,
+    0, 0, 0], trans));
+};
+// leave this in for legacy, testing. eventually this can be removed.
+const make_matrix3_rotate_old = (angle, vector = [0, 0, 1], origin = [0, 0, 0]) => {
   // normalize inputs
   const vec = resize(3, normalize(vector));
   const pos = [0, 1, 2].map(i => origin[i] || 0);
