@@ -24,6 +24,7 @@ import * as matrix2 from "./core/matrix2";
 import * as matrix3 from "./core/matrix3";
 import * as nearest from "./core/nearest";
 import * as axioms from "./core/axioms";
+import * as axioms_ud from "./core/axioms_ud";
 
 import intersect from "./intersection/intersect";
 import overlap from "./intersection/overlap";
@@ -70,6 +71,7 @@ math.core = Object.assign(Object.create(null),
   matrix3,
   nearest,
   axioms,
+  axioms_ud,
   {
     enclose_convex_polygons_inclusive,
     intersect_convex_polygon_line,
