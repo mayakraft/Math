@@ -157,21 +157,18 @@ export const rotate270 = v => [v[1], -v[0]];
  * @param {number[]} one vector, n-dimensions
  * @returns boolean
  */
-
-
-//////////////
- // hold up this might be wrong!!! add then abs?
- ////////////
-export const degenerate = (v, epsilon = EPSILON) => Math
-  .abs(v.reduce(fn_add, 0)) < epsilon;
-
-// todo: should we use cross product to determine parallel?
-
+export const degenerate = (v, epsilon = EPSILON) => v
+  .map(n => Math.abs(n))
+  .reduce(fn_add, 0) < epsilon;
 /**
  * @param {number[]} one vector, n-dimensions
  * @param {number[]} one vector, n-dimensions
  * @returns boolean
  */
-export const parallel = (a, b, epsilon = EPSILON) => 1 - Math
-  .abs(dot(normalize(a), normalize(b))) < epsilon;
-
+export const parallel = (a, b, epsilon = EPSILON) => Math
+  .abs(cross2(a, b)) < epsilon;
+// export const parallel = (a, b, epsilon = EPSILON) => 1 - Math
+//   .abs(dot(normalize(a), normalize(b))) < epsilon;
+// cross product to determine parallel might be faster, although
+// it now might be inconsistent as it doesn't normalize against
+// the epsilon

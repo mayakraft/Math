@@ -45,4 +45,3 @@ const intersect_line_line = (
 };
 
 export default intersect_line_line;
-

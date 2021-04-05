@@ -134,8 +134,12 @@ test("degenerate", () => {
 test("parallel", () => {
   expect(math.core.parallel([1, 0], [0, 1])).toBe(false);
   expect(math.core.parallel([1, 0], [-1, 0])).toBe(true);
-  expect(math.core.parallel([1, 0], [1, 0.0014142])).toBe(true);
-  expect(math.core.parallel([1, 0], [1, 0.0014143])).toBe(false);
+  // this is where the parallel test breaks down when it uses dot product
+  // expect(math.core.parallel([1, 0], [1, 0.0014142])).toBe(true);
+  // expect(math.core.parallel([1, 0], [1, 0.0014143])).toBe(false);
+  // this is the parallel test using cross product
+  expect(math.core.parallel([1, 0], [1, 0.0000009])).toBe(true);
+  expect(math.core.parallel([1, 0], [1, 0.0000010])).toBe(false);
 });
 
 /*
