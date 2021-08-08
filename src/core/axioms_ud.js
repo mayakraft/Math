@@ -1,5 +1,6 @@
 /**
  * Rabbit Ear (c) Robby Kraft
+ * this section contains code from Robert Lang's Reference Finder
  */
 import { EPSILON } from "./constants";
 import {
@@ -29,16 +30,17 @@ const intersection = (line1, line2) => {
   const y = line2.d * line1.u[0] - line1.d * line2.u[0];
   return [x / det, y / det];
 };
-export const axiom1ud = (point1, point2) => {
-  const u = normalize(rotate90(subtract(point2, point1)));
-  const d = dot(add(point1, point2), u) / 2.0;
-  return {u, d};
-};
-export const axiom2ud = (point1, point2) => {
-  const u = normalize(subtract(point2, point1));
-  const d = dot(add(point1, point2), u) / 2.0;
-  return {u, d};
-};
+
+export const axiom1ud = (point1, point2) => ({
+  u: normalize(rotate90(subtract(point2, point1))),
+  d: dot(add(point1, point2), u) / 2.0,
+});
+
+export const axiom2ud = (point1, point2) => ({
+  u: normalize(subtract(point2, point1)),
+  d: dot(add(point1, point2), u) / 2.0,
+});
+
 export const axiom3ud = (line1, line2) => {
   // if no intersect, lines are parallel, only one solution exists
   const intersect = intersection(line1, line2);
@@ -51,11 +53,11 @@ export const axiom3ud = (line1, line2) => {
 /**
  * axiom 4
  * @description create a line perpendicular to a vector through a point
- * @param {number[]} the vector of the line
- * @param {number[]} the point
+ * @param {object} the line, in {u,d} parameterization
+ * @param {number[]} the point in array form
  * @returns {line} axiom 4 result
  */
-export const axiom4ud = (line, point) => {
+ export const axiom4ud = (line, point) => {
   const u = rotate90(line.u);
   const d = dot(point, u);
   return {u, d};
@@ -77,7 +79,6 @@ export const axiom5ud = (line, point1, point2) => {
     .map(pt => normalize(subtract(point2, pt)))
     .map(u => ({ u, d: dot(point1, u) }));
 };
-
 
 // cube root preserve sign
 const cubrt = n => n < 0
@@ -143,12 +144,11 @@ const polynomial = (degree, a, b, c, d) => {
   }
 };
 /**
- * @description axiom 6: make a crease by bringing point1 onto a
- *  line1 and point2 onto line2
- * @param {number[]} vector of the first line
- * @param {number[]} origin of the first line
- * @param {number[]} vector of the second line
- * @param {number[]} origin of the second line
+ * axiom 6
+ * @description axiom 6: make a crease by bringing pointA onto a
+ *  lineA and pointB onto lineB
+ * @param {line} line in (u,d) parameterization
+ * @param {line} line in (u,d) parameterization
  * @param {number[]} point to bring to the first line
  * @param {number[]} point to bring to the second line
  */
@@ -184,11 +184,10 @@ export const axiom6ud = (line1, line2, point1, point2) => {
 };
 /**
  * @description axiom 7: make a crease by bringing a point (pointC) onto a
- *  line () perpendicular to another line ()
- * @param {number[]} vector of the first line
- * @param {number[]} origin of the first line
- * @param {number[]} vector of the second line (origin is not needed)
- * @param {number[]} point involved in the folding
+ *  line (line1) perpendicular to another line (line2)
+ * @param {line} line in (u,d) parameterization
+ * @param {line} line in (u,d) parameterization
+ * @param {point} 2D point in array form
  */
 export const axiom7ud = (line1, line2, point1) => {
   let u = rotate90(line1.u);

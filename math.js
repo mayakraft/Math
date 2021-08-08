@@ -249,6 +249,7 @@
   const magnitude = v => Math.sqrt(v
     .map(fn_square)
     .reduce(fn_add, 0));
+  const magnitude2 = v => Math.sqrt(v[0] * v[0] + v[1] * v[1]);
   const mag_squared = v => v
     .map(fn_square)
     .reduce(fn_add, 0);
@@ -256,13 +257,22 @@
     const m = magnitude(v);
     return m === 0 ? v : v.map(c => c / m);
   };
+  const normalize2 = (v) => {
+    const m = magnitude2(v);
+    return m === 0 ? v : [v[0] / m, v[1] / m];
+  };
   const scale = (v, s) => v.map(n => n * s);
+  const scale2 = (v, s) => [v[0] * s, v[1] * s];
   const add = (v, u) => v.map((n, i) => n + (u[i] || 0));
+  const add2 = (v, u) => [v[0] + u[0], v[1] + u[1]];
   const subtract = (v, u) => v.map((n, i) => n - (u[i] || 0));
+  const subtract2 = (v, u) => [v[0] - u[0], v[1] - u[1]];
   const dot = (v, u) => v
     .map((_, i) => v[i] * u[i])
     .reduce(fn_add, 0);
+  const dot2 = (v, u) => v[0] * u[0] + v[1] * u[1];
   const midpoint = (v, u) => v.map((n, i) => (n + u[i]) / 2);
+  const midpoint2 = (v, u) => scale2(add2(v, u), 0.5);
   const average = function () {
     if (arguments.length === 0) { return []; }
     const dimension = (arguments[0].length > 0) ? arguments[0].length : 0;
@@ -281,6 +291,9 @@
     a[2] * b[0] - a[0] * b[2],
     a[0] * b[1] - a[1] * b[0],
   ];
+  const distance = (a, b) => Math.sqrt(a
+    .map((_, i) => (a[i] - b[i]) ** 2)
+    .reduce((u, v) => u + v, 0));
   const distance2$1 = (a, b) => {
     const p = a[0] - b[0];
     const q = a[1] - b[1];
@@ -292,40 +305,47 @@
     const e = a[2] - b[2];
     return Math.sqrt((c * c) + (d * d) + (e * e));
   };
-  const distance = (a, b) => Math.sqrt(a
-    .map((_, i) => (a[i] - b[i]) ** 2)
-    .reduce((u, v) => u + v, 0));
   const flip = v => v.map(n => -n);
   const rotate90 = v => [-v[1], v[0]];
   const rotate270 = v => [v[1], -v[0]];
   const degenerate = (v, epsilon = EPSILON) => v
     .map(n => Math.abs(n))
     .reduce(fn_add, 0) < epsilon;
-  const parallel = (a, b, epsilon = EPSILON) => Math
+  const parallel = (a, b, epsilon = EPSILON) => 1 - Math
+    .abs(dot(normalize(a), normalize(b))) < epsilon;
+  const parallel2 = (a, b, epsilon = EPSILON) => Math
     .abs(cross2$1(a, b)) < epsilon;
 
   var algebra = /*#__PURE__*/Object.freeze({
     __proto__: null,
     magnitude: magnitude,
+    magnitude2: magnitude2,
     mag_squared: mag_squared,
     normalize: normalize,
+    normalize2: normalize2,
     scale: scale,
+    scale2: scale2,
     add: add,
+    add2: add2,
     subtract: subtract,
+    subtract2: subtract2,
     dot: dot,
+    dot2: dot2,
     midpoint: midpoint,
+    midpoint2: midpoint2,
     average: average,
     lerp: lerp,
     cross2: cross2$1,
     cross3: cross3,
+    distance: distance,
     distance2: distance2$1,
     distance3: distance3,
-    distance: distance,
     flip: flip,
     rotate90: rotate90,
     rotate270: rotate270,
     degenerate: degenerate,
-    parallel: parallel
+    parallel: parallel,
+    parallel2: parallel2
   });
 
   const identity3x3 = Object.freeze([1, 0, 0, 0, 1, 0, 0, 0, 1]);
@@ -1115,16 +1135,14 @@
     const y = line2.d * line1.u[0] - line1.d * line2.u[0];
     return [x / det, y / det];
   };
-  const axiom1ud = (point1, point2) => {
-    const u = normalize(rotate90(subtract(point2, point1)));
-    const d = dot(add(point1, point2), u) / 2.0;
-    return {u, d};
-  };
-  const axiom2ud = (point1, point2) => {
-    const u = normalize(subtract(point2, point1));
-    const d = dot(add(point1, point2), u) / 2.0;
-    return {u, d};
-  };
+  const axiom1ud = (point1, point2) => ({
+    u: normalize(rotate90(subtract(point2, point1))),
+    d: dot(add(point1, point2), u) / 2.0,
+  });
+  const axiom2ud = (point1, point2) => ({
+    u: normalize(subtract(point2, point1)),
+    d: dot(add(point1, point2), u) / 2.0,
+  });
   const axiom3ud = (line1, line2) => {
     const intersect = intersection(line1, line2);
     return intersect === undefined
@@ -1133,7 +1151,7 @@
         .map(f => normalize(f(line1.u, line2.u)))
         .map(u => ({ u, d: dot(intersect, u) }));
   };
-  const axiom4ud = (line, point) => {
+   const axiom4ud = (line, point) => {
     const u = rotate90(line.u);
     const d = dot(point, u);
     return {u, d};
@@ -1284,14 +1302,14 @@
     return results.filter((_, i) => line_func(ts[i], epsilon));
   };
 
-  const axiom1 = (pointA, pointB) => Constructors.line(
-    normalize(subtract(...resize_up(pointB, pointA))),
-    pointA
-  );
-  const axiom2 = (pointA, pointB) => Constructors.line(
-    normalize(rotate90(subtract(...resize_up(pointB, pointA)))),
-    midpoint(pointA, pointB)
-  );
+  const axiom1 = (pointA, pointB) => ({
+    vector: normalize(subtract(...resize_up(pointB, pointA))),
+    origin: pointA
+  });
+  const axiom2 = (pointA, pointB) => ({
+    vector: normalize(rotate90(subtract(...resize_up(pointB, pointA)))),
+    origin: midpoint(pointA, pointB)
+  });
   const axiom3 = (vectorA, originA, vectorB, originB) => bisect_lines2(
     vectorA, originA, vectorB, originB).map(Constructors.line);
   const axiom4 = (vector, point) => Constructors.line(

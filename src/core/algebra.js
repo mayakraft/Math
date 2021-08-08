@@ -7,9 +7,15 @@ import {
 /**
  * algebra operations on vectors (mostly).
  *
+ * vectors are assumed to be in Javascript Array form. (not {x: y:} object)
+ * 
  * many of these operations can handle vectors of arbitrary dimension
- * but wherever it specifies "dimensions match first parameter"
- * you should verify that the second parameter is at least as long as the first
+ * in which case there are two vectors as input, it will be noted that
+ * "dimensions match first parameter", you should verify that the second
+ * parameter is at least as long as the first (okay if it is longer)
+ * 
+ * when a function name ends with a number (magnitude2) the input vector's
+ * dimension is assumed to be this number.
  */
 
 /**
@@ -19,6 +25,11 @@ import {
 export const magnitude = v => Math.sqrt(v
   .map(fn_square)
   .reduce(fn_add, 0));
+/**
+ * @param {number[]} one 2D vector
+ * @returns {number} one scalar
+ */
+export const magnitude2 = v => Math.sqrt(v[0] * v[0] + v[1] * v[1]);
 /**
  * @param {number[]} one vector, n-dimensions
  * @returns {number} one scalar
@@ -35,11 +46,25 @@ export const normalize = (v) => {
   return m === 0 ? v : v.map(c => c / m);
 };
 /**
+ * @param {number[]} one 2D vector
+ * @returns {number[]} one 2D vector
+ */
+export const normalize2 = (v) => {
+  const m = magnitude2(v);
+  return m === 0 ? v : [v[0] / m, v[1] / m];
+};
+/**
  * @param {number[]} one vector, n-dimensions
  * @param {number} one scalar
  * @returns {number[]} one vector
  */
 export const scale = (v, s) => v.map(n => n * s);
+/**
+ * @param {number[]} one 2D vector
+ * @param {number} one scalar
+ * @returns {number[]} one 2D vector
+ */
+export const scale2 = (v, s) => [v[0] * s, v[1] * s];
 /**
  * @param {number[]} one vector, n-dimensions
  * @param {number[]} one vector, n-dimensions
@@ -47,11 +72,23 @@ export const scale = (v, s) => v.map(n => n * s);
  */
 export const add = (v, u) => v.map((n, i) => n + (u[i] || 0));
 /**
+ * @param {number[]} one 2D vector
+ * @param {number[]} one 2D vector
+ * @returns {number[]} one 2D vector
+ */
+export const add2 = (v, u) => [v[0] + u[0], v[1] + u[1]];
+/**
  * @param {number[]} one vector, n-dimensions
  * @param {number[]} one vector, n-dimensions
  * @returns {number[]} one vector, dimension matching first parameter
  */
 export const subtract = (v, u) => v.map((n, i) => n - (u[i] || 0));
+/**
+ * @param {number[]} one 2D vector
+ * @param {number[]} one 2D vector
+ * @returns {number[]} one 2D vector
+ */
+export const subtract2 = (v, u) => [v[0] - u[0], v[1] - u[1]];
 /**
  * @param {number[]} one vector, n-dimensions
  * @param {number[]} one vector, n-dimensions
@@ -61,11 +98,23 @@ export const dot = (v, u) => v
   .map((_, i) => v[i] * u[i])
   .reduce(fn_add, 0);
 /**
+ * @param {number[]} one 2D vector
+ * @param {number[]} one 2D vector
+ * @returns {number} one scalar
+ */
+export const dot2 = (v, u) => v[0] * u[0] + v[1] * u[1];
+/**
  * @param {number[]} one vector, n-dimensions
  * @param {number[]} one vector, n-dimensions
  * @returns {number} one vector, dimension matching first parameter
  */
 export const midpoint = (v, u) => v.map((n, i) => (n + u[i]) / 2);
+/**
+ * @param {number[]} one 2D vector
+ * @param {number[]} one 2D vector
+ * @returns {number} one 2D vector
+ */
+export const midpoint2 = (v, u) => scale2(add2(v, u), 0.5);
 /**
  * average is like midpoint, but not limited to only 2 arguments.
  */
@@ -110,6 +159,14 @@ export const cross3 = (a, b) => [
   a[0] * b[1] - a[1] * b[0],
 ];
 /**
+ * @param {number[]} one vector, n-dimensions
+ * @param {number[]} one vector, n-dimensions
+ * @returns {number} one scalar
+ */
+export const distance = (a, b) => Math.sqrt(a
+  .map((_, i) => (a[i] - b[i]) ** 2)
+  .reduce((u, v) => u + v, 0));
+/**
  * @param {number[]} one 2D vector
  * @param {number[]} one 2D vector
  * @returns {number[]} one 2D vector
@@ -132,14 +189,6 @@ export const distance3 = (a, b) => {
 };
 /**
  * @param {number[]} one vector, n-dimensions
- * @param {number[]} one vector, n-dimensions
- * @returns {number} one scalar
- */
-export const distance = (a, b) => Math.sqrt(a
-  .map((_, i) => (a[i] - b[i]) ** 2)
-  .reduce((u, v) => u + v, 0));
-/**
- * @param {number[]} one vector, n-dimensions
  * @returns {number[]} one vector
  */
 export const flip = v => v.map(n => -n);
@@ -155,7 +204,7 @@ export const rotate90 = v => [-v[1], v[0]];
 export const rotate270 = v => [v[1], -v[0]];
 /**
  * @param {number[]} one vector, n-dimensions
- * @returns boolean
+ * @returns {boolean}
  */
 export const degenerate = (v, epsilon = EPSILON) => v
   .map(n => Math.abs(n))
@@ -163,12 +212,14 @@ export const degenerate = (v, epsilon = EPSILON) => v
 /**
  * @param {number[]} one vector, n-dimensions
  * @param {number[]} one vector, n-dimensions
- * @returns boolean
+ * @returns {boolean}
  */
-export const parallel = (a, b, epsilon = EPSILON) => Math
+export const parallel = (a, b, epsilon = EPSILON) => 1 - Math
+  .abs(dot(normalize(a), normalize(b))) < epsilon;
+/**
+ * @param {number[]} one 2D vector
+ * @param {number[]} one 2D vector
+ * @returns {boolean}
+ */
+export const parallel2 = (a, b, epsilon = EPSILON) => Math
   .abs(cross2(a, b)) < epsilon;
-// export const parallel = (a, b, epsilon = EPSILON) => 1 - Math
-//   .abs(dot(normalize(a), normalize(b))) < epsilon;
-// cross product to determine parallel might be faster, although
-// it now might be inconsistent as it doesn't normalize against
-// the epsilon

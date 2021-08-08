@@ -27,7 +27,6 @@ import {
 } from "./radial";
 import intersect_circle_line from "../intersection/intersect-circle-line";
 import intersect_line_line from "../intersection/intersect-line-line";
-
 /*           _                       _              _
             (_)                     (_)            (_)
    ___  _ __ _  __ _  __ _ _ __ ___  _    __ ___  ___  ___  _ __ ___  ___
@@ -37,16 +36,27 @@ import intersect_line_line from "../intersection/intersect-line-line";
                 __/ |
                |___/
 */
-export const axiom1 = (pointA, pointB) => Constructors.line(
-  normalize(subtract(...resize_up(pointB, pointA))),
-  pointA
-);
+// export const axiom1 = (pointA, pointB) => Constructors.line(
+//   normalize(subtract(...resize_up(pointB, pointA))),
+//   pointA
+// );
+// export const axiom2 = (pointA, pointB) => Constructors.line(
+//   normalize(rotate90(subtract(...resize_up(pointB, pointA)))),
+//   midpoint(pointA, pointB)
+// );
 
-export const axiom2 = (pointA, pointB) => Constructors.line(
-  normalize(rotate90(subtract(...resize_up(pointB, pointA)))),
-  midpoint(pointA, pointB)
-);
+export const axiom1 = (pointA, pointB) => ({
+  vector: normalize(subtract(...resize_up(pointB, pointA))),
+  origin: pointA
+});
+export const axiom2 = (pointA, pointB) => ({
+  vector: normalize(rotate90(subtract(...resize_up(pointB, pointA)))),
+  origin: midpoint(pointA, pointB)
+});
 // make sure these all get a resize_up or whatever is necessary
+// export const axiom3 = (line1, line2) => bisect_lines2(
+//   line1.vector, line1.origin, line2.vector, line2.origin
+// );
 export const axiom3 = (vectorA, originA, vectorB, originB) => bisect_lines2(
   vectorA, originA, vectorB, originB).map(Constructors.line);
 /**
