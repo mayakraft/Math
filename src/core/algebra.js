@@ -19,107 +19,105 @@ import {
  */
 
 /**
- * @param {number[]} one vector, n-dimensions
- * @returns {number} one scalar
+ * @param {number[]} v one vector, n-dimensions
+ * @returns {number} one scalar, the magnitude of the input vector
  */
 export const magnitude = v => Math.sqrt(v
   .map(fn_square)
   .reduce(fn_add, 0));
 /**
- * @param {number[]} one 2D vector
- * @returns {number} one scalar
+ * @param {number[]} v one 2D vector
+ * @returns {number} one scalar, the magnitude of the input vector
  */
 export const magnitude2 = v => Math.sqrt(v[0] * v[0] + v[1] * v[1]);
 /**
- * @param {number[]} one vector, n-dimensions
- * @returns {number} one scalar
+ * @param {number[]} v one vector, n-dimensions
+ * @returns {number} one scalar, the magnitude squared of the input vector
  */
 export const mag_squared = v => v
   .map(fn_square)
   .reduce(fn_add, 0);
 /**
- * @param {number[]} one vector, n-dimensions
- * @returns {number[]} one vector
+ * @param {number[]} v one vector, n-dimensions
+ * @returns {number[]} one vector, a normalized copy of the input vector
  */
 export const normalize = (v) => {
   const m = magnitude(v);
   return m === 0 ? v : v.map(c => c / m);
 };
 /**
- * @param {number[]} one 2D vector
- * @returns {number[]} one 2D vector
+ * @param {number[]} v one 2D vector
+ * @returns {number[]} one 2D vector, a normalized copy of the input vector
  */
 export const normalize2 = (v) => {
   const m = magnitude2(v);
   return m === 0 ? v : [v[0] / m, v[1] / m];
 };
 /**
- * @param {number[]} one vector, n-dimensions
- * @param {number} one scalar
- * @returns {number[]} one vector
+ * @param {number[]} v one vector, n-dimensions
+ * @param {number} s one scalar
+ * @returns {number[]} one vector, a scaled copy of the input vector
  */
 export const scale = (v, s) => v.map(n => n * s);
 /**
- * @param {number[]} one 2D vector
- * @param {number} one scalar
- * @returns {number[]} one 2D vector
+ * @param {number[]} v one 2D vector
+ * @param {number} s one scalar
+ * @returns {number[]} one 2D vector, a scaled copy of the input vector
  */
 export const scale2 = (v, s) => [v[0] * s, v[1] * s];
 /**
- * @param {number[]} one vector, n-dimensions
- * @param {number[]} one vector, n-dimensions
+ * @param {number[]} v one vector, n-dimensions
+ * @param {number[]} u one vector, n-dimensions
  * @returns {number[]} one vector, dimension matching first parameter
  */
 export const add = (v, u) => v.map((n, i) => n + (u[i] || 0));
 /**
- * @param {number[]} one 2D vector
- * @param {number[]} one 2D vector
+ * @param {number[]} v one 2D vector
+ * @param {number[]} u one 2D vector
  * @returns {number[]} one 2D vector
  */
 export const add2 = (v, u) => [v[0] + u[0], v[1] + u[1]];
 /**
- * @param {number[]} one vector, n-dimensions
- * @param {number[]} one vector, n-dimensions
+ * @param {number[]} v one vector, n-dimensions
+ * @param {number[]} u one vector, n-dimensions
  * @returns {number[]} one vector, dimension matching first parameter
  */
 export const subtract = (v, u) => v.map((n, i) => n - (u[i] || 0));
 /**
- * @param {number[]} one 2D vector
- * @param {number[]} one 2D vector
+ * @param {number[]} v one 2D vector
+ * @param {number[]} u one 2D vector
  * @returns {number[]} one 2D vector
  */
 export const subtract2 = (v, u) => [v[0] - u[0], v[1] - u[1]];
 /**
- * @param {number[]} one vector, n-dimensions
- * @param {number[]} one vector, n-dimensions
- * @returns {number} one scalar
+ * @param {number[]} v one vector, n-dimensions
+ * @param {number[]} u one vector, n-dimensions
+ * @returns {number} one scalar, the dot product of the two vectors
  */
 export const dot = (v, u) => v
   .map((_, i) => v[i] * u[i])
   .reduce(fn_add, 0);
 /**
- * @param {number[]} one 2D vector
- * @param {number[]} one 2D vector
- * @returns {number} one scalar
+ * @param {number[]} v one 2D vector
+ * @param {number[]} u one 2D vector
+ * @returns {number} one scalar, the dot product of the two vectors
  */
 export const dot2 = (v, u) => v[0] * u[0] + v[1] * u[1];
 /**
- * @param {number[]} one vector, n-dimensions
- * @param {number[]} one vector, n-dimensions
+ * @param {number[]} v one vector, n-dimensions
+ * @param {number[]} u one vector, n-dimensions
  * @returns {number} one vector, dimension matching first parameter
  */
 export const midpoint = (v, u) => v.map((n, i) => (n + u[i]) / 2);
 /**
- * @param {number[]} one 2D vector
- * @param {number[]} one 2D vector
+ * @param {number[]} v one 2D vector
+ * @param {number[]} u one 2D vector
  * @returns {number} one 2D vector
  */
 export const midpoint2 = (v, u) => scale2(add2(v, u), 0.5);
 /**
- * average is like midpoint, but not limited to only 2 arguments.
- */
-/**
- * @param {...number[]} sequence of vectors
+ * @description average is similar to midpoint but can accept more than 2 inputs
+ * @param {...number[]} _ a sequence of vectors
  * @returns {number[]} one vector, dimension matching first parameter
  */
 export const average = function () {
@@ -131,9 +129,9 @@ export const average = function () {
   return sum.map(n => n / arguments.length);
 };
 /**
- * @param {number[]} one vector, n-dimensions
- * @param {number[]} one vector, n-dimensions
- * @param {number} scalar between 0 and 1
+ * @param {number[]} v one vector, n-dimensions
+ * @param {number[]} u one vector, n-dimensions
+ * @param {number} t one scalar between 0 and 1
  * @returns {number[]} one vector, dimensions matching first parameter
  */
 export const lerp = (v, u, t) => {
@@ -143,83 +141,86 @@ export const lerp = (v, u, t) => {
 /**
  * @description technically cross product in 2D is undefined,
  *  this returns the determinant of the matrix of the 2 vectors
- * @param {number[]} one 2D vector
- * @param {number[]} one 2D vector
+ * @param {number[]} v one 2D vector
+ * @param {number[]} u one 2D vector
  * @returns {number} one scalar; the determinant; the magnitude of the vector
  */
-export const cross2 = (a, b) => a[0] * b[1] - a[1] * b[0];
+export const cross2 = (v, u) => v[0] * u[1] - v[1] * u[0];
 /**
- * @param {number[]} one 3D vector
- * @param {number[]} one 3D vector
- * @returns {number[]} one 3D vector
+ * @param {number[]} v one 3D vector
+ * @param {number[]} u one 3D vector
+ * @returns {number[]} one 3D vector, the cross product of the two vectors
  */
-export const cross3 = (a, b) => [
-  a[1] * b[2] - a[2] * b[1],
-  a[2] * b[0] - a[0] * b[2],
-  a[0] * b[1] - a[1] * b[0],
+export const cross3 = (v, u) => [
+  v[1] * u[2] - v[2] * u[1],
+  v[2] * u[0] - v[0] * u[2],
+  v[0] * u[1] - v[1] * u[0],
 ];
 /**
- * @param {number[]} one vector, n-dimensions
- * @param {number[]} one vector, n-dimensions
- * @returns {number} one scalar
+ * @param {number[]} v one vector, n-dimensions
+ * @param {number[]} u one vector, n-dimensions
+ * @returns {number} one scalar, the distance between the two vectors
  */
-export const distance = (a, b) => Math.sqrt(a
-  .map((_, i) => (a[i] - b[i]) ** 2)
-  .reduce((u, v) => u + v, 0));
+export const distance = (v, u) => Math.sqrt(v
+  .map((_, i) => (v[i] - u[i]) ** 2)
+  .reduce(fn_add, 0));
 /**
- * @param {number[]} one 2D vector
- * @param {number[]} one 2D vector
- * @returns {number[]} one 2D vector
+ * @param {number[]} v one 2D vector
+ * @param {number[]} u one 2D vector
+ * @returns {number} one scalar, the distance between the two vectors
  */
-export const distance2 = (a, b) => {
-  const p = a[0] - b[0];
-  const q = a[1] - b[1];
+export const distance2 = (v, u) => {
+  const p = v[0] - u[0];
+  const q = v[1] - u[1];
   return Math.sqrt((p * p) + (q * q));
 };
 /**
- * @param {number[]} one 3D vector
- * @param {number[]} one 3D vector
- * @returns {number} one scalar
+ * @param {number[]} v one 3D vector
+ * @param {number[]} u one 3D vector
+ * @returns {number} one scalar, the distance between the two vectors
  */
-export const distance3 = (a, b) => {
-  const c = a[0] - b[0];
-  const d = a[1] - b[1];
-  const e = a[2] - b[2];
-  return Math.sqrt((c * c) + (d * d) + (e * e));
+export const distance3 = (v, u) => {
+  const a = v[0] - u[0];
+  const b = v[1] - u[1];
+  const c = v[2] - u[2];
+  return Math.sqrt((a * a) + (b * b) + (c * c));
 };
 /**
- * @param {number[]} one vector, n-dimensions
- * @returns {number[]} one vector
+ * @param {number[]} v one vector, n-dimensions
+ * @returns {number[]} one vector, a copy with each element's sign flipped
  */
 export const flip = v => v.map(n => -n);
 /**
- * @param {number[]} one 2D vector
- * @returns {number[]} one 2D vector, counter-clockwise rotation
+ * @param {number[]} v one 2D vector
+ * @returns {number[]} one 2D vector, 90 degree counter-clockwise rotation
  */
 export const rotate90 = v => [-v[1], v[0]];
 /**
- * @param {number[]} one 2D vector
- * @returns {number[]} one 2D vector, counter-clockwise rotation
+ * @param {number[]} v one 2D vector
+ * @returns {number[]} one 2D vector, 270 degree counter-clockwise rotation
  */
 export const rotate270 = v => [v[1], -v[0]];
 /**
- * @param {number[]} one vector, n-dimensions
- * @returns {boolean}
+ * @param {number[]} v one vector, n-dimensions
+ * @param {number} [epsilon=1e-6] an optional epsilon (1e-6 default)
+ * @returns {boolean} is the magnitude of the vector smaller than the epsilon?
  */
 export const degenerate = (v, epsilon = EPSILON) => v
   .map(n => Math.abs(n))
   .reduce(fn_add, 0) < epsilon;
 /**
- * @param {number[]} one vector, n-dimensions
- * @param {number[]} one vector, n-dimensions
- * @returns {boolean}
+ * @param {number[]} v one vector, n-dimensions
+ * @param {number[]} u one vector, n-dimensions
+ * @param {number} [epsilon=1e-6] an optional epsilon (1e-6 default)
+ * @returns {boolean} are the two vectors parallel within an epsilon?
  */
-export const parallel = (a, b, epsilon = EPSILON) => 1 - Math
-  .abs(dot(normalize(a), normalize(b))) < epsilon;
+export const parallel = (v, u, epsilon = EPSILON) => 1 - Math
+  .abs(dot(normalize(v), normalize(u))) < epsilon;
 /**
- * @param {number[]} one 2D vector
- * @param {number[]} one 2D vector
- * @returns {boolean}
+ * @param {number[]} v one 2D vector
+ * @param {number[]} u one 2D vector
+ * @param {number} [epsilon=1e-6] an optional epsilon (1e-6 default)
+ * @returns {boolean} are the two vectors parallel within an epsilon?
  */
-export const parallel2 = (a, b, epsilon = EPSILON) => Math
-  .abs(cross2(a, b)) < epsilon;
+export const parallel2 = (v, u, epsilon = EPSILON) => Math
+  .abs(cross2(v, u)) < epsilon;
