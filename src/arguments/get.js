@@ -69,7 +69,7 @@ export const get_line = function () {
   if (args[0] instanceof Constructors.line
     || args[0] instanceof Constructors.ray
     || args[0] instanceof Constructors.segment) { return args[0]; }
-  if (args[0].constructor === Object) {
+  if (args[0].constructor === Object && args[0].vector !== undefined) {
     return vector_origin_form(args[0].vector || [], args[0].origin || []);
   }
   return typeof args[0] === "number"
@@ -78,6 +78,14 @@ export const get_line = function () {
 };
 
 export const get_ray = get_line;
+
+// export const get_line_ud = function () {
+//   if (arguments.length === 0) { return { u:[], d:0 }; }
+//   if (arguments[0] instanceof Constructors.line) { return args[0]; }
+//   if (arguments[0].constructor === Object && arguments[0].u !== undefined) {
+//     return { u: arguments[0].u || [], d: arguments[0].d || 0 };
+//   }
+// };
 
 export const get_rect_params = (x = 0, y = 0, width = 0, height = 0) => ({
   x, y, width, height
