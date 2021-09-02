@@ -5,6 +5,7 @@
 import { EPSILON } from "./constants";
 import {
   dot2,
+  cross2,
   scale2,
   normalize2,
   midpoint2,
@@ -24,7 +25,7 @@ import {
 */
 
 const intersection_ud = (line1, line2) => {
-  const det = cross2(vector1, vector2);
+  const det = cross2(line1.u, line2.u);
   if (Math.abs(det) < EPSILON) { return undefined; }
   const x = line1.d * line2.u[1] - line2.d * line1.u[1];
   const y = line2.d * line1.u[0] - line1.d * line2.u[0];
@@ -36,20 +37,20 @@ const intersection_ud = (line1, line2) => {
  * @param {number[]} point2 one 2D point
  * @returns {{u: number[], d: number}} the line in {u, d} form
  */
-export const axiom1ud = (point1, point2) => ({
-  u: normalize2(rotate90(subtract2(point2, point1))),
-  d: dot2(add2(point1, point2), u) / 2.0,
-});
+export const axiom1ud = (point1, point2) => {
+  const u = normalize2(rotate90(subtract2(point2, point1)));
+  return { u, d: dot2(add2(point1, point2), u) / 2.0 };
+};
 /**
  * @description origami axiom 2: form a perpendicular bisector between the given points
  * @param {number[]} point1 one 2D point
  * @param {number[]} point2 one 2D point
  * @returns {{u: number[], d: number}} the line in {u, d} form
  */
-export const axiom2ud = (point1, point2) => ({
-  u: normalize2(subtract2(point2, point1)),
-  d: dot2(add2(point1, point2), u) / 2.0,
-});
+export const axiom2ud = (point1, point2) => {
+  const u = normalize2(subtract2(point2, point1));
+  return { u, d: dot2(add2(point1, point2), u) / 2.0 };
+};
 /**
  * @description origami axiom 3: form two lines that make the two angular bisectors between
  * two input lines, and in the case of parallel inputs only one solution will be given
@@ -92,9 +93,9 @@ export const axiom5ud = (line, point1, point2) => {
   const c = distance2(point1, point2);
   if (a > c) { return []; }
   const b = Math.sqrt(c * c - a * a);
-  const a_vec = scale2(l.u, a);
+  const a_vec = scale2(line.u, a);
   const base_center = add2(point1, a_vec);
-  const base_vector = scale2(rotate90(l.u), b);
+  const base_vector = scale2(rotate90(line.u), b);
   // if b is near 0 we have one solution, otherwise two
   const mirrors = b < EPSILON
     ? [base_center]
@@ -217,13 +218,13 @@ export const axiom6ud = (line1, line2, point1, point2) => {
  * @returns {{u: number[], d: number} | undefined} the line in {u, d} form
  * or undefined if the given lines are parallel
  */
-export const axiom7ud = (line1, line2, point1) => {
+export const axiom7ud = (line1, line2, point) => {
   let u = rotate90(line1.u);
   let u_u = dot2(u, line2.u);
   // if u_u is close to 0, the two input lines are parallel, no solution
   if (Math.abs(u_u) < EPSILON) { return undefined; }
-  let a = dot2(p, u);
-  let b = dot2(p, l2.u);
-  let d = (l2.d + 2.0 * a * u_u - b) / (2.0 * u_u);
+  let a = dot2(point, u);
+  let b = dot2(point, line2.u);
+  let d = (line2.d + 2.0 * a * u_u - b) / (2.0 * u_u);
   return {u, d};
 };

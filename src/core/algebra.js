@@ -7,7 +7,11 @@ import {
 /**
  * algebra operations on vectors (mostly).
  *
- * vectors are assumed to be in Javascript Array form. (not {x: y:} object)
+ * vectors are assumed to be Javascript Arrays objects /
+ * contain the Javascript Array prototype, as these methods depend
+ * on the use of "map", "reduce" and other Array functions.
+ * 
+ * ({x: y:} vectors as Javascript Objects will not work)
  * 
  * many of these operations can handle vectors of arbitrary dimension
  * in which case there are two vectors as input, it will be noted that

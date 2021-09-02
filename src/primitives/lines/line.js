@@ -51,10 +51,8 @@ export default {
     }),
 
     S: Object.assign({
-      fromUD: function() {
-        const u = get_vector(...Array.from(arguments).slice(0, arguments.length - 1));
-        const d = arguments[arguments.length - 1];
-        return this.constructor(ud_to_vector_origin({ u, d }));
+      ud: function() {
+        return this.constructor(ud_to_vector_origin(arguments[0]));
       },
     }, Static)
 
