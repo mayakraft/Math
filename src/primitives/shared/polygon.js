@@ -22,7 +22,9 @@ import {
   resize,
   semi_flatten_arrays,
 } from "../../arguments/resize";
-import { include } from "../../arguments/functions";
+import {
+  include_l
+} from "../../arguments/functions";
 import Intersect from "../../intersection/intersect";
 import Overlap from "../../intersection/overlap";
 import clip_line_in_convex_polygon from "../../clip/polygon";

@@ -23,13 +23,15 @@ import * as radial from "./core/radial";
 import * as matrix2 from "./core/matrix2";
 import * as matrix3 from "./core/matrix3";
 import * as nearest from "./core/nearest";
-import * as axioms from "./core/axioms";
-import * as axioms_ud from "./core/axioms_ud";
+import * as parameterize from "./core/parameterize";
+// import * as axioms from "./core/axioms";
+// import * as axioms_ud from "./core/axioms_ud";
 
 import intersect from "./intersection/intersect";
 import overlap from "./intersection/overlap";
 import enclose_convex_polygons_inclusive from "./intersection/enclose-polygons";
 import intersect_convex_polygon_line from "./intersection/intersect-polygon-line";
+import intersect_polygon_polygon from "./intersection/intersect-polygon-polygon";
 import intersect_circle_circle from "./intersection/intersect-circle-circle";
 import intersect_circle_line from "./intersection/intersect-circle-line";
 import intersect_line_line from "./intersection/intersect-line-line";
@@ -70,11 +72,13 @@ math.core = Object.assign(Object.create(null),
   matrix2,
   matrix3,
   nearest,
-  axioms,
-  axioms_ud,
+  parameterize,
+  // axioms,
+  // axioms_ud,
   {
     enclose_convex_polygons_inclusive,
     intersect_convex_polygon_line,
+    intersect_polygon_polygon,
     intersect_circle_circle,
     intersect_circle_line,
     intersect_line_line,

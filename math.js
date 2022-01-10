@@ -115,7 +115,7 @@
   const fn_epsilon_equal = (a, b) => Math.abs(a - b) < EPSILON;
   const include = (n, epsilon = EPSILON) => n > -epsilon;
   const exclude = (n, epsilon = EPSILON) => n > epsilon;
-  const include_l$1 = fn_true;
+  const include_l = fn_true;
   const exclude_l = fn_true;
   const include_r = include;
   const exclude_r = exclude;
@@ -143,7 +143,7 @@
     fn_epsilon_equal: fn_epsilon_equal,
     include: include,
     exclude: exclude,
-    include_l: include_l$1,
+    include_l: include_l,
     exclude_l: exclude_l,
     include_r: include_r,
     exclude_r: exclude_r,
@@ -872,8 +872,8 @@
   const intersect_line_line = (
     aVector, aOrigin,
     bVector, bOrigin,
-    aFunction = include_l$1,
-    bFunction = include_l$1,
+    aFunction = include_l,
+    bFunction = include_l,
     epsilon = EPSILON
   ) => {
     const det_norm = cross2(normalize(aVector), normalize(bVector));
@@ -965,7 +965,7 @@
     make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
   const split_convex_polygon = (poly, lineVector, linePoint) => {
     let vertices_intersections = poly.map((v, i) => {
-      let intersection = overlap_line_point(lineVector, linePoint, v, include_l$1);
+      let intersection = overlap_line_point(lineVector, linePoint, v, include_l);
       return { point: intersection ? v : null, at_index: i };
     }).filter(el => el.point != null);
     let edges_intersections = poly.map((v, i, arr) => ({
@@ -1128,231 +1128,21 @@
     straight_skeleton: straight_skeleton
   });
 
-  const intersection_ud = (line1, line2) => {
-    const det = cross2(line1.u, line2.u);
-    if (Math.abs(det) < EPSILON) { return undefined; }
-    const x = line1.d * line2.u[1] - line2.d * line1.u[1];
-    const y = line2.d * line1.u[0] - line1.d * line2.u[0];
-    return [x / det, y / det];
-  };
-  const axiom1ud = (point1, point2) => {
-    const u = normalize2(rotate90(subtract2(point2, point1)));
-    return { u, d: dot2(add2(point1, point2), u) / 2.0 };
-  };
-  const axiom2ud = (point1, point2) => {
-    const u = normalize2(subtract2(point2, point1));
-    return { u, d: dot2(add2(point1, point2), u) / 2.0 };
-  };
-  const axiom3ud = (line1, line2) => {
-    const intersect = intersection_ud(line1, line2);
-    return intersect === undefined
-      ? [{ u: line1.u, d: (line1.d + line2.d * dot2(line1.u, line2.u)) / 2.0 }]
-      : [add2, subtract2]
-        .map(f => normalize2(f(line1.u, line2.u)))
-        .map(u => ({ u, d: dot2(intersect, u) }));
-  };
-   const axiom4ud = (line, point) => {
-    const u = rotate90(line.u);
-    const d = dot2(point, u);
-    return {u, d};
-  };
-  const axiom5ud = (line, point1, point2) => {
-    const p1base = dot2(point1, line.u);
-    const a = line.d - p1base;
-    const c = distance2(point1, point2);
-    if (a > c) { return []; }
-    const b = Math.sqrt(c * c - a * a);
-    const a_vec = scale2(line.u, a);
-    const base_center = add2(point1, a_vec);
-    const base_vector = scale2(rotate90(line.u), b);
-    const mirrors = b < EPSILON
-      ? [base_center]
-      : [add2(base_center, base_vector), subtract2(base_center, base_vector)];
-    return mirrors
-      .map(pt => normalize2(subtract2(point2, pt)))
-      .map(u => ({ u, d: dot2(point1, u) }));
-  };
-  const cubrt = n => n < 0
-    ? -Math.pow(-n, 1/3)
-    : Math.pow(n, 1/3);
-  const polynomial = (degree, a, b, c, d) => {
-    switch (degree) {
-      case 1: return [-d / c];
-      case 2: {
-        let discriminant = Math.pow(c, 2.0) - (4.0 * b * d);
-        if (discriminant < -EPSILON) { return []; }
-        let q1 = -c / (2.0 * b);
-        if (discriminant < EPSILON) { return [q1]; }
-        let q2 = Math.sqrt(discriminant) / (2.0 * b);
-        return [q1 + q2, q1 - q2];
-      }
-      case 3: {
-        let a2 = b / a;
-        let a1 = c / a;
-        let a0 = d / a;
-        let q = (3.0 * a1 - Math.pow(a2, 2.0)) / 9.0;
-        let r = (9.0 * a2 * a1 - 27.0 * a0 - 2.0 * Math.pow(a2, 3.0)) / 54.0;
-        let d0 = Math.pow(q, 3.0) + Math.pow(r, 2.0);
-        let u = -a2 / 3.0;
-        if (d0 > 0.0) {
-          let sqrt_d0 = Math.sqrt(d0);
-          let s = cubrt(r + sqrt_d0);
-          let t = cubrt(r - sqrt_d0);
-          return [u + s + t];
-        }
-        if (Math.abs(d0) < EPSILON) {
-          let s = Math.pow(r, 1.0/3.0);
-          if (r < 0.0) { return []; }
-          return [u + 2.0 * s, u - s];
-        }
-        let sqrt_d0 = Math.sqrt(-d0);
-        let phi = Math.atan2(sqrt_d0, r) / 3.0;
-        let r_s = Math.pow((Math.pow(r, 2.0) - d0), 1.0/6.0);
-        let s_r = r_s * Math.cos(phi);
-        let s_i = r_s * Math.sin(phi);
-        return [
-          u + 2.0 * s_r,
-          u - s_r - Math.sqrt(3.0) * s_i,
-          u - s_r + Math.sqrt(3.0) * s_i
-        ];
-      }
-      default: return [];
-    }
-  };
-  const axiom6ud = (line1, line2, point1, point2) => {
-    if (Math.abs(1.0 - (dot2(line1.u, point1) / line1.d)) < 0.02) { return []; }
-    const line_vec = rotate90(line1.u);
-    const vec1 = subtract2(add2(point1, scale2(line1.u, line1.d)), scale2(point2, 2.0));
-    const vec2 = subtract2(scale2(line1.u, line1.d), point1);
-    const c1 = dot2(point2, line2.u) - line2.d;
-    const c2 = 2.0 * dot2(vec2, line_vec);
-    const c3 = dot2(vec2, vec2);
-    const c4 = dot2(add2(vec1, vec2), line_vec);
-    const c5 = dot2(vec1, vec2);
-    const c6 = dot2(line_vec, line2.u);
-    const c7 = dot2(vec2, line2.u);
-    const a = c6;
-    const b = c1 + c4 * c6 + c7;
-    const c = c1 * c2 + c5 * c6 + c4 * c7;
-    const d = c1 * c3 + c5 * c7;
-    let polynomial_degree = 0;
-    if (Math.abs(c) > EPSILON) { polynomial_degree = 1; }
-    if (Math.abs(b) > EPSILON) { polynomial_degree = 2; }
-    if (Math.abs(a) > EPSILON) { polynomial_degree = 3; }
-    return polynomial(polynomial_degree, a, b, c, d)
-      .map(n => add2(scale2(line1.u, line1.d), scale2(line_vec, n)))
-      .map(p => ({ p, u: normalize2(subtract2(p, point1)) }))
-      .map(el => ({ u: el.u, d: dot2(el.u, midpoint2(el.p, point1)) }));
-  };
-  const axiom7ud = (line1, line2, point) => {
-    let u = rotate90(line1.u);
-    let u_u = dot2(u, line2.u);
-    if (Math.abs(u_u) < EPSILON) { return undefined; }
-    let a = dot2(point, u);
-    let b = dot2(point, line2.u);
-    let d = (line2.d + 2.0 * a * u_u - b) / (2.0 * u_u);
-    return {u, d};
-  };
-
-  var axioms_ud = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    axiom1ud: axiom1ud,
-    axiom2ud: axiom2ud,
-    axiom3ud: axiom3ud,
-    axiom4ud: axiom4ud,
-    axiom5ud: axiom5ud,
-    axiom6ud: axiom6ud,
-    axiom7ud: axiom7ud
-  });
-
   const vector_origin_to_ud = ({ vector, origin }) => {
     const mag = magnitude(vector);
     const u = rotate90(vector);
     const d = dot(origin, u) / mag;
-    return d < 0
-      ? { u: scale(u, -1/mag), d: -d }
-      : { u: scale(u, 1/mag), d };
+    return { u: scale(u, 1 / mag), d };
   };
   const ud_to_vector_origin = ({ u, d }) => ({
     vector: rotate270(u),
     origin: scale(u, d),
   });
 
-  const intersect_circle_line = (
-    circle_radius, circle_origin,
-    line_vector, line_origin,
-    line_func = include_l$1,
-    epsilon = EPSILON
-  ) => {
-    const magSq = line_vector[0] ** 2 + line_vector[1] ** 2;
-    const mag = Math.sqrt(magSq);
-    const norm = mag === 0 ? line_vector : line_vector.map(c => c / mag);
-    const rot90 = rotate90(norm);
-    const bvec = subtract(line_origin, circle_origin);
-    const det = cross2(bvec, norm);
-    if (Math.abs(det) > circle_radius + epsilon) { return undefined; }
-    const side = Math.sqrt((circle_radius ** 2) - (det ** 2));
-    const f = (s, i) => circle_origin[i] - rot90[i] * det + norm[i] * s;
-    const results = Math.abs(circle_radius - Math.abs(det)) < epsilon
-      ? [side].map((s) => [s, s].map(f))
-      : [-side, side].map((s) => [s, s].map(f));
-    const ts = results.map(res => res.map((n, i) => n - line_origin[i]))
-      .map(v => v[0] * line_vector[0] + line_vector[1] * v[1])
-      .map(d => d / magSq);
-    return results.filter((_, i) => line_func(ts[i], epsilon));
-  };
-
-  const axiom1 = (point1, point2) => ({
-    vector: normalize2(subtract2(...resize_up(point2, point1))),
-    origin: point1
-  });
-  const axiom2 = (point1, point2) => ({
-    vector: normalize2(rotate90(subtract2(...resize_up(point2, point1)))),
-    origin: midpoint2(point1, point2)
-  });
-  const axiom3 = (line1, line2) => bisect_lines2(
-    line1.vector, line1.origin, line2.vector, line2.origin
-  );
-  const axiom4 = (line, point) => ({
-    vector: rotate90(normalize2(line.vector)),
-    origin: point
-  });
-  const axiom5 = (line, point1, point2) => (intersect_circle_line(
-      distance2(point1, point2),
-      point1,
-      line.vector,
-      line.origin,
-      include_l$1
-    ) || []).map(sect => ({
-      vector: normalize2(rotate90(subtract2(...resize_up(sect, point2)))),
-      origin: midpoint2(point2, sect)
-    }));
-  const axiom6 = (line1, line2, point1, point2) => axiom6ud(
-    vector_origin_to_ud(line1),
-    vector_origin_to_ud(line2),
-    point1, point2).map(ud_to_vector_origin);
-  const axiom7 = (line1, line2, point) => {
-    const intersect = intersect_line_line(
-      line1.vector, line1.origin,
-      line2.vector, point,
-      include_l$1, include_l$1);
-    return intersect === undefined
-      ? undefined
-      : ({
-          vector: normalize2(rotate90(subtract2(...resize_up(intersect, point)))),
-          origin: midpoint2(point, intersect)
-      });
-  };
-
-  var axioms = /*#__PURE__*/Object.freeze({
+  var parameterize = /*#__PURE__*/Object.freeze({
     __proto__: null,
-    axiom1: axiom1,
-    axiom2: axiom2,
-    axiom3: axiom3,
-    axiom4: axiom4,
-    axiom5: axiom5,
-    axiom6: axiom6,
-    axiom7: axiom7
+    vector_origin_to_ud: vector_origin_to_ud,
+    ud_to_vector_origin: ud_to_vector_origin
   });
 
   const acos_safe = (x) => {
@@ -1385,6 +1175,30 @@
     return [pt1, pt2];
   };
 
+  const intersect_circle_line = (
+    circle_radius, circle_origin,
+    line_vector, line_origin,
+    line_func = include_l,
+    epsilon = EPSILON
+  ) => {
+    const magSq = line_vector[0] ** 2 + line_vector[1] ** 2;
+    const mag = Math.sqrt(magSq);
+    const norm = mag === 0 ? line_vector : line_vector.map(c => c / mag);
+    const rot90 = rotate90(norm);
+    const bvec = subtract(line_origin, circle_origin);
+    const det = cross2(bvec, norm);
+    if (Math.abs(det) > circle_radius + epsilon) { return undefined; }
+    const side = Math.sqrt((circle_radius ** 2) - (det ** 2));
+    const f = (s, i) => circle_origin[i] - rot90[i] * det + norm[i] * s;
+    const results = Math.abs(circle_radius - Math.abs(det)) < epsilon
+      ? [side].map((s) => [s, s].map(f))
+      : [-side, side].map((s) => [s, s].map(f));
+    const ts = results.map(res => res.map((n, i) => n - line_origin[i]))
+      .map(v => v[0] * line_vector[0] + line_vector[1] * v[1])
+      .map(d => d / magSq);
+    return results.filter((_, i) => line_func(ts[i], epsilon));
+  };
+
   const overlap_convex_polygon_point = (poly, point, func = exclude, epsilon = EPSILON) => poly
     .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
     .map(s => cross2(normalize(subtract(s[1], s[0])), subtract(point, s[0])))
@@ -1403,7 +1217,7 @@
     poly,
     vector, origin,
     fn_poly = include_s,
-    fn_line = include_l$1,
+    fn_line = include_l,
     epsilon = EPSILON
   ) => {
     const intersections = poly
@@ -1457,6 +1271,45 @@
       : sects;
   };
 
+  const intersect_polygon_polygon = (polygon1, polygon2, epsilon = EPSILON) => {
+  	var cp1, cp2, s, e;
+  	const inside = (p) => {
+  		return ((cp2[0] - cp1[0]) * (p[1] - cp1[1]))
+  			> ((cp2[1] - cp1[1]) * (p[0] - cp1[0]) + epsilon);
+  	};
+  	const intersection = () => {
+  		var dc = [ cp1[0] - cp2[0], cp1[1] - cp2[1] ],
+  			dp = [ s[0] - e[0], s[1] - e[1] ],
+  			n1 = cp1[0] * cp2[1] - cp1[1] * cp2[0],
+  			n2 = s[0] * e[1] - s[1] * e[0],
+  			n3 = 1.0 / (dc[0] * dp[1] - dc[1] * dp[0]);
+  		return [(n1*dp[0] - n2*dc[0]) * n3, (n1*dp[1] - n2*dc[1]) * n3];
+  	};
+  	var outputList = polygon1;
+  	cp1 = polygon2[polygon2.length-1];
+  	for (var j in polygon2) {
+  		cp2 = polygon2[j];
+  		var inputList = outputList;
+  		outputList = [];
+  		s = inputList[inputList.length - 1];
+  		for (var i in inputList) {
+  			e = inputList[i];
+  			if (inside(e)) {
+  				if (!inside(s)) {
+  					outputList.push(intersection());
+  				}
+  				outputList.push(e);
+  			}
+  			else if (inside(s)) {
+  				outputList.push(intersection());
+  			}
+  			s = e;
+  		}
+  		cp1 = cp2;
+  	}
+  	return outputList;
+  };
+
   const intersect_param_form = {
     polygon: a => [a],
     rect: a => [a],
@@ -1467,6 +1320,7 @@
   };
   const intersect_func = {
     polygon: {
+      polygon: intersect_polygon_polygon,
       line: (a, b, fnA, fnB, ep) => intersect_convex_polygon_line(...a, ...b, include_s, fnB, ep),
       ray: (a, b, fnA, fnB, ep) => intersect_convex_polygon_line(...a, ...b, include_s, fnB, ep),
       segment: (a, b, fnA, fnB, ep) => intersect_convex_polygon_line(...a, ...b, include_s, fnB, ep),
@@ -1527,6 +1381,31 @@
     return intersect_func[aT][bT](params_a, params_b, domain_a, domain_b, epsilon);
   };
 
+  const convex_polygons_overlap = (poly1, poly2, epsilon = EPSILON) => {
+    for (let p = 0; p < 2; p++) {
+      const polyA = p === 0 ? poly1 : poly2;
+      const polyB = p === 0 ? poly2 : poly1;
+      for (let i = 0; i < polyA.length; i++) {
+        const origin = polyA[i];
+        const vector = rotate90(subtract(polyA[(i + 1) % polyA.length], polyA[i]));
+        const projected = polyB
+          .map(p => subtract(p, origin))
+          .map(v => dot(vector, v));
+        const other_test_point = polyA[(i + 2) % polyA.length];
+        const side_a = dot(vector, subtract(other_test_point, origin));
+        const side = side_a > 0;
+        const one_sided = projected
+          .map(dot => side ? dot < epsilon : dot > -epsilon)
+          .reduce((a, b) => a && b, true);
+        if (one_sided) { return false; }
+      }
+    }
+    return true;
+  };
+
+  const overlap_circle_point = (radius, origin, point, func = exclude, epsilon = EPSILON) =>
+    func(radius - distance2(origin, point), epsilon);
+
   const overlap_line_line = (
     aVector, aOrigin,
     bVector, bOrigin,
@@ -1536,37 +1415,27 @@
   ) => {
     const denominator0 = cross2(aVector, bVector);
     const denominator1 = -denominator0;
-    if (Math.abs(denominator0) < epsilon) {
-      return overlap_line_point(aVector, aOrigin, bOrigin, aFunction, epsilon)
-       || overlap_line_point(flip(aVector), add(aOrigin, aVector), bOrigin, aFunction, epsilon)
-       || overlap_line_point(bVector, bOrigin, aOrigin, bFunction, epsilon)
-       || overlap_line_point(flip(bVector), add(bOrigin, bVector), aOrigin, bFunction, epsilon);
-    }
     const a2b = [bOrigin[0] - aOrigin[0], bOrigin[1] - aOrigin[1]];
+    if (Math.abs(denominator0) < epsilon) {
+      if (Math.abs(cross2(a2b, aVector)) > epsilon) { return false; }
+      const bPt1 = a2b;
+      const bPt2 = add(bPt1, bVector);
+      const aProjLen = dot(aVector, aVector);
+      const bProj1 = dot(bPt1, aVector) / aProjLen;
+      const bProj2 = dot(bPt2, aVector) / aProjLen;
+      const bProjSm = bProj1 < bProj2 ? bProj1 : bProj2;
+      const bProjLg = bProj1 < bProj2 ? bProj2 : bProj1;
+      const bOutside1 = bProjSm > 1 - epsilon;
+      const bOutside2 = bProjLg < epsilon;
+      if (bOutside1 || bOutside2) { return false; }
+      return true;
+    }
     const b2a = [-a2b[0], -a2b[1]];
     const t0 = cross2(a2b, bVector) / denominator0;
     const t1 = cross2(b2a, aVector) / denominator1;
     return aFunction(t0, epsilon / magnitude(aVector))
       && bFunction(t1, epsilon / magnitude(bVector));
   };
-
-  const overlap_convex_polygons = (poly1, poly2, fn_line = exclude_s, fn_point = exclude, epsilon = EPSILON) => {
-    if (overlap_convex_polygon_point(poly1, poly2[0], fn_point, epsilon)) { return true; }
-    if (overlap_convex_polygon_point(poly2, poly1[0], fn_point, epsilon)) { return true; }
-    const e1 = poly1.map((p, i, arr) => [subtract(arr[(i + 1) % arr.length], p), p]);
-    const e2 = poly2.map((p, i, arr) => [subtract(arr[(i + 1) % arr.length], p), p]);
-    for (let i = 0; i < e1.length; i += 1) {
-      for (let j = 0; j < e2.length; j += 1) {
-        if (overlap_line_line(e1[i][0], e1[i][1], e2[j][0], e2[j][1], fn_line, fn_line, epsilon)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
-
-  const overlap_circle_point = (radius, origin, point, func = exclude, epsilon = EPSILON) =>
-    func(radius - distance2(origin, point), epsilon);
 
   const overlap_param_form = {
     polygon: a => [a],
@@ -1579,7 +1448,7 @@
   };
   const overlap_func = {
     polygon: {
-      polygon: (a, b, fnA, fnB, ep) => overlap_convex_polygons(...a, ...b, exclude_s, exclude, ep),
+      polygon: (a, b, fnA, fnB, ep) => convex_polygons_overlap(...a, ...b, exclude_s, exclude, ep),
       vector: (a, b, fnA, fnB, ep) => overlap_convex_polygon_point(...a, ...b, fnA, ep),
     },
     circle: {
@@ -1700,7 +1569,7 @@
     vector,
     origin,
     fn_poly = include,
-    fn_line = include_l$1,
+    fn_line = include_l,
     epsilon = EPSILON
   ) => {
     const numbers = get_intersect_parameters(poly, vector, origin, include_s, epsilon);
@@ -1903,7 +1772,7 @@
         const ud = vector_origin_to_ud({ vector: this.vector, origin: this.origin });
         this.u = ud.u;
         this.d = ud.d;
-        Object.defineProperty(this, "domain_function", { writable: true, value: include_l$1 });
+        Object.defineProperty(this, "domain_function", { writable: true, value: include_l });
       },
       G: {
         dimension: function () {
@@ -1913,7 +1782,7 @@
         },
       },
       M: Object.assign({}, methods$1, {
-        inclusive: function () { this.domain_function = include_l$1; return this; },
+        inclusive: function () { this.domain_function = include_l; return this; },
         exclusive: function () { this.domain_function = exclude_l; return this; },
         clip_function: dist => dist,
         svgPath: function (length = 20000) {
@@ -2505,15 +2374,15 @@
     matrix2,
     matrix3,
     nearest,
-    axioms,
-    axioms_ud,
+    parameterize,
     {
       enclose_convex_polygons_inclusive,
       intersect_convex_polygon_line,
+      intersect_polygon_polygon,
       intersect_circle_circle,
       intersect_circle_line,
       intersect_line_line,
-      overlap_convex_polygons,
+      overlap_convex_polygons: convex_polygons_overlap,
       overlap_convex_polygon_point,
       overlap_line_line,
       overlap_line_point,

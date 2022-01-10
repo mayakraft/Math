@@ -9,6 +9,7 @@ import intersect_line_line from "./intersect-line-line";
 import intersect_circle_circle from "./intersect-circle-circle";
 import intersect_circle_line from "./intersect-circle-line";
 import intersect_convex_polygon_line from "./intersect-polygon-line";
+import intersect_polygon_polygon from "./intersect-polygon-polygon";
 
 // all intersection functions expect primitives to be in a certain form
 // for example all lines are: vector, origin
@@ -24,7 +25,7 @@ const intersect_param_form = {
 
 const intersect_func = {
   polygon: {
-    // polygon: convex_poly_convex_poly,
+    polygon: intersect_polygon_polygon,
     // circle: convex_poly_circle,
     line: (a, b, fnA, fnB, ep) => intersect_convex_polygon_line(...a, ...b, include_s, fnB, ep),
     ray: (a, b, fnA, fnB, ep) => intersect_convex_polygon_line(...a, ...b, include_s, fnB, ep),
@@ -92,4 +93,3 @@ const intersect = function (a, b, epsilon) {
 };
 
 export default intersect;
-
