@@ -367,3 +367,88 @@ test("collinear segment intersections, types not core", () => {
     math.segment([0, 0], [2, 2]).intersect(math.segment([5, 5], [-1, -1])),
   ].forEach(res => expect(res).toBe(undefined));
 });
+
+
+test("polygon polygon, same polygon", () => {
+  // all of the "b" cases are flipped clockwise and should return no solution
+  // same polygon
+  const res1 = math.core.intersect_polygon_polygon(
+    [[60, 10], [50, 50], [20, 20]],
+    [[50, 50], [20, 20], [60, 10]]
+  );
+  expect(res1.length).toBe(3);
+
+  const res2 = math.core.intersect_polygon_polygon(
+    [[50, 50], [25, 25], [50, 0]],
+    [[50, 50], [25, 25], [50, 0]]
+  );
+  expect(res2.length).toBe(3);
+
+  const res2b = math.core.intersect_polygon_polygon(
+    [[50, 0], [25, 25], [50, 50]],
+    [[50, 0], [25, 25], [50, 50]]
+  );
+  expect(res2b.length).toBe(0);
+
+  // same polygon, array rotated
+  const res3 = math.core.intersect_polygon_polygon(
+    [[50, 50], [25, 25], [50, 0]],
+    [[25, 25], [50, 0], [50, 50]]
+  );
+  expect(res3.length).toBe(3);
+
+  const res3b = math.core.intersect_polygon_polygon(
+    [[50, 0], [25, 25], [50, 50]],
+    [[50, 50], [50, 0], [25, 25]]
+  );
+  expect(res3b.length).toBe(0);
+});
+
+test("polygon polygon, edge aligned", () => {
+  // edge aligned
+
+  const poly3 = [[40, 40], [100, 40], [80, 80]];
+  const poly4 = [[100, 40], [40, 40], [80, 0]];
+  const res2 = math.core.intersect_polygon_polygon(poly3, poly4);
+  expect(res2.length).toBe(0);
+
+  const poly5 = [[40, 40], [100, 40], [80, 80]];
+  const poly6 = [[90, 40], [50, 40], [80, 0]];
+  const res3 = math.core.intersect_polygon_polygon(poly5, poly6);
+  expect(res3.length).toBe(0);
+
+  const poly7 = [[40, 40], [100, 40], [80, 80]];
+  const poly8 = [[200, 40], [50, 40], [80, 0]];
+  const res4 = math.core.intersect_polygon_polygon(poly7, poly8);
+  expect(res4.length).toBe(0);
+
+  const poly9 = [[40, 40], [100, 40], [80, 80]];
+  const poly10 = [[200, 40], [20, 40], [80, 0]];
+  const res5 = math.core.intersect_polygon_polygon(poly9, poly10);
+  expect(res5.length).toBe(0);
+});
+
+test("polygon polygon, epsilon", () => {
+  // now with epsilon
+  const ep = 1e-10;
+  const poly11 = [[40, 40 - ep], [100, 40 - ep], [80, 80]];
+  const poly12 = [[100, 40], [40, 40], [80, 0]];
+  const res6 = math.core.intersect_polygon_polygon(poly11, poly12);
+  expect(res6.length).toBe(0);
+  const res7 = math.core.intersect_polygon_polygon(poly12, poly11);
+  expect(res7.length).toBe(0);
+
+  const poly13 = [[60, 10], [50, 50], [20, 20]];
+  const poly14 = [[50+ep, 50+ep], [20, 20], [60, 10]];
+  const res8 = math.core.intersect_polygon_polygon(poly13, poly14);
+  expect(res8.length).toBe(3);
+  const res9 = math.core.intersect_polygon_polygon(poly14, poly13);
+  expect(res9.length).toBe(3);
+
+  const poly15 = [[60, 10], [50, 50], [20, 20]];
+  const poly16 = [[50-ep, 50-ep], [20, 20], [60, 10]];
+  const res10 = math.core.intersect_polygon_polygon(poly15, poly16);
+  expect(res10.length).toBe(3);
+  const res11 = math.core.intersect_polygon_polygon(poly16, poly15);
+  expect(res11.length).toBe(3);
+});

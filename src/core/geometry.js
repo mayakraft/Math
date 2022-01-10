@@ -49,7 +49,6 @@ export const circumcircle = function (a, b, c) {
     radius: Math.sqrt(dx * dx + dy * dy),
   };
 };
-
 /** Calculates the signed area of a polygon. This requires the polygon be non-intersecting.
  * @returns {number} the area of the polygon
  * @example
@@ -60,7 +59,6 @@ export const signed_area = points => 0.5 * points
     const next = arr[(i + 1) % arr.length];
     return el[0] * next[1] - next[0] * el[1];
   }).reduce(fn_add, 0);
-
 /** Calculates the centroid or the center of mass of the polygon.
  * @returns {XY} the location of the centroid
  * @example
@@ -75,7 +73,6 @@ export const centroid = (points) => {
   }).reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0])
     .map(c => c * sixthArea);
 };
-
 /**
  * @returns { x:_, y:_, width:_, height:_ }
  * this can easily be extended to work in any n-dimension
@@ -107,7 +104,6 @@ const angle_array = count => Array
 const angles_to_vecs = (angles, radius) => angles
   .map(a => [radius * Math.cos(a), radius * Math.sin(a)])
   .map(pt => pt.map(n => clean_number(n, 14))); // this step is costly!
-
 // a = 2r tan(π/n)
 /**
  * make regular polygon is circumradius by default
@@ -260,7 +256,6 @@ export const convex_hull = (points, include_collinear = false, epsilon = EPSILON
     ang = Math.atan2(hull[h][1] - angles[0].node[1], hull[h][0] - angles[0].node[0]);
   } while (infiniteLoop < INFINITE_LOOP);
 };
-
 /**
  * @description this recursive algorithm works outwards-to-inwards, each repeat
  * decreases the size of the polygon by one point/side. (removes 2, adds 1)
@@ -351,7 +346,6 @@ const recurse_skeleton = (points, lines, bisectors) => {
   }
   return solutions.concat(recurse_skeleton(points, lines, bisectors));
 };
-
 /**
  * @param {number[][]} array of arrays of numbers (array of points), where
  *   each point is an array of numbers: [number, number].
@@ -384,4 +378,3 @@ export const straight_skeleton = (points) => {
   // console.log("ss points", points_clone, points);
   return recurse_skeleton([...points], lines, bisectors);
 };
-
