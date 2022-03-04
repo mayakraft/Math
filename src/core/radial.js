@@ -12,7 +12,10 @@ import {
   rotate270,
 } from "./algebra";
 import { get_vector_of_vectors } from "../arguments/get";
-import { flatten_arrays } from "../arguments/resize";
+import {
+  flatten_arrays,
+  semi_flatten_arrays,
+} from "../arguments/resize";
 import {
   fn_add,
   fn_vec2_angle,
@@ -150,7 +153,7 @@ export const counter_clockwise_order_radians = function () {
 
 export const counter_clockwise_order2 = function () {
   return counter_clockwise_order_radians(
-    get_vector_of_vectors(arguments).map(fn_vec2_angle)
+    semi_flatten_arrays(arguments).map(fn_vec2_angle)
   );
 };
 /**

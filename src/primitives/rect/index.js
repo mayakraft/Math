@@ -1,6 +1,6 @@
 import Constructors from "../constructors";
 import methods from "../shared/polygon";
-import { enclosing_rectangle } from "../../core/geometry";
+import { bounding_box } from "../../core/geometry";
 import { include, exclude } from "../../arguments/functions";
 import {
   get_rect,
@@ -55,7 +55,8 @@ export default {
     }),
     S: {
       fromPoints: function () {
-        return Constructors.rect(enclosing_rectangle(get_vector_of_vectors(arguments)));
+        const box = bounding_box(get_vector_of_vectors(arguments));
+        return Constructors.rect(box.min[0], box.min[1], box.span[0], box.span[1]);
       }
     }
   }

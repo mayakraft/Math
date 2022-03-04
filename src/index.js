@@ -7,7 +7,6 @@
                __/ |
               |___/
  */
-
 import Typeof from "./arguments/typeof";
 import * as resizers from "./arguments/resize";
 import * as functions from "./arguments/functions";
@@ -24,8 +23,6 @@ import * as matrix2 from "./core/matrix2";
 import * as matrix3 from "./core/matrix3";
 import * as nearest from "./core/nearest";
 import * as parameterize from "./core/parameterize";
-// import * as axioms from "./core/axioms";
-// import * as axioms_ud from "./core/axioms_ud";
 
 import intersect from "./intersection/intersect";
 import overlap from "./intersection/overlap";
@@ -37,6 +34,7 @@ import intersect_circle_line from "./intersection/intersect-circle-line";
 import intersect_line_line from "./intersection/intersect-line-line";
 import overlap_convex_polygons from "./intersection/overlap-polygons";
 import overlap_convex_polygon_point from "./intersection/overlap-polygon-point";
+import overlap_bounding_boxes from "./intersection/overlap-bounding-boxes";
 import overlap_line_line from "./intersection/overlap-line-line";
 import overlap_line_point from "./intersection/overlap-line-point";
 import clip_line_in_convex_polygon from "./clip/polygon";
@@ -73,8 +71,6 @@ math.core = Object.assign(Object.create(null),
   matrix3,
   nearest,
   parameterize,
-  // axioms,
-  // axioms_ud,
   {
     enclose_convex_polygons_inclusive,
     intersect_convex_polygon_line,
@@ -84,6 +80,7 @@ math.core = Object.assign(Object.create(null),
     intersect_line_line,
     overlap_convex_polygons,
     overlap_convex_polygon_point,
+    overlap_bounding_boxes,
     overlap_line_line,
     overlap_line_point,
     clip_line_in_convex_polygon,
@@ -95,4 +92,3 @@ math.intersect = intersect;
 math.overlap = overlap;
 
 export default math;
-

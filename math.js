@@ -814,7 +814,7 @@
   };
   const counter_clockwise_order2 = function () {
     return counter_clockwise_order_radians(
-      get_vector_of_vectors(arguments).map(fn_vec2_angle)
+      semi_flatten_arrays(arguments).map(fn_vec2_angle)
     );
   };
   const counter_clockwise_sectors_radians = function () {
@@ -931,16 +931,16 @@
     }).reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0])
       .map(c => c * sixthArea);
   };
-  const enclosing_rectangle = (points) => {
-    const mins = Array(points[0].length).fill(Infinity);
-    const maxs = Array(points[0].length).fill(-Infinity);
+  const bounding_box = (points, epsilon = 0) => {
+    const min = Array(points[0].length).fill(Infinity);
+    const max = Array(points[0].length).fill(-Infinity);
     points.forEach(point => point
       .forEach((c, i) => {
-        if (c < mins[i]) { mins[i] = c; }
-        if (c > maxs[i]) { maxs[i] = c; }
+        if (c < min[i]) { min[i] = c - epsilon; }
+        if (c > max[i]) { max[i] = c + epsilon; }
       }));
-    const lengths = maxs.map((max, i) => max - mins[i]);
-    return get_rect_params(mins[0], mins[1], lengths[0], lengths[1]);
+    const span = max.map((max, i) => max - min[i]);
+    return { min, max, span };
   };
   const angle_array = count => Array
     .from(Array(Math.floor(count)))
@@ -963,6 +963,16 @@
     make_regular_polygon(sides, (length / 2) / Math.sin(Math.PI / sides));
   const make_regular_polygon_side_length_side_aligned = (sides = 3, length = 1) =>
     make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
+  const make_polygon_non_collinear = (polygon, epsilon = EPSILON) => {
+    const edges_vector = polygon
+      .map((v, i, arr) => [v, arr[(i + 1) % arr.length]])
+      .map(pair => subtract(pair[1], pair[0]));
+    const vertex_collinear = edges_vector
+      .map((vector, i, arr) => [vector, arr[(i + arr.length - 1) % arr.length]])
+      .map(pair => !parallel(pair[1], pair[0], epsilon));
+    return polygon
+      .filter((vertex, v) => vertex_collinear[v]);
+  };
   const split_convex_polygon = (poly, lineVector, linePoint) => {
     let vertices_intersections = poly.map((v, i) => {
       let intersection = overlap_line_point(lineVector, linePoint, v, include_l);
@@ -1116,13 +1126,14 @@
     circumcircle: circumcircle,
     signed_area: signed_area,
     centroid: centroid,
-    enclosing_rectangle: enclosing_rectangle,
+    bounding_box: bounding_box,
     make_regular_polygon: make_regular_polygon,
     make_regular_polygon_side_aligned: make_regular_polygon_side_aligned,
     make_regular_polygon_inradius: make_regular_polygon_inradius,
     make_regular_polygon_inradius_side_aligned: make_regular_polygon_inradius_side_aligned,
     make_regular_polygon_side_length: make_regular_polygon_side_length,
     make_regular_polygon_side_length_side_aligned: make_regular_polygon_side_length_side_aligned,
+    make_polygon_non_collinear: make_polygon_non_collinear,
     split_convex_polygon: split_convex_polygon,
     convex_hull: convex_hull,
     straight_skeleton: straight_skeleton
@@ -1307,7 +1318,7 @@
   		}
   		cp1 = cp2;
   	}
-  	return outputList;
+  	return outputList.length === 0 ? undefined : outputList;
   };
 
   const intersect_param_form = {
@@ -1381,7 +1392,7 @@
     return intersect_func[aT][bT](params_a, params_b, domain_a, domain_b, epsilon);
   };
 
-  const convex_polygons_overlap = (poly1, poly2, epsilon = EPSILON) => {
+  const overlap_convex_polygons = (poly1, poly2, epsilon = EPSILON) => {
     for (let p = 0; p < 2; p++) {
       const polyA = p === 0 ? poly1 : poly2;
       const polyB = p === 0 ? poly2 : poly1;
@@ -1395,7 +1406,7 @@
         const side_a = dot(vector, subtract(other_test_point, origin));
         const side = side_a > 0;
         const one_sided = projected
-          .map(dot => side ? dot < epsilon : dot > -epsilon)
+          .map(dotProd => side ? dotProd < epsilon : dotProd > -epsilon)
           .reduce((a, b) => a && b, true);
         if (one_sided) { return false; }
       }
@@ -1448,7 +1459,7 @@
   };
   const overlap_func = {
     polygon: {
-      polygon: (a, b, fnA, fnB, ep) => convex_polygons_overlap(...a, ...b, exclude_s, exclude, ep),
+      polygon: (a, b, fnA, fnB, ep) => overlap_convex_polygons(...a, ...b, ep),
       vector: (a, b, fnA, fnB, ep) => overlap_convex_polygon_point(...a, ...b, fnA, ep),
     },
     circle: {
@@ -1519,6 +1530,18 @@
       .map(p => overlap_convex_polygon_point(inner, p, include))
       .reduce((a, b) => a && b, true);
     return (!outerGoesInside && innerGoesOutside);
+  };
+
+  const overlap_bounding_boxes = (box1, box2) => {
+    const dimensions = box1.min.length > box2.min.length
+      ? box2.min.length
+      : box1.min.length;
+    for (let d = 0; d < dimensions; d++) {
+      if (box1.min[d] > box2.max[d] || box1.max[d] < box2.min[d]) {
+        return false;
+      }
+    }
+    return true;
   };
 
   const line_line_parameter = (
@@ -1714,7 +1737,7 @@
     },
   };
 
-  const methods$1 = {
+  const LinesMethods = {
     isParallel: function () {
       const arr = resize_up(this.vector, get_line(arguments).vector);
       return parallel(...arr);
@@ -1781,7 +1804,7 @@
             .reduce((a, b) => Math.max(a, b), 0);
         },
       },
-      M: Object.assign({}, methods$1, {
+      M: Object.assign({}, LinesMethods, {
         inclusive: function () { this.domain_function = include_l; return this; },
         exclusive: function () { this.domain_function = exclude_l; return this; },
         clip_function: dist => dist,
@@ -1815,7 +1838,7 @@
             .reduce((a, b) => Math.max(a, b), 0);
         },
       },
-      M: Object.assign({}, methods$1, {
+      M: Object.assign({}, LinesMethods, {
         inclusive: function () { this.domain_function = include_r; return this; },
         exclusive: function () { this.domain_function = exclude_r; return this; },
         flip: function () {
@@ -1856,7 +1879,7 @@
             .reduce((a, b) => Math.max(a, b), 0);
         },
       },
-      M: Object.assign({}, methods$1, {
+      M: Object.assign({}, LinesMethods, {
         inclusive: function () { this.domain_function = include_s; return this; },
         exclusive: function () { this.domain_function = exclude_s; return this; },
         clip_function: segment_limiter,
@@ -2058,15 +2081,15 @@
     }
   };
 
-  const methods = {
+  const PolygonMethods = {
     area: function () {
       return signed_area(this);
     },
     centroid: function () {
       return Constructors.vector(centroid(this));
     },
-    enclosingRectangle: function () {
-      return Constructors.rect(enclosing_rectangle(this));
+    boundingBox: function () {
+      return bounding_box(this);
     },
     straightSkeleton: function () {
       return straight_skeleton(this);
@@ -2167,7 +2190,7 @@
           this.origin[1] + this.height / 2,
         ); },
       },
-      M: Object.assign({}, methods, {
+      M: Object.assign({}, PolygonMethods, {
         inclusive: function () { this.domain_function = include; return this; },
         exclusive: function () { this.domain_function = exclude; return this; },
         area: function () { return this.width * this.height; },
@@ -2178,7 +2201,8 @@
       }),
       S: {
         fromPoints: function () {
-          return Constructors.rect(enclosing_rectangle(get_vector_of_vectors(arguments)));
+          const box = bounding_box(get_vector_of_vectors(arguments));
+          return Constructors.rect(box.min[0], box.min[1], box.span[0], box.span[1]);
         }
       }
     }
@@ -2202,7 +2226,7 @@
           return this;
         },
       },
-      M: Object.assign({}, methods, {
+      M: Object.assign({}, PolygonMethods, {
         inclusive: function () { this.domain_function = include; return this; },
         exclusive: function () { this.domain_function = exclude; return this; },
         segments: function () {
@@ -2223,7 +2247,7 @@
     }
   };
 
-  const assign = (thisMat, mat) => {
+  const array_assign = (thisMat, mat) => {
     for (let i = 0; i < 12; i += 1) {
       thisMat[i] = mat[i];
     }
@@ -2240,45 +2264,45 @@
       M: {
         copy: function () { return Constructors.matrix(...Array.from(this)); },
         set: function () {
-          return assign(this, get_matrix_3x4(arguments));
+          return array_assign(this, get_matrix_3x4(arguments));
         },
         isIdentity: function () { return is_identity3x4(this); },
         multiply: function (mat) {
-          return assign(this, multiply_matrices3(this, mat));
+          return array_assign(this, multiply_matrices3(this, mat));
         },
         determinant: function () {
           return determinant3(this);
         },
         inverse: function () {
-          return assign(this, invert_matrix3(this));
+          return array_assign(this, invert_matrix3(this));
         },
         translate: function (x, y, z) {
-          return assign(this,
+          return array_assign(this,
             multiply_matrices3(this, make_matrix3_translate(x, y, z)));
         },
         rotateX: function (radians) {
-          return assign(this,
+          return array_assign(this,
             multiply_matrices3(this, make_matrix3_rotateX(radians)));
         },
         rotateY: function (radians) {
-          return assign(this,
+          return array_assign(this,
             multiply_matrices3(this, make_matrix3_rotateY(radians)));
         },
         rotateZ: function (radians) {
-          return assign(this,
+          return array_assign(this,
             multiply_matrices3(this, make_matrix3_rotateZ(radians)));
         },
         rotate: function (radians, vector, origin) {
           const transform = make_matrix3_rotate(radians, vector, origin);
-          return assign(this, multiply_matrices3(this, transform));
+          return array_assign(this, multiply_matrices3(this, transform));
         },
         scale: function (amount) {
-          return assign(this,
+          return array_assign(this,
             multiply_matrices3(this, make_matrix3_scale(amount)));
         },
         reflectZ: function (vector, origin) {
           const transform = make_matrix3_reflectZ(vector, origin);
-          return assign(this, multiply_matrices3(this, transform));
+          return array_assign(this, multiply_matrices3(this, transform));
         },
         transform: function (...innerArgs) {
           return Constructors.vector(
@@ -2382,8 +2406,9 @@
       intersect_circle_circle,
       intersect_circle_line,
       intersect_line_line,
-      overlap_convex_polygons: convex_polygons_overlap,
+      overlap_convex_polygons,
       overlap_convex_polygon_point,
+      overlap_bounding_boxes,
       overlap_line_line,
       overlap_line_point,
       clip_line_in_convex_polygon,

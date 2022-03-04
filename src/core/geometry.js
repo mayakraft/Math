@@ -19,6 +19,7 @@ import {
   subtract,
   flip,
   rotate90,
+  parallel,
 } from "./algebra";
 import overlap_line_point from "../intersection/overlap-line-point";
 import intersect_line_line from "../intersection/intersect-line-line";
@@ -74,22 +75,24 @@ export const centroid = (points) => {
     .map(c => c * sixthArea);
 };
 /**
- * @returns { x:_, y:_, width:_, height:_ }
- * this can easily be extended to work in any n-dimension
- * (enclosing cube, hypercube..)
- * if you remove the last line (convert to rect form)
- * and instead return an array of arrays: [[x, y, z], [width, height, depth]]
+ * @description axis-aligned bounding box. given a set of points.
+ * the epsilon is used to make the bounding box inclusive / exclusive
+ * by adding a tiny bit of padding on all sides.
+ * a positive epsilon results in an inclusive boundary. negative, exclusive.
+ * @param {number[][]} an array of unsorted points, in any dimension.
+ * @param {number} epsilon, optional, to add padding around the box.
+ * @returns {object} "min" and "max" are two points, "span" is the lengths.
  */
-export const enclosing_rectangle = (points) => {
-  const mins = Array(points[0].length).fill(Infinity);
-  const maxs = Array(points[0].length).fill(-Infinity);
+export const bounding_box = (points, epsilon = 0) => {
+  const min = Array(points[0].length).fill(Infinity);
+  const max = Array(points[0].length).fill(-Infinity);
   points.forEach(point => point
     .forEach((c, i) => {
-      if (c < mins[i]) { mins[i] = c; }
-      if (c > maxs[i]) { maxs[i] = c; }
+      if (c < min[i]) { min[i] = c - epsilon; }
+      if (c > max[i]) { max[i] = c + epsilon; }
     }));
-  const lengths = maxs.map((max, i) => max - mins[i]);
-  return get_rect_params(mins[0], mins[1], lengths[0], lengths[1]);
+  const span = max.map((max, i) => max - min[i]);
+  return { min, max, span };
 };
 /**
  * the radius parameter measures from the center to the midpoint of the edge
@@ -128,7 +131,25 @@ export const make_regular_polygon_side_length = (sides = 3, length = 1) =>
 
 export const make_regular_polygon_side_length_side_aligned = (sides = 3, length = 1) =>
   make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
-
+/**
+ * @description removes any collinear vertices from a n-dimensional polygon.
+ * @param {number[][]} a polygon as an array of ordered points in array form.
+ * @returns {number[][]} a copy of the polygon with collinear points removed.
+ */
+export const make_polygon_non_collinear = (polygon, epsilon = EPSILON) => {
+  // index map [i] to [i, i+1]
+  const edges_vector = polygon
+    .map((v, i, arr) => [v, arr[(i + 1) % arr.length]])
+    .map(pair => subtract(pair[1], pair[0]));
+  // the vertex to be removed. true=valid, false=collinear.
+  // ask if an edge is parallel to its predecessor, this way,
+  // the edge index will match to the collinear vertex.
+  const vertex_collinear = edges_vector
+    .map((vector, i, arr) => [vector, arr[(i + arr.length - 1) % arr.length]])
+    .map(pair => !parallel(pair[1], pair[0], epsilon));
+  return polygon
+    .filter((vertex, v) => vertex_collinear[v]);
+};
 // export const split_polygon = () => console.warn("split polygon not done");
 
 export const split_convex_polygon = (poly, lineVector, linePoint) => {

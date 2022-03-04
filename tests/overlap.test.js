@@ -259,29 +259,39 @@ test("overlap lines", () => {
   expect(math.core.overlap_line_line(aV, aP, math.core.subtract(b1, b0), b0, math.core.exclude_r, math.core.exclude_s)).toBe(false);
   expect(math.core.overlap_line_line(math.core.subtract(a1, a0), a0, math.core.subtract(b1, b0), b0, math.core.exclude_s, math.core.exclude_s)).toBe(false);
 });
+// if we choose to bring back exclusive / inclusive polygon overlap
+// test("convex polygons overlap with point inside each other", () => {
+// 	const poly1 = [[0, 0], [1, 0], [1, 1], [0, 1]];
+// 	const polyA = [[0.5, 0.5], [10, 10], [10, 0]];
+// 	const polyB = [[-10, -10], [10, -10], [10, 10], [-10, 10]];
+// 	expect(math.core.overlap_convex_polygons(poly1, polyA, math.core.include_s, math.core.include)).toBe(true);
+// 	expect(math.core.overlap_convex_polygons(poly1, polyB, math.core.include_s, math.core.include)).toBe(true);
+// 	expect(math.core.overlap_convex_polygons(polyA, poly1, math.core.include_s, math.core.include)).toBe(true);
+// 	expect(math.core.overlap_convex_polygons(polyB, poly1, math.core.include_s, math.core.include)).toBe(true);
+// });
 
-test("convex polygons overlap with point inside each other", () => {
-	const poly1 = [[0, 0], [1, 0], [1, 1], [0, 1]];
-	const polyA = [[0.5, 0.5], [10, 10], [10, 0]];
-	const polyB = [[-10, -10], [10, -10], [10, 10], [-10, 10]];
-	expect(math.core.overlap_convex_polygons(poly1, polyA, math.core.include_s, math.core.include)).toBe(true);
-	expect(math.core.overlap_convex_polygons(poly1, polyB, math.core.include_s, math.core.include)).toBe(true);
-	expect(math.core.overlap_convex_polygons(polyA, poly1, math.core.include_s, math.core.include)).toBe(true);
-	expect(math.core.overlap_convex_polygons(polyB, poly1, math.core.include_s, math.core.include)).toBe(true);
-});
-
+// test("convex polygons overlap", () => {
+//   const poly1 = [[1,0], [0,1], [-1,0]];  // top
+//   const poly2 = [[0,1], [-1,0], [0,-1]]; // left
+//   const poly3 = [[1,0], [0,1], [0,-1]];  // right
+//   // inclusive
+//   expect(math.core.overlap_convex_polygons(poly1, poly2, math.core.include_s, math.core.include)).toBe(true);
+//   expect(math.core.overlap_convex_polygons(poly2, poly3, math.core.include_s, math.core.include)).toBe(true);
+//   expect(math.core.overlap_convex_polygons(poly1, poly3, math.core.include_s, math.core.include)).toBe(true);
+//   // exclusive
+//   expect(math.core.overlap_convex_polygons(poly1, poly2, math.core.exclude_s, math.core.exclude)).toBe(true);
+//   expect(math.core.overlap_convex_polygons(poly2, poly3, math.core.exclude_s, math.core.exclude)).toBe(false);
+//   expect(math.core.overlap_convex_polygons(poly1, poly3, math.core.exclude_s, math.core.exclude)).toBe(true);
+// });
+// until then, exclusive only
 test("convex polygons overlap", () => {
   const poly1 = [[1,0], [0,1], [-1,0]];  // top
   const poly2 = [[0,1], [-1,0], [0,-1]]; // left
   const poly3 = [[1,0], [0,1], [0,-1]];  // right
-  // inclusive
-  expect(math.core.overlap_convex_polygons(poly1, poly2, math.core.include_s, math.core.include)).toBe(true);
-  expect(math.core.overlap_convex_polygons(poly2, poly3, math.core.include_s, math.core.include)).toBe(true);
-  expect(math.core.overlap_convex_polygons(poly1, poly3, math.core.include_s, math.core.include)).toBe(true);
   // exclusive
-  expect(math.core.overlap_convex_polygons(poly1, poly2, math.core.exclude_s, math.core.exclude)).toBe(true);
-  expect(math.core.overlap_convex_polygons(poly2, poly3, math.core.exclude_s, math.core.exclude)).toBe(false);
-  expect(math.core.overlap_convex_polygons(poly1, poly3, math.core.exclude_s, math.core.exclude)).toBe(true);
+  expect(math.core.overlap_convex_polygons(poly1, poly2)).toBe(true);
+  expect(math.core.overlap_convex_polygons(poly2, poly3)).toBe(false);
+  expect(math.core.overlap_convex_polygons(poly1, poly3)).toBe(true);
 });
 
 test("enclose_convex_polygons_inclusive", () => {

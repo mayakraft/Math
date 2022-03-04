@@ -21,8 +21,7 @@ import { exclude_l } from "../arguments/functions";
  * @param {function} seconde line's boolean test normalized value lies collinear
 */
 
-export const exclude_s = (t, e = EPSILON) => t > e && t < 1 - e;
-
+// export const exclude_s = (t, e = EPSILON) => t > e && t < 1 - e;
 
 const overlap_line_line = (
   aVector, aOrigin,

@@ -27,7 +27,7 @@ const overlap_param_form = {
 
 const overlap_func = {
   polygon: {
-    polygon: (a, b, fnA, fnB, ep) => overlap_convex_polygons(...a, ...b, exclude_s, exclude, ep),
+    polygon: (a, b, fnA, fnB, ep) => overlap_convex_polygons(...a, ...b, ep),
     // circle: (a, b) => 
     // line: (a, b) =>
     // ray: (a, b) =>

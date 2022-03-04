@@ -43,7 +43,7 @@ import {
  *   and returns a modified d for what is considered valid space between 0-1
  */
 
-const methods = {
+const LinesMethods = {
 // todo, this only takes line types. it should be able to take a vector
   isParallel: function () {
     const arr = resize_up(this.vector, get_line(arguments).vector);
@@ -93,5 +93,5 @@ const methods = {
   },
 };
 
-export default methods;
+export default LinesMethods;
 

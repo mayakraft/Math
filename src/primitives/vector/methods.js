@@ -119,4 +119,3 @@ Object.keys(table.vector).forEach(key => {
 });
 
 export default VectorMethods;
-

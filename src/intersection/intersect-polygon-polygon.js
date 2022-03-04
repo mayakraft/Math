@@ -3,6 +3,9 @@ import { EPSILON } from "../core/constants";
  * Sutherland-Hodgman polygon clipping
  * from Rosetta Code
  * refactored to use this library, and include an epsilon
+ * 
+ * the epsilon is hard-coded to be exclusive. two polygons sharing an
+ * edge will return nothing
  *
  * polygons must be counter-clockwise!
  * will not work even if both are similarly clockwise.
@@ -48,7 +51,7 @@ const intersect_polygon_polygon = (polygon1, polygon2, epsilon = EPSILON) => {
 		}
 		cp1 = cp2;
 	}
-	return outputList;
+	return outputList.length === 0 ? undefined : outputList;
 };
 
 export default intersect_polygon_polygon;

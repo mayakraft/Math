@@ -7,7 +7,7 @@ import { multiply_matrix3_vector3 } from "../../core/matrix3";
 import {
   signed_area,
   centroid,
-  enclosing_rectangle,
+  bounding_box,
   split_convex_polygon,
   straight_skeleton,
 } from "../../core/geometry";
@@ -38,7 +38,7 @@ import {
 // this.points - same as above
 // this.sides - array edge pairs of points
 // this.vectors - non-normalized vectors relating to this.sides.
-const methods = {
+const PolygonMethods = {
   area: function () {
     return signed_area(this);
   },
@@ -46,8 +46,8 @@ const methods = {
   centroid: function () {
     return Constructors.vector(centroid(this));
   },
-  enclosingRectangle: function () {
-    return Constructors.rect(enclosing_rectangle(this));
+  boundingBox: function () {
+    return bounding_box(this);
   },
   // contains: function () {
   //   return overlap_convex_polygon_point(this, get_vector(arguments));
@@ -133,5 +133,5 @@ const methods = {
   },
 };
 
-export default methods;
+export default PolygonMethods;
 

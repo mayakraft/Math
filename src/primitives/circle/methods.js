@@ -22,7 +22,6 @@ import Constructors from "../constructors";
 // const circlePoints = c => Array.from(Array(count))
 //   .map((_, i) => { return })
 
-
 const CircleMethods = {
   nearestPoint: function () {
     return Constructors.vector(nearest_point_on_circle(
@@ -79,4 +78,3 @@ const CircleMethods = {
 // give us two tangent lines that intersect a point (outside the circle)
 
 export default CircleMethods;
-

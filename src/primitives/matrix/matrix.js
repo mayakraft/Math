@@ -37,7 +37,7 @@ import {
  */
 
 // this is 4x faster than calling Object.assign(thisMat, mat)
-const assign = (thisMat, mat) => {
+const array_assign = (thisMat, mat) => {
   for (let i = 0; i < 12; i += 1) {
     thisMat[i] = mat[i];
   }
@@ -59,47 +59,47 @@ export default {
     M: {
       copy: function () { return Constructors.matrix(...Array.from(this)); },
       set: function () {
-        return assign(this, get_matrix_3x4(arguments));
+        return array_assign(this, get_matrix_3x4(arguments));
       },
       isIdentity: function () { return is_identity3x4(this); },
       // todo: is this right, on the right hand side?
       multiply: function (mat) {
-        return assign(this, multiply_matrices3(this, mat));
+        return array_assign(this, multiply_matrices3(this, mat));
       },
       determinant: function () {
         return determinant3(this);
       },
       inverse: function () {
-        return assign(this, invert_matrix3(this));
+        return array_assign(this, invert_matrix3(this));
       },
       // todo: is this the right order (this, transform)?
       translate: function (x, y, z) {
-        return assign(this,
+        return array_assign(this,
           multiply_matrices3(this, make_matrix3_translate(x, y, z)));
       },
       rotateX: function (radians) {
-        return assign(this,
+        return array_assign(this,
           multiply_matrices3(this, make_matrix3_rotateX(radians)));
       },
       rotateY: function (radians) {
-        return assign(this,
+        return array_assign(this,
           multiply_matrices3(this, make_matrix3_rotateY(radians)));
       },
       rotateZ: function (radians) {
-        return assign(this,
+        return array_assign(this,
           multiply_matrices3(this, make_matrix3_rotateZ(radians)));
       },
       rotate: function (radians, vector, origin) {
         const transform = make_matrix3_rotate(radians, vector, origin);
-        return assign(this, multiply_matrices3(this, transform));
+        return array_assign(this, multiply_matrices3(this, transform));
       },
       scale: function (amount) {
-        return assign(this,
+        return array_assign(this,
           multiply_matrices3(this, make_matrix3_scale(amount)));
       },
       reflectZ: function (vector, origin) {
         const transform = make_matrix3_reflectZ(vector, origin);
-        return assign(this, multiply_matrices3(this, transform));
+        return array_assign(this, multiply_matrices3(this, transform));
       },
       // todo, do type checking
       transform: function (...innerArgs) {
