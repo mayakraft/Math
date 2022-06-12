@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 // this is used by Line and Ray
 import {
   average,

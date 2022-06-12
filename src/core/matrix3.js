@@ -1,4 +1,7 @@
 /**
+ * Math (c) Kraft
+ */
+/**
  * 3x4 matrix methods. the fourth column is a translation vector
  * these methods depend on arrays of 12 items, 3x3 matrices won't work.
  */

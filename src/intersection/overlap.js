@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import type_of from "../arguments/typeof";
 
 import overlap_convex_polygons from "./overlap-polygons";

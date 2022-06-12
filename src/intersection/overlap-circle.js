@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import { EPSILON } from "../core/constants";
 import { distance2 } from "../core/algebra";
 import { exclude } from "../arguments/functions";

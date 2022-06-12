@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 const VectorGetters = {
   x: function () { return this[0]; },
   y: function () { return this[1]; },

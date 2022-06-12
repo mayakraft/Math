@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import {
   include,
   exclude,

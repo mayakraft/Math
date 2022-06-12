@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import { EPSILON } from "../core/constants";
 import { include_l } from "../arguments/functions";
 import {

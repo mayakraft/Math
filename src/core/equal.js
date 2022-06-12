@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import { EPSILON } from "./constants";
 import {
   fn_and,

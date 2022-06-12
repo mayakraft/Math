@@ -4,7 +4,7 @@ import cleanup from "rollup-plugin-cleanup";
 
 const input = "src/index.js";
 const name = "math";
-const banner = "/* Math (c) Robby Kraft, MIT License */";
+const banner = "/* Math (c) Kraft, MIT License */";
 
 module.exports = [{
   input,
@@ -15,6 +15,14 @@ module.exports = [{
     banner,
   },
   plugins: [cleanup()]
+}, {
+  input,
+  output: {
+    name,
+    file: "docs/math.docs.js",
+    format: "es",
+    banner,
+  },
 }, {
   input,
   output: {

@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 import { EPSILON } from "../../core/constants";
 import { resize } from "../../arguments/resize";

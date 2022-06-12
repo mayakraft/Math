@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import A from "./args";
 import G from "./getters";
 import M from "./methods";

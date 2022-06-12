@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import {
   EPSILON,
   TWO_PI,
@@ -26,10 +29,11 @@ import {
  */
 
 /**
+ * @description check if the first parameter is counter-clockwise between A and B.
  * @param {number} radians
  * @param {number} radians, lower bound
  * @param {number} radians, upper bound
- * this will test if the first parameter is counter-clockwise between A and B.
+ * @returns {boolean}
  */
 export const is_counter_clockwise_between = (angle, angleA, angleB) => {
   while (angleB < angleA) { angleB += TWO_PI; }
@@ -38,7 +42,7 @@ export const is_counter_clockwise_between = (angle, angleA, angleB) => {
   return angle < angleB;
 };
 /**
- * There are 2 interior angles between 2 angles: A-to-B clockwise and
+ * @description There are 2 interior angles between 2 angles: A-to-B clockwise and
  * A-to-B counter-clockwise, this returns the clockwise one.
  * @param {number} angle in radians
  * @param {number} angle in radians
@@ -56,7 +60,7 @@ export const clockwise_angle_radians = (a, b) => {
     : TWO_PI - (b - a);
 };
 /**
- * There are 2 interior angles between 2 angles: A-to-B clockwise and
+ * @description There are 2 interior angles between 2 angles: A-to-B clockwise and
  * A-to-B counter-clockwise, this returns the counter-clockwise one.
  * @param {number} angle in radians
  * @param {number} angle in radians
@@ -73,9 +77,10 @@ export const counter_clockwise_angle_radians = (a, b) => {
     ? b_a
     : TWO_PI - (a - b);
 };
-/** There are 2 angles between 2 vectors, from A to B return the clockwise one.
- * @param {[number, number]} vector
- * @param {[number, number]} vector
+/**
+ * @description There are 2 angles between 2 vectors, from A to B return the clockwise one.
+ * @param {number[]} vector with 2 numbers
+ * @param {number[]} vector with 2 numbers
  * @returns {number} clockwise angle (from a to b) in radians
  */
 export const clockwise_angle2 = (a, b) => {
@@ -104,13 +109,56 @@ export const counter_clockwise_angle2 = (a, b) => {
  *     / .
  *     --------x  b
  */
+/**
+ * @description calculate the angle bisection clockwise from the first vector to the second.
+ * @param {number[]} a one 2D vector
+ * @param {number[]} b one 2D vector
+ * @returns {number[]} one 2D vector
+ */
 export const clockwise_bisect2 = (a, b) => fn_to_vec2(
   fn_vec2_angle(a) - clockwise_angle2(a, b) / 2
 );
-
+/**
+ * @description calculate the angle bisection counter-clockwise from the first vector to the second.
+ * @param {number[]} a one 2D vector
+ * @param {number[]} b one 2D vector
+ * @returns {number[]} one 2D vector
+ */
 export const counter_clockwise_bisect2 = (a, b) => fn_to_vec2(
   fn_vec2_angle(a) + counter_clockwise_angle2(a, b) / 2
 );
+/**
+ * @description subsect into n-divisions the angle clockwise from one angle to the next
+ * @param {number} a one angle in radians
+ * @param {number} b one angle in radians
+ * @param {number} divisions number of angles minus 1, 
+ * @returns {number[]} array of angles in radians
+ */
+export const clockwise_subsect_radians = (divisions, angleA, angleB) => {
+  const angle = clockwise_angle_radians(angleA, angleB) / divisions;
+  return Array.from(Array(divisions - 1))
+    .map((_, i) => angleA + angle * (i + 1));
+};
+export const counter_clockwise_subsect_radians = (divisions, angleA, angleB) => {
+  const angle = counter_clockwise_angle_radians(angleA, angleB) / divisions;
+  return Array.from(Array(divisions - 1))
+    .map((_, i) => angleA + angle * (i + 1));
+};
+export const clockwise_subsect2 = (divisions, vectorA, vectorB) => {
+  const angleA = Math.atan2(vectorA[1], vectorA[0]);
+  const angleB = Math.atan2(vectorB[1], vectorB[0]);
+  return clockwise_subsect_radians(divisions, angleA, angleB)
+    .map(fn_to_vec2);
+};
+/**
+ * subsect the angle between two vectors (counter-clockwise from A to B)
+ */
+export const counter_clockwise_subsect2 = (divisions, vectorA, vectorB) => {
+  const angleA = Math.atan2(vectorA[1], vectorA[0]);
+  const angleB = Math.atan2(vectorB[1], vectorB[0]);
+  return counter_clockwise_subsect_radians(divisions, angleA, angleB)
+    .map(fn_to_vec2);
+};
 
 export const bisect_lines2 = (vectorA, originA, vectorB, originB, epsilon = EPSILON) => {
   const determinant = cross2(vectorA, vectorB);
@@ -183,26 +231,9 @@ export const counter_clockwise_sectors2 = function () {
   );
 };
 /**
- * subsect the angle between two vectors already converted to radians
- */
-export const counter_clockwise_subsect_radians = (divisions, angleA, angleB) => {
-  const angle = counter_clockwise_angle_radians(angleA, angleB) / divisions;
-  return Array.from(Array(divisions - 1))
-    .map((_, i) => angleA + angle * (i + 1));
-};
-/**
- * subsect the angle between two vectors (counter-clockwise from A to B)
- */
-export const counter_clockwise_subsect2 = (divisions, vectorA, vectorB) => {
-  const angleA = Math.atan2(vectorA[1], vectorA[0]);
-  const angleB = Math.atan2(vectorB[1], vectorB[0]);
-  return counter_clockwise_subsect_radians(divisions, angleA, angleB)
-    .map(fn_to_vec2);
-};
-/**
  * subsect the angle between two lines, can handle parallel lines
  */
-// export const subsectLines = function (divisions, pointA, vectorA, pointB, vectorB) {
+// export const subsect = function (divisions, pointA, vectorA, pointB, vectorB) {
 //   const denominator = vectorA[0] * vectorB[1] - vectorB[0] * vectorA[1];
 //   if (Math.abs(denominator) < EPSILON) { /* parallel */
 //     const solution = [midpoint(pointA, pointB), [vectorA[0], vectorA[1]]];

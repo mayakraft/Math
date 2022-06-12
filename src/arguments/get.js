@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../primitives/constructors";
 import { identity2x3 } from "../core/matrix2";
 import { identity3x4 } from "../core/matrix3";
@@ -5,7 +8,7 @@ import { flatten_arrays, semi_flatten_arrays } from "./resize";
 import { fn_not_undefined } from "./functions";
 import { distance2 } from "../core/algebra";
 /**
- * @returns ({ point:[], vector:[] })
+ * @returns {object} in form { point:[], vector:[] }
 */
 const vector_origin_form = (vector, origin) => ({
   vector: vector || [],
@@ -16,7 +19,7 @@ const vector_origin_form = (vector, origin) => ({
  * search function arguments for a valid n-dimensional vector
  * can handle object-vector representation {x:, y:}
  *
- * @returns (number[]) vector in array form, or empty array for bad inputs
+ * @returns {number[]} vector in array form, or empty array for bad inputs
 */
 export const get_vector = function () {
   // todo, incorporate constructors.vector check to all indices. and below
@@ -37,7 +40,7 @@ export const get_vector = function () {
  * search function arguments for a an array of vectors. a vector of vectors
  * can handle object-vector representation {x:, y:}
  *
- * @returns (number[]) vector in array form, or empty array for bad inputs
+ * @returns {number[]} vector in array form, or empty array for bad inputs
 */
 export const get_vector_of_vectors = function () {
   return semi_flatten_arrays(arguments)
@@ -45,7 +48,7 @@ export const get_vector_of_vectors = function () {
 };
 
 /**
- * @returns [[2,3],[10,11]]
+ * @returns {number[]} segment in array form [[a1, a2], [b1, b2]]
 */
 export const get_segment = function () {
   if (arguments[0] instanceof Constructors.segment) {

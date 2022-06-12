@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 import { D2R } from "../../core/constants";
 

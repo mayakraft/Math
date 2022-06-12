@@ -1,4 +1,7 @@
 /**
+ * Math (c) Kraft
+ */
+/**
  * @description point1 and point2 define the segment
  * @param {object} box1, the result of calling "bounding_box()"
  */

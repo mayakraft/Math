@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 import methods from "../shared/polygon";
 import { semi_flatten_arrays } from "../../arguments/resize";
@@ -25,7 +28,7 @@ export default {
     G: {
       // todo: convex test
       isConvex: function () {
-        return true;
+        return undefined;
       },
       points: function () {
         return this;

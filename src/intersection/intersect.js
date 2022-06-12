@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import type_of from "../arguments/typeof";
 import {
   include, exclude,

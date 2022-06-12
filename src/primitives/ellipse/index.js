@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 // import { nearest_point_on_ellipse } from "../../core/nearest";
 import {

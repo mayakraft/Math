@@ -1,7 +1,10 @@
+/**
+ * Math (c) Kraft
+ */
 import { EPSILON, TWO_PI } from "./constants";
 import { nearest_point_on_line } from "./nearest";
 import { clean_number } from "../arguments/resize";
-import { get_rect_params } from "../arguments/get";
+import { get_line, get_rect_params } from "../arguments/get";
 import {
   fn_add,
   include_l,
@@ -9,12 +12,19 @@ import {
   exclude_r,
   exclude_s,
 } from "../arguments/functions";
-import { clockwise_bisect2 } from "./radial";
+import {
+  clockwise_angle2,
+  counter_clockwise_angle2,
+  clockwise_bisect2,
+  clockwise_subsect2,
+  counter_clockwise_subsect2,
+} from "./radial";
 import {
   dot,
   normalize,
   distance,
   midpoint,
+  lerp,
   add,
   subtract,
   flip,
@@ -151,6 +161,36 @@ export const make_polygon_non_collinear = (polygon, epsilon = EPSILON) => {
     .filter((vertex, v) => vertex_collinear[v]);
 };
 // export const split_polygon = () => console.warn("split polygon not done");
+
+const pleat_parallel = (count, a, b) => {
+  const origins = Array.from(Array(count - 1))
+    .map((_, i) => (i + 1) / count)
+    .map(t => lerp(a.origin, b.origin, t));
+  const vector = [...a.vector];
+  return origins.map(origin => ({ origin, vector }));
+};
+
+const pleat_angle = (count, a, b) => {
+  const origin = intersect_line_line(
+    a.vector, a.origin,
+    b.vector, b.origin);
+  const vectors = clockwise_angle2(a.vector, b.vector) < counter_clockwise_angle2(a.vector, b.vector)
+    ? clockwise_subsect2(count, a.vector, b.vector)
+    : counter_clockwise_subsect2(count, a.vector, b.vector);
+  return vectors.map(vector => ({ origin, vector }));
+};
+/**
+ * @param {line} object with two keys/values: { vector: [], origin: [] }
+ * @param {line} object with two keys/values: { vector: [], origin: [] }
+ * @param {number} the number of faces, the number of lines will be n-1.
+ */
+export const pleat = (count, a, b) => {
+  const lineA = get_line(a);
+  const lineB = get_line(b);
+  return parallel(lineA.vector, lineB.vector)
+    ? pleat_parallel(count, lineA, lineB)
+    : pleat_angle(count, lineA, lineB);
+};
 
 export const split_convex_polygon = (poly, lineVector, linePoint) => {
   // todo: should this return undefined if no intersection?

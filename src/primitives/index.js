@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "./constructors";
 import Vector from "./vector/index";
 import Line from "./lines/line";
@@ -7,6 +10,7 @@ import Circle from "./circle/index";
 import Ellipse from "./ellipse/index";
 import Rect from "./rect/index";
 import Polygon from "./polygon/index";
+import Polyline from "./polyline/index";
 import Matrix from "./matrix/matrix";
 // import Junction from "./junction/index";
 // import Plane from "./plane/index";
@@ -33,6 +37,7 @@ const Definitions = Object.assign({},
   Ellipse,
   Rect,
   Polygon,
+  Polyline,
   Matrix,
   // Junction,
   // Plane,
@@ -48,13 +53,14 @@ const create = function (primitiveName, args) {
 // these have to be typed out longform like this
 // this function name is what appears as the object type name in use
 const vector = function () { return create("vector", arguments); };
+const line = function () { return create("line", arguments); };
+const ray = function () { return create("ray", arguments); };
+const segment = function () { return create("segment", arguments); };
 const circle = function () { return create("circle", arguments); };
 const ellipse = function () { return create("ellipse", arguments); };
 const rect = function () { return create("rect", arguments); };
 const polygon = function () { return create("polygon", arguments); };
-const line = function () { return create("line", arguments); };
-const ray = function () { return create("ray", arguments); };
-const segment = function () { return create("segment", arguments); };
+const polyline = function () { return create("polyline", arguments); };
 const matrix = function () { return create("matrix", arguments); };
 // const junction = function () { return create("junction", arguments); };
 // const plane = function () { return create("plane", arguments); };
@@ -62,13 +68,14 @@ const matrix = function () { return create("matrix", arguments); };
 
 Object.assign(Constructors, {
   vector,
+  line,
+  ray,
+  segment,
   circle,
   ellipse,
   rect,
   polygon,
-  line,
-  ray,
-  segment,
+  polyline,
   matrix,
   // junction,
   // plane,

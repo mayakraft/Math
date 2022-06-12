@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 export const identity2x2 = [1, 0, 0, 1];
 export const identity2x3 = identity2x2.concat(0, 0);
 

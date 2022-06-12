@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import {
   clean_number,
 } from "../../arguments/resize";

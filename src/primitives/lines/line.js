@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 import { resize } from "../../arguments/resize";
 import { get_vector, get_line } from "../../arguments/get";

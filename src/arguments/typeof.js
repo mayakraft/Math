@@ -1,4 +1,7 @@
 /**
+ * Math (c) Kraft
+ */
+/**
  * type checking
  */
 /**

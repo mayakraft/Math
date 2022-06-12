@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 import { equivalent_vectors } from "../../core/equal";
 import { counter_clockwise_bisect2 } from "../../core/radial";

@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import { get_vector } from "../../arguments/get";
 
 const VectorArgs = function () {

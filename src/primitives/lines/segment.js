@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 import { EPSILON } from "../../core/constants";
 import { add, subtract, average, magnitude } from "../../core/algebra";

@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import { EPSILON } from "../../core/constants";
 import { bisect_lines2 } from "../../core/radial";
 import { nearest_point_on_line } from "../../core/nearest";

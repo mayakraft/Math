@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 /** n-dimensional vector, with some 3D and 2D-specific operations */
 import A from "./args";
 import G from "./getters";
