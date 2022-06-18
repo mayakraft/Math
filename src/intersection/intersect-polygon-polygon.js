@@ -15,7 +15,7 @@ import { EPSILON } from "../core/constants";
  *
  * https://rosettacode.org/wiki/Sutherland-Hodgman_polygon_clipping#JavaScript
  */
-const intersect_polygon_polygon = (polygon1, polygon2, epsilon = EPSILON) => {
+const intersectPolygonPolygon = (polygon1, polygon2, epsilon = EPSILON) => {
 	var cp1, cp2, s, e;
 	const inside = (p) => {
 		// console.log(p, "inside", ((cp2[0] - cp1[0]) * (p[1] - cp1[1]))
@@ -57,4 +57,4 @@ const intersect_polygon_polygon = (polygon1, polygon2, epsilon = EPSILON) => {
 	return outputList.length === 0 ? undefined : outputList;
 };
 
-export default intersect_polygon_polygon;
+export default intersectPolygonPolygon;

@@ -3,20 +3,20 @@
  */
 import Constructors from "../constructors";
 import methods from "../shared/polygon";
-import { semi_flatten_arrays } from "../../arguments/resize";
+import { semiFlattenArrays } from "../../arguments/resize";
 import { include, exclude } from "../../arguments/functions";
 import { subtract } from "../../core/algebra";
 import {
-  convex_hull,
-  make_polygon_circumradius,
+  convexHull,
+  makePolygonCircumradius,
 } from "../../core/geometry";
 
 export default {
   polygon: {
     P: Array.prototype,
     A: function () {
-      this.push(...semi_flatten_arrays(arguments));
-      // this.points = semi_flatten_arrays(arguments);
+      this.push(...semiFlattenArrays(arguments));
+      // this.points = semiFlattenArrays(arguments);
         // .map(v => Constructors.vector(v));
       this.sides = this
         .map((p, i, arr) => [p, arr[(i + 1) % arr.length]]);
@@ -49,10 +49,10 @@ export default {
         return this.constructor(...arguments);
       },
       regularPolygon: function () {
-        return this.constructor(make_polygon_circumradius(...arguments));
+        return this.constructor(makePolygonCircumradius(...arguments));
       },
       convexHull: function () {
-        return this.constructor(convex_hull(...arguments));
+        return this.constructor(convexHull(...arguments));
       },
     }
   }

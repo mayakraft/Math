@@ -5,7 +5,7 @@
  * @description point1 and point2 define the segment
  * @param {object} box1, the result of calling "bounding_box()"
  */
-const overlap_bounding_boxes = (box1, box2) => {
+const overlapBoundingBoxes = (box1, box2) => {
   const dimensions = box1.min.length > box2.min.length
     ? box2.min.length
     : box1.min.length;
@@ -18,4 +18,4 @@ const overlap_bounding_boxes = (box1, box2) => {
   return true;
 };
 
-export default overlap_bounding_boxes;
+export default overlapBoundingBoxes;

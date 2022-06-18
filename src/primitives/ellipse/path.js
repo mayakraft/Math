@@ -2,7 +2,7 @@
  * Math (c) Kraft
  */
 import {
-  clean_number,
+  cleanNumber,
 } from "../../arguments/resize";
 
 export const pointOnEllipse = function (cx, cy, rx, ry, zRotation, arcAngle) {
@@ -42,7 +42,7 @@ export const pathInfo = function (cx, cy, rx, ry, zRotation, arcStart_, deltaArc
   };
 };
 
-const cln = n => clean_number(n, 4);
+const cln = n => cleanNumber(n, 4);
 
 // (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
 export const ellipticalArcTo = (rx, ry, phi_degrees, fa, fs, endX, endY) =>

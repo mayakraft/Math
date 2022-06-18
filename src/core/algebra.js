@@ -3,8 +3,8 @@
  */
 import { EPSILON } from "./constants";
 import {
-  fn_square,
-  fn_add,
+  fnSquare,
+  fnAdd,
 } from "../arguments/functions";
 
 /**
@@ -31,8 +31,8 @@ import {
  * @returns {number} one scalar
  */
 export const magnitude = v => Math.sqrt(v
-  .map(fn_square)
-  .reduce(fn_add, 0));
+  .map(fnSquare)
+  .reduce(fnAdd, 0));
 /**
  * @description compute the magnitude a 2D vector
  * @param {number[]} v one 2D vector
@@ -44,9 +44,9 @@ export const magnitude2 = v => Math.sqrt(v[0] * v[0] + v[1] * v[1]);
  * @param {number[]} v one vector, n-dimensions
  * @returns {number} one scalar
  */
-export const mag_squared = v => v
-  .map(fn_square)
-  .reduce(fn_add, 0);
+export const magSquared = v => v
+  .map(fnSquare)
+  .reduce(fnAdd, 0);
 /**
  * @description normalize the input vector and return a new vector as a copy
  * @param {number[]} v one vector, n-dimensions
@@ -115,7 +115,7 @@ export const subtract2 = (v, u) => [v[0] - u[0], v[1] - u[1]];
  */
 export const dot = (v, u) => v
   .map((_, i) => v[i] * u[i])
-  .reduce(fn_add, 0);
+  .reduce(fnAdd, 0);
 /**
  * @description compute the dot product of two 2D vectors.
  * @param {number[]} v one 2D vector
@@ -187,7 +187,7 @@ export const cross3 = (v, u) => [
  */
 export const distance = (v, u) => Math.sqrt(v
   .map((_, i) => (v[i] - u[i]) ** 2)
-  .reduce(fn_add, 0));
+  .reduce(fnAdd, 0));
 /**
  * @description compute the distance between two 2D vectors
  * @param {number[]} v one 2D vector
@@ -237,7 +237,7 @@ export const rotate270 = v => [v[1], -v[0]];
  */
 export const degenerate = (v, epsilon = EPSILON) => v
   .map(n => Math.abs(n))
-  .reduce(fn_add, 0) < epsilon;
+  .reduce(fnAdd, 0) < epsilon;
 /**
  * @description check if two vectors are parallel to each other within an epsilon
  * @param {number[]} v one vector, n-dimensions

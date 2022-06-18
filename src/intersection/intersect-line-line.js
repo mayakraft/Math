@@ -10,8 +10,8 @@ import {
   cross2,
 } from "../core/algebra";
 import {
-  include_l,
-  exclude_l,
+  includeL,
+  excludeL,
 } from "../arguments/functions";
 /**
  * @description Find the intersection of two lines. Lines can be lines/rays/segments,
@@ -20,16 +20,16 @@ import {
  * @param {number[]} origin array of 2 numbers, the first line's origin
  * @param {number[]} vector array of 2 numbers, the second line's vector
  * @param {number[]} origin array of 2 numbers, the second line's origin
- * @param {function} [aFunction=include_l] first line's boolean test normalized value lies collinear
- * @param {function} [bFunction=include_l] second line's boolean test normalized value lies collinear
+ * @param {function} [aFunction=includeL] first line's boolean test normalized value lies collinear
+ * @param {function} [bFunction=includeL] second line's boolean test normalized value lies collinear
  * @param {number} [epsilon=1e-6] optional epsilon
  * @returns {number[]|undefined} one 2D point or undefined
 */
-const intersect_line_line = (
+const intersectLineLine = (
   aVector, aOrigin,
   bVector, bOrigin,
-  aFunction = include_l,
-  bFunction = include_l,
+  aFunction = includeL,
+  bFunction = includeL,
   epsilon = EPSILON
 ) => {
   // a normalized determinant gives consisten values across all epsilon ranges
@@ -49,4 +49,4 @@ const intersect_line_line = (
   return undefined;
 };
 
-export default intersect_line_line;
+export default intersectLineLine;

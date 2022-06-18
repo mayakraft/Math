@@ -2,7 +2,7 @@
  * Math (c) Kraft
  */
 import { EPSILON } from "../core/constants";
-import { include_l } from "../arguments/functions";
+import { includeL } from "../arguments/functions";
 import {
   subtract,
   cross2,
@@ -11,10 +11,10 @@ import {
 /*
  * returns an array of array of numbers
  */
-const intersect_circle_line = (
+const intersectCircleLine = (
   circle_radius, circle_origin,
   line_vector, line_origin,
-  line_func = include_l,
+  line_func = includeL,
   epsilon = EPSILON
 ) => {
   const magSq = line_vector[0] ** 2 + line_vector[1] ** 2;
@@ -35,5 +35,5 @@ const intersect_circle_line = (
   return results.filter((_, i) => line_func(ts[i], epsilon));
 };
 
-export default intersect_circle_line;
+export default intersectCircleLine;
 

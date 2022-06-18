@@ -2,17 +2,17 @@
  * Math (c) Kraft
  */
 import Constructors from "../constructors";
-import { equivalent_vectors } from "../../core/equal";
-import { counter_clockwise_bisect2 } from "../../core/radial";
+import { equivalentVectors } from "../../core/equal";
+import { counterClockwiseBisect2 } from "../../core/radial";
 
 import {
   resize,
-  resize_up,
+  resizeUp,
 } from "../../arguments/resize";
 
 import {
-  get_vector,
-  get_matrix_3x4,
+  getVector,
+  getMatrix3x4,
 } from "../../arguments/get";
 
 import {
@@ -33,11 +33,11 @@ import {
 } from "../../core/algebra";
 
 import {
-  make_matrix2_rotate,
+  makeMatrix2Rotate,
 } from "../../core/matrix2";
 
 import {
-  multiply_matrix3_vector3,
+  multiplyMatrix3Vector3,
 } from "../../core/matrix3";
 
 import overlap from "../../intersection/overlap";
@@ -46,19 +46,19 @@ const table = {
   preserve: { // don't transform the return type. preserve it
     magnitude: function () { return magnitude(this); },
     isEquivalent: function () {
-      return equivalent_vectors(this, get_vector(arguments));
+      return equivalentVectors(this, getVector(arguments));
     },
     isParallel: function () {
-      return parallel(...resize_up(this, get_vector(arguments)));
+      return parallel(...resizeUp(this, getVector(arguments)));
     },
     isCollinear: function (line) {
       return overlap(this, line);
     },
     dot: function () {
-      return dot(...resize_up(this, get_vector(arguments)));
+      return dot(...resizeUp(this, getVector(arguments)));
     },
     distanceTo: function () {
-      return distance(...resize_up(this, get_vector(arguments)));
+      return distance(...resizeUp(this, getVector(arguments)));
     },
     overlap: function (other) {
       return overlap(this, other);
@@ -74,12 +74,12 @@ const table = {
     cross: function () {
       return cross3(
         resize(3, this),
-        resize(3, get_vector(arguments))
+        resize(3, getVector(arguments))
       );
     },
     transform: function () {
-      return multiply_matrix3_vector3(
-        get_matrix_3x4(arguments),
+      return multiplyMatrix3Vector3(
+        getMatrix3x4(arguments),
         resize(3, this)
       );
     },
@@ -89,26 +89,26 @@ const table = {
      * @returns {number[]} one vector, the sum of this and the input vector
      */
     add: function () {
-      return add(this, resize(this.length, get_vector(arguments)));
+      return add(this, resize(this.length, getVector(arguments)));
     },
     subtract: function () {
-      return subtract(this, resize(this.length, get_vector(arguments)));
+      return subtract(this, resize(this.length, getVector(arguments)));
     },
     // todo, can this be improved?
     rotateZ: function (angle, origin) {
-      return multiply_matrix3_vector3(
-        get_matrix_3x4(make_matrix2_rotate(angle, origin)),
+      return multiplyMatrix3Vector3(
+        getMatrix3x4(makeMatrix2Rotate(angle, origin)),
         resize(3, this)
       );
     },
     lerp: function (vector, pct) {
-      return lerp(this, resize(this.length, get_vector(vector)), pct);
+      return lerp(this, resize(this.length, getVector(vector)), pct);
     },
     midpoint: function () {
-      return midpoint(...resize_up(this, get_vector(arguments)));
+      return midpoint(...resizeUp(this, getVector(arguments)));
     },
     bisect: function () {
-      return counter_clockwise_bisect2(this, get_vector(arguments));
+      return counterClockwiseBisect2(this, getVector(arguments));
     },
   }
 };

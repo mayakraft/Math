@@ -100,7 +100,7 @@ test("transformLine", () => {
 // });
 
 const testEqualVectors = function (...args) {
-  expect(math.core.equivalent_vectors(...args)).toBe(true);
+  expect(math.core.equivalentVectors(...args)).toBe(true);
 };
 
 const sqrt05 = Math.sqrt(0.5);
@@ -110,21 +110,21 @@ const sqrt05 = Math.sqrt(0.5);
  */
 
 test("matrix 2 core", () => {
-  expect(math.core.invert_matrix2([1,0,0,1,0,0])).not.toBe(undefined);
-  const r1 = math.core.make_matrix2_translate();
+  expect(math.core.invertMatrix2([1,0,0,1,0,0])).not.toBe(undefined);
+  const r1 = math.core.makeMatrix2Translate();
   expect(r1[0]).toBe(1);
   expect(r1[4]).toBe(0);
   expect(r1[5]).toBe(0);
-  const r2 = math.core.make_matrix2_scale(2,-1)
+  const r2 = math.core.makeMatrix2Scale(2,-1)
   expect(r2[0]).toBe(2);
   expect(r2[3]).toBe(-1);
 });
 
 test("matrix core invert", () => {
-  expect(math.core.invert_matrix2([1,0,0,1,0,0])).not.toBe(undefined);
-  expect(math.core.invert_matrix3([1,0,0,0,1,0,0,0,1,0,0,0])).not.toBe(undefined);
-  expect(math.core.invert_matrix2([5,5,4,4,3,3])).toBe(undefined);
-  expect(math.core.invert_matrix3([0,1,1,0,1,1,0,1,1,1,1,1])).toBe(undefined);
+  expect(math.core.invertMatrix2([1,0,0,1,0,0])).not.toBe(undefined);
+  expect(math.core.invertMatrix3([1,0,0,0,1,0,0,0,1,0,0,0])).not.toBe(undefined);
+  expect(math.core.invertMatrix2([5,5,4,4,3,3])).toBe(undefined);
+  expect(math.core.invertMatrix3([0,1,1,0,1,1,0,1,1,1,1,1])).toBe(undefined);
 });
 
 test("matrix 3, init with parameters", () => {
@@ -138,20 +138,20 @@ test("matrix 3, init with parameters", () => {
 
 // todo: test matrix3 methods (invert) with the translation component to make sure it carries over
 test("matrix 3 core, transforms", () => {
-  const result1 = math.core.make_matrix3_translate();
+  const result1 = math.core.makeMatrix3Translate();
   [1,0,0,0,1,0,0,0,1,0,0,0].forEach((n, i) => expect(n).toBe(result1[i]));
   // rotate 360 degrees about an arbitrary axis and origin
   testEqualVectors([1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-    math.core.make_matrix3_rotate(Math.PI * 2,
+    math.core.makeMatrix3Rotate(Math.PI * 2,
       [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5],
       [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]));
 
-  testEqualVectors(math.core.make_matrix3_rotateX(Math.PI / 6),
-    math.core.make_matrix3_rotate(Math.PI / 6, [1, 0, 0]));
-  testEqualVectors(math.core.make_matrix3_rotateY(Math.PI / 6),
-    math.core.make_matrix3_rotate(Math.PI / 6, [0, 1, 0]));
-  testEqualVectors(math.core.make_matrix3_rotateZ(Math.PI / 6),
-    math.core.make_matrix3_rotate(Math.PI / 6, [0, 0, 1]));
+  testEqualVectors(math.core.makeMatrix3RotateX(Math.PI / 6),
+    math.core.makeMatrix3Rotate(Math.PI / 6, [1, 0, 0]));
+  testEqualVectors(math.core.makeMatrix3RotateY(Math.PI / 6),
+    math.core.makeMatrix3Rotate(Math.PI / 6, [0, 1, 0]));
+  testEqualVectors(math.core.makeMatrix3RotateZ(Math.PI / 6),
+    math.core.makeMatrix3Rotate(Math.PI / 6, [0, 0, 1]));
   // source wikipedia https://en.wikipedia.org/wiki/Rotation_matrix#Examples
   const exampleMat = [
     0.35612209405955486, -0.8018106071106572, 0.47987165414043453,
@@ -161,30 +161,30 @@ test("matrix 3 core, transforms", () => {
   ];
   testEqualVectors(
     exampleMat,
-    math.core.make_matrix3_rotate(-74 / 180 * Math.PI, [-1 / 3, 2 / 3, 2 / 3])
+    math.core.makeMatrix3Rotate(-74 / 180 * Math.PI, [-1 / 3, 2 / 3, 2 / 3])
   );
   testEqualVectors(
     exampleMat,
-    math.core.make_matrix3_rotate(-74 / 180 * Math.PI, [-0.5, 1, 1])
+    math.core.makeMatrix3Rotate(-74 / 180 * Math.PI, [-0.5, 1, 1])
   );
 
   testEqualVectors([1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0],
-    math.core.make_matrix3_rotate(Math.PI / 6, [1, 0, 0]));
+    math.core.makeMatrix3Rotate(Math.PI / 6, [1, 0, 0]));
 });
 
 test("matrix 3 core", () => {
   expect(math.core.determinant3([1, 2, 3, 2, 4, 8, 7, 8, 9])).toBe(12);
   expect(math.core.determinant3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0])).toBe(10);
   testEqualVectors([4, 5, -8, -5, -6, 9, -2, -2, 3, 0, 0, 0],
-    math.core.invert_matrix3([0, 1, -3, -3, -4, 4, -2, -2, 1, 0, 0, 0]));
+    math.core.invertMatrix3([0, 1, -3, -3, -4, 4, -2, -2, 1, 0, 0, 0]));
   testEqualVectors([0.2, -0.2, 0.2, 0.2, 0.3, -0.3, 0, 1, 0, 0, 0, 0],
-    math.core.invert_matrix3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
-  const mat_3d_ref = math.core.make_matrix3_reflectZ([1, -2], [12, 13]);
-  testEqualVectors(math.core.make_matrix2_reflect([1, -2], [12, 13]),
+    math.core.invertMatrix3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
+  const mat_3d_ref = math.core.makeMatrix3ReflectZ([1, -2], [12, 13]);
+  testEqualVectors(math.core.makeMatrix2Reflect([1, -2], [12, 13]),
     [mat_3d_ref[0], mat_3d_ref[1], mat_3d_ref[3], mat_3d_ref[4], mat_3d_ref[9], mat_3d_ref[10]]);
   // source wolfram alpha
   testEqualVectors([-682, 3737, -5545, 2154, -549, -1951, 953, -3256, 4401, 0, 0, 0],
-    math.core.multiply_matrices3([5, -52, 85, 15, -9, -2, 32, 2, -50, 0, 0, 0],
+    math.core.multiplyMatrices3([5, -52, 85, 15, -9, -2, 32, 2, -50, 0, 0, 0],
       [-77, 25, -21, 3, 53, 42, 63, 2, 19, 0, 0, 0]));
 });
 

@@ -6,34 +6,33 @@ import {
   subtract,
   distance2,
 } from "../../core/algebra";
-import { multiply_matrix3_vector3 } from "../../core/matrix3";
+import { multiplyMatrix3Vector3 } from "../../core/matrix3";
 import {
-  signed_area,
+  signedArea,
   centroid,
-  bounding_box,
-  split_convex_polygon,
-  straight_skeleton,
+  boundingBox,
+  splitConvexPolygon,
+  straightSkeleton,
 } from "../../core/geometry";
-import Typeof from "../../arguments/typeof";
 import {
-  get_vector,
-  get_matrix_3x4,
-  get_line,
-  get_segment,
+  getVector,
+  getMatrix3x4,
+  getLine,
+  getSegment,
 } from "../../arguments/get";
 import {
   resize,
-  semi_flatten_arrays,
+  semiFlattenArrays,
 } from "../../arguments/resize";
 import {
-  include_l
+  includeL
 } from "../../arguments/functions";
 import Intersect from "../../intersection/intersect";
 import Overlap from "../../intersection/overlap";
-import clip_line_in_convex_polygon from "../../clip/polygon";
+import clipLineInConvexPolygon from "../../clip/polygon";
 import {
-  nearest_point_on_line,
-  nearest_point_on_polygon,
+  nearestPointOnLine,
+  nearestPointOnPolygon,
 } from "../../core/nearest";
 
 // a polygon is expecting to have these properties:
@@ -47,20 +46,20 @@ const PolygonMethods = {
    * @returns {number} the signed area
    */
   area: function () {
-    return signed_area(this);
+    return signedArea(this);
   },
   // midpoint: function () { return average(this); },
   centroid: function () {
     return Constructors.vector(centroid(this));
   },
   boundingBox: function () {
-    return bounding_box(this);
+    return boundingBox(this);
   },
   // contains: function () {
-  //   return overlap_convex_polygon_point(this, get_vector(arguments));
+  //   return overlap_convex_polygon_point(this, getVector(arguments));
   // },
   straightSkeleton: function () {
-    return straight_skeleton(this);
+    return straightSkeleton(this);
   },
   // scale will return a rect for rectangles, otherwise polygon
   scale: function (magnitude, center = centroid(this)) {
@@ -82,14 +81,14 @@ const PolygonMethods = {
     return Constructors.polygon(newPoints);
   },
   translate: function () {
-    const vec = get_vector(...arguments);
+    const vec = getVector(...arguments);
     const newPoints = this.map(p => p.map((n, i) => n + vec[i]));
     return this.constructor.fromPoints(newPoints);
   },
   transform: function () {
-    const m = get_matrix_3x4(...arguments);
+    const m = getMatrix3x4(...arguments);
     const newPoints = this
-      .map(p => multiply_matrix3_vector3(m, resize(3, p)));
+      .map(p => multiplyMatrix3Vector3(m, resize(3, p)));
     return Constructors.polygon(newPoints);
   },
   // sectors: function () {
@@ -103,16 +102,16 @@ const PolygonMethods = {
   //   });
   // },
   nearest: function () {
-    const point = get_vector(...arguments);
-    const result = nearest_point_on_polygon(this, point);
+    const point = getVector(...arguments);
+    const result = nearestPointOnPolygon(this, point);
     return result === undefined
       ? undefined
       : Object.assign(result, { edge: this.sides[result.i] });
   },
   split: function () {
-    const line = get_line(...arguments);
-    // const split_func = this.isConvex ? split_convex_polygon : split_polygon;
-    const split_func = split_convex_polygon;
+    const line = getLine(...arguments);
+    // const split_func = this.isConvex ? splitConvexPolygon : split_polygon;
+    const split_func = splitConvexPolygon;
     return split_func(this, line.vector, line.origin)
       .map(poly => Constructors.polygon(poly));
   },
@@ -123,8 +122,8 @@ const PolygonMethods = {
     return Intersect(this, ...arguments);
   },
   clip: function (line_type, epsilon) {
-    const fn_line = line_type.domain_function ? line_type.domain_function : include_l;
-    const segment = clip_line_in_convex_polygon(this,
+    const fn_line = line_type.domain_function ? line_type.domain_function : includeL;
+    const segment = clipLineInConvexPolygon(this,
       line_type.vector,
       line_type.origin,
       this.domain_function,

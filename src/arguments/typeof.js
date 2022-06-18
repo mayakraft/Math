@@ -15,7 +15,7 @@
  * @param {any} any object
  * @returns {string} the type name
  */
-const type_of = function (obj) {
+const typeOf = function (obj) {
   switch (obj.constructor.name) {
     case "vector":
     case "matrix":
@@ -39,5 +39,5 @@ const type_of = function (obj) {
   return undefined;
 };
 
-export default type_of;
+export default typeOf;
 

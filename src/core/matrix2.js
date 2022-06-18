@@ -15,7 +15,7 @@ export const identity2x3 = identity2x2.concat(0, 0);
  * @param {number[]} matrix, in array form
  * @returns {number[]} vector, the input vector transformed by the matrix
  */
-export const multiply_matrix2_vector2 = (matrix, vector) => [
+export const multiplyMatrix2Vector2 = (matrix, vector) => [
   matrix[0] * vector[0] + matrix[2] * vector[1] + matrix[4],
   matrix[1] * vector[0] + matrix[3] * vector[1] + matrix[5]
 ];
@@ -23,7 +23,7 @@ export const multiply_matrix2_vector2 = (matrix, vector) => [
  * @param line in point-vector form, matrix
  * @returns transformed line in point-vector form
  */
-export const multiply_matrix2_line2 = (matrix, vector, origin) => ({
+export const multiplyMatrix2Line2 = (matrix, vector, origin) => ({
   vector: [
     matrix[0] * vector[0] + matrix[2] * vector[1],
     matrix[1] * vector[0] + matrix[3] * vector[1]
@@ -37,7 +37,7 @@ export const multiply_matrix2_line2 = (matrix, vector, origin) => ({
  * @param {number[]} matrix, matrix, left/right order matches what you'd see on a page.
  * @returns {number[]} matrix
  */
-export const multiply_matrices2 = (m1, m2) => [
+export const multiplyMatrices2 = (m1, m2) => [
   m1[0] * m2[0] + m1[2] * m2[1],
   m1[1] * m2[0] + m1[3] * m2[1],
   m1[0] * m2[2] + m1[2] * m2[3],
@@ -57,7 +57,7 @@ export const determinant2 = m => m[0] * m[3] - m[1] * m[2];
  * @param {number[]} matrix one matrix in array form
  * @returns {number[]|undefined} the inverted matrix, or undefined if not possible
  */
-export const invert_matrix2 = (m) => {
+export const invertMatrix2 = (m) => {
   const det = determinant2(m);
   if (Math.abs(det) < 1e-6 || isNaN(det) || !isFinite(m[4]) || !isFinite(m[5])) {
     return undefined;
@@ -75,12 +75,12 @@ export const invert_matrix2 = (m) => {
  * @param {number} x, y
  * @returns {number[]} matrix
  */
-export const make_matrix2_translate = (x = 0, y = 0) => identity2x2.concat(x, y);
+export const makeMatrix2Translate = (x = 0, y = 0) => identity2x2.concat(x, y);
 /**
  * @param ratio of scale, optional origin homothetic center (0,0 default)
  * @returns {number[]} matrix
  */
-export const make_matrix2_scale = (x, y, origin = [0, 0]) => [
+export const makeMatrix2Scale = (x, y, origin = [0, 0]) => [
   x,
   0,
   0,
@@ -92,7 +92,7 @@ export const make_matrix2_scale = (x, y, origin = [0, 0]) => [
  * @param angle of rotation, origin of transformation
  * @returns {number[]} matrix
  */
-export const make_matrix2_rotate = (angle, origin = [0, 0]) => {
+export const makeMatrix2Rotate = (angle, origin = [0, 0]) => {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
   return [
@@ -110,7 +110,7 @@ export const make_matrix2_rotate = (angle, origin = [0, 0]) => {
  * @param line in vector-origin form
  * @returns matrix
  */
-export const make_matrix2_reflect = (vector, origin = [0, 0]) => {
+export const makeMatrix2Reflect = (vector, origin = [0, 0]) => {
   // the line of reflection passes through origin, runs along vector
   const angle = Math.atan2(vector[1], vector[0]);
   const cosAngle = Math.cos(angle);

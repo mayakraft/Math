@@ -1,18 +1,18 @@
 /**
  * Math (c) Kraft
  */
-import type_of from "../arguments/typeof";
+import typeOf from "../arguments/typeof";
 
-import overlap_convex_polygons from "./overlap-polygons";
-import overlap_convex_polygon_point from "./overlap-polygon-point";
-import { overlap_circle_point } from "./overlap-circle";
-import overlap_line_line from "./overlap-line-line";
-import overlap_line_point from "./overlap-line-point";
-import { equivalent_vector2 } from "../core/equal";
+import overlapConvexPolygons from "./overlap-polygons";
+import overlapConvexPolygonPoint from "./overlap-polygon-point";
+import { overlapCirclePoint } from "./overlap-circle";
+import overlapLineLine from "./overlap-line-line";
+import overlapLinePoint from "./overlap-line-point";
+import { equivalentVector2 } from "../core/equal";
 import {
   include, exclude,
-  include_l, include_r, include_s,
-  exclude_l, exclude_r, exclude_s,
+  includeL, includeR, includeS,
+  excludeL, excludeR, excludeS,
 } from "../arguments/functions";
 
 // all intersection functions expect primitives to be in a certain form
@@ -30,12 +30,12 @@ const overlap_param_form = {
 
 const overlap_func = {
   polygon: {
-    polygon: (a, b, fnA, fnB, ep) => overlap_convex_polygons(...a, ...b, ep),
+    polygon: (a, b, fnA, fnB, ep) => overlapConvexPolygons(...a, ...b, ep),
     // circle: (a, b) => 
     // line: (a, b) =>
     // ray: (a, b) =>
     // segment: (a, b) =>
-    vector: (a, b, fnA, fnB, ep) => overlap_convex_polygon_point(...a, ...b, fnA, ep),
+    vector: (a, b, fnA, fnB, ep) => overlapConvexPolygonPoint(...a, ...b, fnA, ep),
   },
   circle: {
     // polygon: (a, b) =>
@@ -43,39 +43,39 @@ const overlap_func = {
     // line: (a, b) =>
     // ray: (a, b) =>
     // segment: (a, b) =>
-    vector: (a, b, fnA, fnB, ep) => overlap_circle_point(...a, ...b, exclude, ep),
+    vector: (a, b, fnA, fnB, ep) => overlapCirclePoint(...a, ...b, exclude, ep),
   },
   line: {
     // polygon: (a, b) =>
     // circle: (a, b) =>
-    line: (a, b, fnA, fnB, ep) => overlap_line_line(...a, ...b, fnA, fnB, ep),
-    ray: (a, b, fnA, fnB, ep) => overlap_line_line(...a, ...b, fnA, fnB, ep),
-    segment: (a, b, fnA, fnB, ep) => overlap_line_line(...a, ...b, fnA, fnB, ep),
-    vector: (a, b, fnA, fnB, ep) => overlap_line_point(...a, ...b, fnA, ep),
+    line: (a, b, fnA, fnB, ep) => overlapLineLine(...a, ...b, fnA, fnB, ep),
+    ray: (a, b, fnA, fnB, ep) => overlapLineLine(...a, ...b, fnA, fnB, ep),
+    segment: (a, b, fnA, fnB, ep) => overlapLineLine(...a, ...b, fnA, fnB, ep),
+    vector: (a, b, fnA, fnB, ep) => overlapLinePoint(...a, ...b, fnA, ep),
   },
   ray: {
     // polygon: (a, b) =>
     // circle: (a, b) =>
-    line: (a, b, fnA, fnB, ep) => overlap_line_line(...b, ...a, fnB, fnA, ep),
-    ray: (a, b, fnA, fnB, ep) => overlap_line_line(...a, ...b, fnA, fnB, ep),
-    segment: (a, b, fnA, fnB, ep) => overlap_line_line(...a, ...b, fnA, fnB, ep),
-    vector: (a, b, fnA, fnB, ep) => overlap_line_point(...a, ...b, fnA, ep),
+    line: (a, b, fnA, fnB, ep) => overlapLineLine(...b, ...a, fnB, fnA, ep),
+    ray: (a, b, fnA, fnB, ep) => overlapLineLine(...a, ...b, fnA, fnB, ep),
+    segment: (a, b, fnA, fnB, ep) => overlapLineLine(...a, ...b, fnA, fnB, ep),
+    vector: (a, b, fnA, fnB, ep) => overlapLinePoint(...a, ...b, fnA, ep),
   },
   segment: {
     // polygon: (a, b) =>
     // circle: (a, b) =>
-    line: (a, b, fnA, fnB, ep) => overlap_line_line(...b, ...a, fnB, fnA, ep),
-    ray: (a, b, fnA, fnB, ep) => overlap_line_line(...b, ...a, fnB, fnA, ep),
-    segment: (a, b, fnA, fnB, ep) => overlap_line_line(...a, ...b, fnA, fnB, ep),
-    vector: (a, b, fnA, fnB, ep) => overlap_line_point(...a, ...b, fnA, ep),
+    line: (a, b, fnA, fnB, ep) => overlapLineLine(...b, ...a, fnB, fnA, ep),
+    ray: (a, b, fnA, fnB, ep) => overlapLineLine(...b, ...a, fnB, fnA, ep),
+    segment: (a, b, fnA, fnB, ep) => overlapLineLine(...a, ...b, fnA, fnB, ep),
+    vector: (a, b, fnA, fnB, ep) => overlapLinePoint(...a, ...b, fnA, ep),
   },
   vector: {
-    polygon: (a, b, fnA, fnB, ep) => overlap_convex_polygon_point(...b, ...a, fnB, ep),
-    circle: (a, b, fnA, fnB, ep) => overlap_circle_point(...b, ...a, exclude, ep),
-    line: (a, b, fnA, fnB, ep) => overlap_line_point(...b, ...a, fnB, ep),
-    ray: (a, b, fnA, fnB, ep) => overlap_line_point(...b, ...a, fnB, ep),
-    segment: (a, b, fnA, fnB, ep) => overlap_line_point(...b, ...a, fnB, ep),
-    vector: (a, b, fnA, fnB, ep) => equivalent_vector2(...a, ...b, ep),
+    polygon: (a, b, fnA, fnB, ep) => overlapConvexPolygonPoint(...b, ...a, fnB, ep),
+    circle: (a, b, fnA, fnB, ep) => overlapCirclePoint(...b, ...a, exclude, ep),
+    line: (a, b, fnA, fnB, ep) => overlapLinePoint(...b, ...a, fnB, ep),
+    ray: (a, b, fnA, fnB, ep) => overlapLinePoint(...b, ...a, fnB, ep),
+    segment: (a, b, fnA, fnB, ep) => overlapLinePoint(...b, ...a, fnB, ep),
+    vector: (a, b, fnA, fnB, ep) => equivalentVector2(...a, ...b, ep),
   },
 };
 
@@ -94,15 +94,15 @@ const default_overlap_domain_function = {
   polygon: exclude,
   rect: exclude,
   circle: exclude, // not used
-  line: exclude_l,
-  ray: exclude_r,
-  segment: exclude_s,
-  vector: exclude_l, // not used
+  line: excludeL,
+  ray: excludeR,
+  segment: excludeS,
+  vector: excludeL, // not used
 };
 
 const overlap = function (a, b, epsilon) {
-  const type_a = type_of(a);
-  const type_b = type_of(b);
+  const type_a = typeOf(a);
+  const type_b = typeOf(b);
   const aT = similar_overlap_types[type_a];
   const bT = similar_overlap_types[type_b];
   const params_a = overlap_param_form[type_a](a);

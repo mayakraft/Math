@@ -11,7 +11,7 @@ import { EPSILON } from "../core/constants";
  * @description find out if two convex polygons are overlapping by searching
  * for a dividing axis, which should be one side from one of the polygons.
  */
-const overlap_convex_polygons = (poly1, poly2, epsilon = EPSILON) => {
+const overlapConvexPolygons = (poly1, poly2, epsilon = EPSILON) => {
   for (let p = 0; p < 2; p++) {
     // for non-overlapping convex polygons, it's possible that only only
     // one edge on one polygon holds the property of being a dividing axis.
@@ -44,4 +44,4 @@ const overlap_convex_polygons = (poly1, poly2, epsilon = EPSILON) => {
   return true;
 };
 
-export default overlap_convex_polygons;
+export default overlapConvexPolygons;

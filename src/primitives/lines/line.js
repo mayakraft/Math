@@ -3,18 +3,18 @@
  */
 import Constructors from "../constructors";
 import { resize } from "../../arguments/resize";
-import { get_vector, get_line } from "../../arguments/get";
+import { getVector, getLine } from "../../arguments/get";
 import {
-  include_l,
-  exclude_l,
+  includeL,
+  excludeL,
 } from "../../arguments/functions";
 import {
   add,
   scale,
 } from "../../core/algebra";
 import {
-  vector_origin_to_ud,
-  ud_to_vector_origin
+  vectorOriginToUD,
+  UDToVectorOrigin
 } from "../../core/parameterize";
 import Static from "./static";
 import methods from "./methods";
@@ -24,13 +24,13 @@ export default {
     P: Object.prototype,
 
     A: function () {
-      const l = get_line(...arguments);
+      const l = getLine(...arguments);
       this.vector = Constructors.vector(l.vector);
       this.origin = Constructors.vector(resize(this.vector.length, l.origin));
-      const ud = vector_origin_to_ud({ vector: this.vector, origin: this.origin });
+      const ud = vectorOriginToUD({ vector: this.vector, origin: this.origin });
       this.u = ud.u;
       this.d = ud.d;
-      Object.defineProperty(this, "domain_function", { writable: true, value: include_l });
+      Object.defineProperty(this, "domain_function", { writable: true, value: includeL });
     },
 
     G: {
@@ -43,8 +43,8 @@ export default {
     },
 
     M: Object.assign({}, methods, {
-      inclusive: function () { this.domain_function = include_l; return this; },
-      exclusive: function () { this.domain_function = exclude_l; return this; },
+      inclusive: function () { this.domain_function = includeL; return this; },
+      exclusive: function () { this.domain_function = excludeL; return this; },
       clip_function: dist => dist,
       svgPath: function (length = 20000) {
         const start = add(this.origin, scale(this.vector, -length / 2));
@@ -55,7 +55,7 @@ export default {
 
     S: Object.assign({
       ud: function() {
-        return this.constructor(ud_to_vector_origin(arguments[0]));
+        return this.constructor(UDToVectorOrigin(arguments[0]));
       },
     }, Static)
 

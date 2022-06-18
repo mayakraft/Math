@@ -8,8 +8,9 @@ test("prototype member variables accessing 'this'", () => {
   expect(math.polygon.regularPolygon(4).area()).toBeCloseTo(2);
 });
 
+// todo: convex
 test("isConvex", () => {
-  expect(math.polygon.regularPolygon(4).isConvex).toBe(true);
+  expect(math.polygon.regularPolygon(4).isConvex).toBe(undefined);
 });
 test(".segments", () => {
   const polygon = math.polygon.regularPolygon(4);

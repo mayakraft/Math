@@ -11,8 +11,8 @@ import {
   magnitude,
   parallel,
 } from "../core/algebra";
-import overlap_line_point from "./overlap-line-point";
-import { exclude_l } from "../arguments/functions";
+import overlapLinePoint from "./overlap-line-point";
+import { excludeL } from "../arguments/functions";
 /**
  * @description 2D line intersection function, generalized and works for lines,
  * rays, segments.
@@ -26,11 +26,11 @@ import { exclude_l } from "../arguments/functions";
 
 // export const exclude_s = (t, e = EPSILON) => t > e && t < 1 - e;
 
-const overlap_line_line = (
+const overlapLineLine = (
   aVector, aOrigin,
   bVector, bOrigin,
-  aFunction = exclude_l,
-  bFunction = exclude_l,
+  aFunction = excludeL,
+  bFunction = excludeL,
   epsilon = EPSILON
 ) => {
   const denominator0 = cross2(aVector, bVector);
@@ -58,5 +58,5 @@ const overlap_line_line = (
     && bFunction(t1, epsilon / magnitude(bVector));
 };
 
-export default overlap_line_line;
+export default overlapLineLine;
 

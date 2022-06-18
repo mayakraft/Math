@@ -32,7 +32,7 @@ import {
  * @description convert a line from one parameterization into another.
  * convert vector-origin into u-d (normal, distance-to-origin)
  */
-export const vector_origin_to_ud = ({ vector, origin }) => {
+export const vectorOriginToUD = ({ vector, origin }) => {
   const mag = magnitude(vector);
   const u = rotate90(vector);
   const d = dot(origin, u) / mag;
@@ -43,7 +43,7 @@ export const vector_origin_to_ud = ({ vector, origin }) => {
  * @description convert a line from one parameterization into another.
  * convert u-d (normal, distance-to-origin) into vector-origin
  */
-export const ud_to_vector_origin = ({ u, d }) => ({
+export const UDToVectorOrigin = ({ u, d }) => ({
   vector: rotate270(u),
   origin: scale(u, d),
 });

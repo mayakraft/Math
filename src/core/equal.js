@@ -3,41 +3,41 @@
  */
 import { EPSILON } from "./constants";
 import {
-  fn_and,
-  fn_equal,
-  fn_epsilon_equal,
+  fnAnd,
+  fnEqual,
+  fnEpsilonEqual,
 } from "../arguments/functions";
 import {
-  semi_flatten_arrays,
-  resize_up,
+  semiFlattenArrays,
+  resizeUp,
   resize,
 } from "../arguments/resize";
 
-const array_similarity_test = (list, compFunc) => Array
+const arraySimilarityTest = (list, compFunc) => Array
   .from(Array(list.length - 1))
   .map((_, i) => compFunc(list[0], list[i + 1]))
-  .reduce(fn_and, true);
+  .reduce(fnAnd, true);
 
 // square bounding box for fast calculation
-export const equivalent_vector2 = (a, b) => [0, 1]
-  .map(i => fn_epsilon_equal(a[i], b[i]))
-  .reduce(fn_and, true);
-// export const equivalent_vector2 = (a, b) => Math.abs(a[0] - b[0]) < EPSILON
+export const equivalentVector2 = (a, b) => [0, 1]
+  .map(i => fnEpsilonEqual(a[i], b[i]))
+  .reduce(fnAnd, true);
+// export const equivalentVector2 = (a, b) => Math.abs(a[0] - b[0]) < EPSILON
 //   && Math.abs(a[1] - b[1]) < EPSILON;
 /**
  * @description check whether a set of numbers are all similar to each other within an epsilon
  * @param {...number|number[]} args a sequence of numbers or an array of numbers
  * @returns {boolean} true if all numbers are similar within an epsilon
  */
-export const equivalent_numbers = function () {
+export const equivalentNumbers = function () {
   if (arguments.length === 0) { return false; }
   if (arguments.length === 1 && arguments[0] !== undefined) {
-    return equivalent_numbers(...arguments[0]);
+    return equivalentNumbers(...arguments[0]);
   }
-  return array_similarity_test(arguments, fn_epsilon_equal);
+  return arraySimilarityTest(arguments, fnEpsilonEqual);
 };
-// export const equivalent_vectors = (a, b) => {
-//   const vecs = resize_up(a, b);
+// export const equivalentVectors = (a, b) => {
+//   const vecs = resizeUp(a, b);
 //   return vecs[0]
 //     .map((_, i) => Math.abs(vecs[0][i] - vecs[1][i]) < EPSILON)
 //     .reduce((u, v) => u && v, true);
@@ -48,21 +48,21 @@ export const equivalent_numbers = function () {
  * @param {...number[]|number[][]} args a sequence of number arrays or an array of array of numbers.
  * @returns {boolean} true if all vectors are equivalent
  */
-export const equivalent_vectors = function () {
+export const equivalentVectors = function () {
   const args = Array.from(arguments);
   const length = args.map(a => a.length).reduce((a, b) => a > b ? a : b);
   const vecs = args.map(a => resize(length, a));
   return Array.from(Array(arguments.length - 1))
     .map((_, i) => vecs[0]
       .map((_, n) => Math.abs(vecs[0][n] - vecs[i + 1][n]) < EPSILON)
-      .reduce(fn_and, true))
-    .reduce(fn_and, true);
+      .reduce(fnAnd, true))
+    .reduce(fnAnd, true);
 };
 // export const equivalent_arrays = function (...args) {
-//   const list = semi_flatten_arrays(args);
+//   const list = semiFlattenArrays(args);
 //   if (list.length === 0) { return false; }
 //   if (list.length === 1 && list[0] !== undefined) {
-//     return equivalent_vectors(...list[0]);
+//     return equivalentVectors(...list[0]);
 //   }
 //   const dimension = list[0].length;
 //   const dim_array = Array.from(Array(dimension));
@@ -102,20 +102,20 @@ export const equivalent_vectors = function () {
  * @returns {boolean} if set is equivalent
  */
 export const equivalent = function () {
-  const list = semi_flatten_arrays(...arguments);
+  const list = semiFlattenArrays(...arguments);
   if (list.length < 1) { return false; }
   const typeofList = typeof list[0];
   // array contains undefined, cannot compare
   if (typeofList === "undefined") { return false; }
   switch (typeofList) {
     case "number":
-      return array_similarity_test(list, fn_epsilon_equal);
+      return arraySimilarityTest(list, fnEpsilonEqual);
     case "boolean":
     case "string":
-      return array_similarity_test(list, fn_equal);
+      return arraySimilarityTest(list, fnEqual);
     case "object":
-      if (list[0].constructor === Array) { return equivalent_vectors(...list); }
-      return array_similarity_test(list, (a, b) => JSON.stringify(a) === JSON.stringify(b));
+      if (list[0].constructor === Array) { return equivalentVectors(...list); }
+      return arraySimilarityTest(list, (a, b) => JSON.stringify(a) === JSON.stringify(b));
     default: return undefined;
   }
 };

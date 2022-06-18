@@ -2,7 +2,7 @@
  * Math (c) Kraft
  */
 import Constructors from "../constructors";
-import { get_circle } from "../../arguments/get";
+import { getCircle } from "../../arguments/get";
 /**
  * circle constructors:
  * circle(1, [4,5]) radius:1, origin:4,5
@@ -15,7 +15,7 @@ import { get_circle } from "../../arguments/get";
  */
 
 const CircleArgs = function () {
-  const circle = get_circle(...arguments);
+  const circle = getCircle(...arguments);
   this.radius = circle.radius;
   this.origin = Constructors.vector(...circle.origin);
 };

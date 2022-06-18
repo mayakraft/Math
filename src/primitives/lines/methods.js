@@ -2,24 +2,24 @@
  * Math (c) Kraft
  */
 import { EPSILON } from "../../core/constants";
-import { bisect_lines2 } from "../../core/radial";
-import { nearest_point_on_line } from "../../core/nearest";
-import { include_l } from "../../arguments/functions";
+import { bisectLines2 } from "../../core/radial";
+import { nearestPointOnLine } from "../../core/nearest";
+import { includeL } from "../../arguments/functions";
 import TypeOf from "../../arguments/typeof";
 import Constructors from "../constructors";
 import intersect from "../../intersection/intersect";
 import overlap from "../../intersection/overlap";
-import overlap_line_point from "../../intersection/overlap-line-point";
+import overlapLinePoint from "../../intersection/overlap-line-point";
 
 import {
   resize,
-  resize_up
+  resizeUp
 } from "../../arguments/resize";
 
 import {
-  get_vector,
-  get_line,
-  get_matrix_3x4,
+  getVector,
+  getLine,
+  getMatrix3x4,
 } from "../../arguments/get";
 
 import {
@@ -29,8 +29,8 @@ import {
 } from "../../core/algebra";
 
 import {
-  multiply_matrix3_line3,
-  make_matrix3_reflectZ
+  multiplyMatrix3Line3,
+  makeMatrix3ReflectZ
 } from "../../core/matrix3";
 
 // do not define object methods as arrow functions in here
@@ -49,38 +49,38 @@ import {
 const LinesMethods = {
 // todo, this only takes line types. it should be able to take a vector
   isParallel: function () {
-    const arr = resize_up(this.vector, get_line(arguments).vector);
+    const arr = resizeUp(this.vector, getLine(arguments).vector);
     return parallel(...arr);
   },
   isCollinear: function () {
-    const line = get_line(arguments);
-    return overlap_line_point(this.vector, this.origin, line.origin)
-      && parallel(...resize_up(this.vector, line.vector));
+    const line = getLine(arguments);
+    return overlapLinePoint(this.vector, this.origin, line.origin)
+      && parallel(...resizeUp(this.vector, line.vector));
   },
   isDegenerate: function (epsilon = EPSILON) {
     return degenerate(this.vector, epsilon);
   },
   reflectionMatrix: function () {
-    return Constructors.matrix(make_matrix3_reflectZ(this.vector, this.origin));
+    return Constructors.matrix(makeMatrix3ReflectZ(this.vector, this.origin));
   },
   nearestPoint: function () {
-    const point = get_vector(arguments);
+    const point = getVector(arguments);
     return Constructors.vector(
-      nearest_point_on_line(this.vector, this.origin, point, this.clip_function)
+      nearestPointOnLine(this.vector, this.origin, point, this.clip_function)
     );
   },
   // this works with lines and rays, it should be overwritten for segments
   transform: function () {
     const dim = this.dimension;
-    const r = multiply_matrix3_line3(
-      get_matrix_3x4(arguments),
+    const r = multiplyMatrix3Line3(
+      getMatrix3x4(arguments),
       resize(3, this.vector),
       resize(3, this.origin)
     );
     return this.constructor(resize(dim, r.vector), resize(dim, r.origin));
   },
   translate: function () {
-    const origin = add(...resize_up(this.origin, get_vector(arguments)));
+    const origin = add(...resizeUp(this.origin, getVector(arguments)));
     return this.constructor(this.vector, origin);
   },
   intersect: function () {
@@ -90,8 +90,8 @@ const LinesMethods = {
     return overlap(this, ...arguments);
   },
   bisect: function (lineType, epsilon) {
-    const line = get_line(lineType);
-    return bisect_lines2(this.vector, this.origin, line.vector, line.origin, epsilon)
+    const line = getLine(lineType);
+    return bisectLines2(this.vector, this.origin, line.vector, line.origin, epsilon)
       .map(line => this.constructor(line));
   },
 };

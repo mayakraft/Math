@@ -4,7 +4,7 @@
 import { EPSILON } from "./constants";
 import { resize } from "../arguments/resize";
 import {
-  mag_squared,
+  magSquared,
   distance,
   distance2,
   add,
@@ -14,8 +14,8 @@ import {
   scale
 } from "./algebra";
 import {
-  ray_limiter,
-  segment_limiter,
+  rayLimiter,
+  segmentLimiter,
 } from "../arguments/functions";
 /**
  * @description find the one item in the set which minimizes the function when compared against an object.
@@ -25,7 +25,7 @@ import {
  * the type of the first parameter), execution of this function should return a scalar.
  * @returns {number[]} the index from the set which minimizes the compare function
  */
-export const smallest_comparison_search = (obj, array, compare_func) => {
+export const smallestComparisonSearch = (obj, array, compare_func) => {
   const objs = array.map((o, i) => ({ o, i, d: compare_func(obj, o) }));
   let index;
   let smallest_value = Infinity;
@@ -43,9 +43,9 @@ export const smallest_comparison_search = (obj, array, compare_func) => {
  * @param {number[][]} array_of_points an array of 2D points to test against
  * @returns {number[]} one point from the array of points
  */
-export const nearest_point2 = (point, array_of_points) => {
+export const nearestPoint2 = (point, array_of_points) => {
   // todo speed up with partitioning
-  const index = smallest_comparison_search(point, array_of_points, distance2);
+  const index = smallestComparisonSearch(point, array_of_points, distance2);
   return index === undefined ? undefined : array_of_points[index];
 };
 /**
@@ -54,9 +54,9 @@ export const nearest_point2 = (point, array_of_points) => {
  * @param {number[][]} array_of_points an array of points to test against
  * @returns {number[]} one point from the array of points
  */
-export const nearest_point = (point, array_of_points) => {
+export const nearestPoint = (point, array_of_points) => {
   // todo speed up with partitioning
-  const index = smallest_comparison_search(point, array_of_points, distance);
+  const index = smallestComparisonSearch(point, array_of_points, distance);
   return index === undefined ? undefined : array_of_points[index];
 };
 /**
@@ -69,13 +69,13 @@ export const nearest_point = (point, array_of_points) => {
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number[]} a point
  */
-export const nearest_point_on_line = (vector, origin, point, limiterFunc, epsilon = EPSILON) => {
+export const nearestPointOnLine = (vector, origin, point, limiterFunc, epsilon = EPSILON) => {
   origin = resize(vector.length, origin);
   point = resize(vector.length, point);
-  const magSquared = mag_squared(vector);
+  const magSq = magSquared(vector);
   const vectorToPoint = subtract(point, origin);
   const dotProd = dot(vector, vectorToPoint);
-  const dist = dotProd / magSquared;
+  const dist = dotProd / magSq;
   // limit depending on line, ray, segment
   const d = limiterFunc(dist, epsilon);
   return add(origin, scale(vector, d))
@@ -87,11 +87,11 @@ export const nearest_point_on_line = (vector, origin, point, limiterFunc, epsilo
  * @param {number[]} point the point to test nearness to
  * @returns {number[]} a point
  */
-export const nearest_point_on_polygon = (polygon, point) => {
+export const nearestPointOnPolygon = (polygon, point) => {
   const v = polygon
     .map((p, i, arr) => subtract(arr[(i + 1) % arr.length], p));
   return polygon
-    .map((p, i) => nearest_point_on_line(v[i], p, point, segment_limiter))
+    .map((p, i) => nearestPointOnLine(v[i], p, point, segmentLimiter))
     .map((p, i) => ({ point: p, i, distance: distance(p, point) }))
     .sort((a, b) => a.distance - b.distance)
     .shift();
@@ -104,9 +104,9 @@ export const nearest_point_on_polygon = (polygon, point) => {
  * @param {number[]} point the point to test nearness to
  * @returns {number[]} a point
  */
-export const nearest_point_on_circle = (radius, origin, point) => add(
+export const nearestPointOnCircle = (radius, origin, point) => add(
   origin, scale(normalize(subtract(point, origin)), radius)
 );
 
 // todo
-const nearest_point_on_ellipse = () => false;
+const nearestPointOnEllipse = () => false;

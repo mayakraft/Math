@@ -1,10 +1,10 @@
 /**
  * Math (c) Kraft
  */
-import { get_vector } from "../../arguments/get";
+import { getVector } from "../../arguments/get";
 
 const VectorArgs = function () {
-  this.push(...get_vector(arguments));
+  this.push(...getVector(arguments));
 };
 
 export default VectorArgs;

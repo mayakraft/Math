@@ -2,13 +2,13 @@
  * Math (c) Kraft
  */
 import {
-  get_vector,
+  getVector,
 } from "../../arguments/get";
 import {
   pathInfo,
   ellipticalArcTo,
 } from "../ellipse/path";
-import { nearest_point_on_circle } from "../../core/nearest";
+import { nearestPointOnCircle } from "../../core/nearest";
 import Intersect from "../../intersection/intersect";
 import Overlap from "../../intersection/overlap";
 import Constructors from "../constructors";
@@ -27,10 +27,10 @@ import Constructors from "../constructors";
 
 const CircleMethods = {
   nearestPoint: function () {
-    return Constructors.vector(nearest_point_on_circle(
+    return Constructors.vector(nearestPointOnCircle(
       this.radius,
       this.origin,
-      get_vector(arguments)
+      getVector(arguments)
     ));
   },
 

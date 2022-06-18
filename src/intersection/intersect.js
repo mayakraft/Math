@@ -1,18 +1,18 @@
 /**
  * Math (c) Kraft
  */
-import type_of from "../arguments/typeof";
+import typeOf from "../arguments/typeof";
 import {
   include, exclude,
-  include_l, include_r, include_s,
-  exclude_l, exclude_r, exclude_s,
+  includeL, includeR, includeS,
+  excludeL, excludeR, excludeS,
 } from "../arguments/functions";
 import { subtract } from "../core/algebra";
-import intersect_line_line from "./intersect-line-line";
-import intersect_circle_circle from "./intersect-circle-circle";
-import intersect_circle_line from "./intersect-circle-line";
-import intersect_convex_polygon_line from "./intersect-polygon-line";
-import intersect_polygon_polygon from "./intersect-polygon-polygon";
+import intersectLineLine from "./intersect-line-line";
+import intersectCircleCircle from "./intersect-circle-circle";
+import intersectCircleLine from "./intersect-circle-line";
+import intersectConvexPolygonLine from "./intersect-polygon-line";
+import intersectPolygonPolygon from "./intersect-polygon-polygon";
 
 // all intersection functions expect primitives to be in a certain form
 // for example all lines are: vector, origin
@@ -28,39 +28,39 @@ const intersect_param_form = {
 
 const intersect_func = {
   polygon: {
-    polygon: intersect_polygon_polygon,
+    polygon: intersectPolygonPolygon,
     // circle: convex_poly_circle,
-    line: (a, b, fnA, fnB, ep) => intersect_convex_polygon_line(...a, ...b, include_s, fnB, ep),
-    ray: (a, b, fnA, fnB, ep) => intersect_convex_polygon_line(...a, ...b, include_s, fnB, ep),
-    segment: (a, b, fnA, fnB, ep) => intersect_convex_polygon_line(...a, ...b, include_s, fnB, ep),
+    line: (a, b, fnA, fnB, ep) => intersectConvexPolygonLine(...a, ...b, includeS, fnB, ep),
+    ray: (a, b, fnA, fnB, ep) => intersectConvexPolygonLine(...a, ...b, includeS, fnB, ep),
+    segment: (a, b, fnA, fnB, ep) => intersectConvexPolygonLine(...a, ...b, includeS, fnB, ep),
   },
   circle: {
     // polygon: (a, b) => convex_poly_circle(b, a),
-    circle: (a, b, fnA, fnB, ep) => intersect_circle_circle(...a, ...b, ep),
-    line: (a, b, fnA, fnB, ep) => intersect_circle_line(...a, ...b, fnB, ep),
-    ray: (a, b, fnA, fnB, ep) => intersect_circle_line(...a, ...b, fnB, ep),
-    segment: (a, b, fnA, fnB, ep) => intersect_circle_line(...a, ...b, fnB, ep),
+    circle: (a, b, fnA, fnB, ep) => intersectCircleCircle(...a, ...b, ep),
+    line: (a, b, fnA, fnB, ep) => intersectCircleLine(...a, ...b, fnB, ep),
+    ray: (a, b, fnA, fnB, ep) => intersectCircleLine(...a, ...b, fnB, ep),
+    segment: (a, b, fnA, fnB, ep) => intersectCircleLine(...a, ...b, fnB, ep),
   },
   line: {
-    polygon: (a, b, fnA, fnB, ep) => intersect_convex_polygon_line(...b, ...a, include_s, fnA, ep),
-    circle: (a, b, fnA, fnB, ep) => intersect_circle_line(...b, ...a, fnA, ep),
-    line: (a, b, fnA, fnB, ep) => intersect_line_line(...a, ...b, fnA, fnB, ep),
-    ray: (a, b, fnA, fnB, ep) => intersect_line_line(...a, ...b, fnA, fnB, ep),
-    segment: (a, b, fnA, fnB, ep) => intersect_line_line(...a, ...b, fnA, fnB, ep),
+    polygon: (a, b, fnA, fnB, ep) => intersectConvexPolygonLine(...b, ...a, includeS, fnA, ep),
+    circle: (a, b, fnA, fnB, ep) => intersectCircleLine(...b, ...a, fnA, ep),
+    line: (a, b, fnA, fnB, ep) => intersectLineLine(...a, ...b, fnA, fnB, ep),
+    ray: (a, b, fnA, fnB, ep) => intersectLineLine(...a, ...b, fnA, fnB, ep),
+    segment: (a, b, fnA, fnB, ep) => intersectLineLine(...a, ...b, fnA, fnB, ep),
   },
   ray: {
-    polygon: (a, b, fnA, fnB, ep) => intersect_convex_polygon_line(...b, ...a, include_s, fnA, ep),
-    circle: (a, b, fnA, fnB, ep) => intersect_circle_line(...b, ...a, fnA, ep),
-    line: (a, b, fnA, fnB, ep) => intersect_line_line(...b, ...a, fnB, fnA, ep),
-    ray: (a, b, fnA, fnB, ep) => intersect_line_line(...a, ...b, fnA, fnB, ep),
-    segment: (a, b, fnA, fnB, ep) => intersect_line_line(...a, ...b, fnA, fnB, ep),
+    polygon: (a, b, fnA, fnB, ep) => intersectConvexPolygonLine(...b, ...a, includeS, fnA, ep),
+    circle: (a, b, fnA, fnB, ep) => intersectCircleLine(...b, ...a, fnA, ep),
+    line: (a, b, fnA, fnB, ep) => intersectLineLine(...b, ...a, fnB, fnA, ep),
+    ray: (a, b, fnA, fnB, ep) => intersectLineLine(...a, ...b, fnA, fnB, ep),
+    segment: (a, b, fnA, fnB, ep) => intersectLineLine(...a, ...b, fnA, fnB, ep),
   },
   segment: {
-    polygon: (a, b, fnA, fnB, ep) => intersect_convex_polygon_line(...b, ...a, include_s, fnA, ep),
-    circle: (a, b, fnA, fnB, ep) => intersect_circle_line(...b, ...a, fnA, ep),
-    line: (a, b, fnA, fnB, ep) => intersect_line_line(...b, ...a, fnB, fnA, ep),
-    ray: (a, b, fnA, fnB, ep) => intersect_line_line(...b, ...a, fnB, fnA, ep),
-    segment: (a, b, fnA, fnB, ep) => intersect_line_line(...a, ...b, fnA, fnB, ep),
+    polygon: (a, b, fnA, fnB, ep) => intersectConvexPolygonLine(...b, ...a, includeS, fnA, ep),
+    circle: (a, b, fnA, fnB, ep) => intersectCircleLine(...b, ...a, fnA, ep),
+    line: (a, b, fnA, fnB, ep) => intersectLineLine(...b, ...a, fnB, fnA, ep),
+    ray: (a, b, fnA, fnB, ep) => intersectLineLine(...b, ...a, fnB, fnA, ep),
+    segment: (a, b, fnA, fnB, ep) => intersectLineLine(...a, ...b, fnA, fnB, ep),
   },
 };
 
@@ -78,14 +78,14 @@ const default_intersect_domain_function = {
   polygon: exclude, // not used
   rect: exclude, // not used
   circle: exclude, // not used
-  line: exclude_l,
-  ray: exclude_r,
-  segment: exclude_s,
+  line: excludeL,
+  ray: excludeR,
+  segment: excludeS,
 };
 
 const intersect = function (a, b, epsilon) {
-  const type_a = type_of(a);
-  const type_b = type_of(b);
+  const type_a = typeOf(a);
+  const type_b = typeOf(b);
   const aT = similar_intersect_types[type_a];
   const bT = similar_intersect_types[type_b];
   const params_a = intersect_param_form[type_a](a);
