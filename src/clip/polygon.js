@@ -85,7 +85,17 @@ const get_min_max = (numbers, func, scaled_epsilon) => {
   if (a >= b) { return undefined; }
   return [numbers[a], numbers[b]];
 };
-
+/**
+ * @description find the overlap between one line and one convex polygon and
+ * clip the line into a segment (two endpoints) or return undefined if no overlap.
+ * The input line can be a line, ray, or segment, as determined by "fn_line".
+ * @param {number[][]} poly array of points (which are arrays of numbers)
+ * @param {number[]} vector the vector of the line
+ * @param {number[]} origin the origin of the line
+ * @param {function} [fn_poly=include] include or exclude polygon boundary in clip
+ * @param {function} [fn_line=include_l] function to determine line/ray/segment, and inclusive or exclusive.
+ * @param {number} [epsilon=1e-6] optional epsilon
+ */
 const clip_line_in_convex_polygon = (
   poly,
   vector,

@@ -1,7 +1,13 @@
 /**
  * Math (c) Kraft
  */
+/**
+ * @description the identity matrix for 2x2 matrices
+ */
 export const identity2x2 = [1, 0, 0, 1];
+/**
+ * @description the identity matrix for 2x3 matrices (zero translation)
+ */
 export const identity2x3 = identity2x2.concat(0, 0);
 
 /**
@@ -39,12 +45,17 @@ export const multiply_matrices2 = (m1, m2) => [
   m1[0] * m2[4] + m1[2] * m2[5] + m1[4],
   m1[1] * m2[4] + m1[3] * m2[5] + m1[5]
 ];
-
-export const determinant2 = m => m[0] * m[3] - m[1] * m[2];
-
 /**
- * @param {number[]} matrix
- * @returns {number[]} matrix
+ * @description calculate the determinant of a 2x3 or 2x2 matrix.
+ * in the case of 2x3, the translation component is ignored.
+ * @param {number[]} matrix one matrix in array form
+ * @returns {number} the determinant of the matrix
+ */
+export const determinant2 = m => m[0] * m[3] - m[1] * m[2];
+/**
+ * @description invert a 2x3 matrix
+ * @param {number[]} matrix one matrix in array form
+ * @returns {number[]|undefined} the inverted matrix, or undefined if not possible
  */
 export const invert_matrix2 = (m) => {
   const det = determinant2(m);
@@ -60,7 +71,6 @@ export const invert_matrix2 = (m) => {
     (m[1] * m[4] - m[0] * m[5]) / det
   ];
 };
-
 /**
  * @param {number} x, y
  * @returns {number[]} matrix

@@ -25,8 +25,9 @@ export const equivalent_vector2 = (a, b) => [0, 1]
 // export const equivalent_vector2 = (a, b) => Math.abs(a[0] - b[0]) < EPSILON
 //   && Math.abs(a[1] - b[1]) < EPSILON;
 /**
- * @param {...number} a sequence of numbers
- * @returns boolean
+ * @description check whether a set of numbers are all similar to each other within an epsilon
+ * @param {...number|number[]} args a sequence of numbers or an array of numbers
+ * @returns {boolean} true if all numbers are similar within an epsilon
  */
 export const equivalent_numbers = function () {
   if (arguments.length === 0) { return false; }
@@ -35,20 +36,18 @@ export const equivalent_numbers = function () {
   }
   return array_similarity_test(arguments, fn_epsilon_equal);
 };
-/**
- * this method compares two vectors and is permissive with trailing zeros
- * equivalency of [1, 2] and [1, 2, 0] is true
- * however, equivalency of [1, 2] and [1, 2, 3] is false
- * @param {...number[]} compare n number of vectors, requires a consistent dimension
- * @returns boolean
- */
 // export const equivalent_vectors = (a, b) => {
 //   const vecs = resize_up(a, b);
 //   return vecs[0]
 //     .map((_, i) => Math.abs(vecs[0][i] - vecs[1][i]) < EPSILON)
 //     .reduce((u, v) => u && v, true);
 // };
-
+/**
+ * @description this method compares two vectors and is permissive with trailing zeros,
+ * for example, [1, 2] and [1, 2, 0] is true. however, [1, 2] and [1, 2, 3] is false
+ * @param {...number[]|number[][]} args a sequence of number arrays or an array of array of numbers.
+ * @returns {boolean} true if all vectors are equivalent
+ */
 export const equivalent_vectors = function () {
   const args = Array.from(arguments);
   const length = args.map(a => a.length).reduce((a, b) => a > b ? a : b);
@@ -100,7 +99,7 @@ export const equivalent_vectors = function () {
  *   1. boolean
  *   2. number
  *   3. arrays of numbers (vectors)
- * @returns boolean
+ * @returns {boolean} if set is equivalent
  */
 export const equivalent = function () {
   const list = semi_flatten_arrays(...arguments);

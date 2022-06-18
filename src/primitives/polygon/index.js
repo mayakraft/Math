@@ -8,7 +8,7 @@ import { include, exclude } from "../../arguments/functions";
 import { subtract } from "../../core/algebra";
 import {
   convex_hull,
-  make_regular_polygon,
+  make_polygon_circumradius,
 } from "../../core/geometry";
 
 export default {
@@ -49,7 +49,7 @@ export default {
         return this.constructor(...arguments);
       },
       regularPolygon: function () {
-        return this.constructor(make_regular_polygon(...arguments));
+        return this.constructor(make_polygon_circumradius(...arguments));
       },
       convexHull: function () {
         return this.constructor(convex_hull(...arguments));

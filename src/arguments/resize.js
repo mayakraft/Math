@@ -6,14 +6,12 @@
  *
  */
 // export const lengthSort = (a, b) => [a, b].sort((m, n) => m.length - n.length);
-
 /**
  * force a vector into N-dimensions by adding 0s if they don't exist.
  */
 export const resize = (d, v) => (v.length === d
   ? v
   : Array(d).fill(0).map((z, i) => (v[i] ? v[i] : z)));
-
 /**
  * this makes the two vectors match in dimension.
  * the smaller array will be filled with 0s to match the length of the larger
@@ -22,7 +20,6 @@ export const resize_up = (a, b) => {
   const size = a.length > b.length ? a.length : b.length;
   return [a, b].map(v => resize(size, v));
 };
-
 /**
  * this makes the two vectors match in dimension.
  * the larger array will be shrunk to match the length of the smaller
@@ -37,13 +34,12 @@ const count_places = function (num) {
   if (!m) { return 0; }
   return Math.max(0, (m[1] ? m[1].length : 0) - (m[2] ? +m[2] : 0));
 };
-
 /**
- * clean floating point numbers
- * example: 15.0000000000000002 into 15
- * the epsilon is adjustable default 15 places for Javascript's 16 digit float.
- * the remainder will be chopped off, make this epsilon as small as possible.
- * @args must be a number! do you own checking. this is for speed.
+ * @description clean floating point numbers, where 15.0000000000000002 becomes 15,
+ * this method involves encoding and parsing so it is relatively expensive.
+ * @param {number} num the floating point number to clean
+ * @param {number} [places=15] the whole number of decimal places to keep, beyond this point can be considered to be noise.
+ * @returns {number} the cleaned floating point number
  */
 export const clean_number = function (num, places = 15) {
   if (typeof num !== "number") { return num; }
@@ -56,9 +52,9 @@ export const clean_number = function (num, places = 15) {
 
 const is_iterable = obj => obj != null
   && typeof obj[Symbol.iterator] === "function";
-
 /**
- * flatten only until the point of comma separated entities. recursive
+ * @description flatten only until the point of comma separated entities. recursive
+ * @param {Array} args any array, intended to contain arrays of arrays.
  * @returns always an array
  */
 export const semi_flatten_arrays = function () {
@@ -75,9 +71,9 @@ export const semi_flatten_arrays = function () {
         : a));
   }
 };
-
 /**
  * totally flatten, recursive
+ * @param {Array} args any array, intended to contain arrays of arrays.
  * @returns an array, always.
  */
 export const flatten_arrays = function () {
@@ -94,4 +90,3 @@ export const flatten_arrays = function () {
         : a)).reduce((a, b) => a.concat(b), []);
   }
 };
-

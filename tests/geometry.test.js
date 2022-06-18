@@ -45,17 +45,17 @@ test("bounding_box", () => {
   expect(box.span[1]).toBe(2);
 });
 
-test("make_regular_polygon", () => {
-	expect(math.core.make_regular_polygon().length).toBe(3);
-	const vert_square = math.core.make_regular_polygon(4);
+test("make_polygon_circumradius", () => {
+	expect(math.core.make_polygon_circumradius().length).toBe(3);
+	const vert_square = math.core.make_polygon_circumradius(4);
 	expect(vert_square[0][0]).toBe(1);
 	expect(vert_square[0][1]).toBe(0);
-	const vert_square_2 = math.core.make_regular_polygon(4, 2);
+	const vert_square_2 = math.core.make_polygon_circumradius(4, 2);
 	expect(vert_square_2[0][0]).toBe(2);
 	expect(vert_square_2[0][1]).toBe(0);
 
-  const tri1 = math.core.make_regular_polygon(3);
-  const tri2 = math.core.make_regular_polygon(3, 2);
+  const tri1 = math.core.make_polygon_circumradius(3);
+  const tri2 = math.core.make_polygon_circumradius(3, 2);
   // first coord (1,0)
   expect(tri1[0][0]).toBeCloseTo(1);
   expect(tri1[0][1]).toBeCloseTo(0);
@@ -69,38 +69,38 @@ test("make_regular_polygon", () => {
 });
 
 test("make regular polygon side aligned", () => {
-	const square = math.core.make_regular_polygon_side_aligned(4);
+	const square = math.core.make_polygon_circumradius_s(4);
 	expect(square[0][0]).toBeCloseTo(Math.sqrt(2) / 2);
-	const square2 = math.core.make_regular_polygon_side_aligned(4, 2);
+	const square2 = math.core.make_polygon_circumradius_s(4, 2);
 	expect(square2[0][0]).toBeCloseTo(Math.sqrt(2));
 });
 
 test("make regular polygon inradius", () => {
-	const square = math.core.make_regular_polygon_inradius(4);
+	const square = math.core.make_polygon_inradius(4);
 	expect(square[0][0]).toBeCloseTo(Math.sqrt(2));
 	expect(square[0][1]).toBeCloseTo(0);
 });
 
-test("make_regular_polygon_inradius_side_aligned", () => {
-	const square = math.core.make_regular_polygon_inradius_side_aligned(4);
+test("make_polygon_inradius_s", () => {
+	const square = math.core.make_polygon_inradius_s(4);
 	expect(square[0][0]).toBe(1);
-	const square2 = math.core.make_regular_polygon_inradius_side_aligned(4, 2);
+	const square2 = math.core.make_polygon_inradius_s(4, 2);
 	expect(square2[0][0]).toBe(2);
 });
 
-test("make_regular_polygon_side_length", () => {
-	const square = math.core.make_regular_polygon_side_length(4);
+test("make_polygon_side_length", () => {
+	const square = math.core.make_polygon_side_length(4);
 	expect(square[0][0]).toBeCloseTo(Math.sqrt(2) / 2);
 	expect(square[0][1]).toBe(0);
-	const square2 = math.core.make_regular_polygon_side_length(4, 2);
+	const square2 = math.core.make_polygon_side_length(4, 2);
 	expect(square2[0][0]).toBeCloseTo(Math.sqrt(2));
 	expect(square2[0][1]).toBe(0);
 });
 
-test("make_regular_polygon_side_length_side_aligned", () => {
-	const square = math.core.make_regular_polygon_side_length_side_aligned(4);
+test("make_polygon_side_length_s", () => {
+	const square = math.core.make_polygon_side_length_s(4);
 	expect(square[0][0]).toBe(0.5);
-	const square2 = math.core.make_regular_polygon_side_length_side_aligned(4, 2);
+	const square2 = math.core.make_polygon_side_length_s(4, 2);
 	expect(square2[0][0]).toBe(1);
 });
 

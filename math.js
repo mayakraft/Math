@@ -446,7 +446,7 @@
       t * x * z + y * s, t * y * z - x * s, t * z * z + c,
       0, 0, 0], trans));
   };
-  const make_matrix3_scale = (scale, origin = [0, 0, 0]) => [
+  const make_matrix3_scale = (scale = 1, origin = [0, 0, 0]) => [
     scale,
     0,
     0,
@@ -673,9 +673,9 @@
   });
 
   const sort_points_along_vector2 = (points, vector) => points
-    .map(point => ({ point, d: point[0] * vector[0] + point[1] * vector[1] }))
-    .sort((a, b) => a.d - b.d)
-    .map(a => a.point);
+  	.map(point => ({ point, d: point[0] * vector[0] + point[1] * vector[1] }))
+  	.sort((a, b) => a.d - b.d)
+  	.map(a => a.point);
 
   var sort = /*#__PURE__*/Object.freeze({
     __proto__: null,
@@ -724,7 +724,6 @@
   const nearest_point_on_circle = (radius, origin, point) => add(
     origin, scale(normalize(subtract(point, origin)), radius)
   );
-  const nearest_point_on_ellipse = () => false;
 
   var nearest = /*#__PURE__*/Object.freeze({
     __proto__: null,
@@ -733,15 +732,14 @@
     nearest_point: nearest_point,
     nearest_point_on_line: nearest_point_on_line,
     nearest_point_on_polygon: nearest_point_on_polygon,
-    nearest_point_on_circle: nearest_point_on_circle,
-    nearest_point_on_ellipse: nearest_point_on_ellipse
+    nearest_point_on_circle: nearest_point_on_circle
   });
 
-  const is_counter_clockwise_between = (angle, angleA, angleB) => {
-    while (angleB < angleA) { angleB += TWO_PI; }
-    while (angle > angleA) { angle -= TWO_PI; }
-    while (angle < angleA) { angle += TWO_PI; }
-    return angle < angleB;
+  const is_counter_clockwise_between = (angle, floor, ceiling) => {
+    while (ceiling < floor) { ceiling += TWO_PI; }
+    while (angle > floor) { angle -= TWO_PI; }
+    while (angle < floor) { angle += TWO_PI; }
+    return angle < ceiling;
   };
   const clockwise_angle_radians = (a, b) => {
     while (a < 0) { a += TWO_PI; }
@@ -944,13 +942,13 @@
     }).reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0])
       .map(c => c * sixthArea);
   };
-  const bounding_box = (points, epsilon = 0) => {
+  const bounding_box = (points, padding = 0) => {
     const min = Array(points[0].length).fill(Infinity);
     const max = Array(points[0].length).fill(-Infinity);
     points.forEach(point => point
       .forEach((c, i) => {
-        if (c < min[i]) { min[i] = c - epsilon; }
-        if (c > max[i]) { max[i] = c + epsilon; }
+        if (c < min[i]) { min[i] = c - padding; }
+        if (c > max[i]) { max[i] = c + padding; }
       }));
     const span = max.map((max, i) => max - min[i]);
     return { min, max, span };
@@ -961,21 +959,21 @@
   const angles_to_vecs = (angles, radius) => angles
     .map(a => [radius * Math.cos(a), radius * Math.sin(a)])
     .map(pt => pt.map(n => clean_number(n, 14)));
-  const make_regular_polygon = (sides = 3, radius = 1) =>
+  const make_polygon_circumradius = (sides = 3, radius = 1) =>
     angles_to_vecs(angle_array(sides), radius);
-  const make_regular_polygon_side_aligned = (sides = 3, radius = 1) => {
+  const make_polygon_circumradius_s = (sides = 3, radius = 1) => {
     const halfwedge = Math.PI / sides;
     const angles = angle_array(sides).map(a => a + halfwedge);
     return angles_to_vecs(angles, radius);
   };
-  const make_regular_polygon_inradius = (sides = 3, radius = 1) =>
-    make_regular_polygon(sides, radius / Math.cos(Math.PI / sides));
-  const make_regular_polygon_inradius_side_aligned = (sides = 3, radius = 1) =>
-    make_regular_polygon_side_aligned(sides, radius / Math.cos(Math.PI / sides));
-  const make_regular_polygon_side_length = (sides = 3, length = 1) =>
-    make_regular_polygon(sides, (length / 2) / Math.sin(Math.PI / sides));
-  const make_regular_polygon_side_length_side_aligned = (sides = 3, length = 1) =>
-    make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
+  const make_polygon_inradius = (sides = 3, radius = 1) =>
+    make_polygon_circumradius(sides, radius / Math.cos(Math.PI / sides));
+  const make_polygon_inradius_s = (sides = 3, radius = 1) =>
+    make_polygon_circumradius_s(sides, radius / Math.cos(Math.PI / sides));
+  const make_polygon_side_length = (sides = 3, length = 1) =>
+    make_polygon_circumradius(sides, (length / 2) / Math.sin(Math.PI / sides));
+  const make_polygon_side_length_s = (sides = 3, length = 1) =>
+    make_polygon_circumradius_s(sides, (length / 2) / Math.sin(Math.PI / sides));
   const make_polygon_non_collinear = (polygon, epsilon = EPSILON) => {
     const edges_vector = polygon
       .map((v, i, arr) => [v, arr[(i + 1) % arr.length]])
@@ -1163,12 +1161,12 @@
     signed_area: signed_area,
     centroid: centroid,
     bounding_box: bounding_box,
-    make_regular_polygon: make_regular_polygon,
-    make_regular_polygon_side_aligned: make_regular_polygon_side_aligned,
-    make_regular_polygon_inradius: make_regular_polygon_inradius,
-    make_regular_polygon_inradius_side_aligned: make_regular_polygon_inradius_side_aligned,
-    make_regular_polygon_side_length: make_regular_polygon_side_length,
-    make_regular_polygon_side_length_side_aligned: make_regular_polygon_side_length_side_aligned,
+    make_polygon_circumradius: make_polygon_circumradius,
+    make_polygon_circumradius_s: make_polygon_circumradius_s,
+    make_polygon_inradius: make_polygon_inradius,
+    make_polygon_inradius_s: make_polygon_inradius_s,
+    make_polygon_side_length: make_polygon_side_length,
+    make_polygon_side_length_s: make_polygon_side_length_s,
     make_polygon_non_collinear: make_polygon_non_collinear,
     pleat: pleat,
     split_convex_polygon: split_convex_polygon,
@@ -2275,7 +2273,7 @@
           return this.constructor(...arguments);
         },
         regularPolygon: function () {
-          return this.constructor(make_regular_polygon(...arguments));
+          return this.constructor(make_polygon_circumradius(...arguments));
         },
         convexHull: function () {
           return this.constructor(convex_hull(...arguments));

@@ -14,15 +14,6 @@ module.exports = [{
     format: "es",
     banner,
   },
-  plugins: [cleanup()]
-}, {
-  input,
-  output: {
-    name,
-    file: "docs/math.docs.js",
-    format: "es",
-    banner,
-  },
 }, {
   input,
   output: {

@@ -8,4 +8,3 @@
 // this file should import no other file
 
 export default Object.create(null);
-

@@ -27,26 +27,26 @@ import {
 /**
  * measurements involving vectors and radians
  */
-
 /**
  * @description check if the first parameter is counter-clockwise between A and B.
- * @param {number} radians
- * @param {number} radians, lower bound
- * @param {number} radians, upper bound
- * @returns {boolean}
+ * floor and ceiling can be unbounded, this method takes care of 0-2pi wrap around.
+ * @param {number} angle angle in radians
+ * @param {number} floor angle in radians, lower bound
+ * @param {number} ceiling angle in radians, upper bound
+ * @returns {boolean} is the angle between floor and ceiling
  */
-export const is_counter_clockwise_between = (angle, angleA, angleB) => {
-  while (angleB < angleA) { angleB += TWO_PI; }
-  while (angle > angleA) { angle -= TWO_PI; }
-  while (angle < angleA) { angle += TWO_PI; }
-  return angle < angleB;
+export const is_counter_clockwise_between = (angle, floor, ceiling) => {
+  while (ceiling < floor) { ceiling += TWO_PI; }
+  while (angle > floor) { angle -= TWO_PI; }
+  while (angle < floor) { angle += TWO_PI; }
+  return angle < ceiling;
 };
 /**
- * @description There are 2 interior angles between 2 angles: A-to-B clockwise and
- * A-to-B counter-clockwise, this returns the clockwise one.
- * @param {number} angle in radians
- * @param {number} angle in radians
- * @returns {number} interior angle in radians, clockwise from a to b
+ * @description There are 2 interior angles between 2 vectors (as an angle in radians),
+ * A-to-B clockwise, and A-to-B counter-clockwise. Get the clockwise one from A to B.
+ * @param {number} a vector as an angle in radians
+ * @param {number} b vector as an angle in radians
+ * @returns {number} interior angle in radians
  */
 export const clockwise_angle_radians = (a, b) => {
   // this is on average 50 to 100 times faster than clockwise_angle2
@@ -60,10 +60,10 @@ export const clockwise_angle_radians = (a, b) => {
     : TWO_PI - (b - a);
 };
 /**
- * @description There are 2 interior angles between 2 angles: A-to-B clockwise and
- * A-to-B counter-clockwise, this returns the counter-clockwise one.
- * @param {number} angle in radians
- * @param {number} angle in radians
+ * @description There are 2 interior angles between 2 vectors (as an angle in radians),
+ * A-to-B clockwise, and A-to-B counter-clockwise. Get the counter-clockwise one from A to B.
+ * @param {number} a vector as an angle in radians
+ * @param {number} b vector as an angle in radians
  * @returns {number} interior angle in radians, counter-clockwise from a to b
  */
 export const counter_clockwise_angle_radians = (a, b) => {
@@ -78,10 +78,11 @@ export const counter_clockwise_angle_radians = (a, b) => {
     : TWO_PI - (a - b);
 };
 /**
- * @description There are 2 angles between 2 vectors, from A to B return the clockwise one.
- * @param {number[]} vector with 2 numbers
- * @param {number[]} vector with 2 numbers
- * @returns {number} clockwise angle (from a to b) in radians
+ * @description There are 2 interior angles between 2 vectors, A-to-B clockwise,
+ * and A-to-B counter-clockwise. Get the clockwise one from A to B.
+ * @param {number[]} a vector as an array of two numbers
+ * @param {number[]} b vector as an array of two numbers
+ * @returns {number} interior angle in radians, clockwise from a to b
  */
 export const clockwise_angle2 = (a, b) => {
   const dotProduct = b[0] * a[0] + b[1] * a[1];
@@ -90,8 +91,13 @@ export const clockwise_angle2 = (a, b) => {
   if (angle < 0) { angle += TWO_PI; }
   return angle;
 };
-
-// @returns {number}
+/**
+ * @description There are 2 interior angles between 2 vectors, A-to-B clockwise,
+ * and A-to-B counter-clockwise. Get the counter-clockwise one from A to B.
+ * @param {number[]} a vector as an array of two numbers
+ * @param {number[]} b vector as an array of two numbers
+ * @returns {number} interior angle in radians, counter-clockwise from a to b
+ */
 export const counter_clockwise_angle2 = (a, b) => {
   const dotProduct = a[0] * b[0] + a[1] * b[1];
   const determinant = a[0] * b[1] - a[1] * b[0];
@@ -129,9 +135,9 @@ export const counter_clockwise_bisect2 = (a, b) => fn_to_vec2(
 );
 /**
  * @description subsect into n-divisions the angle clockwise from one angle to the next
- * @param {number} a one angle in radians
- * @param {number} b one angle in radians
  * @param {number} divisions number of angles minus 1, 
+ * @param {number} angleA one angle in radians
+ * @param {number} angleB one angle in radians
  * @returns {number[]} array of angles in radians
  */
 export const clockwise_subsect_radians = (divisions, angleA, angleB) => {
@@ -139,11 +145,25 @@ export const clockwise_subsect_radians = (divisions, angleA, angleB) => {
   return Array.from(Array(divisions - 1))
     .map((_, i) => angleA + angle * (i + 1));
 };
+/**
+ * @description subsect into n-divisions the angle counter-clockwise from one angle to the next
+ * @param {number} divisions number of angles minus 1, 
+ * @param {number} angleA one angle in radians
+ * @param {number} angleB one angle in radians
+ * @returns {number[]} array of angles in radians
+ */
 export const counter_clockwise_subsect_radians = (divisions, angleA, angleB) => {
   const angle = counter_clockwise_angle_radians(angleA, angleB) / divisions;
   return Array.from(Array(divisions - 1))
     .map((_, i) => angleA + angle * (i + 1));
 };
+/**
+ * @description subsect into n-divisions the angle clockwise from one vector to the next
+ * @param {number} divisions number of angles minus 1, 
+ * @param {number[]} vectorA one vector in array form
+ * @param {number[]} vectorB one vector in array form
+ * @returns {number[][]} array of vectors (which are arrays of numbers)
+ */
 export const clockwise_subsect2 = (divisions, vectorA, vectorB) => {
   const angleA = Math.atan2(vectorA[1], vectorA[0]);
   const angleB = Math.atan2(vectorB[1], vectorB[0]);
@@ -151,7 +171,11 @@ export const clockwise_subsect2 = (divisions, vectorA, vectorB) => {
     .map(fn_to_vec2);
 };
 /**
- * subsect the angle between two vectors (counter-clockwise from A to B)
+ * @description subsect into n-divisions the angle counter-clockwise from one vector to the next
+ * @param {number} divisions number of angles minus 1, 
+ * @param {number[]} vectorA one vector in array form
+ * @param {number[]} vectorB one vector in array form
+ * @returns {number[][]} array of vectors (which are arrays of numbers)
  */
 export const counter_clockwise_subsect2 = (divisions, vectorA, vectorB) => {
   const angleA = Math.atan2(vectorA[1], vectorA[0]);
@@ -159,7 +183,16 @@ export const counter_clockwise_subsect2 = (divisions, vectorA, vectorB) => {
   return counter_clockwise_subsect_radians(divisions, angleA, angleB)
     .map(fn_to_vec2);
 };
-
+/**
+ * @description given two lines, find two lines which bisect the given lines,
+ * if the given lines have an intersection, or return one line if they are parallel.
+ * @param {number[]} vectorA the vector of the first line, as an array of numbers
+ * @param {number[]} originA the origin of the first line, as an array of numbers
+ * @param {number[]} vectorB the vector of the first line, as an array of numbers
+ * @param {number[]} originB the origin of the first line, as an array of numbers
+ * @param {number} [epsilon=1e-6] an optional epsilon for testing parallel-ness.
+ * @returns {object[]} an array of objects with "vector" and "origin" keys defining a line
+ */
 export const bisect_lines2 = (vectorA, originA, vectorB, originB, epsilon = EPSILON) => {
   const determinant = cross2(vectorA, vectorB);
   const dotProd = dot(vectorA, vectorB);
@@ -181,13 +214,16 @@ export const bisect_lines2 = (vectorA, originA, vectorB, originB, epsilon = EPSI
   return solution;
 };
 /**
- * given vectors, make a separate array of radially-sorted vector indices
+ * @description sort an array of angles in radians by getting an array of
+ * reference indices to the input array, instead of an array of angles.
  *
  * maybe there is such thing as an absolute radial origin (x axis?)
  * but this chooses the first element as the first element
  * and sort everything else counter-clockwise around it.
  *
- * @returns {number[]}, already c-cwise sorted would give [0,1,2,3,4]
+ * @param {number[]} args array of angles in radians
+ * @returns {number[]} array of indices of the input array, indicating
+ * the counter-clockwise sorted arrangement.
  */
 export const counter_clockwise_order_radians = function () {
   const radians = flatten_arrays(arguments);
@@ -198,7 +234,13 @@ export const counter_clockwise_order_radians = function () {
     .slice(counter_clockwise.indexOf(0), counter_clockwise.length)
     .concat(counter_clockwise.slice(0, counter_clockwise.indexOf(0)));
 };
-
+/**
+ * @description sort an array of vectors by getting an array of
+ * reference indices to the input array, instead of a sorted array of vectors.
+ * @param {number[][]} args array of vectors (which are arrays of numbers)
+ * @returns {number[]} array of indices of the input array, indicating
+ * the counter-clockwise sorted arrangement.
+ */
 export const counter_clockwise_order2 = function () {
   return counter_clockwise_order_radians(
     semi_flatten_arrays(arguments).map(fn_vec2_angle)
@@ -207,8 +249,7 @@ export const counter_clockwise_order2 = function () {
 /**
  * @description given an array of angles, return the sector angles between
  * consecutive parameters. if radially unsorted, this will sort them.
- *
- * @param {number[]} array of angles in radians
+ * @param {number[]} args array of angles in radians
  * @returns {number[]} array of sector angles in radians
  */
 export const counter_clockwise_sectors_radians = function () {
@@ -221,8 +262,7 @@ export const counter_clockwise_sectors_radians = function () {
 /**
  * @description given an array of vectors, return the sector angles between
  * consecutive parameters. if radially unsorted, this will sort them.
- *
- * @param {number[][]} array of 2D vectors (higher dimensions will be ignored)
+ * @param {number[][]} args array of 2D vectors (higher dimensions will be ignored)
  * @returns {number[]} array of sector angles in radians
  */
 export const counter_clockwise_sectors2 = function () {

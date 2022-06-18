@@ -43,7 +43,10 @@ import overlap_line_point from "./intersection/overlap-line-point";
 import clip_line_in_convex_polygon from "./clip/polygon";
 
 import primitives from "./primitives/index";
-
+/**
+ * @description A collection of math functions with a focus on linear algebra,
+ * computational geometry, intersection of shapes, and some origami-specific operations.
+ */
 const math = primitives;
 
 /*
@@ -89,9 +92,27 @@ math.core = Object.assign(Object.create(null),
     clip_line_in_convex_polygon,
   }
 );
-
+/**
+ * @description get the type of an object, which includes the custom types in this library.
+ * @param {any} any object
+ * @returns {string} the type name
+ */
 math.typeof = Typeof;
+/**
+ * @description get the intersection of two geometry objects, the type of each is inferred.
+ * @param {any} a any geometry object
+ * @param {any} b any geometry object
+ * @param {number} [epsilon=1e-6] optional epsilon
+ * @returns {number[]|number[][]|undefined} the type of the result varies depending on the type of the input parameters, it is always one point, or an array of points, or undefined if no intersection.
+ */
 math.intersect = intersect;
+/**
+ * @description test whether or not two geometry objects overlap each other.
+ * @param {any} a any geometry object
+ * @param {any} b any geometry object
+ * @param {number} [epsilon=1e-6] optional epsilon
+ * @returns {boolean} true if the two objects overlap.
+ */
 math.overlap = overlap;
 
 export default math;

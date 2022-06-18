@@ -10,6 +10,11 @@
  * you're passing in. in the case that it isn't and there's an object
  * in the first slot, it won't find the valid data in the second.
  */
+/**
+ * @description get the type of an object, which includes the custom types in this library.
+ * @param {any} any object
+ * @returns {string} the type name
+ */
 const type_of = function (obj) {
   switch (obj.constructor.name) {
     case "vector":

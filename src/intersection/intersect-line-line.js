@@ -14,14 +14,16 @@ import {
   exclude_l,
 } from "../arguments/functions";
 /**
- * @description 2D line intersection function, generalized and works
- * for lines, rays, and segments by passing in a function for each line
- * @param {number[]} array of 2 numbers, the first line's vector
- * @param {number[]} array of 2 numbers, the first line's origin
- * @param {number[]} array of 2 numbers, the second line's vector
- * @param {number[]} array of 2 numbers, the second line's origin
- * @param {function} first line's boolean test normalized value lies collinear
- * @param {function} seconde line's boolean test normalized value lies collinear
+ * @description Find the intersection of two lines. Lines can be lines/rays/segments,
+ * and can be inclusve or exclusive in terms of their endpoints and the epsilon value.
+ * @param {number[]} vector array of 2 numbers, the first line's vector
+ * @param {number[]} origin array of 2 numbers, the first line's origin
+ * @param {number[]} vector array of 2 numbers, the second line's vector
+ * @param {number[]} origin array of 2 numbers, the second line's origin
+ * @param {function} [aFunction=include_l] first line's boolean test normalized value lies collinear
+ * @param {function} [bFunction=include_l] second line's boolean test normalized value lies collinear
+ * @param {number} [epsilon=1e-6] optional epsilon
+ * @returns {number[]|undefined} one 2D point or undefined
 */
 const intersect_line_line = (
   aVector, aOrigin,

@@ -232,7 +232,7 @@ export const rotate270 = v => [v[1], -v[0]];
 /**
  * @description check if a vector is degenerate, meaning its magnitude is below an epsilon limit.
  * @param {number[]} v one vector, n-dimensions
- * @param {number=} an optional epsilon with a default value of 1e-6
+ * @param {number} [epsilon=1e-6] an optional epsilon with a default value of 1e-6
  * @returns {boolean} is the magnitude of the vector smaller than the epsilon?
  */
 export const degenerate = (v, epsilon = EPSILON) => v
@@ -242,7 +242,7 @@ export const degenerate = (v, epsilon = EPSILON) => v
  * @description check if two vectors are parallel to each other within an epsilon
  * @param {number[]} v one vector, n-dimensions
  * @param {number[]} u one vector, n-dimensions
- * @param {number=} an optional epsilon with a default value of 1e-6
+ * @param {number} [epsilon=1e-6] an optional epsilon with a default value of 1e-6
  * @returns {boolean} are the two vectors parallel within an epsilon?
  */
 export const parallel = (v, u, epsilon = EPSILON) => 1 - Math
@@ -251,7 +251,7 @@ export const parallel = (v, u, epsilon = EPSILON) => 1 - Math
  * @description check if two 2D vectors are parallel to each other within an epsilon
  * @param {number[]} v one 2D vector
  * @param {number[]} u one 2D vector
- * @param {number=} an optional epsilon with a default value of 1e-6
+ * @param {number} [epsilon=1e-6] an optional epsilon with a default value of 1e-6
  * @returns {boolean} are the two vectors parallel within an epsilon?
  */
 export const parallel2 = (v, u, epsilon = EPSILON) => Math

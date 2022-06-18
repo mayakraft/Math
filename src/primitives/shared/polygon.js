@@ -42,6 +42,10 @@ import {
 // this.sides - array edge pairs of points
 // this.vectors - non-normalized vectors relating to this.sides.
 const PolygonMethods = {
+  /**
+   * @description calculate the signed area of this polygon
+   * @returns {number} the signed area
+   */
   area: function () {
     return signed_area(this);
   },

@@ -52,15 +52,78 @@ const create = function (primitiveName, args) {
 
 // these have to be typed out longform like this
 // this function name is what appears as the object type name in use
+/**
+ * @description this vector object inherits from Array.prototype, its components
+ * can be accessed via array syntax, [0], [1], or .x, .y, .z properties. There
+ * is no limit to the dimensions, but be careful some member functions
+ * (like cross product) are limited.
+ * @param {...number|number[]} numbers a list of numbers as arguments or inside an array
+ * @returns {vector} one vector object
+ */
 const vector = function () { return create("vector", arguments); };
+/**
+ * @description line defined by a vector and a point passing through the line
+ * @param {number[]} vector the line's vector
+ * @param {number[]} origin the line's origin (without this, it will assumed to be the origin)
+ * @returns {line} one line object
+ */
 const line = function () { return create("line", arguments); };
+/**
+ * @description ray defined by a vector and a point passing through the ray
+ * @param {number[]} vector the ray's vector
+ * @param {number[]} origin the ray's origin (without this, it will assumed to be the origin)
+ * @returns {ray} one ray object
+ */
 const ray = function () { return create("ray", arguments); };
+/**
+ * @description segment, a straight line bounded by two points
+ * @param {number[]} a the first point
+ * @param {number[]} b the second point
+ * @returns {segment} one segment object
+ */
 const segment = function () { return create("segment", arguments); };
+/**
+ * @description a circle defined by a radius and the circle's center
+ * @param {number} radius
+ * @param {number[]|...number} the origin of the circle 
+ * @returns {circle} one circle object
+ */
 const circle = function () { return create("circle", arguments); };
+/**
+ * @description ellipse defined by two foci
+ * @param {number} rx the radius along the x axis
+ * @param {number} ry the radius along the y axis
+ * @param {number[]} origin the center of the ellipse
+ * @param {number} spin the angle of rotation in radians
+ * @returns {ellipse} one ellipse object
+ */
 const ellipse = function () { return create("ellipse", arguments); };
+/**
+ * @description an axis-aligned rectangle defined by the corner and a width and height
+ * @param {number} x the x coordinate of the origin
+ * @param {number} y the y coordinate of the origin
+ * @param {number} width the width of the rectangle
+ * @param {number} height the height of the rectangle
+ * @returns {rect} one rect object
+ */
 const rect = function () { return create("rect", arguments); };
+/**
+ * @description a polygon defined by a sequence of points
+ * @param {number[][]|...number[]} one array containing points (array of numbers) or a list of points as the arguments.
+ * @returns {polygon} one polygon object
+ */
 const polygon = function () { return create("polygon", arguments); };
+/**
+ * @description a polyline defined by a sequence of points
+ * @param {number[][]|...number[]} one array containing points (array of numbers) or a list of points as the arguments.
+ * @returns {polyline} one polyline object
+ */
 const polyline = function () { return create("polyline", arguments); };
+/**
+ * @description a 3x4 column-major matrix containing ijk basis vectors and a translation column.
+ * @param {number[]|...number} one array of numbers, or list of numbers as parameters.
+ * @returns {matrix} one 3x4 matrix object
+ */
 const matrix = function () { return create("matrix", arguments); };
 // const junction = function () { return create("junction", arguments); };
 // const plane = function () { return create("plane", arguments); };

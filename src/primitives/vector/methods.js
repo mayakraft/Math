@@ -83,6 +83,11 @@ const table = {
         resize(3, this)
       );
     },
+    /**
+     * @description add a vector to this vector.
+     * @param {number[]} vector one vector
+     * @returns {number[]} one vector, the sum of this and the input vector
+     */
     add: function () {
       return add(this, resize(this.length, get_vector(arguments)));
     },

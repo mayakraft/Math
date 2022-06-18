@@ -33,7 +33,15 @@ import {
 } from "./algebra";
 import overlap_line_point from "../intersection/overlap-line-point";
 import intersect_line_line from "../intersection/intersect-line-line";
-
+/**
+ * @description Calculates the circumcircle which lies on three points.
+ * @param {number[]} a one 2D point as an array of numbers
+ * @param {number[]} b one 2D point as an array of numbers
+ * @param {number[]} c one 2D point as an array of numbers
+ * @returns {circle} one circle with keys "radius" (number) and "origin" (number[])
+ * @example
+ * var centroid = polygon.centroid()
+ */
 export const circumcircle = function (a, b, c) {
   const A = b[0] - a[0];
   const B = b[1] - a[1];
@@ -60,7 +68,9 @@ export const circumcircle = function (a, b, c) {
     radius: Math.sqrt(dx * dx + dy * dy),
   };
 };
-/** Calculates the signed area of a polygon. This requires the polygon be non-intersecting.
+/**
+ * @description Calculates the signed area of a polygon. This requires the polygon be non-self-intersecting.
+ * @param {number[][]} points an array of 2D points, which are arrays of numbers
  * @returns {number} the area of the polygon
  * @example
  * var area = polygon.signedArea()
@@ -70,8 +80,10 @@ export const signed_area = points => 0.5 * points
     const next = arr[(i + 1) % arr.length];
     return el[0] * next[1] - next[0] * el[1];
   }).reduce(fn_add, 0);
-/** Calculates the centroid or the center of mass of the polygon.
- * @returns {XY} the location of the centroid
+/**
+ * @description Calculates the centroid or the center of mass of the polygon.
+ * @param {number[][]} points an array of 2D points, which are arrays of numbers
+ * @returns {number[]} one 2D point as an array of numbers
  * @example
  * var centroid = polygon.centroid()
  */
@@ -85,21 +97,21 @@ export const centroid = (points) => {
     .map(c => c * sixthArea);
 };
 /**
- * @description axis-aligned bounding box. given a set of points.
- * the epsilon is used to make the bounding box inclusive / exclusive
- * by adding a tiny bit of padding on all sides.
- * a positive epsilon results in an inclusive boundary. negative, exclusive.
- * @param {number[][]} an array of unsorted points, in any dimension.
- * @param {number} epsilon, optional, to add padding around the box.
- * @returns {object} "min" and "max" are two points, "span" is the lengths.
+ * @description Make an axis-aligned bounding box that encloses a set of points.
+ * the optional padding is used to make the bounding box inclusive / exclusive
+ * by adding padding on all sides, or inset in the case of negative number.
+ * (positive=inclusive boundary, negative=exclusive boundary)
+ * @param {number[][]} points an array of unsorted points, in any dimension
+ * @param {number} [padding=0] optionally add padding around the box
+ * @returns {object} "min" and "max" are two points, "span" is the lengths
  */
-export const bounding_box = (points, epsilon = 0) => {
+export const bounding_box = (points, padding = 0) => {
   const min = Array(points[0].length).fill(Infinity);
   const max = Array(points[0].length).fill(-Infinity);
   points.forEach(point => point
     .forEach((c, i) => {
-      if (c < min[i]) { min[i] = c - epsilon; }
-      if (c > max[i]) { max[i] = c + epsilon; }
+      if (c < min[i]) { min[i] = c - padding; }
+      if (c > max[i]) { max[i] = c + padding; }
     }));
   const span = max.map((max, i) => max - min[i]);
   return { min, max, span };
@@ -121,30 +133,30 @@ const angles_to_vecs = (angles, radius) => angles
 /**
  * make regular polygon is circumradius by default
  */
-export const make_regular_polygon = (sides = 3, radius = 1) =>
+export const make_polygon_circumradius = (sides = 3, radius = 1) =>
   angles_to_vecs(angle_array(sides), radius);
 
-export const make_regular_polygon_side_aligned = (sides = 3, radius = 1) => {
+export const make_polygon_circumradius_s = (sides = 3, radius = 1) => {
   const halfwedge = Math.PI / sides;
   const angles = angle_array(sides).map(a => a + halfwedge);
   return angles_to_vecs(angles, radius);
 };
+export const make_polygon_inradius = (sides = 3, radius = 1) => 
+  make_polygon_circumradius(sides, radius / Math.cos(Math.PI / sides));
 
-export const make_regular_polygon_inradius = (sides = 3, radius = 1) => 
-  make_regular_polygon(sides, radius / Math.cos(Math.PI / sides));
+export const make_polygon_inradius_s = (sides = 3, radius = 1) =>
+  make_polygon_circumradius_s(sides, radius / Math.cos(Math.PI / sides));
 
-export const make_regular_polygon_inradius_side_aligned = (sides = 3, radius = 1) =>
-  make_regular_polygon_side_aligned(sides, radius / Math.cos(Math.PI / sides));
+export const make_polygon_side_length = (sides = 3, length = 1) =>
+  make_polygon_circumradius(sides, (length / 2) / Math.sin(Math.PI / sides));
 
-export const make_regular_polygon_side_length = (sides = 3, length = 1) =>
-  make_regular_polygon(sides, (length / 2) / Math.sin(Math.PI / sides));
-
-export const make_regular_polygon_side_length_side_aligned = (sides = 3, length = 1) =>
-  make_regular_polygon_side_aligned(sides, (length / 2) / Math.sin(Math.PI / sides));
+export const make_polygon_side_length_s = (sides = 3, length = 1) =>
+  make_polygon_circumradius_s(sides, (length / 2) / Math.sin(Math.PI / sides));
 /**
  * @description removes any collinear vertices from a n-dimensional polygon.
- * @param {number[][]} a polygon as an array of ordered points in array form.
- * @returns {number[][]} a copy of the polygon with collinear points removed.
+ * @param {number[][]} polygon a polygon as an array of ordered points in array form
+ * @param {number} [epsilon=1e-6] an optional epsilon
+ * @returns {number[][]} a copy of the polygon with collinear points removed
  */
 export const make_polygon_non_collinear = (polygon, epsilon = EPSILON) => {
   // index map [i] to [i, i+1]
@@ -180,9 +192,11 @@ const pleat_angle = (count, a, b) => {
   return vectors.map(vector => ({ origin, vector }));
 };
 /**
+ * @description between two lines, make a repeating sequence of evenly-spaced lines to simulate a series of pleats.
  * @param {line} object with two keys/values: { vector: [], origin: [] }
  * @param {line} object with two keys/values: { vector: [], origin: [] }
  * @param {number} the number of faces, the number of lines will be n-1.
+ * @returns {line[]} an array of lines, objects which contain "vector" and "origin"
  */
 export const pleat = (count, a, b) => {
   const lineA = get_line(a);
@@ -257,7 +271,13 @@ export const split_convex_polygon = (poly, lineVector, linePoint) => {
   }
   return [poly.slice()];
 };
-
+/**
+ * @description create a 2D convex hull from a set of 2D points, choose whether to include or exclude points which lie collinear inside one of the boundary lines.
+ * @param {number[][]} points an array of 2D points (which are arrays of numbers)
+ * @param {boolean} [include_collinear=false] should we include points collinear along a boundary edge? by default, no (false).
+ * @param {number} [epsilon=1e-6] an optional epsilon
+ * @returns {number[][]} an array of points (which are arrays of numbers)
+ */
 export const convex_hull = (points, include_collinear = false, epsilon = EPSILON) => {
   // # points in the convex hull before escaping function
   let INFINITE_LOOP = 10000;
@@ -408,8 +428,11 @@ const recurse_skeleton = (points, lines, bisectors) => {
   return solutions.concat(recurse_skeleton(points, lines, bisectors));
 };
 /**
- * @param {number[][]} array of arrays of numbers (array of points), where
- *   each point is an array of numbers: [number, number].
+ * @description create a straight skeleton inside of a convex polygon
+ * @param {number[][]} points counter-clockwise polygon as an array of points
+ * (which are arrays of numbers)
+ * @returns {object[]} list of objects containing "points" {number[][]}: two points
+ * defining a line segment, and "type" {string}: either "skeleton" or "perpendicular"
  *
  * make sure:
  *  - your polygon is convex (todo: make this algorithm work with non-convex)

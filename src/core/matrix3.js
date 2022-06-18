@@ -9,21 +9,27 @@
 import { EPSILON } from "./constants";
 import { normalize } from "./algebra";
 import { resize } from "../arguments/resize";
-
+/**
+ * @description the identity matrix for 3x3 matrices
+ */
 export const identity3x3 = Object.freeze([1, 0, 0, 0, 1, 0, 0, 0, 1]);
+/**
+ * @description the identity matrix for 3x4 matrices (zero translation)
+ */
 export const identity3x4 = Object.freeze(identity3x3.concat(0, 0, 0));
 /**
- * @param {number[]} is a 3x4 matrix the identity matrix
- * with a translation component of 0, 0, 0
- * @returns boolean
+ * @description test if a 3x4 matrix is the identity matrix within an epsilon
+ * @param {number[]} matrix a 3x4 matrix
+ * @returns {boolean} true if the matrix is the identity matrix
  */
 export const is_identity3x4 = m => identity3x4
   .map((n, i) => Math.abs(n - m[i]) < EPSILON)
   .reduce((a, b) => a && b, true);
 /**
- * @param {number[]} vector, in array form
- * @param {number[]} matrix, in array frotateorm
- * @returns {number[]} vector, the input vector transformed by the matrix
+ * @description multiply one 3D vector by a 3x4 matrix
+ * @param {number[]} matrix one matrix in array form
+ * @param {number[]} vector in array form
+ * @returns {number[]} the transformed vector
  */
 export const multiply_matrix3_vector3 = (m, vector) => [
   m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2] + m[9],
@@ -31,8 +37,11 @@ export const multiply_matrix3_vector3 = (m, vector) => [
   m[2] * vector[0] + m[5] * vector[1] + m[8] * vector[2] + m[11]
 ];
 /**
- * @param line in point-vector form, matrix
- * @returns transformed line in point-vector form
+ * @description multiply one 3D line by a 3x4 matrix
+ * @param {number[]} matrix one matrix in array form
+ * @param {number[]} vector the vector of the line
+ * @param {number[]} origin the origin of the line
+ * @returns {object} transformed line in point-vector form
  */
 export const multiply_matrix3_line3 = (m, vector, origin) => ({
   vector: [
@@ -46,7 +55,12 @@ export const multiply_matrix3_line3 = (m, vector, origin) => ({
     m[2] * origin[0] + m[5] * origin[1] + m[8] * origin[2] + m[11]
   ],
 });
-
+/**
+ * @description multiply two 3x4 matrices together
+ * @param {number[]} matrix the first matrix
+ * @param {number[]} matrix the second matrix
+ * @returns {number[]} one matrix, the product of the two
+ */
 export const multiply_matrices3 = (m1, m2) => [
   m1[0] * m2[0] + m1[3] * m2[1] + m1[6] * m2[2],
   m1[1] * m2[0] + m1[4] * m2[1] + m1[7] * m2[2],
@@ -61,7 +75,12 @@ export const multiply_matrices3 = (m1, m2) => [
   m1[1] * m2[9] + m1[4] * m2[10] + m1[7] * m2[11] + m1[10],
   m1[2] * m2[9] + m1[5] * m2[10] + m1[8] * m2[11] + m1[11]
 ];
-
+/**
+ * @description calculate the determinant of a 3x4 or 3x3 matrix.
+ * in the case of 3x4, the translation component is ignored.
+ * @param {number[]} matrix one matrix in array form
+ * @returns {number} the determinant of the matrix
+ */
 export const determinant3 = m => (
     m[0] * m[4] * m[8]
   - m[0] * m[7] * m[5]
@@ -71,8 +90,9 @@ export const determinant3 = m => (
   - m[6] * m[4] * m[2]
 );
 /**
- * @param matrix
- * @returns matrix
+ * @description invert a 3x4 matrix
+ * @param {number[]} matrix one matrix in array form
+ * @returns {number[]|undefined} the inverted matrix, or undefined if not possible
  */
 export const invert_matrix3 = (m) => {
   const det = determinant3(m);
@@ -100,7 +120,13 @@ export const invert_matrix3 = (m) => {
   const invDet = 1.0 / det;
   return inv.map(n => n * invDet);
 };
-
+/**
+ * @description make a 3x4 matrix representing a translation in 3D
+ * @param {number} [x=0] the x component of the translation
+ * @param {number} [y=0] the y component of the translation
+ * @param {number} [z=0] the z component of the translation
+ * @returns {number[]} one 3x4 matrix
+ */
 export const make_matrix3_translate = (x = 0, y = 0, z = 0) => identity3x3.concat(x, y, z);
 
 // i0 and i1 direct which columns and rows are filled
@@ -116,10 +142,35 @@ const single_axis_rotate = (angle, origin, i0, i1, sgn) => {
   return mat;
 };
 
+/**
+ * @description make a 3x4 matrix representing a rotation in 3D around the x-axis (allowing you to specify the center of rotation if needed).
+ * @param {number} angle the angle of rotation in radians
+ * @param {number[]} [origin=[0,0,0]] the center of rotation
+ * @returns {number[]} one 3x4 matrix
+ */
 export const make_matrix3_rotateX = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 1, 2, true);
+/**
+ * @description make a 3x4 matrix representing a rotation in 3D around the y-axis (allowing you to specify the center of rotation if needed).
+ * @param {number} angle the angle of rotation in radians
+ * @param {number[]} [origin=[0,0,0]] the center of rotation
+ * @returns {number[]} one 3x4 matrix
+ */
 export const make_matrix3_rotateY = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 0, 2, false);
+/**
+ * @description make a 3x4 matrix representing a rotation in 3D around the z-axis (allowing you to specify the center of rotation if needed).
+ * @param {number} angle the angle of rotation in radians
+ * @param {number[]} [origin=[0,0,0]] the center of rotation
+ * @returns {number[]} one 3x4 matrix
+ */
 export const make_matrix3_rotateZ = (angle, origin = [0, 0, 0]) => single_axis_rotate(angle, origin, 0, 1, true);
-
+/**
+ * @description make a 3x4 matrix representing a rotation in 3D
+ * around a given vector and around a given center of rotation.
+ * @param {number} angle the angle of rotation in radians
+ * @param {number[]} [vector=[0,0,1]] the axis of rotation
+ * @param {number[]} [origin=[0,0,0]] the center of rotation
+ * @returns {number[]} one 3x4 matrix
+ */
 export const make_matrix3_rotate = (angle, vector = [0, 0, 1], origin = [0, 0, 0]) => {
   const pos = [0, 1, 2].map(i => origin[i] || 0);
   const [x, y, z] = resize(3, normalize(vector));
@@ -159,8 +210,13 @@ const make_matrix3_rotate_old = (angle, vector = [0, 0, 1], origin = [0, 0, 0]) 
           multiply_matrices3(ry,
             multiply_matrices3(rx, t))))));
 };
-
-export const make_matrix3_scale = (scale, origin = [0, 0, 0]) => [
+/**
+ * @description make a 3x4 matrix representing a uniform scale.
+ * @param {number} [scale=1] the uniform scale value
+ * @param {number[]} [origin=[0,0,0]] the center of transformation
+ * @returns {number[]} one 3x4 matrix
+ */
+export const make_matrix3_scale = (scale = 1, origin = [0, 0, 0]) => [
   scale,
   0,
   0,
@@ -174,11 +230,12 @@ export const make_matrix3_scale = (scale, origin = [0, 0, 0]) => [
   scale * -origin[1] + origin[1],
   scale * -origin[2] + origin[2]
 ];
-
 /**
- * 2D operation, assuming everything is 0 in the z plane
- * @param line in vector-origin form
- * @returns matrix3
+ * @description make a 3x4 representing a reflection across a line in the XY plane
+ * This is a 2D operation, assumes everything is in the XY plane.
+ * @param {number[]} vector one 2D vector specifying the reflection axis
+ * @param {number[]} [origin=[0,0]] 2D origin specifying a point of reflection
+ * @returns {number[]} one 3x4 matrix
  */
 export const make_matrix3_reflectZ = (vector, origin = [0, 0]) => {
   // the line of reflection passes through origin, runs along vector
