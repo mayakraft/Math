@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import { EPSILON } from "../core/constants";
 import {
   cross2,
@@ -17,15 +20,16 @@ import { exclude } from "../arguments/functions";
  * @param {number[][]} polygon in array of array form
  * @param {function} true for positive numbers, in/exclude near zero
  * @returns {boolean} is the point inside the polygon?
+ * @linkcode Math ./src/intersection/overlap-polygon-point.js 23
  */
-const overlap_convex_polygon_point = (poly, point, func = exclude, epsilon = EPSILON) => poly
+const overlapConvexPolygonPoint = (poly, point, func = exclude, epsilon = EPSILON) => poly
   .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
   .map(s => cross2(normalize(subtract(s[1], s[0])), subtract(point, s[0])))
   .map(side => func(side, epsilon))
   .map((s, _, arr) => s === arr[0])
   .reduce((prev, curr) => prev && curr, true);
 
-export default overlap_convex_polygon_point;
+export default overlapConvexPolygonPoint;
 
 /**
  * Tests whether or not a point is contained inside a polygon.

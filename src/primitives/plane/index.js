@@ -1,7 +1,10 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 import {
-  get_vector_of_vectors,
-  get_line,
+  getVectorOfVectors,
+  getLine,
 } from "../../arguments/get";
 import {
   average,
@@ -14,7 +17,7 @@ import Intersect from "../../intersection/index";
 export default {
   plane: {
     A: function () {
-      const args = get_vector_of_vectors(...arguments);
+      const args = getVectorOfVectors(...arguments);
       this.normal = Constructors.vector((args.length > 0 ? args[0] : null));
       this.origin = Constructors.vector((args.length > 1 ? args[1] : null));
     },
@@ -35,18 +38,18 @@ export default {
     S: {
       // three points in 3D space
       fromPoints: function () {
-        // const points = get_vector_of_vectors(arguments);
+        // const points = getVectorOfVectors(arguments);
         // return this.constructor({
         //   normal: points[0],
         //   origin: points[1],
         // });
       },
       fromLine: function () {
-        const line = get_line(arguments);
+        const line = getLine(arguments);
         return this.constructor(line.vector, line.origin);
       },
       fromRay: function () {
-        const line = get_line(arguments);
+        const line = getLine(arguments);
         return this.constructor(line.vector, line.origin);
       },
     }

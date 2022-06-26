@@ -1,4 +1,7 @@
 /**
+ * Math (c) Kraft
+ */
+/**
  * type checking
  */
 /**
@@ -7,7 +10,13 @@
  * you're passing in. in the case that it isn't and there's an object
  * in the first slot, it won't find the valid data in the second.
  */
-const type_of = function (obj) {
+/**
+ * @description get the type of an object, which includes the custom types in this library.
+ * @param {any} any object
+ * @returns {string} the type name
+ * @linkcode Math ./src/arguments/typeof.js 17
+ */
+const typeOf = function (obj) {
   switch (obj.constructor.name) {
     case "vector":
     case "matrix":
@@ -31,5 +40,5 @@ const type_of = function (obj) {
   return undefined;
 };
 
-export default type_of;
+export default typeOf;
 

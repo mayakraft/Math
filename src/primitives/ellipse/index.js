@@ -1,10 +1,13 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 // import { nearest_point_on_ellipse } from "../../core/nearest";
 import {
   resize,
-  flatten_arrays,
+  flattenArrays,
 } from "../../arguments/resize";
-import { get_vector } from "../../arguments/get";
+import { getVector } from "../../arguments/get";
 // import Intersect from "../../intersection/index";
 
 import {
@@ -29,7 +32,7 @@ export default {
   ellipse: {
     A: function () {
       // const arr = Array.from(arguments);
-      const numbers = flatten_arrays(arguments).filter(a => !isNaN(a));
+      const numbers = flattenArrays(arguments).filter(a => !isNaN(a));
       const params = resize(5, numbers);
       this.rx = params[0];
       this.ry = params[1];
@@ -37,7 +40,7 @@ export default {
       this.spin = params[4];
       this.foci = getFoci(this.origin, this.rx, this.ry, this.spin);
       // const numbers = arr.filter(param => !isNaN(param));
-      // const vectors = get_vector_of_vectors(arr);
+      // const vectors = getVector_of_vectors(arr);
       // if (numbers.length === 4) {
       //   // this.origin = Constructors.vector(numbers[0], numbers[1]);
       //   // this.rx = numbers[2];
@@ -60,7 +63,7 @@ export default {
       //   return Constructors.vector(nearest_point_on_ellipse(
       //     this.origin,
       //     this.radius,
-      //     get_vector(arguments)
+      //     getVector(arguments)
       //   ));
       // },
       // intersect: function (object) {
@@ -97,7 +100,7 @@ export default {
     S: {
       // static methods
       // fromPoints: function () {
-      //   const points = get_vector_of_vectors(arguments);
+      //   const points = getVector_of_vectors(arguments);
       //   return Constructors.circle(points, distance2(points[0], points[1]));
       // }
     }

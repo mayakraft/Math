@@ -95,8 +95,8 @@ test("circle fromThreePoints", () => {
 test("intersect lines", () => {
   const clipLine = math.circle(1).intersect(math.line([0, 1], [0.5, 0]));
   const shouldBeLine = [[0.5, -Math.sqrt(3) / 2], [0.5, Math.sqrt(3) / 2]];
-  math.core.equivalent_vectors(clipLine[0], shouldBeLine[0]);
-  math.core.equivalent_vectors(clipLine[1], shouldBeLine[1]);
+  math.core.fnEpsilonEqualVectors(clipLine[0], shouldBeLine[0]);
+  math.core.fnEpsilonEqualVectors(clipLine[1], shouldBeLine[1]);
   // no intersect
   expect(math.circle(1, [2,2]).intersect(math.line([0,1], [10,0]))).toBe(undefined);
   // tangent
@@ -106,11 +106,11 @@ test("intersect lines", () => {
 
   const shouldBeRay = [Math.sqrt(2) / 2, Math.sqrt(2) / 2];
   const clipRay = math.circle(1).intersect(math.ray(0.1, 0.1));
-  math.core.equivalent_vectors(shouldBeRay, clipRay[0]);
+  math.core.fnEpsilonEqualVectors(shouldBeRay, clipRay[0]);
 
   const shouldBeSeg = [Math.sqrt(2) / 2, Math.sqrt(2) / 2];
   const clipSeg = math.circle(1).intersect(math.segment(0, 0, 10, 10));
-  math.core.equivalent_vectors(shouldBeSeg, clipSeg[0]);
+  math.core.fnEpsilonEqualVectors(shouldBeSeg, clipSeg[0]);
 });
 
 test("circle circle intersect", () => {

@@ -1,22 +1,25 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 
 import {
-  get_vector,
+  getVector,
   get_matrix2,
 } from "../../arguments/get";
 
 import { clean_number } from "../../arguments/resize";
 
 import {
-  multiply_matrix2_vector2,
-  multiply_matrix2_line2,
-  multiply_matrices2,
+  multiplyMatrix2Vector2,
+  multiplyMatrix2Line2,
+  multiplyMatrices2,
   determinant2,
-  invert_matrix2,
-  make_matrix2_translate,
-  make_matrix2_scale,
-  make_matrix2_rotate,
-  make_matrix2_reflect,
+  invertMatrix2,
+  makeMatrix2Translate,
+  makeMatrix2Scale,
+  makeMatrix2Rotate,
+  makeMatrix2Reflect,
 } from "../../core/matrix2";
 
 /**
@@ -41,7 +44,7 @@ export default {
     M: {
       multiply: function () {
         return Constructors.matrix2(
-          multiply_matrices2(this, get_matrix2(arguments))
+          multiplyMatrices2(this, get_matrix2(arguments))
             .map(n => clean_number(n, 13))
         );
       },
@@ -49,46 +52,46 @@ export default {
         return clean_number(determinant2(this));
       },
       inverse: function () {
-        return Constructors.matrix2(invert_matrix2(this)
+        return Constructors.matrix2(invertMatrix2(this)
           .map(n => clean_number(n, 13)));
       },
       translate: function (x, y) {
         return Constructors.matrix2(
-          multiply_matrices2(this, make_matrix2_translate(x, y))
+          multiplyMatrices2(this, makeMatrix2Translate(x, y))
             .map(n => clean_number(n, 13))
         );
       },
       scale: function () {
         return Constructors.matrix2(
-          multiply_matrices2(this, make_matrix2_scale(arguments))
+          multiplyMatrices2(this, makeMatrix2Scale(arguments))
             .map(n => clean_number(n, 13))
         );
       },
       rotate: function () {
         return Constructors.matrix2(
-          multiply_matrices2(this, make_matrix2_rotate(arguments))
+          multiplyMatrices2(this, makeMatrix2Rotate(arguments))
             .map(n => clean_number(n, 13))
         );
       },
       reflect: function () {
         return Constructors.matrix2(
-          multiply_matrices2(this, make_matrix2_reflect(arguments))
+          multiplyMatrices2(this, makeMatrix2Reflect(arguments))
             .map(n => clean_number(n, 13))
         );
       },
       transform: function () {
         return Constructors.vector(
-          multiply_matrix2_vector2(this, get_vector(arguments))
+          multiplyMatrix2Vector2(this, getVector(arguments))
             .map(n => clean_number(n, 13))
         );
       },
       transformVector: function (vector) {
-        return Constructors.matrix2(multiply_matrix2_vector2(this, vector)
+        return Constructors.matrix2(multiplyMatrix2Vector2(this, vector)
           .map(n => clean_number(n, 13)));
       },
       transformLine: function (vector, origin) {
         return Constructors.matrix2(
-          multiply_matrix2_line2(this, vector, origin)
+          multiplyMatrix2Line2(this, vector, origin)
             .map(n => clean_number(n, 13))
         );
       },
@@ -97,17 +100,17 @@ export default {
     S: {
       makeIdentity: () => Constructors.matrix2(1, 0, 0, 1, 0, 0),
       makeTranslation: (x, y) => Constructors.matrix2(
-        make_matrix2_translate(x, y)
+        makeMatrix2Translate(x, y)
       ),
       makeRotation: (angle_radians, origin) => Constructors.matrix2(
-        make_matrix2_rotate(angle_radians, origin)
+        makeMatrix2Rotate(angle_radians, origin)
           .map(n => clean_number(n, 13))
       ),
       makeScale: (x, y, origin) => Constructors.matrix2(
-        make_matrix2_scale(x, y, origin).map(n => clean_number(n, 13))
+        makeMatrix2Scale(x, y, origin).map(n => clean_number(n, 13))
       ),
       makeReflection: (vector, origin) => Constructors.matrix2(
-        make_matrix2_reflect(vector, origin).map(n => clean_number(n, 13))
+        makeMatrix2Reflect(vector, origin).map(n => clean_number(n, 13))
       ),
     }
   }

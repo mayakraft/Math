@@ -15,7 +15,7 @@ export const cubic = (a, b, c, d, t) => {
   return e0 * t * t2 + e1 * t2 + e2 * t + e3;
 };
 
-export const catmull_rom = (a, b, c, d, t) => {
+export const catmullRom = (a, b, c, d, t) => {
   const t2 = t * t;
   const e0 = -0.5 * a + 1.5 * b - 1.5 * c + 0.5 * d;
   const e1 = a - 2.5 * b + 2 * c - 0.5 * d;

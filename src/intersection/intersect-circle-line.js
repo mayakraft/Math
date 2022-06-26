@@ -1,17 +1,28 @@
+/**
+ * Math (c) Kraft
+ */
 import { EPSILON } from "../core/constants";
-import { include_l } from "../arguments/functions";
+import { includeL } from "../arguments/functions";
 import {
   subtract,
   cross2,
   rotate90,
 } from "../core/algebra";
-/*
- * returns an array of array of numbers
+/**
+ * @description Calculate the intersection of a circle and a line; the line can
+ * be a line, ray, or segment.
+ * @param {number} circleRadius the circle's radius
+ * @param {number[]} circleOrigin the center of the circle
+ * @param {number[]} lineVector the vector component of the line
+ * @param {number[]} lineOrigin the origin component of the line
+ * @param {function} [lineFunc=includeL] set the line/ray/segment and inclusive/exclusive
+ * @param {number} [epsilon=1e-6] an optional epsilon
+ * @linkcode Math ./src/intersection/intersect-circle-line.js 20
  */
-const intersect_circle_line = (
+const intersectCircleLine = (
   circle_radius, circle_origin,
   line_vector, line_origin,
-  line_func = include_l,
+  line_func = includeL,
   epsilon = EPSILON
 ) => {
   const magSq = line_vector[0] ** 2 + line_vector[1] ** 2;
@@ -32,5 +43,5 @@ const intersect_circle_line = (
   return results.filter((_, i) => line_func(ts[i], epsilon));
 };
 
-export default intersect_circle_line;
+export default intersectCircleLine;
 

@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import { EPSILON } from "../core/constants";
 import {
   add,
@@ -7,27 +10,30 @@ import {
   cross2,
 } from "../core/algebra";
 import {
-  include_l,
-  exclude_l,
+  includeL,
+  excludeL,
 } from "../arguments/functions";
 /**
- * @description 2D line intersection function, generalized and works
- * for lines, rays, and segments by passing in a function for each line
- * @param {number[]} array of 2 numbers, the first line's vector
- * @param {number[]} array of 2 numbers, the first line's origin
- * @param {number[]} array of 2 numbers, the second line's vector
- * @param {number[]} array of 2 numbers, the second line's origin
- * @param {function} first line's boolean test normalized value lies collinear
- * @param {function} seconde line's boolean test normalized value lies collinear
+ * @description Find the intersection of two lines. Lines can be lines/rays/segments,
+ * and can be inclusve or exclusive in terms of their endpoints and the epsilon value.
+ * @param {number[]} vector array of 2 numbers, the first line's vector
+ * @param {number[]} origin array of 2 numbers, the first line's origin
+ * @param {number[]} vector array of 2 numbers, the second line's vector
+ * @param {number[]} origin array of 2 numbers, the second line's origin
+ * @param {function} [aFunction=includeL] first line's boolean test normalized value lies collinear
+ * @param {function} [bFunction=includeL] second line's boolean test normalized value lies collinear
+ * @param {number} [epsilon=1e-6] optional epsilon
+ * @returns {number[]|undefined} one 2D point or undefined
+ * @linkcode Math ./src/intersection/intersect-line-line.js 27
 */
-const intersect_line_line = (
+const intersectLineLine = (
   aVector, aOrigin,
   bVector, bOrigin,
-  aFunction = include_l,
-  bFunction = include_l,
+  aFunction = includeL,
+  bFunction = includeL,
   epsilon = EPSILON
 ) => {
-  // a normalized determinant gives consisten values across all epsilon ranges
+  // a normalized determinant gives consistent values across all epsilon ranges
   const det_norm = cross2(normalize(aVector), normalize(bVector));
   // lines are parallel
   if (Math.abs(det_norm) < epsilon) { return undefined; }
@@ -44,4 +50,4 @@ const intersect_line_line = (
   return undefined;
 };
 
-export default intersect_line_line;
+export default intersectLineLine;

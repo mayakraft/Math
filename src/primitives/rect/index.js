@@ -1,10 +1,13 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 import methods from "../shared/polygon";
-import { enclosing_rectangle } from "../../core/geometry";
+import { boundingBox } from "../../core/geometry";
 import { include, exclude } from "../../arguments/functions";
 import {
-  get_rect,
-  get_vector_of_vectors,
+  getRect,
+  getVectorOfVectors,
 } from "../../arguments/get";
 
 /**
@@ -29,7 +32,7 @@ export default {
   rect: {
     P: Array.prototype,
     A: function () {
-      const r = get_rect(...arguments);
+      const r = getRect(...arguments);
       this.width = r.width;
       this.height = r.height;
       this.origin = Constructors.vector(r.x, r.y);
@@ -55,7 +58,8 @@ export default {
     }),
     S: {
       fromPoints: function () {
-        return Constructors.rect(enclosing_rectangle(get_vector_of_vectors(arguments)));
+        const box = boundingBox(getVectorOfVectors(arguments));
+        return Constructors.rect(box.min[0], box.min[1], box.span[0], box.span[1]);
       }
     }
   }

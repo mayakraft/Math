@@ -1,15 +1,19 @@
+/**
+ * Math (c) Kraft
+ */
 import { EPSILON } from "../core/constants";
 /**
- * Sutherland-Hodgman polygon clipping
- * from Rosetta Code
- * refactored to use this library, and include an epsilon
- *
- * polygons must be counter-clockwise!
- * will not work even if both are similarly clockwise.
- *
- * https://rosettacode.org/wiki/Sutherland-Hodgman_polygon_clipping#JavaScript
+ * @description clip two polygons and return their union. this works for non-convex
+ * poylgons, but both polygons must have counter-clockwise winding; will not work
+ * even if both are similarly-clockwise. Sutherland-Hodgman algorithm.
+ * Implementation is from Rosetta Code, refactored to include an epsilon.
+ * @attribution https://rosettacode.org/wiki/Sutherland-Hodgman_polygon_clipping#JavaScript
+ * @param {number[][]} polygon1 an array of points, where each point is an array of numbers.
+ * @param {number[][]} polygon2 an array of points, where each point is an array of numbers.
+ * @param {number} [epsilon=1e-6] an optional epsilon
+ * @returns {number[][]} a polygon as an array of points.
  */
-const intersect_polygon_polygon = (polygon1, polygon2, epsilon = EPSILON) => {
+const clipPolygonPolygon = (polygon1, polygon2, epsilon = EPSILON) => {
 	var cp1, cp2, s, e;
 	const inside = (p) => {
 		// console.log(p, "inside", ((cp2[0] - cp1[0]) * (p[1] - cp1[1]))
@@ -48,7 +52,7 @@ const intersect_polygon_polygon = (polygon1, polygon2, epsilon = EPSILON) => {
 		}
 		cp1 = cp2;
 	}
-	return outputList;
+	return outputList.length === 0 ? undefined : outputList;
 };
 
-export default intersect_polygon_polygon;
+export default clipPolygonPolygon;

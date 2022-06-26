@@ -1,9 +1,12 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 
 import {
-  get_vector,
-  get_line,
-  get_matrix_3x4,
+  getVector,
+  getLine,
+  getMatrix3x4,
 } from "../../arguments/get";
 
 import {
@@ -11,19 +14,19 @@ import {
 } from "../../arguments/resize";
 
 import {
-  is_identity3x4,
-  multiply_matrix3_vector3,
-  multiply_matrix3_line3,
-  multiply_matrices3,
+  isIdentity3x4,
+  multiplyMatrix3Vector3,
+  multiplyMatrix3Line3,
+  multiplyMatrices3,
   determinant3,
-  invert_matrix3,
-  make_matrix3_translate,
-  make_matrix3_rotateX,
-  make_matrix3_rotateY,
-  make_matrix3_rotateZ,
-  make_matrix3_rotate,
-  make_matrix3_scale,
-  make_matrix3_reflectZ
+  invertMatrix3,
+  makeMatrix3Translate,
+  makeMatrix3RotateX,
+  makeMatrix3RotateY,
+  makeMatrix3RotateZ,
+  makeMatrix3Rotate,
+  makeMatrix3Scale,
+  makeMatrix3ReflectZ
 } from "../../core/matrix3";
 
 /**
@@ -37,7 +40,7 @@ import {
  */
 
 // this is 4x faster than calling Object.assign(thisMat, mat)
-const assign = (thisMat, mat) => {
+const array_assign = (thisMat, mat) => {
   for (let i = 0; i < 12; i += 1) {
     thisMat[i] = mat[i];
   }
@@ -50,7 +53,7 @@ export default {
 
     A: function () {
       // [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0].forEach(m => this.push(m));
-      get_matrix_3x4(arguments).forEach(m => this.push(m));
+      getMatrix3x4(arguments).forEach(m => this.push(m));
     },
 
     G: {
@@ -59,62 +62,62 @@ export default {
     M: {
       copy: function () { return Constructors.matrix(...Array.from(this)); },
       set: function () {
-        return assign(this, get_matrix_3x4(arguments));
+        return array_assign(this, getMatrix3x4(arguments));
       },
-      isIdentity: function () { return is_identity3x4(this); },
+      isIdentity: function () { return isIdentity3x4(this); },
       // todo: is this right, on the right hand side?
       multiply: function (mat) {
-        return assign(this, multiply_matrices3(this, mat));
+        return array_assign(this, multiplyMatrices3(this, mat));
       },
       determinant: function () {
         return determinant3(this);
       },
       inverse: function () {
-        return assign(this, invert_matrix3(this));
+        return array_assign(this, invertMatrix3(this));
       },
       // todo: is this the right order (this, transform)?
       translate: function (x, y, z) {
-        return assign(this,
-          multiply_matrices3(this, make_matrix3_translate(x, y, z)));
+        return array_assign(this,
+          multiplyMatrices3(this, makeMatrix3Translate(x, y, z)));
       },
       rotateX: function (radians) {
-        return assign(this,
-          multiply_matrices3(this, make_matrix3_rotateX(radians)));
+        return array_assign(this,
+          multiplyMatrices3(this, makeMatrix3RotateX(radians)));
       },
       rotateY: function (radians) {
-        return assign(this,
-          multiply_matrices3(this, make_matrix3_rotateY(radians)));
+        return array_assign(this,
+          multiplyMatrices3(this, makeMatrix3RotateY(radians)));
       },
       rotateZ: function (radians) {
-        return assign(this,
-          multiply_matrices3(this, make_matrix3_rotateZ(radians)));
+        return array_assign(this,
+          multiplyMatrices3(this, makeMatrix3RotateZ(radians)));
       },
       rotate: function (radians, vector, origin) {
-        const transform = make_matrix3_rotate(radians, vector, origin);
-        return assign(this, multiply_matrices3(this, transform));
+        const transform = makeMatrix3Rotate(radians, vector, origin);
+        return array_assign(this, multiplyMatrices3(this, transform));
       },
       scale: function (amount) {
-        return assign(this,
-          multiply_matrices3(this, make_matrix3_scale(amount)));
+        return array_assign(this,
+          multiplyMatrices3(this, makeMatrix3Scale(amount)));
       },
       reflectZ: function (vector, origin) {
-        const transform = make_matrix3_reflectZ(vector, origin);
-        return assign(this, multiply_matrices3(this, transform));
+        const transform = makeMatrix3ReflectZ(vector, origin);
+        return array_assign(this, multiplyMatrices3(this, transform));
       },
       // todo, do type checking
       transform: function (...innerArgs) {
         return Constructors.vector(
-          multiply_matrix3_vector3(this, resize(3, get_vector(innerArgs)))
+          multiplyMatrix3Vector3(this, resize(3, getVector(innerArgs)))
         );
       },
       transformVector: function (vector) {
         return Constructors.vector(
-          multiply_matrix3_vector3(this, resize(3, get_vector(vector)))
+          multiplyMatrix3Vector3(this, resize(3, getVector(vector)))
         );
       },
       transformLine: function (...innerArgs) {
-        const l = get_line(innerArgs);
-        return Constructors.line(multiply_matrix3_line3(this, l.vector, l.origin));
+        const l = getLine(innerArgs);
+        return Constructors.line(multiplyMatrix3Line3(this, l.vector, l.origin));
       },
     },
 

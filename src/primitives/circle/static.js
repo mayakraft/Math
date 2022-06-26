@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import { circumcircle } from "../../core/geometry";
 
 const CircleStatic = {

@@ -1,18 +1,21 @@
+/**
+ * Math (c) Kraft
+ */
 import Constructors from "../constructors";
 import {
   subtract,
-  alternating_sum,
+  alternatingSum,
 } from "../../core/algebra";
 import {
-  counter_clockwise_angle_radians,
-  counter_clockwise_order_radians,
+  counterClockwiseAngleRadians,
+  counterClockwiseOrderRadians,
 } from "../../core/radial";
 import {
-  get_vector,
-  get_vector_of_vectors,
+  getVector,
+  getVectorOfVectors,
 } from "../../arguments/get";
 
-const invert_order_array = (arr) => {
+const invertOrderArray = (arr) => {
   const new_arr = [];
   arr.forEach((n, i) => new_arr[n] = i);
   return new_arr;
@@ -21,31 +24,31 @@ const invert_order_array = (arr) => {
 export default {
   junction: {
     A: function () {
-      const vectors = get_vector_of_vectors(arguments)
+      const vectors = getVectorOfVectors(arguments)
 				.map(v => Constructors.vector(v));
       const radians = vectors.map(v => Math.atan2(v[1], v[0]));
-      const order = counter_clockwise_order_radians(...radians);
+      const order = counterClockwiseOrderRadians(...radians);
       this.vectors = order.map(i => vectors[i]);
       this.radians = order.map(i => radians[i]);
-      this.order = invert_order_array(order);
+      this.order = invertOrderArray(order);
     },
     G: {
       sectors: function () {
         return this.radians
           .map((n, i, arr) => [n, arr[(i + 1) % arr.length]])
-          .map(pair => counter_clockwise_angle_radians(pair[0], pair[1]));
+          .map(pair => counterClockwiseAngleRadians(pair[0], pair[1]));
           // .map(pair => Sector.fromVectors(pair[0], pair[1]));
       },
     },
     M: {
       alternatingAngleSum: function () {
-        return alternating_sum(this.sectors);
+        return alternatingSum(this.sectors);
       },
     },
     S: {
       fromRadians: function () {
         // todo, this duplicates work converting back to vector form
-        const radians = get_vector(arguments);
+        const radians = getVector(arguments);
         return this.constructor(radians.map(r => [Math.cos(r), Math.sin(r)]));
       },
 			// fromVectors: function () {

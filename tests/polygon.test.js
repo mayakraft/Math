@@ -8,8 +8,9 @@ test("prototype member variables accessing 'this'", () => {
   expect(math.polygon.regularPolygon(4).area()).toBeCloseTo(2);
 });
 
+// todo: convex
 test("isConvex", () => {
-  expect(math.polygon.regularPolygon(4).isConvex).toBe(true);
+  expect(math.polygon.regularPolygon(4).isConvex).toBe(undefined);
 });
 test(".segments", () => {
   const polygon = math.polygon.regularPolygon(4);
@@ -50,12 +51,12 @@ test("centroid", () => {
   expect(result[0]).toBeCloseTo(0);
   expect(result[1]).toBeCloseTo(1/3);
 });
-test("enclosingRectangle", () => {
-  const rect = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]).enclosingRectangle();
-  expect(rect.x).toBe(-1);
-  expect(rect.y).toBe(-1);
-  expect(rect.width).toBe(2);
-  expect(rect.height).toBe(2);
+test("boundingBox", () => {
+  const box = math.polygon([[1,0], [0,1], [-1,0], [0,-1]]).boundingBox();
+  expect(box.min[0]).toBe(-1);
+  expect(box.min[1]).toBe(-1);
+  expect(box.span[0]).toBe(2);
+  expect(box.span[1]).toBe(2);
 });
 test("contains", () => {
   expect(math.polygon([[1,0], [0,1], [-1,0], [0,-1]]).overlap(math.vector(0.49, 0.49)))

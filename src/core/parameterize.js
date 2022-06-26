@@ -1,3 +1,6 @@
+/**
+ * Math (c) Kraft
+ */
 import {
   magnitude,
   dot,
@@ -28,19 +31,23 @@ import {
 /**
  * @description convert a line from one parameterization into another.
  * convert vector-origin into u-d (normal, distance-to-origin)
+ * @linkcode Math ./src/core/parameterize.js 34
  */
-export const vector_origin_to_ud = ({ vector, origin }) => {
+// export const vectorOriginToUD = ({ vector, origin }) => {
+export const makeNormalDistanceLine = ({ vector, origin }) => {
   const mag = magnitude(vector);
-  const u = rotate90(vector);
-  const d = dot(origin, u) / mag;
-  return { u: scale(u, 1 / mag), d };
+  const normal = rotate90(vector);
+  const distance = dot(origin, normal) / mag;
+  return { normal: scale(normal, 1 / mag), distance };
 
 };
 /**
  * @description convert a line from one parameterization into another.
  * convert u-d (normal, distance-to-origin) into vector-origin
+ * @linkcode Math ./src/core/parameterize.js 47
  */
-export const ud_to_vector_origin = ({ u, d }) => ({
-  vector: rotate270(u),
-  origin: scale(u, d),
+// export const UDToVectorOrigin = ({ u, d }) => ({
+export const makeVectorOriginLine = ({ normal, distance }) => ({
+  vector: rotate270(normal),
+  origin: scale(normal, distance),
 });
