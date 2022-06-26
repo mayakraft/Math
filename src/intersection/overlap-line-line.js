@@ -22,6 +22,7 @@ import { excludeL } from "../arguments/functions";
  * @param {number[]} array of 2 numbers, the second line's origin
  * @param {function} first line's boolean test normalized value lies collinear
  * @param {function} seconde line's boolean test normalized value lies collinear
+ * @linkcode Math ./src/intersection/overlap-line-line.js 25
 */
 
 // export const exclude_s = (t, e = EPSILON) => t > e && t < 1 - e;

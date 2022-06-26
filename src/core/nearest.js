@@ -24,6 +24,7 @@ import {
  * @param {function} compare_func a function which takes two items (which match
  * the type of the first parameter), execution of this function should return a scalar.
  * @returns {number[]} the index from the set which minimizes the compare function
+ * @linkcode Math ./src/core/nearest.js 27
  */
 export const smallestComparisonSearch = (obj, array, compare_func) => {
   const objs = array.map((o, i) => ({ o, i, d: compare_func(obj, o) }));
@@ -42,6 +43,7 @@ export const smallestComparisonSearch = (obj, array, compare_func) => {
  * @param {number[]} point the 2D point to test nearness to
  * @param {number[][]} array_of_points an array of 2D points to test against
  * @returns {number[]} one point from the array of points
+ * @linkcode Math ./src/core/nearest.js 46
  */
 export const nearestPoint2 = (point, array_of_points) => {
   // todo speed up with partitioning
@@ -53,6 +55,7 @@ export const nearestPoint2 = (point, array_of_points) => {
  * @param {number[]} point the point to test nearness to
  * @param {number[][]} array_of_points an array of points to test against
  * @returns {number[]} one point from the array of points
+ * @linkcode Math ./src/core/nearest.js 58
  */
 export const nearestPoint = (point, array_of_points) => {
   // todo speed up with partitioning
@@ -68,6 +71,7 @@ export const nearestPoint = (point, array_of_points) => {
  * for segments, greater than 0 for rays, or unbounded for lines.
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number[]} a point
+ * @linkcode Math ./src/core/nearest.js 74
  */
 export const nearestPointOnLine = (vector, origin, point, limiterFunc, epsilon = EPSILON) => {
   origin = resize(vector.length, origin);
@@ -86,6 +90,7 @@ export const nearestPointOnLine = (vector, origin, point, limiterFunc, epsilon =
  * @param {number[][]} polygon an array of points (which are arrays of numbers)
  * @param {number[]} point the point to test nearness to
  * @returns {number[]} a point
+ * @linkcode Math ./src/core/nearest.js 93
  */
 export const nearestPointOnPolygon = (polygon, point) => {
   const v = polygon
@@ -103,6 +108,7 @@ export const nearestPointOnPolygon = (polygon, point) => {
  * @param {number[]} origin the origin of the circle as an array of numbers.
  * @param {number[]} point the point to test nearness to
  * @returns {number[]} a point
+ * @linkcode Math ./src/core/nearest.js 111
  */
 export const nearestPointOnCircle = (radius, origin, point) => add(
   origin, scale(normalize(subtract(point, origin)), radius)

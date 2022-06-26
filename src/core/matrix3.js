@@ -11,16 +11,19 @@ import { normalize } from "./algebra";
 import { resize } from "../arguments/resize";
 /**
  * @description the identity matrix for 3x3 matrices
+ * @linkcode Math ./src/core/matrix3.js 14
  */
 export const identity3x3 = Object.freeze([1, 0, 0, 0, 1, 0, 0, 0, 1]);
 /**
  * @description the identity matrix for 3x4 matrices (zero translation)
+ * @linkcode Math ./src/core/matrix3.js 19
  */
 export const identity3x4 = Object.freeze(identity3x3.concat(0, 0, 0));
 /**
  * @description test if a 3x4 matrix is the identity matrix within an epsilon
  * @param {number[]} matrix a 3x4 matrix
  * @returns {boolean} true if the matrix is the identity matrix
+ * @linkcode Math ./src/core/matrix3.js 26
  */
 export const isIdentity3x4 = m => identity3x4
   .map((n, i) => Math.abs(n - m[i]) < EPSILON)
@@ -30,6 +33,7 @@ export const isIdentity3x4 = m => identity3x4
  * @param {number[]} matrix one matrix in array form
  * @param {number[]} vector in array form
  * @returns {number[]} the transformed vector
+ * @linkcode Math ./src/core/matrix3.js 36
  */
 export const multiplyMatrix3Vector3 = (m, vector) => [
   m[0] * vector[0] + m[3] * vector[1] + m[6] * vector[2] + m[9],
@@ -42,6 +46,7 @@ export const multiplyMatrix3Vector3 = (m, vector) => [
  * @param {number[]} vector the vector of the line
  * @param {number[]} origin the origin of the line
  * @returns {object} transformed line in point-vector form
+ * @linkcode Math ./src/core/matrix3.js 49
  */
 export const multiplyMatrix3Line3 = (m, vector, origin) => ({
   vector: [
@@ -60,6 +65,7 @@ export const multiplyMatrix3Line3 = (m, vector, origin) => ({
  * @param {number[]} matrix the first matrix
  * @param {number[]} matrix the second matrix
  * @returns {number[]} one matrix, the product of the two
+ * @linkcode Math ./src/core/matrix3.js 68
  */
 export const multiplyMatrices3 = (m1, m2) => [
   m1[0] * m2[0] + m1[3] * m2[1] + m1[6] * m2[2],
@@ -80,6 +86,7 @@ export const multiplyMatrices3 = (m1, m2) => [
  * in the case of 3x4, the translation component is ignored.
  * @param {number[]} matrix one matrix in array form
  * @returns {number} the determinant of the matrix
+ * @linkcode Math ./src/core/matrix3.js 89
  */
 export const determinant3 = m => (
     m[0] * m[4] * m[8]
@@ -93,6 +100,7 @@ export const determinant3 = m => (
  * @description invert a 3x4 matrix
  * @param {number[]} matrix one matrix in array form
  * @returns {number[]|undefined} the inverted matrix, or undefined if not possible
+ * @linkcode Math ./src/core/matrix3.js 103
  */
 export const invertMatrix3 = (m) => {
   const det = determinant3(m);
@@ -126,6 +134,7 @@ export const invertMatrix3 = (m) => {
  * @param {number} [y=0] the y component of the translation
  * @param {number} [z=0] the z component of the translation
  * @returns {number[]} one 3x4 matrix
+ * @linkcode Math ./src/core/matrix3.js 137
  */
 export const makeMatrix3Translate = (x = 0, y = 0, z = 0) => identity3x3.concat(x, y, z);
 
@@ -147,6 +156,7 @@ const singleAxisRotate = (angle, origin, i0, i1, sgn) => {
  * @param {number} angle the angle of rotation in radians
  * @param {number[]} [origin=[0,0,0]] the center of rotation
  * @returns {number[]} one 3x4 matrix
+ * @linkcode Math ./src/core/matrix3.js 159
  */
 export const makeMatrix3RotateX = (angle, origin = [0, 0, 0]) => singleAxisRotate(angle, origin, 1, 2, true);
 /**
@@ -154,6 +164,7 @@ export const makeMatrix3RotateX = (angle, origin = [0, 0, 0]) => singleAxisRotat
  * @param {number} angle the angle of rotation in radians
  * @param {number[]} [origin=[0,0,0]] the center of rotation
  * @returns {number[]} one 3x4 matrix
+ * @linkcode Math ./src/core/matrix3.js 167
  */
 export const makeMatrix3RotateY = (angle, origin = [0, 0, 0]) => singleAxisRotate(angle, origin, 0, 2, false);
 /**
@@ -161,6 +172,7 @@ export const makeMatrix3RotateY = (angle, origin = [0, 0, 0]) => singleAxisRotat
  * @param {number} angle the angle of rotation in radians
  * @param {number[]} [origin=[0,0,0]] the center of rotation
  * @returns {number[]} one 3x4 matrix
+ * @linkcode Math ./src/core/matrix3.js 175
  */
 export const makeMatrix3RotateZ = (angle, origin = [0, 0, 0]) => singleAxisRotate(angle, origin, 0, 1, true);
 /**
@@ -170,6 +182,7 @@ export const makeMatrix3RotateZ = (angle, origin = [0, 0, 0]) => singleAxisRotat
  * @param {number[]} [vector=[0,0,1]] the axis of rotation
  * @param {number[]} [origin=[0,0,0]] the center of rotation
  * @returns {number[]} one 3x4 matrix
+ * @linkcode Math ./src/core/matrix3.js 185
  */
 export const makeMatrix3Rotate = (angle, vector = [0, 0, 1], origin = [0, 0, 0]) => {
   const pos = [0, 1, 2].map(i => origin[i] || 0);
@@ -215,6 +228,7 @@ const makeMatrix3RotateOld = (angle, vector = [0, 0, 1], origin = [0, 0, 0]) => 
  * @param {number} [scale=1] the uniform scale value
  * @param {number[]} [origin=[0,0,0]] the center of transformation
  * @returns {number[]} one 3x4 matrix
+ * @linkcode Math ./src/core/matrix3.js 231
  */
 export const makeMatrix3Scale = (scale = 1, origin = [0, 0, 0]) => [
   scale,
@@ -236,6 +250,7 @@ export const makeMatrix3Scale = (scale = 1, origin = [0, 0, 0]) => [
  * @param {number[]} vector one 2D vector specifying the reflection axis
  * @param {number[]} [origin=[0,0]] 2D origin specifying a point of reflection
  * @returns {number[]} one 3x4 matrix
+ * @linkcode Math ./src/core/matrix3.js 253
  */
 export const makeMatrix3ReflectZ = (vector, origin = [0, 0]) => {
   // the line of reflection passes through origin, runs along vector

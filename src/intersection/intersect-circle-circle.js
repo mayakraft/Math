@@ -16,7 +16,17 @@ const rotateVector2 = (center, pt, a) => {
   const yRot = y * Math.cos(a) - x * Math.sin(a);
   return [center[0] + xRot, center[1] + yRot];
 };
-
+/**
+ * @description calculate the intersection of two circles, resulting in either no intersection,
+ * or one or two points.
+ * @param {number} radius1 the first circle's radius
+ * @param {number[]} origin1 the first circle's origin
+ * @param {number} radius2 the second circle's radius
+ * @param {number[]} origin2 the second circle's origin
+ * @param {number} [epsilon=1e-6] an optional epsilon
+ * @returns {number[][]|undefined} an array of one or two points, or undefined if no intersection 
+ * @linkcode Math ./src/intersection/intersect-circle-circle.js 28
+ */
 const intersectCircleCircle = (c1_radius, c1_origin, c2_radius, c2_origin, epsilon = EPSILON) => {
   // sort by largest-smallest radius
   const r = (c1_radius < c2_radius) ? c1_radius : c2_radius;
@@ -43,4 +53,3 @@ const intersectCircleCircle = (c1_radius, c1_origin, c2_radius, c2_origin, epsil
 };
 
 export default intersectCircleCircle;
-

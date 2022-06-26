@@ -10,6 +10,7 @@ import { EPSILON } from "../core/constants";
 /**
  * @description find out if two convex polygons are overlapping by searching
  * for a dividing axis, which should be one side from one of the polygons.
+ * @linkcode Math ./src/intersection/overlap-polygons.js 13
  */
 const overlapConvexPolygons = (poly1, poly2, epsilon = EPSILON) => {
   for (let p = 0; p < 2; p++) {

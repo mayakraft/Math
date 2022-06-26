@@ -2,7 +2,7 @@
  * Math (c) Kraft
  */
 import Constructors from "../constructors";
-import { equivalentVectors } from "../../core/equal";
+import { fnEpsilonEqualVectors } from "../../arguments/functions";
 import { counterClockwiseBisect2 } from "../../core/radial";
 
 import {
@@ -46,7 +46,7 @@ const table = {
   preserve: { // don't transform the return type. preserve it
     magnitude: function () { return magnitude(this); },
     isEquivalent: function () {
-      return equivalentVectors(this, getVector(arguments));
+      return fnEpsilonEqualVectors(this, getVector(arguments));
     },
     isParallel: function () {
       return parallel(...resizeUp(this, getVector(arguments)));

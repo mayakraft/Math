@@ -100,7 +100,7 @@ test("transformLine", () => {
 // });
 
 const testEqualVectors = function (...args) {
-  expect(math.core.equivalentVectors(...args)).toBe(true);
+  expect(math.core.fnEpsilonEqualVectors(...args)).toBe(true);
 };
 
 const sqrt05 = Math.sqrt(0.5);

@@ -34,6 +34,7 @@ import {
  * @param {number} floor angle in radians, lower bound
  * @param {number} ceiling angle in radians, upper bound
  * @returns {boolean} is the angle between floor and ceiling
+ * @linkcode Math ./src/core/radial.js 37
  */
 export const isCounterClockwiseBetween = (angle, floor, ceiling) => {
   while (ceiling < floor) { ceiling += TWO_PI; }
@@ -47,6 +48,7 @@ export const isCounterClockwiseBetween = (angle, floor, ceiling) => {
  * @param {number} a vector as an angle in radians
  * @param {number} b vector as an angle in radians
  * @returns {number} interior angle in radians
+ * @linkcode Math ./src/core/radial.js 51
  */
 export const clockwiseAngleRadians = (a, b) => {
   // this is on average 50 to 100 times faster than clockwiseAngle2
@@ -65,6 +67,7 @@ export const clockwiseAngleRadians = (a, b) => {
  * @param {number} a vector as an angle in radians
  * @param {number} b vector as an angle in radians
  * @returns {number} interior angle in radians, counter-clockwise from a to b
+ * @linkcode Math ./src/core/radial.js 70
  */
 export const counterClockwiseAngleRadians = (a, b) => {
   // this is on average 50 to 100 times faster than counterClockwiseAngle2
@@ -83,6 +86,7 @@ export const counterClockwiseAngleRadians = (a, b) => {
  * @param {number[]} a vector as an array of two numbers
  * @param {number[]} b vector as an array of two numbers
  * @returns {number} interior angle in radians, clockwise from a to b
+ * @linkcode Math ./src/core/radial.js 89
  */
 export const clockwiseAngle2 = (a, b) => {
   const dotProduct = b[0] * a[0] + b[1] * a[1];
@@ -97,6 +101,7 @@ export const clockwiseAngle2 = (a, b) => {
  * @param {number[]} a vector as an array of two numbers
  * @param {number[]} b vector as an array of two numbers
  * @returns {number} interior angle in radians, counter-clockwise from a to b
+ * @linkcode Math ./src/core/radial.js 104
  */
 export const counterClockwiseAngle2 = (a, b) => {
   const dotProduct = a[0] * b[0] + a[1] * b[1];
@@ -120,6 +125,7 @@ export const counterClockwiseAngle2 = (a, b) => {
  * @param {number[]} a one 2D vector
  * @param {number[]} b one 2D vector
  * @returns {number[]} one 2D vector
+ * @linkcode Math ./src/core/radial.js 128
  */
 export const clockwiseBisect2 = (a, b) => fnToVec2(
   fnVec2Angle(a) - clockwiseAngle2(a, b) / 2
@@ -129,6 +135,7 @@ export const clockwiseBisect2 = (a, b) => fnToVec2(
  * @param {number[]} a one 2D vector
  * @param {number[]} b one 2D vector
  * @returns {number[]} one 2D vector
+ * @linkcode Math ./src/core/radial.js 138
  */
 export const counterClockwiseBisect2 = (a, b) => fnToVec2(
   fnVec2Angle(a) + counterClockwiseAngle2(a, b) / 2
@@ -139,6 +146,7 @@ export const counterClockwiseBisect2 = (a, b) => fnToVec2(
  * @param {number} angleA one angle in radians
  * @param {number} angleB one angle in radians
  * @returns {number[]} array of angles in radians
+ * @linkcode Math ./src/core/radial.js 149
  */
 export const clockwiseSubsectRadians = (divisions, angleA, angleB) => {
   const angle = clockwiseAngleRadians(angleA, angleB) / divisions;
@@ -151,6 +159,7 @@ export const clockwiseSubsectRadians = (divisions, angleA, angleB) => {
  * @param {number} angleA one angle in radians
  * @param {number} angleB one angle in radians
  * @returns {number[]} array of angles in radians
+ * @linkcode Math ./src/core/radial.js 162
  */
 export const counterClockwiseSubsectRadians = (divisions, angleA, angleB) => {
   const angle = counterClockwiseAngleRadians(angleA, angleB) / divisions;
@@ -163,6 +172,7 @@ export const counterClockwiseSubsectRadians = (divisions, angleA, angleB) => {
  * @param {number[]} vectorA one vector in array form
  * @param {number[]} vectorB one vector in array form
  * @returns {number[][]} array of vectors (which are arrays of numbers)
+ * @linkcode Math ./src/core/radial.js 175
  */
 export const clockwiseSubsect2 = (divisions, vectorA, vectorB) => {
   const angleA = Math.atan2(vectorA[1], vectorA[0]);
@@ -176,6 +186,7 @@ export const clockwiseSubsect2 = (divisions, vectorA, vectorB) => {
  * @param {number[]} vectorA one vector in array form
  * @param {number[]} vectorB one vector in array form
  * @returns {number[][]} array of vectors (which are arrays of numbers)
+ * @linkcode Math ./src/core/radial.js 189
  */
 export const counterClockwiseSubsect2 = (divisions, vectorA, vectorB) => {
   const angleA = Math.atan2(vectorA[1], vectorA[0]);
@@ -192,6 +203,7 @@ export const counterClockwiseSubsect2 = (divisions, vectorA, vectorB) => {
  * @param {number[]} originB the origin of the first line, as an array of numbers
  * @param {number} [epsilon=1e-6] an optional epsilon for testing parallel-ness.
  * @returns {object[]} an array of objects with "vector" and "origin" keys defining a line
+ * @linkcode Math ./src/core/radial.js 206
  */
 export const bisectLines2 = (vectorA, originA, vectorB, originB, epsilon = EPSILON) => {
   const determinant = cross2(vectorA, vectorB);
@@ -221,12 +233,13 @@ export const bisectLines2 = (vectorA, originA, vectorB, originB, epsilon = EPSIL
  * but this chooses the first element as the first element
  * and sort everything else counter-clockwise around it.
  *
- * @param {number[]} args array of angles in radians
+ * @param {number[]|...number} args array or sequence of angles in radians
  * @returns {number[]} array of indices of the input array, indicating
  * the counter-clockwise sorted arrangement.
+ * @linkcode Math ./src/core/radial.js 239
  */
 export const counterClockwiseOrderRadians = function () {
-  const radians = flattenArrays(arguments);
+  const radians = Array.from(arguments).flat();
   const counter_clockwise = radians
     .map((_, i) => i)
     .sort((a, b) => radians[a] - radians[b]);
@@ -240,6 +253,7 @@ export const counterClockwiseOrderRadians = function () {
  * @param {number[][]} args array of vectors (which are arrays of numbers)
  * @returns {number[]} array of indices of the input array, indicating
  * the counter-clockwise sorted arrangement.
+ * @linkcode Math ./src/core/radial.js 256
  */
 export const counterClockwiseOrder2 = function () {
   return counterClockwiseOrderRadians(
@@ -249,11 +263,12 @@ export const counterClockwiseOrder2 = function () {
 /**
  * @description given an array of angles, return the sector angles between
  * consecutive parameters. if radially unsorted, this will sort them.
- * @param {number[]} args array of angles in radians
+ * @param {number[]|...number} args array or sequence of angles in radians
  * @returns {number[]} array of sector angles in radians
+ * @linkcode Math ./src/core/radial.js 268
  */
 export const counterClockwiseSectorsRadians = function () {
-  const radians = flattenArrays(arguments);
+  const radians = Array.from(arguments).flat();
   const ordered = counterClockwiseOrderRadians(radians)
     .map(i => radians[i]);
   return ordered.map((rad, i, arr) => [rad, arr[(i + 1) % arr.length]])
@@ -264,6 +279,7 @@ export const counterClockwiseSectorsRadians = function () {
  * consecutive parameters. if radially unsorted, this will sort them.
  * @param {number[][]} args array of 2D vectors (higher dimensions will be ignored)
  * @returns {number[]} array of sector angles in radians
+ * @linkcode Math ./src/core/radial.js 282
  */
 export const counterClockwiseSectors2 = function () {
   return counterClockwiseSectorsRadians(

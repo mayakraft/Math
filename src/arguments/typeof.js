@@ -14,6 +14,7 @@
  * @description get the type of an object, which includes the custom types in this library.
  * @param {any} any object
  * @returns {string} the type name
+ * @linkcode Math ./src/arguments/typeof.js 17
  */
 const typeOf = function (obj) {
   switch (obj.constructor.name) {

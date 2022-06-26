@@ -20,7 +20,7 @@ test("arguments", () => {
 });
 
 test("u d form", () => {
-  const l1 = math.line.ud({u: [1, 0], d: 3});
+  const l1 = math.line.fromNormalDistance({ normal: [1, 0], distance: 3 });
   expect(l1.vector.x).toBeCloseTo(0);
   expect(l1.vector.y).toBeCloseTo(-1);
   expect(l1.origin.x).toBeCloseTo(3);

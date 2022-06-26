@@ -24,6 +24,7 @@ import {
  * @param {function} [bFunction=includeL] second line's boolean test normalized value lies collinear
  * @param {number} [epsilon=1e-6] optional epsilon
  * @returns {number[]|undefined} one 2D point or undefined
+ * @linkcode Math ./src/intersection/intersect-line-line.js 27
 */
 const intersectLineLine = (
   aVector, aOrigin,
@@ -32,7 +33,7 @@ const intersectLineLine = (
   bFunction = includeL,
   epsilon = EPSILON
 ) => {
-  // a normalized determinant gives consisten values across all epsilon ranges
+  // a normalized determinant gives consistent values across all epsilon ranges
   const det_norm = cross2(normalize(aVector), normalize(bVector));
   // lines are parallel
   if (Math.abs(det_norm) < epsilon) { return undefined; }

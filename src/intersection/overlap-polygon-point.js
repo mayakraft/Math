@@ -20,6 +20,7 @@ import { exclude } from "../arguments/functions";
  * @param {number[][]} polygon in array of array form
  * @param {function} true for positive numbers, in/exclude near zero
  * @returns {boolean} is the point inside the polygon?
+ * @linkcode Math ./src/intersection/overlap-polygon-point.js 23
  */
 const overlapConvexPolygonPoint = (poly, point, func = exclude, epsilon = EPSILON) => poly
   .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])

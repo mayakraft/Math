@@ -14,7 +14,6 @@ const vectorOriginForm = (vector, origin) => ({
   vector: vector || [],
   origin: origin || []
 });
-
 /**
  * search function arguments for a valid n-dimensional vector
  * can handle object-vector representation {x:, y:}
@@ -81,14 +80,6 @@ export const getLine = function () {
 };
 
 export const getRay = getLine;
-
-// export const get_line_ud = function () {
-//   if (arguments.length === 0) { return { u:[], d:0 }; }
-//   if (arguments[0] instanceof Constructors.line) { return args[0]; }
-//   if (arguments[0].constructor === Object && arguments[0].u !== undefined) {
-//     return { u: arguments[0].u || [], d: arguments[0].d || 0 };
-//   }
-// };
 
 export const getRectParams = (x = 0, y = 0, width = 0, height = 0) => ({
   x, y, width, height

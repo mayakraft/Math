@@ -1,7 +1,7 @@
 const math = require("../math");
 
 const testEqual = function (...args) {
-  expect(math.core.equivalent(...args)).toBe(true);
+  expect(math.core.fnEpsilonEqualVectors(...args)).toBe(true);
 };
 
 /**

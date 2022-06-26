@@ -8,8 +8,16 @@ import {
   cross2,
   rotate90,
 } from "../core/algebra";
-/*
- * returns an array of array of numbers
+/**
+ * @description Calculate the intersection of a circle and a line; the line can
+ * be a line, ray, or segment.
+ * @param {number} circleRadius the circle's radius
+ * @param {number[]} circleOrigin the center of the circle
+ * @param {number[]} lineVector the vector component of the line
+ * @param {number[]} lineOrigin the origin component of the line
+ * @param {function} [lineFunc=includeL] set the line/ray/segment and inclusive/exclusive
+ * @param {number} [epsilon=1e-6] an optional epsilon
+ * @linkcode Math ./src/intersection/intersect-circle-line.js 20
  */
 const intersectCircleLine = (
   circle_radius, circle_origin,

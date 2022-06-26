@@ -1,6 +1,6 @@
-// import babel from "@rollup/plugin-babel";
+import babel from "@rollup/plugin-babel";
 import cleanup from "rollup-plugin-cleanup";
-// import { terser } from "rollup-plugin-terser";
+import { terser } from "rollup-plugin-terser";
 
 const input = "src/index.js";
 const name = "math";
@@ -23,11 +23,11 @@ module.exports = [{
     banner,
   },
   plugins: [
-    // babel({
-    //   babelHelpers: "bundled",
-    //   presets: ["@babel/preset-env"]
-    // }),
+    babel({
+      babelHelpers: "bundled",
+      presets: ["@babel/preset-env"]
+    }),
     cleanup(),
-    // terser(),
+    terser(),
   ]
 }];

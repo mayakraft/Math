@@ -12,7 +12,6 @@ import intersectLineLine from "./intersect-line-line";
 import intersectCircleCircle from "./intersect-circle-circle";
 import intersectCircleLine from "./intersect-circle-line";
 import intersectConvexPolygonLine from "./intersect-polygon-line";
-import intersectPolygonPolygon from "./intersect-polygon-polygon";
 
 // all intersection functions expect primitives to be in a certain form
 // for example all lines are: vector, origin
@@ -28,7 +27,7 @@ const intersect_param_form = {
 
 const intersect_func = {
   polygon: {
-    polygon: intersectPolygonPolygon,
+    // polygon: intersectPolygonPolygon,
     // circle: convex_poly_circle,
     line: (a, b, fnA, fnB, ep) => intersectConvexPolygonLine(...a, ...b, includeS, fnB, ep),
     ray: (a, b, fnA, fnB, ep) => intersectConvexPolygonLine(...a, ...b, includeS, fnB, ep),
@@ -83,6 +82,15 @@ const default_intersect_domain_function = {
   segment: excludeS,
 };
 
+/**
+ * @name intersect
+ * @description get the intersection of two geometry objects, the type of each is inferred.
+ * @param {any} a any geometry object
+ * @param {any} b any geometry object
+ * @param {number} [epsilon=1e-6] optional epsilon
+ * @returns {number[]|number[][]|undefined} the type of the result varies depending on the type of the input parameters, it is always one point, or an array of points, or undefined if no intersection.
+ * @linkcode Math ./src/intersection/intersect.js 92
+ */
 const intersect = function (a, b, epsilon) {
   const type_a = typeOf(a);
   const type_b = typeOf(b);

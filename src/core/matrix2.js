@@ -3,10 +3,12 @@
  */
 /**
  * @description the identity matrix for 2x2 matrices
+ * @linkcode Math ./src/core/matrix2.js 6
  */
 export const identity2x2 = [1, 0, 0, 1];
 /**
  * @description the identity matrix for 2x3 matrices (zero translation)
+ * @linkcode Math ./src/core/matrix2.js 11
  */
 export const identity2x3 = identity2x2.concat(0, 0);
 
@@ -14,6 +16,7 @@ export const identity2x3 = identity2x2.concat(0, 0);
  * @param {number[]} vector, in array form
  * @param {number[]} matrix, in array form
  * @returns {number[]} vector, the input vector transformed by the matrix
+ * @linkcode Math ./src/core/matrix2.js 19
  */
 export const multiplyMatrix2Vector2 = (matrix, vector) => [
   matrix[0] * vector[0] + matrix[2] * vector[1] + matrix[4],
@@ -22,6 +25,7 @@ export const multiplyMatrix2Vector2 = (matrix, vector) => [
 /**
  * @param line in point-vector form, matrix
  * @returns transformed line in point-vector form
+ * @linkcode Math ./src/core/matrix2.js 28
  */
 export const multiplyMatrix2Line2 = (matrix, vector, origin) => ({
   vector: [
@@ -36,6 +40,7 @@ export const multiplyMatrix2Line2 = (matrix, vector, origin) => ({
 /**
  * @param {number[]} matrix, matrix, left/right order matches what you'd see on a page.
  * @returns {number[]} matrix
+ * @linkcode Math ./src/core/matrix2.js 43
  */
 export const multiplyMatrices2 = (m1, m2) => [
   m1[0] * m2[0] + m1[2] * m2[1],
@@ -50,12 +55,14 @@ export const multiplyMatrices2 = (m1, m2) => [
  * in the case of 2x3, the translation component is ignored.
  * @param {number[]} matrix one matrix in array form
  * @returns {number} the determinant of the matrix
+ * @linkcode Math ./src/core/matrix2.js 58
  */
 export const determinant2 = m => m[0] * m[3] - m[1] * m[2];
 /**
  * @description invert a 2x3 matrix
  * @param {number[]} matrix one matrix in array form
  * @returns {number[]|undefined} the inverted matrix, or undefined if not possible
+ * @linkcode Math ./src/core/matrix2.js 65
  */
 export const invertMatrix2 = (m) => {
   const det = determinant2(m);
@@ -74,11 +81,13 @@ export const invertMatrix2 = (m) => {
 /**
  * @param {number} x, y
  * @returns {number[]} matrix
+ * @linkcode Math ./src/core/matrix2.js 84
  */
 export const makeMatrix2Translate = (x = 0, y = 0) => identity2x2.concat(x, y);
 /**
  * @param ratio of scale, optional origin homothetic center (0,0 default)
  * @returns {number[]} matrix
+ * @linkcode Math ./src/core/matrix2.js 90
  */
 export const makeMatrix2Scale = (x, y, origin = [0, 0]) => [
   x,
@@ -91,6 +100,7 @@ export const makeMatrix2Scale = (x, y, origin = [0, 0]) => [
 /**
  * @param angle of rotation, origin of transformation
  * @returns {number[]} matrix
+ * @linkcode Math ./src/core/matrix2.js 103
  */
 export const makeMatrix2Rotate = (angle, origin = [0, 0]) => {
   const cos = Math.cos(angle);
@@ -109,6 +119,7 @@ export const makeMatrix2Rotate = (angle, origin = [0, 0]) => {
  * to leave it empty and make a reflection through the origin.
  * @param line in vector-origin form
  * @returns matrix
+ * @linkcode Math ./src/core/matrix2.js 122
  */
 export const makeMatrix2Reflect = (vector, origin = [0, 0]) => {
   // the line of reflection passes through origin, runs along vector

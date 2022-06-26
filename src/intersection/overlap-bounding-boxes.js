@@ -2,8 +2,11 @@
  * Math (c) Kraft
  */
 /**
- * @description point1 and point2 define the segment
- * @param {object} box1, the result of calling "bounding_box()"
+ * @description Test if two axis-aligned bounding boxes overlap each other.
+ * @param {BoundingBox} box1 an axis-aligned bounding box, the result of calling boundingBox(...)
+ * @param {BoundingBox} box2 an axis-aligned bounding box, the result of calling boundingBox(...)
+ * @returns {boolean} true if the bounding boxes overlap each other
+ * @linkcode Math ./src/intersection/overlap-bounding-boxes.js 9
  */
 const overlapBoundingBoxes = (box1, box2) => {
   const dimensions = box1.min.length > box2.min.length

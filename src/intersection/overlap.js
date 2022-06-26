@@ -8,11 +8,11 @@ import overlapConvexPolygonPoint from "./overlap-polygon-point";
 import { overlapCirclePoint } from "./overlap-circle";
 import overlapLineLine from "./overlap-line-line";
 import overlapLinePoint from "./overlap-line-point";
-import { equivalentVector2 } from "../core/equal";
 import {
   include, exclude,
   includeL, includeR, includeS,
   excludeL, excludeR, excludeS,
+  fnEpsilonEqualVectors,
 } from "../arguments/functions";
 
 // all intersection functions expect primitives to be in a certain form
@@ -75,7 +75,7 @@ const overlap_func = {
     line: (a, b, fnA, fnB, ep) => overlapLinePoint(...b, ...a, fnB, ep),
     ray: (a, b, fnA, fnB, ep) => overlapLinePoint(...b, ...a, fnB, ep),
     segment: (a, b, fnA, fnB, ep) => overlapLinePoint(...b, ...a, fnB, ep),
-    vector: (a, b, fnA, fnB, ep) => equivalentVector2(...a, ...b, ep),
+    vector: (a, b, fnA, fnB, ep) => fnEpsilonEqualVectors(...a, ...b, ep),
   },
 };
 
@@ -99,7 +99,15 @@ const default_overlap_domain_function = {
   segment: excludeS,
   vector: excludeL, // not used
 };
-
+/**
+ * @name overlap
+ * @description test whether or not two geometry objects overlap each other.
+ * @param {any} a any geometry object
+ * @param {any} b any geometry object
+ * @param {number} [epsilon=1e-6] optional epsilon
+ * @returns {boolean} true if the two objects overlap.
+ * @linkcode Math ./src/intersection/overlap.js 109
+ */
 const overlap = function (a, b, epsilon) {
   const type_a = typeOf(a);
   const type_b = typeOf(b);

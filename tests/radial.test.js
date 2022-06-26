@@ -1,7 +1,7 @@
 const math = require("../math");
 
 const testEqualVectors = function (...args) {
-  expect(math.core.equivalentVectors(...args)).toBe(true);
+  expect(math.core.fnEpsilonEqualVectors(...args)).toBe(true);
 };
 
 test("isCounterClockwiseBetween", () => {

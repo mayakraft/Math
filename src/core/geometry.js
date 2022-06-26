@@ -41,6 +41,7 @@ import intersectLineLine from "../intersection/intersect-line-line";
  * @returns {circle} one circle with keys "radius" (number) and "origin" (number[])
  * @example
  * var centroid = polygon.centroid()
+ * @linkcode Math ./src/core/geometry.js 44
  */
 export const circumcircle = function (a, b, c) {
   const A = b[0] - a[0];
@@ -74,6 +75,7 @@ export const circumcircle = function (a, b, c) {
  * @returns {number} the area of the polygon
  * @example
  * var area = polygon.signedArea()
+ * @linkcode Math ./src/core/geometry.js 78
  */
 export const signedArea = points => 0.5 * points
   .map((el, i, arr) => {
@@ -86,6 +88,7 @@ export const signedArea = points => 0.5 * points
  * @returns {number[]} one 2D point as an array of numbers
  * @example
  * var centroid = polygon.centroid()
+ * @linkcode Math ./src/core/geometry.js 91
  */
 export const centroid = (points) => {
   const sixthArea = 1 / (6 * signedArea(points));
@@ -103,7 +106,8 @@ export const centroid = (points) => {
  * (positive=inclusive boundary, negative=exclusive boundary)
  * @param {number[][]} points an array of unsorted points, in any dimension
  * @param {number} [padding=0] optionally add padding around the box
- * @returns {object} "min" and "max" are two points, "span" is the lengths
+ * @returns {BoundingBox} an object where "min" and "max" are two points and "span" is the lengths
+ * @linkcode Math ./src/core/geometry.js 110
  */
 export const boundingBox = (points, padding = 0) => {
   const min = Array(points[0].length).fill(Infinity);
@@ -131,32 +135,74 @@ const anglesToVecs = (angles, radius) => angles
   .map(pt => pt.map(n => cleanNumber(n, 14))); // this step is costly!
 // a = 2r tan(π/n)
 /**
- * make regular polygon is circumradius by default
+ * @description Make a regular polygon from a circumradius,
+ * the first point is +X aligned.
+ * @param {number} sides the number of sides in the polygon
+ * @param {number} [circumradius=1] the polygon's circumradius
+ * @returns {number[][]} an array of points, each point as an arrays of numbers
+ * @linkcode Math ./src/core/geometry.js 143
  */
 export const makePolygonCircumradius = (sides = 3, radius = 1) =>
   anglesToVecs(angleArray(sides), radius);
-
-export const makePolygonCircumradiusS = (sides = 3, radius = 1) => {
+/**
+ * @description Make a regular polygon from a circumradius,
+ * the middle of the first side is +X aligned.
+ * @param {number} sides the number of sides in the polygon
+ * @param {number} [circumradius=1] the polygon's circumradius
+ * @returns {number[][]} an array of points, each point as an arrays of numbers
+ * @linkcode Math ./src/core/geometry.js 153
+ */
+export const makePolygonCircumradiusSide = (sides = 3, radius = 1) => {
   const halfwedge = Math.PI / sides;
   const angles = angleArray(sides).map(a => a + halfwedge);
   return anglesToVecs(angles, radius);
 };
+/**
+ * @description Make a regular polygon from a inradius,
+ * the first point is +X aligned.
+ * @param {number} sides the number of sides in the polygon
+ * @param {number} [inradius=1] the polygon's inradius
+ * @returns {number[][]} an array of points, each point as an arrays of numbers
+ * @linkcode Math ./src/core/geometry.js 166
+ */
 export const makePolygonInradius = (sides = 3, radius = 1) => 
   makePolygonCircumradius(sides, radius / Math.cos(Math.PI / sides));
-
-export const makePolygonInradiusS = (sides = 3, radius = 1) =>
-  makePolygonCircumradiusS(sides, radius / Math.cos(Math.PI / sides));
-
+/**
+ * @description Make a regular polygon from a inradius,
+ * the middle of the first side is +X aligned.
+ * @param {number} sides the number of sides in the polygon
+ * @param {number} [inradius=1] the polygon's inradius
+ * @returns {number[][]} an array of points, each point as an arrays of numbers
+ * @linkcode Math ./src/core/geometry.js 176
+ */
+export const makePolygonInradiusSide = (sides = 3, radius = 1) =>
+  makePolygonCircumradiusSide(sides, radius / Math.cos(Math.PI / sides));
+/**
+ * @description Make a regular polygon from a side length,
+ * the first point is +X aligned.
+ * @param {number} sides the number of sides in the polygon
+ * @param {number} [length=1] the polygon's side length
+ * @returns {number[][]} an array of points, each point as an arrays of numbers
+ * @linkcode Math ./src/core/geometry.js 186
+ */
 export const makePolygonSideLength = (sides = 3, length = 1) =>
   makePolygonCircumradius(sides, (length / 2) / Math.sin(Math.PI / sides));
-
-export const makePolygonSideLengthS = (sides = 3, length = 1) =>
-  makePolygonCircumradiusS(sides, (length / 2) / Math.sin(Math.PI / sides));
 /**
- * @description removes any collinear vertices from a n-dimensional polygon.
+ * @description Make a regular polygon from a side length,
+ * the middle of the first side is +X aligned.
+ * @param {number} sides the number of sides in the polygon
+ * @param {number} [length=1] the polygon's side length
+ * @returns {number[][]} an array of points, each point as an arrays of numbers
+ * @linkcode Math ./src/core/geometry.js 196
+ */
+export const makePolygonSideLengthSide = (sides = 3, length = 1) =>
+  makePolygonCircumradiusSide(sides, (length / 2) / Math.sin(Math.PI / sides));
+/**
+ * @description Remove any collinear vertices from a n-dimensional polygon.
  * @param {number[][]} polygon a polygon as an array of ordered points in array form
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number[][]} a copy of the polygon with collinear points removed
+ * @linkcode Math ./src/core/geometry.js 205
  */
 export const makePolygonNonCollinear = (polygon, epsilon = EPSILON) => {
   // index map [i] to [i, i+1]
@@ -192,11 +238,12 @@ const pleatAngle = (count, a, b) => {
   return vectors.map(vector => ({ origin, vector }));
 };
 /**
- * @description between two lines, make a repeating sequence of evenly-spaced lines to simulate a series of pleats.
+ * @description Between two lines, make a repeating sequence of evenly-spaced lines to simulate a series of pleats.
  * @param {line} object with two keys/values: { vector: [], origin: [] }
  * @param {line} object with two keys/values: { vector: [], origin: [] }
  * @param {number} the number of faces, the number of lines will be n-1.
  * @returns {line[]} an array of lines, objects which contain "vector" and "origin"
+ * @linkcode Math ./src/core/geometry.js 246
  */
 export const pleat = (count, a, b) => {
   const lineA = getLine(a);
@@ -205,7 +252,15 @@ export const pleat = (count, a, b) => {
     ? pleatParallel(count, lineA, lineB)
     : pleatAngle(count, lineA, lineB);
 };
-
+/**
+ * @description Split a convex polygon by a line and rebuild each half into two convex polygons.
+ * @param {number[][]} polygon an array of points, each point is an array of numbers
+ * @param {number[]} vector the vector component of the line
+ * @param {number[]} origin the origin component of the line
+ * @returns {number[][][]} an array of one or two polygons, each polygon is an array of points,
+ * each point is an array of numbers.
+ * @linkcode Math ./src/core/geometry.js 262
+ */
 export const splitConvexPolygon = (poly, lineVector, linePoint) => {
   // todo: should this return undefined if no intersection?
   //       or the original poly?
@@ -272,11 +327,13 @@ export const splitConvexPolygon = (poly, lineVector, linePoint) => {
   return [poly.slice()];
 };
 /**
- * @description create a 2D convex hull from a set of 2D points, choose whether to include or exclude points which lie collinear inside one of the boundary lines.
+ * @description Create a 2D convex hull from a set of 2D points, choose whether to include
+ * or exclude points which lie collinear inside one of the boundary lines.
  * @param {number[][]} points an array of 2D points (which are arrays of numbers)
  * @param {boolean} [include_collinear=false] should we include points collinear along a boundary edge? by default, no (false).
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number[][]} an array of points (which are arrays of numbers)
+ * @linkcode Math ./src/core/geometry.js 336
  */
 export const convexHull = (points, include_collinear = false, epsilon = EPSILON) => {
   // # points in the convex hull before escaping function
@@ -437,6 +494,7 @@ const recurseSkeleton = (points, lines, bisectors) => {
  * make sure:
  *  - your polygon is convex (todo: make this algorithm work with non-convex)
  *  - your polygon points are sorted counter-clockwise
+ * @linkcode Math ./src/core/geometry.js 497
  */
 export const straightSkeleton = (points) => {
   // first time running this function, create the 2nd and 3rd parameters

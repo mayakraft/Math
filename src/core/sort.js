@@ -6,6 +6,7 @@
  * @param {number[][]} points array of points (which are arrays of numbers)
  * @param {number[]} vector one 2D vector
  * @returns {number[][]} the same points, sorted.
+ * @linkcode Math ./src/core/sort.js 9
  */
 export const sortPointsAlongVector2 = (points, vector) => points
 	.map(point => ({ point, d: point[0] * vector[0] + point[1] * vector[1] }))

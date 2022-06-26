@@ -29,9 +29,8 @@ import * as parameterize from "./core/parameterize";
 
 import intersect from "./intersection/intersect";
 import overlap from "./intersection/overlap";
-import encloseConvexPolygonsInclusive from "./intersection/enclose-polygons";
+import enclosingPolygonPolygon from "./intersection/enclose-polygons";
 import intersectConvexPolygonLine from "./intersection/intersect-polygon-line";
-import intersectPolygonPolygon from "./intersection/intersect-polygon-polygon";
 import intersectCircleCircle from "./intersection/intersect-circle-circle";
 import intersectCircleLine from "./intersection/intersect-circle-line";
 import intersectLineLine from "./intersection/intersect-line-line";
@@ -40,7 +39,8 @@ import overlapConvexPolygonPoint from "./intersection/overlap-polygon-point";
 import overlapBoundingBoxes from "./intersection/overlap-bounding-boxes";
 import overlapLineLine from "./intersection/overlap-line-line";
 import overlapLinePoint from "./intersection/overlap-line-point";
-import clipLineInConvexPolygon from "./clip/polygon";
+import clipLineConvexPolygon from "./clip/line-polygon";
+import clipPolygonPolygon from "./clip/polygon-polygon";
 
 import primitives from "./primitives/index";
 /**
@@ -48,7 +48,7 @@ import primitives from "./primitives/index";
  * computational geometry, intersection of shapes, and some origami-specific operations.
  */
 const math = primitives;
-
+// const math = Object.create(null);
 /*
  * the logic is under ".core", the primitives are under the top level.
  * the primitives have arguments type inference. the logic core is strict:
@@ -61,7 +61,6 @@ const math = primitives;
  * the primitives store object methods under their prototype,
  * the top level has properties like x, y, z.
  */
-
 math.core = Object.assign(Object.create(null),
   constants,
   resizers,
@@ -78,9 +77,8 @@ math.core = Object.assign(Object.create(null),
   nearest,
   parameterize,
   {
-    encloseConvexPolygonsInclusive,
+    enclosingPolygonPolygon,
     intersectConvexPolygonLine,
-    intersectPolygonPolygon,
     intersectCircleCircle,
     intersectCircleLine,
     intersectLineLine,
@@ -89,30 +87,12 @@ math.core = Object.assign(Object.create(null),
     overlapBoundingBoxes,
     overlapLineLine,
     overlapLinePoint,
-    clipLineInConvexPolygon,
+    clipLineConvexPolygon,
+    clipPolygonPolygon,
   }
 );
-/**
- * @description get the type of an object, which includes the custom types in this library.
- * @param {any} any object
- * @returns {string} the type name
- */
 math.typeof = typeOf;
-/**
- * @description get the intersection of two geometry objects, the type of each is inferred.
- * @param {any} a any geometry object
- * @param {any} b any geometry object
- * @param {number} [epsilon=1e-6] optional epsilon
- * @returns {number[]|number[][]|undefined} the type of the result varies depending on the type of the input parameters, it is always one point, or an array of points, or undefined if no intersection.
- */
 math.intersect = intersect;
-/**
- * @description test whether or not two geometry objects overlap each other.
- * @param {any} a any geometry object
- * @param {any} b any geometry object
- * @param {number} [epsilon=1e-6] optional epsilon
- * @returns {boolean} true if the two objects overlap.
- */
 math.overlap = overlap;
 
 export default math;

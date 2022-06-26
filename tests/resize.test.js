@@ -11,7 +11,7 @@ test("resize", () => {
 
 test("resize empty", () => {
 	const res = math.core.resize(3, []);
-	expect(math.core.equivalentVectors([0, 0, 0], res)).toBe(true);
+	expect(math.core.fnEpsilonEqualVectors([0, 0, 0], res)).toBe(true);
 });
 
 test("resize undefined", () => {

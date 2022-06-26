@@ -7,7 +7,6 @@ import {
   subtract,
   midpoint
 } from "../core/algebra";
-import { equivalentVector2 } from "../core/equal";
 import {
   exclude,
   includeL,
@@ -16,6 +15,7 @@ import {
   excludeL,
   excludeR,
   excludeS,
+  fnEpsilonEqualVectors,
 } from "../arguments/functions";
 import intersectLineLine from "./intersect-line-line";
 import overlapConvexPolygonPoint from "./overlap-polygon-point";
@@ -23,7 +23,7 @@ import overlapConvexPolygonPoint from "./overlap-polygon-point";
 // todo, this is copied over in clip/polygon.js
 const getUniquePair = (intersections) => {
   for (let i = 1; i < intersections.length; i += 1) {
-    if (!equivalentVector2(intersections[0], intersections[i])) {
+    if (!fnEpsilonEqualVectors(intersections[0], intersections[i])) {
       return [intersections[0], intersections[i]];
     }
   }
@@ -63,12 +63,13 @@ const intersectConvexPolygonLineInclusive = (
 };
 
 /**
- * generalized line-ray-segment intersection with convex polygon function
+ * @description generalized line-ray-segment intersection with convex polygon function
  * for lines and rays, line1 and line2 are the vector, origin in that order.
  * for segments, line1 and line2 are the two endpoints.
  *
  * this doubles as the exclusive condition, and the main export since it
  * checks for exclusive/inclusive and can early-return
+ * @linkcode Math ./src/intersection/intersect-polygon-line.js 72
  */
 const intersectConvexPolygonLine = (
   poly,

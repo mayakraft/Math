@@ -22,7 +22,6 @@ import {
   midpoint,
   parallel
 } from "../core/algebra";
-import { equivalentVector2 } from "../core/equal";
 import { sortPointsAlongVector2 } from "../core/sort";
 import overlapLinePoint from "../intersection/overlap-line-point";
 import overlapConvexPolygonPoint from "../intersection/overlap-polygon-point";
@@ -93,7 +92,7 @@ const getMinMax = (numbers, func, scaled_epsilon) => {
  * @param {function} [fnLine=includeL] function to determine line/ray/segment, and inclusive or exclusive.
  * @param {number} [epsilon=1e-6] optional epsilon
  */
-const clip_line_in_convex_polygon = (
+const clipLineConvexPolygon = (
   poly,
   vector,
   origin,
@@ -125,5 +124,5 @@ const clip_line_in_convex_polygon = (
     : undefined;
 };
 
-export default clip_line_in_convex_polygon;
+export default clipLineConvexPolygon;
 

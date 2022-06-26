@@ -29,7 +29,7 @@ import {
 } from "../../arguments/functions";
 import Intersect from "../../intersection/intersect";
 import Overlap from "../../intersection/overlap";
-import clipLineInConvexPolygon from "../../clip/polygon";
+import clipLineConvexPolygon from "../../clip/line-polygon";
 import {
   nearestPointOnLine,
   nearestPointOnPolygon,
@@ -123,7 +123,7 @@ const PolygonMethods = {
   },
   clip: function (line_type, epsilon) {
     const fn_line = line_type.domain_function ? line_type.domain_function : includeL;
-    const segment = clipLineInConvexPolygon(this,
+    const segment = clipLineConvexPolygon(this,
       line_type.vector,
       line_type.origin,
       this.domain_function,

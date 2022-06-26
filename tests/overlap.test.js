@@ -294,15 +294,15 @@ test("convex polygons overlap", () => {
   expect(math.core.overlapConvexPolygons(poly1, poly3)).toBe(true);
 });
 
-test("encloseConvexPolygonsInclusive", () => {
+test("enclosingPolygonPolygon", () => {
   const poly1 = [[1,0], [0,1], [-1,0], [0,-1]];
   const poly2 = [[10,0], [0,10], [-10,0], [0,-10]];
   const poly3 = [[8,8], [-8,8], [-8,-8], [8,-8]];
-  expect(math.core.encloseConvexPolygonsInclusive(poly2, poly1)).toBe(true);
-  expect(math.core.encloseConvexPolygonsInclusive(poly3, poly1)).toBe(true);
+  expect(math.core.enclosingPolygonPolygon(poly2, poly1)).toBe(true);
+  expect(math.core.enclosingPolygonPolygon(poly3, poly1)).toBe(true);
   // todo, this should be false i think
-  // expect(math.core.encloseConvexPolygonsInclusive(poly2, poly3)).toBe(false);
-  expect(math.core.encloseConvexPolygonsInclusive(poly1, poly2)).toBe(false);
-  expect(math.core.encloseConvexPolygonsInclusive(poly1, poly3)).toBe(false);
+  // expect(math.core.enclosingPolygonPolygon(poly2, poly3)).toBe(false);
+  expect(math.core.enclosingPolygonPolygon(poly1, poly2)).toBe(false);
+  expect(math.core.enclosingPolygonPolygon(poly1, poly3)).toBe(false);
 });
 

@@ -13,8 +13,8 @@ import {
   scale,
 } from "../../core/algebra";
 import {
-  vectorOriginToUD,
-  UDToVectorOrigin
+  makeNormalDistanceLine,
+  makeVectorOriginLine
 } from "../../core/parameterize";
 import Static from "./static";
 import methods from "./methods";
@@ -27,9 +27,9 @@ export default {
       const l = getLine(...arguments);
       this.vector = Constructors.vector(l.vector);
       this.origin = Constructors.vector(resize(this.vector.length, l.origin));
-      const ud = vectorOriginToUD({ vector: this.vector, origin: this.origin });
-      this.u = ud.u;
-      this.d = ud.d;
+      const alt = makeNormalDistanceLine({ vector: this.vector, origin: this.origin });
+      this.normal = alt.normal;
+      this.distance = alt.distance;
       Object.defineProperty(this, "domain_function", { writable: true, value: includeL });
     },
 
@@ -54,8 +54,8 @@ export default {
     }),
 
     S: Object.assign({
-      ud: function() {
-        return this.constructor(UDToVectorOrigin(arguments[0]));
+      fromNormalDistance: function() {
+        return this.constructor(makeVectorOriginLine(arguments[0]));
       },
     }, Static)
 

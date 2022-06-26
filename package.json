@@ -5,7 +5,8 @@
 	"main": "math.js",
 	"scripts": {
 		"test": "jest",
-		"docs": "node ./docs/make-docs.js"
+		"clean": "node tests/clean.js",
+		"lineno": "node tests/lineno.js"
 	},
 	"author": "Robby Kraft",
 	"license": "MIT",
