@@ -29,8 +29,8 @@ test("16 angles of lines, through the origin", () => {
 	const origins = angles.map(a => [0, 0]);
 	vectors
 		.map((vector, i) => ({ vector, origin: origins[i] }))
-		.map(vec_or => math.core.makeNormalDistanceLine(vec_or))
-		.map(norm_dist => math.core.makeVectorOriginLine(norm_dist))
+		.map(vec_or => math.core.rayLineToUniqueLine(vec_or))
+		.map(norm_dist => math.core.uniqueLineToRayLine(norm_dist))
 		.forEach((el, i) => {
 			expect(el.vector[0]).toBeCloseTo(vectors[i][0]);
 			expect(el.vector[1]).toBeCloseTo(vectors[i][1]);
@@ -65,8 +65,8 @@ test("16 angles of lines, not through the origin, dir 1", () => {
 		.map(a => [Math.cos(a + Math.PI / 2), Math.sin(a + Math.PI / 2)]);
 	vectors
 		.map((vector, i) => ({ vector, origin: origins[i] }))
-		.map(vec_or => math.core.makeNormalDistanceLine(vec_or))
-		.map(norm_dist => math.core.makeVectorOriginLine(norm_dist))
+		.map(vec_or => math.core.rayLineToUniqueLine(vec_or))
+		.map(norm_dist => math.core.uniqueLineToRayLine(norm_dist))
 		.forEach((el, i) => {
 			expect(el.vector[0]).toBeCloseTo(vectors[i][0]);
 			expect(el.vector[1]).toBeCloseTo(vectors[i][1]);
@@ -83,8 +83,8 @@ test("16 angles of lines, not through the origin, dir 2", () => {
 		.map(a => [Math.cos(a - Math.PI / 2), Math.sin(a - Math.PI / 2)]);
 	vectors
 		.map((vector, i) => ({ vector, origin: origins[i] }))
-		.map(vec_or => math.core.makeNormalDistanceLine(vec_or))
-		.map(norm_dist => math.core.makeVectorOriginLine(norm_dist))
+		.map(vec_or => math.core.rayLineToUniqueLine(vec_or))
+		.map(norm_dist => math.core.uniqueLineToRayLine(norm_dist))
 		.forEach((el, i) => {
 			expect(el.vector[0]).toBeCloseTo(vectors[i][0]);
 			expect(el.vector[1]).toBeCloseTo(vectors[i][1]);

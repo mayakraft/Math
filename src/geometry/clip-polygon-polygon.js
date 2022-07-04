@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../core/constants";
+import { EPSILON } from "../algebra/constants";
 /**
  * @description clip two polygons and return their union. this works for non-convex
  * poylgons, but both polygons must have counter-clockwise winding; will not work
@@ -15,15 +15,12 @@ import { EPSILON } from "../core/constants";
  */
 const clipPolygonPolygon = (polygon1, polygon2, epsilon = EPSILON) => {
 	var cp1, cp2, s, e;
-	const inside = (p) => {
-		// console.log(p, "inside", ((cp2[0] - cp1[0]) * (p[1] - cp1[1]))
-		// 	> ((cp2[1] - cp1[1]) * (p[0] - cp1[0])));
-		return ((cp2[0] - cp1[0]) * (p[1] - cp1[1]))
-			> ((cp2[1] - cp1[1]) * (p[0] - cp1[0]) + epsilon);
-	};
+	const inside = (p) => (
+		(cp2[0] - cp1[0]) * (p[1] - cp1[1])) > ((cp2[1] - cp1[1]) * (p[0] - cp1[0]) + epsilon
+	);
 	const intersection = () => {
 		var dc = [ cp1[0] - cp2[0], cp1[1] - cp2[1] ],
-			dp = [ s[0] - e[0], s[1] - e[1] ],
+			dp = [s[0] - e[0], s[1] - e[1] ],
 			n1 = cp1[0] * cp2[1] - cp1[1] * cp2[0],
 			n2 = s[0] * e[1] - s[1] * e[0], 
 			n3 = 1.0 / (dc[0] * dp[1] - dc[1] * dp[0]);
@@ -44,8 +41,7 @@ const clipPolygonPolygon = (polygon1, polygon2, epsilon = EPSILON) => {
 					outputList.push(intersection());
 				}
 				outputList.push(e);
-			}
-			else if (inside(s)) {
+			} else if (inside(s)) {
 				outputList.push(intersection());
 			}
 			s = e;

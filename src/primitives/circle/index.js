@@ -7,5 +7,10 @@ import M from "./methods";
 import S from "./static";
 
 export default {
-  circle: { A, G, M, S }
+	circle: {
+		A,
+		G,
+		M,
+		S,
+	},
 };

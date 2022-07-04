@@ -1,13 +1,13 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../core/constants";
+import { EPSILON } from "../algebra/constants";
 import {
-  cross2,
-  subtract,
-  normalize,
-} from "../core/algebra";
-import { exclude } from "../arguments/functions";
+	cross2,
+	subtract,
+	normalize,
+} from "../algebra/vectors";
+import { exclude } from "../algebra/functions";
 
 /**
  * exclusivity and inclusivity are flipped if the winding is flipped
@@ -23,11 +23,11 @@ import { exclude } from "../arguments/functions";
  * @linkcode Math ./src/intersection/overlap-polygon-point.js 23
  */
 const overlapConvexPolygonPoint = (poly, point, func = exclude, epsilon = EPSILON) => poly
-  .map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
-  .map(s => cross2(normalize(subtract(s[1], s[0])), subtract(point, s[0])))
-  .map(side => func(side, epsilon))
-  .map((s, _, arr) => s === arr[0])
-  .reduce((prev, curr) => prev && curr, true);
+	.map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
+	.map(s => cross2(normalize(subtract(s[1], s[0])), subtract(point, s[0])))
+	.map(side => func(side, epsilon))
+	.map((s, _, arr) => s === arr[0])
+	.reduce((prev, curr) => prev && curr, true);
 
 export default overlapConvexPolygonPoint;
 
@@ -61,4 +61,3 @@ export default overlapConvexPolygonPoint;
 //   }
 //   return isInside;
 // };
-

@@ -9,19 +9,19 @@ test("static fromPoints", () => {
 
 // native
 test("area", () => {
-  const r = math.rect(2, 3, 4, 5);
-  expect(r.area()).toBe(4 * 5);
+	const r = math.rect(2, 3, 4, 5);
+	expect(r.area()).toBe(4 * 5);
 });
 
 test("scale", () => {
-  const r = math.rect(2, 3, 4, 5);
-  expect(r.scale(2).area()).toBe((4 * 2) * (5 * 2));
+	const r = math.rect(2, 3, 4, 5);
+	expect(r.scale(2).area()).toBe((4 * 2) * (5 * 2));
 });
 
 test("segments", () => {
-  const r = math.rect(2, 3, 4, 5);
-  const seg = r.segments();
-  expect(seg.length).toBe(4);
+	const r = math.rect(2, 3, 4, 5);
+	const seg = r.segments();
+	expect(seg.length).toBe(4);
 });
 
 test("center", () => {
@@ -31,25 +31,25 @@ test("center", () => {
 });
 
 test("centroid", () => {
-  const r = math.rect(1, 2, 3, 4);
-  const centroid = r.centroid();
-  expect(centroid.x).toBe(1 + 3 / 2);
-  expect(centroid.y).toBe(2 + 4 / 2);
+	const r = math.rect(1, 2, 3, 4);
+	const centroid = r.centroid();
+	expect(centroid.x).toBe(1 + 3 / 2);
+	expect(centroid.y).toBe(2 + 4 / 2);
 });
 
 test("boundingBox", () => {
-  const r = math.rect(1, 2, 3, 4);
-  const bounds = r.boundingBox();
-  expect(bounds.min[0]).toBe(1);
-  expect(bounds.min[1]).toBe(2);
-  expect(bounds.span[0]).toBe(3);
-  expect(bounds.span[1]).toBe(4);
+	const r = math.rect(1, 2, 3, 4);
+	const bounds = r.boundingBox();
+	expect(bounds.min[0]).toBe(1);
+	expect(bounds.min[1]).toBe(2);
+	expect(bounds.span[0]).toBe(3);
+	expect(bounds.span[1]).toBe(4);
 });
 
 test("contains", () => {
-  const r = math.rect(1, 2, 3, 4);
-  expect(r.overlap(math.vector(0, 0))).toBe(false);
-  expect(r.overlap(math.vector(1.5, 3))).toBe(true);
+	const r = math.rect(1, 2, 3, 4);
+	expect(r.overlap(math.vector(0, 0))).toBe(false);
+	expect(r.overlap(math.vector(1.5, 3))).toBe(true);
 });
 
 test("svg", () => {

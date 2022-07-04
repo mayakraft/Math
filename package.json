@@ -21,6 +21,9 @@
 	"devDependencies": {
 		"@babel/preset-env": "^7.18.2",
 		"@rollup/plugin-babel": "^5.3.1",
+		"eslint": "^8.19.0",
+		"eslint-config-airbnb-base": "^15.0.0",
+		"eslint-plugin-import": "^2.26.0",
 		"jest": "^28.1.0",
 		"rollup": "^2.75.5",
 		"rollup-plugin-cleanup": "^3.2.1",

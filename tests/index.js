@@ -14,26 +14,26 @@ const sqrt05 = Math.sqrt(0.5);
 
 
 const testName = function (newName) {
-  name = newName;
-  testNumber = 1;
+	name = newName;
+	testNumber = 1;
 };
 /**
  * test equal runs the equivalent() function which incorporates an epsilon
  * such that the test "1e-8 is equivalent to 0" will come back true
  */
 const testEqual = function (...args) {
-  if (!math.core.equivalent(...args)) {
-    // test failed
-    const message = `xxx test failed. #${testNumber} of ${name}`;
-    failedTests.push({ message, args });
-    if (verbose) { console.log(message); }
-  } else {
-    // test passed
-    if (verbose) {
-      console.log(`... test passed #${testNumber} of ${name}`);
-    }
-  }
-  testNumber += 1;
+	if (!math.core.equivalent(...args)) {
+		// test failed
+		const message = `xxx test failed. #${testNumber} of ${name}`;
+		failedTests.push({ message, args });
+		if (verbose) { console.log(message); }
+	} else {
+		// test passed
+		if (verbose) {
+			console.log(`... test passed #${testNumber} of ${name}`);
+		}
+	}
+	testNumber += 1;
 };
 
 /**
@@ -42,25 +42,25 @@ const testEqual = function (...args) {
 testName("clean number");
 // this is the most decimal places javascript uses
 testEqual(true, math.core.cleanNumber(0.12345678912345678)
-  === 0.12345678912345678);
+	=== 0.12345678912345678);
 testEqual(true, math.core.cleanNumber(0.12345678912345678, 5)
-  === 0.12345678912345678);
+	=== 0.12345678912345678);
 testEqual(true, math.core.cleanNumber(0.00000678912345678, 5)
-  === 0.00000678912345678);
+	=== 0.00000678912345678);
 testEqual(true, math.core.cleanNumber(0.00000078912345678, 5)
-  === 0);
+	=== 0);
 testEqual(true, math.core.cleanNumber(0.00000000000000001)
-  === 0);
+	=== 0);
 testEqual(true, math.core.cleanNumber(0.0000000000000001)
-  === 0);
+	=== 0);
 testEqual(true, math.core.cleanNumber(0.000000000000001)
-  === 0.000000000000001);
+	=== 0.000000000000001);
 testEqual(true, math.core.cleanNumber(0.00000000001, 9)
-  === 0);
+	=== 0);
 testEqual(true, math.core.cleanNumber(0.0000000001, 9)
-  === 0);
+	=== 0);
 testEqual(true, math.core.cleanNumber(0.000000001, 9)
-  === 0.000000001);
+	=== 0.000000001);
 
 /**
  * inputs and argument inference
@@ -79,15 +79,15 @@ testEqual([1], math.core.flattenArrays([[[1]], []]));
 testEqual([1, 2, 3, 4], math.core.flattenArrays([[[1, 2, 3, 4]]]));
 testEqual([1, 2, 3, 4], math.core.flattenArrays(1, 2, 3, 4));
 testEqual([1, 2, 3, 4, 2, 4],
-  math.core.flattenArrays([1, 2, 3, 4], [2, 4]));
+	math.core.flattenArrays([1, 2, 3, 4], [2, 4]));
 testEqual([1, 2, 3, 4, 6, 7, 6],
-  math.core.flattenArrays([1, 2, 3, 4], [6, 7], 6));
+	math.core.flattenArrays([1, 2, 3, 4], [6, 7], 6));
 testEqual([1, 2, 3, 4, 6, 7, 6, 2, 4, 5],
-  math.core.flattenArrays([1, 2, 3, 4], [6, 7], 6, 2, 4, 5));
+	math.core.flattenArrays([1, 2, 3, 4], [6, 7], 6, 2, 4, 5));
 testEqual([{ x: 5, y: 3 }], math.core.flattenArrays({ x: 5, y: 3 }));
 testEqual([{ x: 5, y: 3 }], math.core.flattenArrays([[{ x: 5, y: 3 }]]));
 testEqual([1, 2, 3, 4, 5, 6],
-  math.core.flattenArrays([[[1], [2, 3]]], 4, [5, 6]));
+	math.core.flattenArrays([[[1], [2, 3]]], 4, [5, 6]));
 
 testName("get vector");
 testEqual([1, 2, 3, 4], math.core.getVector([[[1, 2, 3, 4]]]));
@@ -105,23 +105,23 @@ testEqual([5, 3], math.core.getVector([[[5]]], 3));
 
 testName("get vector of vectors");
 testEqual([[1, 2], [3, 4]],
-  math.core.getVectorOfVectors({ x: 1, y: 2 }, { x: 3, y: 4 }));
+	math.core.getVectorOfVectors({ x: 1, y: 2 }, { x: 3, y: 4 }));
 testEqual([[1, 2], [3, 4]],
-  math.core.getVectorOfVectors([[[{ x: 1, y: 2 }, { x: 3, y: 4 }]]]));
+	math.core.getVectorOfVectors([[[{ x: 1, y: 2 }, { x: 3, y: 4 }]]]));
 testEqual([[1, 2], [3, 4]],
-  math.core.getVectorOfVectors([[[1, 2], [3, 4]]]));
+	math.core.getVectorOfVectors([[[1, 2], [3, 4]]]));
 testEqual([[1, 2], [3, 4]],
-  math.core.getVectorOfVectors([[[1, 2]], [[3, 4]]]));
+	math.core.getVectorOfVectors([[[1, 2]], [[3, 4]]]));
 testEqual([[1, 2], [3, 4]],
-  math.core.getVectorOfVectors([[[1, 2]]], [[[3, 4]]]));
+	math.core.getVectorOfVectors([[[1, 2]]], [[[3, 4]]]));
 testEqual([[1], [2], [3], [4]],
-  math.core.getVectorOfVectors([[[1], [2], [3], [4]]]));
+	math.core.getVectorOfVectors([[[1], [2], [3], [4]]]));
 testEqual([[1], [2], [3], [4]],
-  math.core.getVectorOfVectors([[[1]], [[2]], [[3]], [[4]]]));
+	math.core.getVectorOfVectors([[[1]], [[2]], [[3]], [[4]]]));
 testEqual([[1], [2], [3], [4]],
-  math.core.getVectorOfVectors([[[1]]], 2, 3, 4));
+	math.core.getVectorOfVectors([[[1]]], 2, 3, 4));
 testEqual([[1], [2], [3], [4]],
-  math.core.getVectorOfVectors([[[1, 2, 3, 4]]]));
+	math.core.getVectorOfVectors([[[1, 2, 3, 4]]]));
 
 testName("get two vectors");
 testEqual([[1, 2], [3, 4]], math.segment(1, 2, 3, 4));
@@ -172,11 +172,11 @@ testEqual(false, math.core.equivalentNumbers([1, 1, 1, 1, 1, 1], [1, 2]));
 
 testName("average function");
 testEqual([3.75, 4.75],
-  math.core.average([4, 1], [5, 6], [4, 6], [2, 6]));
+	math.core.average([4, 1], [5, 6], [4, 6], [2, 6]));
 testEqual([4, 5, 3],
-  math.core.average([1, 2, 3], [4, 5, 6], [7, 8]));
+	math.core.average([1, 2, 3], [4, 5, 6], [7, 8]));
 testEqual([4, 5, 6],
-  math.core.average([1, 2, 3], [4, 5, 6], [7, 8, 9]));
+	math.core.average([1, 2, 3], [4, 5, 6], [7, 8, 9]));
 
 /**
  * vectors
@@ -184,7 +184,7 @@ testEqual([4, 5, 6],
 
 testName("vector normalize, scale");
 testEqual([Math.sqrt(2), Math.sqrt(2)],
-  math.vector(10, 10).normalize().scale(2));
+	math.vector(10, 10).normalize().scale(2));
 
 testName("vector dot");
 testEqual(0, math.vector(2, 1).normalize().dot(math.vector(1, -2).normalize()));
@@ -213,61 +213,61 @@ testName("matrix core");
 testEqual(12, math.core.determinant3([1, 2, 3, 2, 4, 8, 7, 8, 9]));
 testEqual(10, math.core.determinant3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
 testEqual([4, 5, -8, -5, -6, 9, -2, -2, 3, 0, 0, 0],
-  math.core.invertMatrix3([0, 1, -3, -3, -4, 4, -2, -2, 1, 0, 0, 0]));
+	math.core.invertMatrix3([0, 1, -3, -3, -4, 4, -2, -2, 1, 0, 0, 0]));
 testEqual([0.2, -0.2, 0.2, 0.2, 0.3, -0.3, 0, 1, 0, 0, 0, 0],
-  math.core.invertMatrix3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
+	math.core.invertMatrix3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
 const mat_3d_ref = math.core.makeMatrix3ReflectZ([1, -2], [12, 13]);
 testEqual(math.core.makeMatrix2Reflect([1, -2], [12, 13]),
-  [mat_3d_ref[0], mat_3d_ref[1], mat_3d_ref[3], mat_3d_ref[4], mat_3d_ref[9], mat_3d_ref[10]]);
+	[mat_3d_ref[0], mat_3d_ref[1], mat_3d_ref[3], mat_3d_ref[4], mat_3d_ref[9], mat_3d_ref[10]]);
 // rotate 360 degrees about an arbitrary axis and origin
 testEqual([1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-  math.core.makeMatrix3Rotate(Math.PI * 2,
-    [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5],
-    [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]));
+	math.core.makeMatrix3Rotate(Math.PI * 2,
+		[Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5],
+		[Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]));
 
 testEqual(math.core.make_matrix3_rotateX(Math.PI / 6),
-  math.core.makeMatrix3Rotate(Math.PI / 6, [1, 0, 0]));
+	math.core.makeMatrix3Rotate(Math.PI / 6, [1, 0, 0]));
 testEqual(math.core.make_matrix3_rotateY(Math.PI / 6),
-  math.core.makeMatrix3Rotate(Math.PI / 6, [0, 1, 0]));
+	math.core.makeMatrix3Rotate(Math.PI / 6, [0, 1, 0]));
 testEqual(math.core.make_matrix3_rotateZ(Math.PI / 6),
-  math.core.makeMatrix3Rotate(Math.PI / 6, [0, 0, 1]));
+	math.core.makeMatrix3Rotate(Math.PI / 6, [0, 0, 1]));
 // source wikipedia https://en.wikipedia.org/wiki/Rotation_matrix#Examples
 testEqual([
-  0.35612209405955486, -0.8018106071106572, 0.47987165414043453,
-  0.47987165414043464, 0.5975763087872217, 0.6423595182829954,
-  -0.8018106071106572, 0.0015183876574496047, 0.5975763087872216,
-  0, 0, 0
+	0.35612209405955486, -0.8018106071106572, 0.47987165414043453,
+	0.47987165414043464, 0.5975763087872217, 0.6423595182829954,
+	-0.8018106071106572, 0.0015183876574496047, 0.5975763087872216,
+	0, 0, 0
 ], math.core.makeMatrix3Rotate(-74 / 180 * Math.PI, [-1 / 3, 2 / 3, 2 / 3]));
 
 testEqual([1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0],
-  math.core.makeMatrix3Rotate(Math.PI / 6, [1, 0, 0]));
+	math.core.makeMatrix3Rotate(Math.PI / 6, [1, 0, 0]));
 
 // source wolfram alpha
 testEqual([-682, 3737, -5545, 2154, -549, -1951, 953, -3256, 4401, 0, 0, 0],
-  math.core.multiply_matrices3([5, -52, 85, 15, -9, -2, 32, 2, -50, 0, 0, 0],
-    [-77, 25, -21, 3, 53, 42, 63, 2, 19, 0, 0, 0]));
+	math.core.multiply_matrices3([5, -52, 85, 15, -9, -2, 32, 2, -50, 0, 0, 0],
+		[-77, 25, -21, 3, 53, 42, 63, 2, 19, 0, 0, 0]));
 
 testName("matrices");
 const ident = math.matrix();
 testEqual(ident.rotateX(Math.PI / 2).translate(40, 20, 10),
-  [1, 0, 0, 0, 0, 1, 0, -1, 0, 40, -10, 20]);
+	[1, 0, 0, 0, 0, 1, 0, -1, 0, 40, -10, 20]);
 // top level types
 testEqual([1, 2, 3, 4, 5, 6], math.matrix2(1, 2, 3, 4, 5, 6));
 testEqual([1, 0, 0, 1, 6, 7], math.matrix2.makeTranslation(6, 7));
 testEqual([3, 0, 0, 3, -2, 0], math.matrix2.makeScale(3, 3, [1, 0]));
 testEqual([0, 1, 1, -0, -8, 8], math.matrix2.makeReflection([1, 1], [-5, 3]));
 testEqual(
-  [sqrt05, sqrt05, -sqrt05, sqrt05, 1, 1],
-  math.matrix2.makeRotation(Math.PI / 4, [1, 1])
+	[sqrt05, sqrt05, -sqrt05, sqrt05, 1, 1],
+	math.matrix2.makeRotation(Math.PI / 4, [1, 1])
 );
 testEqual(
-  [sqrt05, -sqrt05, sqrt05, sqrt05, -sqrt05, sqrt05],
-  math.matrix2(sqrt05, sqrt05, -sqrt05, sqrt05, 1, 0).inverse()
+	[sqrt05, -sqrt05, sqrt05, sqrt05, -sqrt05, sqrt05],
+	math.matrix2(sqrt05, sqrt05, -sqrt05, sqrt05, 1, 0).inverse()
 );
 testEqual(
-  [Math.sqrt(4.5), sqrt05, -sqrt05, Math.sqrt(4.5), Math.sqrt(4.5), sqrt05],
-  math.matrix2(sqrt05, -sqrt05, sqrt05, sqrt05, 0, 0)
-    .multiply(math.matrix2(1, 2, -2, 1, 1, 2))
+	[Math.sqrt(4.5), sqrt05, -sqrt05, Math.sqrt(4.5), Math.sqrt(4.5), sqrt05],
+	math.matrix2(sqrt05, -sqrt05, sqrt05, sqrt05, 0, 0)
+		.multiply(math.matrix2(1, 2, -2, 1, 1, 2))
 );
 testEqual([0, 3], math.matrix2(2, 1, -1, 2, -1, 0).transform(1, 1));
 testEqual([-2, 3], math.matrix2.makeScale(3, 3, [1, 0]).transform([0, 1]));
@@ -291,12 +291,12 @@ testEqual(false, math.line(0, 0, -1, 1).isParallel(math.segment(10, 0, 1, 1)));
 
 testName("line ray segment reflection matrices");
 testEqual(
-  math.line(10, 0, -1, 1).reflection(),
-  math.ray(10, 0, -1, 1).reflection()
+	math.line(10, 0, -1, 1).reflection(),
+	math.ray(10, 0, -1, 1).reflection()
 );
 testEqual(
-  math.segment(10, 0, 0, 10).reflection(),
-  math.ray(10, 0, -1, 1).reflection()
+	math.segment(10, 0, 0, 10).reflection(),
+	math.ray(10, 0, -1, 1).reflection()
 );
 
 testName("line ray segment nearest points");
@@ -307,12 +307,12 @@ testEqual([-50, 60], math.ray(10, 0, -1, 1).nearestPoint([-10, 100]));
 testEqual([10, 0], math.segment(10, 0, 0, 10).nearestPoint([20, -10]));
 testEqual([0, 10], math.segment(10, 0, 0, 10).nearestPoint([-10, 100]));
 testEqual(
-  math.ray(10, 0, -1, 1).nearestPoint([0, 0]),
-  math.line(10, 0, -1, 1).nearestPoint([0, 0])
+	math.ray(10, 0, -1, 1).nearestPoint([0, 0]),
+	math.line(10, 0, -1, 1).nearestPoint([0, 0])
 );
 testEqual(
-  math.segment(10, 0, 0, 10).nearestPoint([0, 0]),
-  math.ray(10, 0, -1, 1).nearestPoint([0, 0])
+	math.segment(10, 0, 0, 10).nearestPoint([0, 0]),
+	math.ray(10, 0, -1, 1).nearestPoint([0, 0])
 );
 
 /**
@@ -323,8 +323,8 @@ testName("circle");
 testEqual(5, math.circle(1, 2, 5).radius);
 testEqual([1, 2], math.circle(1, 2, 5).origin);
 testEqual(
-  [[0.5, Math.sqrt(3) / 2], [0.5, -Math.sqrt(3) / 2]],
-  math.circle(0, 0, 1).intersectionLine(math.line(0.5, 0, 0, 1))
+	[[0.5, Math.sqrt(3) / 2], [0.5, -Math.sqrt(3) / 2]],
+	math.circle(0, 0, 1).intersectionLine(math.line(0.5, 0, 0, 1))
 );
 // todo, this needs to be written
 // testEqual(
@@ -339,11 +339,11 @@ testEqual(
 
 testName("polygon");
 testEqual(
-  math.polygon.regularPolygon(4).clipLine(math.line(0.5, 0.5, 6, -11)),
-  math.convexPolygon.regularPolygon(4).clipLine(math.line(0.5, 0.5, 6, -11))
+	math.polygon.regularPolygon(4).clipLine(math.line(0.5, 0.5, 6, -11)),
+	math.convexPolygon.regularPolygon(4).clipLine(math.line(0.5, 0.5, 6, -11))
 );
 testEqual([[-1, 0.5], [1, 0.5]],
-  math.polygon.regularPolygon(4).clipLine(math.line(0.5, 0.5, 1, 0)));
+	math.polygon.regularPolygon(4).clipLine(math.line(0.5, 0.5, 1, 0)));
 testEqual([[1, 0], [0, 1.87], [-1, 0]], math.convexPolygon([1, 0], [0, 1.87], [-1, 0]).points);
 
 // testEqual(true, math.convexPolygon([1, 0], [0, 1.87], [-1, 0]).sides);
@@ -366,24 +366,24 @@ testEqual(4, math.polygon.regularPolygon(4).area());
 
 testName("interior angles");
 testEqual(
-  [Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
-  [[1, 0], [0, 1], [-1, 0], [0, -1]].map((v, i, ar) => math.core
-    .counter_clockwise_angle2(v, ar[(i + 1) % ar.length]))
+	[Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
+	[[1, 0], [0, 1], [-1, 0], [0, -1]].map((v, i, ar) => math.core
+		.counter_clockwise_angle2(v, ar[(i + 1) % ar.length]))
 );
 testEqual(
-  [Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
-  [[1, 1], [-1, 1], [-1, -1], [1, -1]].map((v, i, ar) => math.core
-    .counter_clockwise_angle2(v, ar[(i + 1) % ar.length]))
+	[Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
+	[[1, 1], [-1, 1], [-1, -1], [1, -1]].map((v, i, ar) => math.core
+		.counter_clockwise_angle2(v, ar[(i + 1) % ar.length]))
 );
 
 testName("counter-clockwise vector sorting");
 testEqual(
-  [0, 1, 2, 3],
-  math.core.counterClockwiseVectorOrder([1, 1], [-1, 1], [-1, -1], [1, -1])
+	[0, 1, 2, 3],
+	math.core.counterClockwiseVectorOrder([1, 1], [-1, 1], [-1, -1], [1, -1])
 );
 testEqual(
-  [0, 3, 2, 1],
-  math.core.counterClockwiseVectorOrder([1, -1], [-1, -1], [-1, 1], [1, 1])
+	[0, 3, 2, 1],
+	math.core.counterClockwiseVectorOrder([1, -1], [-1, -1], [-1, 1], [1, 1])
 );
 
 testName("sectors");
@@ -395,11 +395,11 @@ testEqual(false, math.sector.fromVectors([1, 0], [0, 1]).contains([1, -1]));
 
 testName("junctions");
 testEqual([[1, 1], [1, -1], [-1, 1], [-1, -1]],
-  math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).vectors);
+	math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).vectors);
 testEqual([0, 2, 3, 1],
-  math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).vectorOrder);
+	math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).vectorOrder);
 testEqual([Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
-  math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).angles());
+	math.junction([1, 1], [1, -1], [-1, 1], [-1, -1]).angles());
 
 /**
  * origami math
@@ -413,54 +413,54 @@ testName("kawasaki's theorem math");
 testEqual([16, 20], math.core.alternating_sum(1, 2, 3, 4, 5, 6, 7, 8));
 testEqual([0, 0], math.core.alternating_deviation(Math.PI, Math.PI));
 testEqual([0, 0], math.core.alternating_deviation(
-  Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2
+	Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2
 ));
 testEqual([1, -1],
-  math.core.alternating_deviation(Math.PI - 1, Math.PI + 1));
+	math.core.alternating_deviation(Math.PI - 1, Math.PI + 1));
 testEqual([1, -1],
-  math.core.alternating_deviation(
-    Math.PI / 2 - 0.5,
-    Math.PI / 2 + 0.5,
-    Math.PI / 2 - 0.5,
-    Math.PI / 2 + 0.5
-  ));
+	math.core.alternating_deviation(
+		Math.PI / 2 - 0.5,
+		Math.PI / 2 + 0.5,
+		Math.PI / 2 - 0.5,
+		Math.PI / 2 + 0.5
+	));
 testEqual([0, 0],
-  math.core.alternating_deviation(...math.core.interior_angles([1, 0], [0, 1], [-1, 0], [0, -1])));
+	math.core.alternating_deviation(...math.core.interior_angles([1, 0], [0, 1], [-1, 0], [0, -1])));
 testEqual(
-  [undefined, undefined, 1.25 * Math.PI],
-  math.core.kawasaki_solutions_radians(
-    0, Math.PI / 2, Math.PI / 4 * 3
-  )
+	[undefined, undefined, 1.25 * Math.PI],
+	math.core.kawasaki_solutions_radians(
+		0, Math.PI / 2, Math.PI / 4 * 3
+	)
 );
 testEqual(
-  [[Math.cos(Math.PI * 1 / 3), Math.sin(Math.PI * 1 / 3)],
-    [Math.cos(Math.PI * 3 / 3), Math.sin(Math.PI * 3 / 3)],
-    [Math.cos(Math.PI * 5 / 3), Math.sin(Math.PI * 5 / 3)]],
-  math.core.kawasaki_solutions(
-    [Math.cos(0), Math.sin(0)],
-    [Math.cos(Math.PI * 2 / 3), Math.sin(Math.PI * 2 / 3)],
-    [Math.cos(Math.PI * 4 / 3), Math.sin(Math.PI * 4 / 3)]
-  )
+	[[Math.cos(Math.PI * 1 / 3), Math.sin(Math.PI * 1 / 3)],
+		[Math.cos(Math.PI * 3 / 3), Math.sin(Math.PI * 3 / 3)],
+		[Math.cos(Math.PI * 5 / 3), Math.sin(Math.PI * 5 / 3)]],
+	math.core.kawasaki_solutions(
+		[Math.cos(0), Math.sin(0)],
+		[Math.cos(Math.PI * 2 / 3), Math.sin(Math.PI * 2 / 3)],
+		[Math.cos(Math.PI * 4 / 3), Math.sin(Math.PI * 4 / 3)]
+	)
 );
 testEqual([undefined, undefined, [-sqrt05, -sqrt05]],
-  math.core.kawasaki_solutions(
-    [Math.cos(0), Math.sin(0)],
-    [Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)],
-    [Math.cos(Math.PI / 2), Math.sin(Math.PI / 2)]
-  ));
+	math.core.kawasaki_solutions(
+		[Math.cos(0), Math.sin(0)],
+		[Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)],
+		[Math.cos(Math.PI / 2), Math.sin(Math.PI / 2)]
+	));
 */
 
 testName("nearest point");
 testEqual([5, 5], math.core.nearestPoint2([10, 0],
-  [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9]]));
+	[[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9]]));
 testEqual([6, 6, 0], math.core.nearestPoint([10, 0, 0],
-  [[0, 0, 0], [1, 1, 0], [2, 2, 0], [3, 3, 0], [4, 4, 1],
-    [5, 5, 10], [6, 6, 0], [7, 7, 0], [8, 8, 0], [9, 9, 0]]));
+	[[0, 0, 0], [1, 1, 0], [2, 2, 0], [3, 3, 0], [4, 4, 1],
+		[5, 5, 10], [6, 6, 0], [7, 7, 0], [8, 8, 0], [9, 9, 0]]));
 
 if (failedTests.length) {
-  console.log(`${bar}\nFailed tests and arguments\n`);
-  failedTests.forEach(test => console.log(`${test.message}\n${test.args}\n${bar}`));
-  throw new Error("tests failed");
+	console.log(`${bar}\nFailed tests and arguments\n`);
+	failedTests.forEach(test => console.log(`${test.message}\n${test.args}\n${bar}`));
+	throw new Error("tests failed");
 } else {
-  console.log(`${bar}\nall tests pass\n${bar}\n`);
+	console.log(`${bar}\nall tests pass\n${bar}\n`);
 }

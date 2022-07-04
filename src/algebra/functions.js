@@ -1,8 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../core/constants";
-
+import { EPSILON } from "./constants";
 /**
  * common functions that get reused, especially inside of map/reduce etc...
  */
@@ -15,7 +14,7 @@ export const fnTrue = () => true;
  * @description multiply a parameter by itself
  * @param {number} n a number
  * @returns {number} a number
- * @linkcode Math ./src/arguments/functions.js 18
+ * @linkcode Math ./src/algebra/functions.js 17
  */
 export const fnSquare = n => n * n;
 /**
@@ -23,14 +22,14 @@ export const fnSquare = n => n * n;
  * @param {number} a a number
  * @param {number} b a number
  * @returns {number} a number
- * @linkcode Math ./src/arguments/functions.js 26
+ * @linkcode Math ./src/algebra/functions.js 25
  */
 export const fnAdd = (a, b) => a + (b || 0);
 /**
  * @description is an input not undefined? using Javascript's triple equals !==
  * @param {any} a any input
  * @returns {boolean} true if the input is not undefined
- * @linkcode Math ./src/arguments/functions.js 33
+ * @linkcode Math ./src/algebra/functions.js 32
  */
 export const fnNotUndefined = a => a !== undefined;
 /**
@@ -38,7 +37,7 @@ export const fnNotUndefined = a => a !== undefined;
  * @param {any} a any input
  * @param {any} b any input
  * @returns {boolean} the AND of both inputs
- * @linkcode Math ./src/arguments/functions.js 41
+ * @linkcode Math ./src/algebra/functions.js 40
  */
 export const fnAnd = (a, b) => a && b;
 /**
@@ -46,98 +45,106 @@ export const fnAnd = (a, b) => a && b;
  * @param {Array} a any array input
  * @param {Array} b any array input
  * @returns {Array} one joined array
- * @linkcode Math ./src/arguments/functions.js 49
+ * @linkcode Math ./src/algebra/functions.js 48
  */
 export const fnCat = (a, b) => a.concat(b);
 /**
- * @description convert a 2D vector to an angle in radians
+ * @description Convert a 2D vector to an angle in radians.
  * @param {number[]} v an input vector
  * @returns {number} the angle in radians
- * @linkcode Math ./src/arguments/functions.js 56
+ * @linkcode Math ./src/algebra/functions.js 55
  */
 export const fnVec2Angle = v => Math.atan2(v[1], v[0]);
 /**
- * @description convert an angle in radians to a 2D vector
+ * @description Convert an angle in radians to a 2D vector.
  * @param {number} a the angle in radians
  * @returns {number[]} a 2D vector
- * @linkcode Math ./src/arguments/functions.js 63
+ * @linkcode Math ./src/algebra/functions.js 62
  */
 export const fnToVec2 = a => [Math.cos(a), Math.sin(a)];
 /**
- * @description are two inputs equal using Javascript's triple equals.
+ * @description Are two inputs equal using Javascript's triple equals?
  * @param {any} a any input
  * @param {any} b any input
  * @returns {boolean} true if the inputs are equal
- * @linkcode Math ./src/arguments/functions.js 71
+ * @linkcode Math ./src/algebra/functions.js 70
  */
 export const fnEqual = (a, b) => a === b;
 /**
- * @description are two inputs equal within an epsilon of each other
+ * @description Are two inputs equal within an epsilon of each other?
  * @param {number} a any number input
  * @param {number} b any number input
  * @returns {boolean} true if the numbers are near each other
- * @linkcode Math ./src/arguments/functions.js 79
+ * @linkcode Math ./src/algebra/functions.js 78
  */
-export const fnEpsilonEqual = (a, b) => Math.abs(a - b) < EPSILON;
+export const fnEpsilonEqual = (a, b, epsilon = EPSILON) => Math.abs(a - b) < epsilon;
+/**
+ * @description Sort two numbers within an epsilon of each other, so that "1": a < b,
+ * "-1": a > b, and "0": a ~= b (epsilon equal).
+ * @param {number} a any number
+ * @param {number} b any number
+ * @param {number} [epsilon=1e-6] an optional epsilon
+ * @returns {number} -1, 0, +1
+ */
+export const fnEpsilonSort = (a, b, epsilon = EPSILON) => (
+	fnEpsilonEqual(a, b, epsilon) ? 0 : Math.sign(b - a)
+);
 /**
  * @description are two vectors equal to each other within an epsilon. This method
  * uses a fast rectangle-area around each vector.
  * @param {number[]} a an array of numbers
  * @param {number[]} b an array of numbers
  * @returns {boolean} true if the vectors are similar within an epsilon
- * @linkcode Math ./src/arguments/functions.js 88
+ * @linkcode Math ./src/algebra/functions.js 98
  */
-export const fnEpsilonEqualVectors = (a, b) => {
-  for (let i = 0; i < Math.max(a.length, b.length); i++) {
-    if (!fnEpsilonEqual(a[i] || 0, b[i] || 0)) { return false; }
-  }
-  return true;
+export const fnEpsilonEqualVectors = (a, b, epsilon = EPSILON) => {
+	for (let i = 0; i < Math.max(a.length, b.length); i += 1) {
+		if (!fnEpsilonEqual(a[i] || 0, b[i] || 0, epsilon)) { return false; }
+	}
+	return true;
 };
-// export const fnEpsilonEqualVectors = (a, b) => a
-//   .map((_, n) => fnEpsilonEqual(a[n], b[n]))
-//   .reduce(fnAnd, true);
 /**
  * @description the inclusive test used in intersection algorithms, returns
  * true if the number is positive, including the epsilon between -epsilon and 0.
  * @returns {boolean} -Infinity...{false}...-epsilon...{true}...+Infinity
- * @linkcode Math ./src/arguments/functions.js 103
+ * @linkcode Math ./src/algebra/functions.js 110
  */
 export const include = (n, epsilon = EPSILON) => n > -epsilon;
 /**
  * @description the exclusive test used in intersection algorithms, returns
  * true if the number is positive, excluding the epsilon between 0 and +epsilon.
  * @returns {boolean} -Infinity...{false}...+epsilon...{true}...+Infinity
- * @linkcode Math ./src/arguments/functions.js 110
+ * @linkcode Math ./src/algebra/functions.js 117
  */
 export const exclude = (n, epsilon = EPSILON) => n > epsilon;
 /**
  * @description the function parameter for an inclusive line
- * @linkcode Math ./src/arguments/functions.js 115
+ * @linkcode Math ./src/algebra/functions.js 122
  */
 export const includeL = fnTrue;
 /**
  * @description the function parameter for an exclusive line
- * @linkcode Math ./src/arguments/functions.js 120
+ * @linkcode Math ./src/algebra/functions.js 127
  */
 export const excludeL = fnTrue;
 /**
  * @description the function parameter for an inclusive ray
- * @linkcode Math ./src/arguments/functions.js 125
+ * @linkcode Math ./src/algebra/functions.js 132
  */
 export const includeR = include;
 /**
  * @description the function parameter for an exclusive ray
- * @linkcode Math ./src/arguments/functions.js 130
+ * @linkcode Math ./src/algebra/functions.js 137
  */
 export const excludeR = exclude;
 /**
  * @description the function parameter for an inclusive segment
- * @linkcode Math ./src/arguments/functions.js 135
+ * @linkcode Math ./src/algebra/functions.js 142
  */
 export const includeS = (t, e = EPSILON) => t > -e && t < 1 + e;
 /**
  * @description the function parameter for an exclusive segment
- * @linkcode Math ./src/arguments/functions.js 140
+ * @linkcode Math ./src/algebra/functions.js 147
  */
 export const excludeS = (t, e = EPSILON) => t > e && t < 1 - e;
 /**
@@ -145,7 +152,7 @@ export const excludeS = (t, e = EPSILON) => t > e && t < 1 - e;
  * The line method allows all values.
  * @param {number} t the length along the vector
  * @returns {number} the clamped input value
- * @linkcode Math ./src/arguments/functions.js 148
+ * @linkcode Math ./src/algebra/functions.js 155
  */
 export const lineLimiter = dist => dist;
 /**
@@ -153,7 +160,7 @@ export const lineLimiter = dist => dist;
  * The ray method clamps values below -epsilon to be 0.
  * @param {number} t the length along the vector
  * @returns {number} the clamped input value
- * @linkcode Math ./src/arguments/functions.js 156
+ * @linkcode Math ./src/algebra/functions.js 163
  */
 export const rayLimiter = dist => (dist < -EPSILON ? 0 : dist);
 /**
@@ -161,10 +168,10 @@ export const rayLimiter = dist => (dist < -EPSILON ? 0 : dist);
  * The segment method clamps values below -epsilon to be 0 and above 1+epsilon to 1.
  * @param {number} t the length along the vector
  * @returns {number} the clamped input value
- * @linkcode Math ./src/arguments/functions.js 164
+ * @linkcode Math ./src/algebra/functions.js 171
  */
 export const segmentLimiter = (dist) => {
-  if (dist < -EPSILON) { return 0; }
-  if (dist > 1 + EPSILON) { return 1; }
-  return dist;
+	if (dist < -EPSILON) { return 0; }
+	if (dist > 1 + EPSILON) { return 1; }
+	return dist;
 };

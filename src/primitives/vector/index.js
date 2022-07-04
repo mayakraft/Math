@@ -8,11 +8,11 @@ import M from "./methods";
 import S from "./static";
 
 export default {
-  vector: {
-    P: Array.prototype, // vector is a special case, it's an instance of an Array
-    A,
-    G,
-    M,
-    S,
-  }
+	vector: {
+		P: Array.prototype, // vector is a special case, it's an instance of an Array
+		A,
+		G,
+		M,
+		S,
+	},
 };
