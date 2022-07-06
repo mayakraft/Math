@@ -8,8 +8,8 @@ import {
 	centroid,
 	boundingBox,
 } from "../../geometry/polygons";
-import { splitConvexPolygon } from "../../geometry/split-polygon";
-import { straightSkeleton } from "../../geometry/straight-skeleton";
+import splitConvexPolygon from "../../geometry/split-polygon";
+import straightSkeleton from "../../geometry/straight-skeleton";
 import {
 	getVector,
 	getMatrix3x4,

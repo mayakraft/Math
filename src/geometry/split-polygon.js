@@ -18,7 +18,7 @@ import {
  * each point is an array of numbers.
  * @linkcode Math ./src/geometry/split-polygon.js 19
  */
-export const splitConvexPolygon = (poly, lineVector, linePoint) => {
+const splitConvexPolygon = (poly, lineVector, linePoint) => {
 	// todo: should this return undefined if no intersection?
 	//       or the original poly?
 
@@ -87,3 +87,5 @@ export const splitConvexPolygon = (poly, lineVector, linePoint) => {
 	}
 	return [poly.slice()];
 };
+
+export default splitConvexPolygon;

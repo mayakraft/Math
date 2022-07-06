@@ -10,8 +10,16 @@ import {
 } from "../algebra/vectors";
 import { excludeL } from "../algebra/functions";
 /**
- *  Boolean tests
- *  collinearity, overlap, contains
+ * @description check if a point lies collinear along a line, and specify if the
+ * line is a line/ray/segment and test whether the point lies within endpoint(s).
+ * @param {number[]} vector the vector component of the line
+ * @param {number[]} origin the origin component of the line
+ * @param {number[]} point one 2D point
+ * @parma {function} [func=excludeL] specify line/ray/segment and inclusive/exclusive
+ * @param {number} [epsilon=1e-6] an optional epsilon with a default value of 1e-6
+ * @returns {boolean} is the point collinear to the line, and in the case of ray/segment,
+ * does the point lie within the bounds of the ray/segment?
+ * @linkcode Math ./src/algebra/vectors.js 287
  */
 const overlapLinePoint = (vector, origin, point, func = excludeL, epsilon = EPSILON) => {
 	const p2p = subtract(point, origin);

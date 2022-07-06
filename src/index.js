@@ -29,9 +29,10 @@ import * as convexHull from "./geometry/convex-hull";
 import * as pleat from "./geometry/pleat";
 import * as polygons from "./geometry/polygons";
 import * as radial from "./geometry/radial";
-import * as splitPolygon from "./geometry/split-polygon";
-import * as straightSkeleton from "./geometry/straight-skeleton";
+import splitConvexPolygon from "./geometry/split-polygon";
+import straightSkeleton from "./geometry/straight-skeleton";
 
+import * as generalIntersect from "./intersection/general";
 import intersect from "./intersection/intersect";
 import overlap from "./intersection/overlap";
 import enclosingPolygonPolygon from "./intersection/enclose-polygons";
@@ -78,13 +79,12 @@ math.core = Object.assign(
 	pleat,
 	polygons,
 	radial,
-	splitPolygon,
-	straightSkeleton,
 
 	matrix2,
 	matrix3,
 	nearest,
 	parameterize,
+	generalIntersect,
 	{
 		enclosingPolygonPolygon,
 		intersectConvexPolygonLine,
@@ -98,6 +98,8 @@ math.core = Object.assign(
 		overlapLinePoint,
 		clipLineConvexPolygon,
 		clipPolygonPolygon,
+		splitConvexPolygon,
+		straightSkeleton,
 	},
 );
 

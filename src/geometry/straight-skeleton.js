@@ -122,7 +122,7 @@ const recurseSkeleton = (points, lines, bisectors) => {
  *  - your polygon points are sorted counter-clockwise
  * @linkcode Math ./src/geometry/straight-skeleton.js 123
  */
-export const straightSkeleton = (points) => {
+const straightSkeleton = (points) => {
 	// first time running this function, create the 2nd and 3rd parameters
 	// convert the edges of the polygons into lines
 	const lines = points
@@ -146,3 +146,5 @@ export const straightSkeleton = (points) => {
 	// console.log("ss points", points_clone, points);
 	return recurseSkeleton([...points], lines, bisectors);
 };
+
+export default straightSkeleton;

@@ -89,6 +89,7 @@ const getMinMax = (numbers, func, scaled_epsilon) => {
  * @param {function} [fnLine=includeL] function to determine line/ray/segment,
  * and inclusive or exclusive.
  * @param {number} [epsilon=1e-6] optional epsilon
+ * @linkcode Math ./src/geometry/clip-line-polygon.js 92
  */
 const clipLineConvexPolygon = (
 	poly,
@@ -109,7 +110,11 @@ const clipLineConvexPolygon = (
 	// and the valid inclusive/exclusive function
 	// todo: this line hardcodes the parameterization that segments and rays are cropping
 	// their lowest point at 0 and highest (if segment) at 1
-	const ends_clip = ends.map(t => fnLine(t) ? t : (t < 0.5 ? 0 : 1));
+	const clip_fn = (t) => {
+		if (fnLine(t)) { return t; }
+		return t < 0.5 ? 0 : 1;
+	};
+	const ends_clip = ends.map(clip_fn);
 	// if endpoints are the same, exit
 	if (Math.abs(ends_clip[0] - ends_clip[1]) < (epsilon * 2) / magnitude(vector)) {
 		return undefined;

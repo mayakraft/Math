@@ -10,7 +10,7 @@ module.exports = [{
 	input,
 	output: {
 		name,
-		file: "math.es6.js",
+		file: "math.es.js",
 		format: "es",
 		banner,
 	},
@@ -25,9 +25,9 @@ module.exports = [{
 	plugins: [
 		babel({
 			babelHelpers: "bundled",
-			presets: ["@babel/preset-env"]
+			presets: ["@babel/preset-env"],
 		}),
 		cleanup(),
 		terser(),
-	]
+	],
 }];

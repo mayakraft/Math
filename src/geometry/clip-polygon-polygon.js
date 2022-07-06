@@ -12,29 +12,33 @@ import { EPSILON } from "../algebra/constants";
  * @param {number[][]} polygon2 an array of points, where each point is an array of numbers.
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number[][]} a polygon as an array of points.
+ * @linkcode Math ./src/geometry/clip-polygon-polygon.js 15
  */
 const clipPolygonPolygon = (polygon1, polygon2, epsilon = EPSILON) => {
-	var cp1, cp2, s, e;
+	let cp1;
+	let cp2;
+	let s;
+	let e;
 	const inside = (p) => (
 		(cp2[0] - cp1[0]) * (p[1] - cp1[1])) > ((cp2[1] - cp1[1]) * (p[0] - cp1[0]) + epsilon
 	);
 	const intersection = () => {
-		var dc = [ cp1[0] - cp2[0], cp1[1] - cp2[1] ],
-			dp = [s[0] - e[0], s[1] - e[1] ],
-			n1 = cp1[0] * cp2[1] - cp1[1] * cp2[0],
-			n2 = s[0] * e[1] - s[1] * e[0], 
-			n3 = 1.0 / (dc[0] * dp[1] - dc[1] * dp[0]);
-			// console.log("intersection res", [(n1*dp[0] - n2*dc[0]) * n3, (n1*dp[1] - n2*dc[1]) * n3]);
-		return [(n1*dp[0] - n2*dc[0]) * n3, (n1*dp[1] - n2*dc[1]) * n3];
+		const dc = [cp1[0] - cp2[0], cp1[1] - cp2[1]];
+		const dp = [s[0] - e[0], s[1] - e[1]];
+		const n1 = cp1[0] * cp2[1] - cp1[1] * cp2[0];
+		const n2 = s[0] * e[1] - s[1] * e[0];
+		const n3 = 1.0 / (dc[0] * dp[1] - dc[1] * dp[0]);
+		// console.log("intersection res", [(n1*dp[0] - n2*dc[0]) * n3, (n1*dp[1] - n2*dc[1]) * n3]);
+		return [(n1 * dp[0] - n2 * dc[0]) * n3, (n1 * dp[1] - n2 * dc[1]) * n3];
 	};
-	var outputList = polygon1;
-	cp1 = polygon2[polygon2.length-1];
-	for (var j in polygon2) {
+	let outputList = polygon1;
+	cp1 = polygon2[polygon2.length - 1];
+	for (let j in polygon2) {
 		cp2 = polygon2[j];
-		var inputList = outputList;
+		const inputList = outputList;
 		outputList = [];
 		s = inputList[inputList.length - 1];
-		for (var i in inputList) {
+		for (let i in inputList) {
 			e = inputList[i];
 			if (inside(e)) {
 				if (!inside(s)) {

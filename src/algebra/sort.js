@@ -30,6 +30,7 @@ export const sortPointsAlongVector2 = (points, vector) => points
  * @param {numbers} [epsilon=1e-6] an optional epsilon
  * @returns {numbers[][]} an array of arrays, each inner array containin indices.
  * each inner array represents clusters of values which lie within an epsilon.
+ * @linkcode Math ./src/algebra/sort.js 33
  */
 export const clusterIndicesOfSortedNumbers = (numbers, epsilon = EPSILON) => {
 	const clusters = [[0]];
@@ -46,7 +47,13 @@ export const clusterIndicesOfSortedNumbers = (numbers, epsilon = EPSILON) => {
 	return clusters;
 };
 /**
+ * @description radially sort point indices around the lowest-value point, clustering
+ * similarly-angled points within an epsilon. Within these clusters, the points are
+ * sorted by distance so the nearest point is listed first.
+ * @param {number[][]} points an array of points
+ * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number[][]} this returns indices in clusters.
+ * @linkcode Math ./src/algebra/sort.js 56
  */
 export const radialSortPointIndices = (points = [], epsilon = EPSILON) => {
 	const first = minimum2DPointIndex(points, epsilon);

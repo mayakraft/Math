@@ -44,6 +44,7 @@ export const smallestComparisonSearch = (obj, array, compare_func) => {
  * the smallest value within an epsilon.
  * @param {number[][]} vectors array of vectors
  * @returns {number[]} array of indices which all have the lowest X value.
+ * @linkcode Math ./src/algebra/nearest.js 47
  */
 const minimumXIndices = (vectors, compFn = fnEpsilonSort, epsilon = EPSILON) => {
 	// find the set of all vectors that share the smallest X value within an epsilon
@@ -63,6 +64,7 @@ const minimumXIndices = (vectors, compFn = fnEpsilonSort, epsilon = EPSILON) => 
  * @param {number[][]} points array of points
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number} the index of the point in the array with the smallest component values
+ * @linkcode Math ./src/algebra/nearest.js 67
  */
 export const minimum2DPointIndex = (points, epsilon = EPSILON) => {
 	// find the set of all points that share the smallest X value
@@ -80,7 +82,7 @@ export const minimum2DPointIndex = (points, epsilon = EPSILON) => {
  * @param {number[]} point the 2D point to test nearness to
  * @param {number[][]} array_of_points an array of 2D points to test against
  * @returns {number[]} one point from the array of points
- * @linkcode Math ./src/algebra/nearest.js 83
+ * @linkcode Math ./src/algebra/nearest.js 85
  */
 export const nearestPoint2 = (point, array_of_points) => {
 	// todo speed up with partitioning
@@ -92,7 +94,7 @@ export const nearestPoint2 = (point, array_of_points) => {
  * @param {number[]} point the point to test nearness to
  * @param {number[][]} array_of_points an array of points to test against
  * @returns {number[]} one point from the array of points
- * @linkcode Math ./src/algebra/nearest.js 95
+ * @linkcode Math ./src/algebra/nearest.js 97
  */
 export const nearestPoint = (point, array_of_points) => {
 	// todo speed up with partitioning
@@ -108,7 +110,7 @@ export const nearestPoint = (point, array_of_points) => {
  * for segments, greater than 0 for rays, or unbounded for lines.
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number[]} a point
- * @linkcode Math ./src/algebra/nearest.js 111
+ * @linkcode Math ./src/algebra/nearest.js 113
  */
 export const nearestPointOnLine = (vector, origin, point, limiterFunc, epsilon = EPSILON) => {
 	origin = resize(vector.length, origin);
@@ -127,7 +129,7 @@ export const nearestPointOnLine = (vector, origin, point, limiterFunc, epsilon =
  * @param {number[][]} polygon an array of points (which are arrays of numbers)
  * @param {number[]} point the point to test nearness to
  * @returns {number[]} a point
- * @linkcode Math ./src/algebra/nearest.js 130
+ * @linkcode Math ./src/algebra/nearest.js 132
  */
 export const nearestPointOnPolygon = (polygon, point) => {
 	const v = polygon
@@ -145,7 +147,7 @@ export const nearestPointOnPolygon = (polygon, point) => {
  * @param {number[]} origin the origin of the circle as an array of numbers.
  * @param {number[]} point the point to test nearness to
  * @returns {number[]} a point
- * @linkcode Math ./src/algebra/nearest.js 148
+ * @linkcode Math ./src/algebra/nearest.js 150
  */
 export const nearestPointOnCircle = (radius, origin, point) => (
 	add(origin, scale(normalize(subtract(point, origin)), radius)));

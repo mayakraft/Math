@@ -28,7 +28,8 @@ import Matrix from "./matrix/matrix";
 // }
 // keys are one letter to shrink minified compile size
 
-const Definitions = Object.assign({},
+const Definitions = Object.assign(
+	{},
 	Vector,
 	Line,
 	Ray,

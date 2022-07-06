@@ -311,8 +311,12 @@ export const counterClockwiseSectors2 = function () {
  * @param {number[]} p1 the middle point
  * @param {number[]} p2 the end point
  * @param {number} [epsilon=1e-6] optional epsilon
- * @returns {number|undefined} "1": counter-clockwise turn, "-1": clockwise turn,
- * "0": collinear, "undefined": collinear but with a 180 degree turn.
+ * @returns {number|undefined} with 4 possible results:
+ * - "0": collinear, no turn, forward
+ * - "1": counter-clockwise turn, 0+epsilon < x < 180-epsilon
+ * - "-1": clockwise turn, 0-epsilon > x > -180+epsilon
+ * - "undefined": collinear but with a 180 degree turn.
+ * @linkcode Math ./src/geometry/radial.js 319
  */
 export const threePointTurnDirection = (p0, p1, p2, epsilon = EPSILON) => {
 	const v = normalize2(subtract2(p1, p0));
