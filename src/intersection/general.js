@@ -16,6 +16,7 @@ import {
  * @param {boolean} [inclusive=false] if the point is the same as the endpoints
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {boolean} true if the point lies collinear and between the other two points.
+ * @linkcode Math ./src/intersection/general.js 19
  */
 export const collinearBetween = (p0, p1, p2, inclusive = false, epsilon = EPSILON) => {
 	const similar = [p0, p2]

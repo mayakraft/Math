@@ -1,3 +1,4 @@
+const { test, expect } = require("@jest/globals");
 const math = require("../math");
 
 test("overlap method", () => {
@@ -55,7 +56,6 @@ test("overlap method", () => {
 		vector2.overlap(vector3),
 	].forEach(overlap => expect(overlap).toBe(true));
 });
-
 
 test("point on line", () => {
 	expect(math.core.overlapLinePoint([5, 5], [0, 0], [2, 2])).toBe(true);
@@ -136,13 +136,12 @@ test("overlap.point_on_segment_inclusive", () => {
 	)).toBe(false);
 });
 
-
 test("point on line epsilon", () => {
 
 });
 
 test("point in poly", () => {
-	const poly = [[1,0], [0,1], [-1,0], [0,-1]];
+	const poly = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 	expect(math.core.overlapConvexPolygonPoint(poly, [0.0, 0.0])).toBe(true);
 	expect(math.core.overlapConvexPolygonPoint(poly, [0.999, 0.0])).toBe(true);
 	expect(math.core.overlapConvexPolygonPoint(poly, [0.9999999999, 0.0])).toBe(false);
@@ -162,7 +161,7 @@ test("point in poly", () => {
 });
 
 test("convex point in poly inclusive", () => {
-	const poly = [[1,0], [0,1], [-1,0], [0,-1]];
+	const poly = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 	expect(math.core.overlapConvexPolygonPoint(poly, [0.0, 0.0], math.core.include))
 		.toBe(true);
 	expect(math.core.overlapConvexPolygonPoint(poly, [0.999, 0.0], math.core.include))
@@ -202,7 +201,7 @@ test("convex point in poly inclusive", () => {
 });
 
 test("convex point in poly exclusive", () => {
-	const poly = [[1,0], [0,1], [-1,0], [0,-1]];
+	const poly = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 	expect(math.core.overlapConvexPolygonPoint(poly, [0.0, 0.0], math.core.exclude))
 		.toBe(true);
 	expect(math.core.overlapConvexPolygonPoint(poly, [0.999, 0.0], math.core.exclude))
@@ -246,18 +245,84 @@ test("overlap lines", () => {
 	const b0 = [5, 0];
 	const b1 = [2, 2];
 
-	expect(math.core.overlapLineLine(aV, aP, bV, bP, math.core.includeL, math.core.includeL)).toBe(true);
-	expect(math.core.overlapLineLine(aV, aP, bV, bP, math.core.includeL, math.core.includeR)).toBe(true);
-	expect(math.core.overlapLineLine(aV, aP, math.core.subtract(b1, b0), b0, math.core.includeL, math.core.includeS)).toBe(false);
-	expect(math.core.overlapLineLine(aV, aP, bV, bP, math.core.includeR, math.core.includeR)).toBe(true);
-	expect(math.core.overlapLineLine(aV, aP, math.core.subtract(b1, b0), b0, math.core.includeR, math.core.includeS)).toBe(false);
-	expect(math.core.overlapLineLine(math.core.subtract(a1, a0), a0, math.core.subtract(b1, b0), b0, math.core.includeS, math.core.includeS)).toBe(false);
-	expect(math.core.overlapLineLine(aV, aP, bV, bP, math.core.excludeL, math.core.excludeL)).toBe(true);
-	expect(math.core.overlapLineLine(aV, aP, bV, bP, math.core.excludeL, math.core.excludeR)).toBe(true);
-	expect(math.core.overlapLineLine(aV, aP, math.core.subtract(b1, b0), b0, math.core.excludeL, math.core.excludeS)).toBe(false);
-	expect(math.core.overlapLineLine(aV, aP, bV, bP, math.core.excludeR, math.core.excludeR)).toBe(true);
-	expect(math.core.overlapLineLine(aV, aP, math.core.subtract(b1, b0), b0, math.core.excludeR, math.core.excludeS)).toBe(false);
-	expect(math.core.overlapLineLine(math.core.subtract(a1, a0), a0, math.core.subtract(b1, b0), b0, math.core.excludeS, math.core.excludeS)).toBe(false);
+	expect(
+		math.core.overlapLineLine(aV, aP, bV, bP, math.core.includeL, math.core.includeL),
+	).toBe(true);
+	expect(
+		math.core.overlapLineLine(aV, aP, bV, bP, math.core.includeL, math.core.includeR),
+	).toBe(true);
+	expect(
+		math.core.overlapLineLine(
+			aV,
+			aP,
+			math.core.subtract(b1, b0),
+			b0,
+			math.core.includeL,
+			math.core.includeS,
+		),
+	).toBe(false);
+	expect(
+		math.core.overlapLineLine(aV, aP, bV, bP, math.core.includeR, math.core.includeR),
+	).toBe(true);
+	expect(
+		math.core.overlapLineLine(
+			aV,
+			aP,
+			math.core.subtract(b1, b0),
+			b0,
+			math.core.includeR,
+			math.core.includeS,
+		),
+	).toBe(false);
+	expect(
+		math.core.overlapLineLine(
+			math.core.subtract(a1, a0),
+			a0,
+			math.core.subtract(b1, b0),
+			b0,
+			math.core.includeS,
+			math.core.includeS,
+		),
+	).toBe(false);
+	expect(
+		math.core.overlapLineLine(aV, aP, bV, bP, math.core.excludeL, math.core.excludeL),
+	).toBe(true);
+	expect(
+		math.core.overlapLineLine(aV, aP, bV, bP, math.core.excludeL, math.core.excludeR),
+	).toBe(true);
+	expect(
+		math.core.overlapLineLine(
+			aV,
+			aP,
+			math.core.subtract(b1, b0),
+			b0,
+			math.core.excludeL,
+			math.core.excludeS,
+		),
+	).toBe(false);
+	expect(
+		math.core.overlapLineLine(aV, aP, bV, bP, math.core.excludeR, math.core.excludeR),
+	).toBe(true);
+	expect(
+		math.core.overlapLineLine(
+			aV,
+			aP,
+			math.core.subtract(b1, b0),
+			b0,
+			math.core.excludeR,
+			math.core.excludeS,
+		),
+	).toBe(false);
+	expect(
+		math.core.overlapLineLine(
+			math.core.subtract(a1, a0),
+			a0,
+			math.core.subtract(b1, b0),
+			b0,
+			math.core.excludeS,
+			math.core.excludeS,
+		),
+	).toBe(false);
 });
 // if we choose to bring back exclusive / inclusive polygon overlap
 // test("convex polygons overlap with point inside each other", () => {
@@ -285,9 +350,9 @@ test("overlap lines", () => {
 // });
 // until then, exclusive only
 test("convex polygons overlap", () => {
-	const poly1 = [[1,0], [0,1], [-1,0]];  // top
-	const poly2 = [[0,1], [-1,0], [0,-1]]; // left
-	const poly3 = [[1,0], [0,1], [0,-1]];  // right
+	const poly1 = [[1, 0], [0, 1], [-1, 0]]; // top
+	const poly2 = [[0, 1], [-1, 0], [0, -1]]; // left
+	const poly3 = [[1, 0], [0, 1], [0, -1]]; // right
 	// exclusive
 	expect(math.core.overlapConvexPolygons(poly1, poly2)).toBe(true);
 	expect(math.core.overlapConvexPolygons(poly2, poly3)).toBe(false);
@@ -295,9 +360,9 @@ test("convex polygons overlap", () => {
 });
 
 test("enclosingPolygonPolygon", () => {
-	const poly1 = [[1,0], [0,1], [-1,0], [0,-1]];
-	const poly2 = [[10,0], [0,10], [-10,0], [0,-10]];
-	const poly3 = [[8,8], [-8,8], [-8,-8], [8,-8]];
+	const poly1 = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+	const poly2 = [[10, 0], [0, 10], [-10, 0], [0, -10]];
+	const poly3 = [[8, 8], [-8, 8], [-8, -8], [8, -8]];
 	expect(math.core.enclosingPolygonPolygon(poly2, poly1)).toBe(true);
 	expect(math.core.enclosingPolygonPolygon(poly3, poly1)).toBe(true);
 	// todo, this should be false i think
@@ -305,4 +370,3 @@ test("enclosingPolygonPolygon", () => {
 	expect(math.core.enclosingPolygonPolygon(poly1, poly2)).toBe(false);
 	expect(math.core.enclosingPolygonPolygon(poly1, poly3)).toBe(false);
 });
-

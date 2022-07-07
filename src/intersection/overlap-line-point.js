@@ -19,7 +19,7 @@ import { excludeL } from "../algebra/functions";
  * @param {number} [epsilon=1e-6] an optional epsilon with a default value of 1e-6
  * @returns {boolean} is the point collinear to the line, and in the case of ray/segment,
  * does the point lie within the bounds of the ray/segment?
- * @linkcode Math ./src/algebra/vectors.js 287
+ * @linkcode Math ./src/intersection/overlap-line-point.js 22
  */
 const overlapLinePoint = (vector, origin, point, func = excludeL, epsilon = EPSILON) => {
 	const p2p = subtract(point, origin);

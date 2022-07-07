@@ -1,3 +1,4 @@
+const { test, expect } = require("@jest/globals");
 const math = require("../math");
 
 const equalTest = (a, b) => expect(JSON.stringify(a))
@@ -17,7 +18,7 @@ test("resize empty", () => {
 test("resize undefined", () => {
 	try {
 		math.core.resize(3);
-	} catch(err) {
+	} catch (err) {
 		expect(err).not.toBe(undefined);
 	}
 });
@@ -72,69 +73,69 @@ test("cleanNumber invalid input", () => {
 test("semi flatten arrays", () => {
 	equalTest(
 		[[0, 1, 2], [2, 3, 4]],
-		math.core.semiFlattenArrays([0, 1, 2], [2, 3, 4])
+		math.core.semiFlattenArrays([0, 1, 2], [2, 3, 4]),
 	);
 	equalTest(
 		[[0, 1, 2], [2, 3, 4]],
-		math.core.semiFlattenArrays([[0, 1, 2]], [[2, 3, 4]])
+		math.core.semiFlattenArrays([[0, 1, 2]], [[2, 3, 4]]),
 	);
 	equalTest(
 		[[0, 1, 2], [2, 3, 4]],
-		math.core.semiFlattenArrays([[[0, 1, 2]], [[2, 3, 4]]])
+		math.core.semiFlattenArrays([[[0, 1, 2]], [[2, 3, 4]]]),
 	);
 	equalTest(
 		[[0, 1, 2], [2, 3, 4]],
-		math.core.semiFlattenArrays([[[[0, 1, 2]], [[2, 3, 4]]]])
+		math.core.semiFlattenArrays([[[[0, 1, 2]], [[2, 3, 4]]]]),
 	);
 	equalTest(
 		[[[0], [1], [2]], [2, 3, 4]],
-		math.core.semiFlattenArrays([[[[0], [1], [2]]], [[2, 3, 4]]])
+		math.core.semiFlattenArrays([[[[0], [1], [2]]], [[2, 3, 4]]]),
 	);
 	equalTest(
 		[[[0], [1], [2]], [2, 3, 4]],
-		math.core.semiFlattenArrays([[[[[[0]]], [[[1]]], [2]]], [[2, 3, 4]]])
+		math.core.semiFlattenArrays([[[[[[0]]], [[[1]]], [2]]], [[2, 3, 4]]]),
 	);
 });
 
 test("flatten arrays", () => {
 	equalTest(
 		[1],
-		math.core.flattenArrays([[[1]], []])
+		math.core.flattenArrays([[[1]], []]),
 	);
 	equalTest(
 		[1, 2, 3, 4],
-		math.core.flattenArrays([[[1, 2, 3, 4]]])
+		math.core.flattenArrays([[[1, 2, 3, 4]]]),
 	);
 	equalTest(
 		[1, 2, 3, 4],
-		math.core.flattenArrays(1, 2, 3, 4)
+		math.core.flattenArrays(1, 2, 3, 4),
 	);
 	equalTest(
 		[1, 2, 3, 4, 2, 4],
-		math.core.flattenArrays([1, 2, 3, 4], [2, 4])
+		math.core.flattenArrays([1, 2, 3, 4], [2, 4]),
 	);
 	equalTest(
 		[1, 2, 3, 4, 6, 7, 6],
-		math.core.flattenArrays([1, 2, 3, 4], [6, 7], 6)
+		math.core.flattenArrays([1, 2, 3, 4], [6, 7], 6),
 	);
 	equalTest(
 		[1, 2, 3, 4, 6, 7, 6, 2, 4, 5],
-		math.core.flattenArrays([1, 2, 3, 4], [6, 7], 6, 2, 4, 5)
+		math.core.flattenArrays([1, 2, 3, 4], [6, 7], 6, 2, 4, 5),
 	);
 	equalTest(
 		[{ x: 5, y: 3 }],
-		math.core.flattenArrays({ x: 5, y: 3 })
+		math.core.flattenArrays({ x: 5, y: 3 }),
 	);
 	equalTest(
 		[{ x: 5, y: 3 }],
-		math.core.flattenArrays([[{ x: 5, y: 3 }]])
+		math.core.flattenArrays([[{ x: 5, y: 3 }]]),
 	);
 	equalTest(
 		[1, 2, 3, 4, 5, 6],
-		math.core.flattenArrays([[[1], [2, 3]]], 4, [5, 6])
+		math.core.flattenArrays([[[1], [2, 3]]], 4, [5, 6]),
 	);
 	equalTest(
 		[undefined, undefined],
-		math.core.flattenArrays([[[undefined, [[undefined]]]]])
+		math.core.flattenArrays([[[undefined, [[undefined]]]]]),
 	);
 });

@@ -1,4 +1,3 @@
-import babel from "@rollup/plugin-babel";
 import cleanup from "rollup-plugin-cleanup";
 import { terser } from "rollup-plugin-terser";
 
@@ -6,15 +5,7 @@ const input = "src/index.js";
 const name = "math";
 const banner = "/* Math (c) Kraft, MIT License */";
 
-module.exports = [{
-	input,
-	output: {
-		name,
-		file: "math.es.js",
-		format: "es",
-		banner,
-	},
-}, {
+export default [{
 	input,
 	output: {
 		name,
@@ -22,12 +13,22 @@ module.exports = [{
 		format: "umd",
 		banner,
 	},
-	plugins: [
-		babel({
-			babelHelpers: "bundled",
-			presets: ["@babel/preset-env"],
-		}),
-		cleanup(),
-		terser(),
-	],
+	plugins: [cleanup(), terser()],
+}, {
+	input,
+	output: {
+		name,
+		file: "math.module.js",
+		format: "es",
+		banner,
+	},
+	plugins: [cleanup()],
+}, {
+	input,
+	output: {
+		name,
+		file: "math.module.comments.js",
+		format: "es",
+		banner,
+	},
 }];

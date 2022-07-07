@@ -1,3 +1,4 @@
+const { test, expect } = require("@jest/globals");
 const math = require("../math");
 
 /**
@@ -65,4 +66,3 @@ test("equivalent vectors", () => {
 	expect(math.core.fnEpsilonEqualVectors([1.000000001, 0], [1])).toBe(true);
 	expect(math.core.fnEpsilonEqualVectors([1.000000001, 0], [1, 0])).toBe(true);
 });
-

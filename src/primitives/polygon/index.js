@@ -5,7 +5,7 @@ import methods from "../shared/polygon";
 import { semiFlattenArrays } from "../../types/resize";
 import { include, exclude } from "../../algebra/functions";
 import { subtract } from "../../algebra/vectors";
-import { convexHullPoints } from "../../geometry/convex-hull";
+import { convexHull } from "../../geometry/convex-hull";
 import { makePolygonCircumradius } from "../../geometry/polygons";
 
 export default {
@@ -49,7 +49,7 @@ export default {
 				return this.constructor(makePolygonCircumradius(...arguments));
 			},
 			convexHull: function () {
-				return this.constructor(convexHullPoints(...arguments));
+				return this.constructor(convexHull(...arguments));
 			},
 		},
 	},

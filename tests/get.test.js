@@ -1,17 +1,18 @@
+const { test, expect } = require("@jest/globals");
 const math = require("../math");
 
 const equalTest = (a, b) => expect(JSON.stringify(a))
 	.toBe(JSON.stringify(b));
 
 test("get with real types", () => {
-	const vector = math.vector(1,2,3);
-	const matrix = math.matrix(1,2,3,4);
-	const line = math.line(1,2);
-	const ray = math.ray(1,2);
-	const segment = math.segment([1,2],[3,4]);
+	const vector = math.vector(1, 2, 3);
+	const matrix = math.matrix(1, 2, 3, 4);
+	const line = math.line(1, 2);
+	const ray = math.ray(1, 2);
+	const segment = math.segment([1, 2], [3, 4]);
 	const circle = math.circle(1);
-	const rect = math.rect(2,4);
-	const ellipse = math.ellipse(1,2);
+	const rect = math.rect(2, 4);
+	const ellipse = math.ellipse(1, 2);
 	expect(math.core.getVector(vector)[2]).toBe(3);
 	// expect(math.core.getVectorOfVectors(segment)[0]).toBe(1);
 	expect(math.core.getSegment(segment)[0][1]).toBe(2);
@@ -24,51 +25,51 @@ test("get with real types", () => {
 test("getVector", () => {
 	equalTest(
 		[1, 2, 3, 4],
-		math.core.getVector([[[1, 2, 3, 4]]])
+		math.core.getVector([[[1, 2, 3, 4]]]),
 	);
 	equalTest(
 		[1, 2, 3, 4],
-		math.core.getVector(1, 2, 3, 4)
+		math.core.getVector(1, 2, 3, 4),
 	);
 	equalTest(
 		[1, 2, 3, 4, 2, 4],
-		math.core.getVector([1, 2, 3, 4], [2, 4])
+		math.core.getVector([1, 2, 3, 4], [2, 4]),
 	);
 	equalTest(
 		[1, 2, 3, 4, 6, 7, 6],
-		math.core.getVector([1, 2, 3, 4], [6, 7], 6)
+		math.core.getVector([1, 2, 3, 4], [6, 7], 6),
 	);
 	equalTest(
 		[1, 2, 3, 4, 6, 7, 6, 2, 4, 5],
-		math.core.getVector([1, 2, 3, 4], [6, 7], 6, 2, 4, 5)
+		math.core.getVector([1, 2, 3, 4], [6, 7], 6, 2, 4, 5),
 	);
 	equalTest(
 		[5, 3],
-		math.core.getVector({ x: 5, y: 3 })
+		math.core.getVector({ x: 5, y: 3 }),
 	);
 	equalTest(
 		[5, 3],
-		math.core.getVector([[[{ x: 5, y: 3 }]]])
+		math.core.getVector([[[{ x: 5, y: 3 }]]]),
 	);
 	equalTest(
 		[5, 3],
-		math.core.getVector([[[5, 3]]])
+		math.core.getVector([[[5, 3]]]),
 	);
 	equalTest(
 		[5, 3],
-		math.core.getVector([[[5], [3]]])
+		math.core.getVector([[[5], [3]]]),
 	);
 	equalTest(
 		[5, 3],
-		math.core.getVector([[[5]], [[3]]])
+		math.core.getVector([[[5]], [[3]]]),
 	);
 	equalTest(
 		[5, 3],
-		math.core.getVector([[[5]]], [[[3]]])
+		math.core.getVector([[[5]]], [[[3]]]),
 	);
 	equalTest(
 		[5, 3],
-		math.core.getVector([[[5]]], 3)
+		math.core.getVector([[[5]]], 3),
 	);
 });
 
@@ -83,24 +84,42 @@ test("getLine", () => {
 });
 
 test("getVectorOfVectors", () => {
-	equalTest([[1, 2], [3, 4]],
-		math.core.getVectorOfVectors({ x: 1, y: 2 }, { x: 3, y: 4 }));
-	equalTest([[1, 2], [3, 4]],
-		math.core.getVectorOfVectors([[[{ x: 1, y: 2 }, { x: 3, y: 4 }]]]));
-	equalTest([[1, 2], [3, 4]],
-		math.core.getVectorOfVectors([[[1, 2], [3, 4]]]));
-	equalTest([[1, 2], [3, 4]],
-		math.core.getVectorOfVectors([[[1, 2]], [[3, 4]]]));
-	equalTest([[1, 2], [3, 4]],
-		math.core.getVectorOfVectors([[[1, 2]]], [[[3, 4]]]));
-	equalTest([[1], [2], [3], [4]],
-		math.core.getVectorOfVectors([[[1], [2], [3], [4]]]));
-	equalTest([[1], [2], [3], [4]],
-		math.core.getVectorOfVectors([[[1]], [[2]], [[3]], [[4]]]));
-	equalTest([[1], [2], [3], [4]],
-		math.core.getVectorOfVectors([[[1]]], 2, 3, 4));
-	equalTest([[1], [2], [3], [4]],
-		math.core.getVectorOfVectors([[[1, 2, 3, 4]]]));
+	equalTest(
+		[[1, 2], [3, 4]],
+		math.core.getVectorOfVectors({ x: 1, y: 2 }, { x: 3, y: 4 }),
+	);
+	equalTest(
+		[[1, 2], [3, 4]],
+		math.core.getVectorOfVectors([[[{ x: 1, y: 2 }, { x: 3, y: 4 }]]]),
+	);
+	equalTest(
+		[[1, 2], [3, 4]],
+		math.core.getVectorOfVectors([[[1, 2], [3, 4]]]),
+	);
+	equalTest(
+		[[1, 2], [3, 4]],
+		math.core.getVectorOfVectors([[[1, 2]], [[3, 4]]]),
+	);
+	equalTest(
+		[[1, 2], [3, 4]],
+		math.core.getVectorOfVectors([[[1, 2]]], [[[3, 4]]]),
+	);
+	equalTest(
+		[[1], [2], [3], [4]],
+		math.core.getVectorOfVectors([[[1], [2], [3], [4]]]),
+	);
+	equalTest(
+		[[1], [2], [3], [4]],
+		math.core.getVectorOfVectors([[[1]], [[2]], [[3]], [[4]]]),
+	);
+	equalTest(
+		[[1], [2], [3], [4]],
+		math.core.getVectorOfVectors([[[1]]], 2, 3, 4),
+	);
+	equalTest(
+		[[1], [2], [3], [4]],
+		math.core.getVectorOfVectors([[[1, 2, 3, 4]]]),
+	);
 });
 
 test("getSegment", () => {

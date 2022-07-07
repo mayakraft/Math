@@ -55,9 +55,10 @@ export const convexHullIndices = (points = [], includeCollinear = false, epsilon
  * @param {number[][]} points array of points, each point is an array of numbers
  * @param {boolean} [includeCollinear=false] true to include points collinear along the boundary
  * @param {number} [epsilon=1e-6] undefined behavior when larger than 0.01
- * @returns {number[]} the convex hull as a list of points
- * @linkcode Math ./src/geometry/convex-hull.js 59
+ * @returns {number[][]} the convex hull as a list of points,
+ * where each point is an array of numbers
+ * @linkcode Math ./src/geometry/convex-hull.js 60
  */
-export const convexHullPoints = (points = [], includeCollinear = false, epsilon = EPSILON) => (
+export const convexHull = (points = [], includeCollinear = false, epsilon = EPSILON) => (
 	convexHullIndices(points, includeCollinear, epsilon)
 		.map(i => points[i]));

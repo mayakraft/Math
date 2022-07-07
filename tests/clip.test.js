@@ -1,39 +1,64 @@
+const { test, expect } = require("@jest/globals");
 const math = require("../math");
 
-const exclude = math.core.exclude;
-const include = math.core.include;
-const includeL = math.core.includeL;
-const excludeL = math.core.excludeL;
-const includeR = math.core.includeR;
-const excludeR = math.core.excludeR;
-const includeS = math.core.includeS;
-const excludeS = math.core.excludeS;
+const {
+	exclude,
+	include,
+	includeL,
+	excludeL,
+	includeR,
+	excludeR,
+	includeS,
+	excludeS,
+} = math.core;
 
 const clip_line_in_convex_poly_inclusive = function () {
-	return math.core.clipLineConvexPolygon(...arguments,
-		math.core.include, math.core.includeL);
+	return math.core.clipLineConvexPolygon(
+		...arguments,
+		math.core.include,
+		math.core.includeL,
+	);
 };
 const clip_line_in_convex_poly_exclusive = function () {
-	return math.core.clipLineConvexPolygon(...arguments,
-		math.core.exclude, math.core.excludeL);
+	return math.core.clipLineConvexPolygon(
+		...arguments,
+		math.core.exclude,
+		math.core.excludeL,
+	);
 };
 const clip_ray_in_convex_poly_inclusive = function () {
-	return math.core.clipLineConvexPolygon(...arguments,
-		math.core.include, math.core.includeR);
+	return math.core.clipLineConvexPolygon(
+		...arguments,
+		math.core.include,
+		math.core.includeR,
+	);
 };
 const clip_ray_in_convex_poly_exclusive = function () {
-	return math.core.clipLineConvexPolygon(...arguments,
-		math.core.exclude, math.core.excludeR);
+	return math.core.clipLineConvexPolygon(
+		...arguments,
+		math.core.exclude,
+		math.core.excludeR,
+	);
 };
 const clip_segment_in_convex_poly_inclusive = function (poly, s0, s1) {
 	const vector = [s1[0] - s0[0], s1[1] - s0[1]];
-	return math.core.clipLineConvexPolygon(poly, vector, s0,
-		math.core.include, math.core.includeS);
+	return math.core.clipLineConvexPolygon(
+		poly,
+		vector,
+		s0,
+		math.core.include,
+		math.core.includeS,
+	);
 };
 const clip_segment_in_convex_poly_exclusive = function (poly, s0, s1) {
 	const vector = [s1[0] - s0[0], s1[1] - s0[1]];
-	return math.core.clipLineConvexPolygon(poly, vector, s0,
-		math.core.exclude, math.core.excludeS);
+	return math.core.clipLineConvexPolygon(
+		poly,
+		vector,
+		s0,
+		math.core.exclude,
+		math.core.excludeS,
+	);
 };
 
 test("collinear line", () => {
@@ -68,7 +93,7 @@ test("collinear line", () => {
 
 test("vertex-incident line", () => {
 	// all cases will return undefined
-	const quad = math.polygon([1,0], [0,1], [-1,0], [0,-1]);
+	const quad = math.polygon([1, 0], [0, 1], [-1, 0], [0, -1]);
 	const lineHoriz1 = [[1, 0], [-1, 1]];
 	const lineHoriz2 = [[1, 0], [-1, -1]];
 	const lineVert1 = [[0, 1], [-1, -1]];
@@ -140,7 +165,7 @@ test("collinear core, segment", () => {
 
 test("vertex-incident segment", () => {
 	// all cases will return undefined
-	const quad = math.polygon([1,0], [0,1], [-1,0], [0,-1]);
+	const quad = math.polygon([1, 0], [0, 1], [-1, 0], [0, -1]);
 	const horiz1 = [[1, 0], [-1, 1]];
 	const horiz2 = [[1, 0], [-1, -1]];
 	const vert1 = [[0, 1], [-1, -1]];
@@ -157,7 +182,6 @@ test("vertex-incident segment", () => {
 	];
 	results.forEach(res => expect(res).toBe(undefined));
 });
-
 
 test("collinear core, ray", () => {
 	const rect = math.rect(1, 1);
@@ -189,7 +213,7 @@ test("collinear core, ray", () => {
 
 test("vertex-incident ray", () => {
 	// all cases will return undefined
-	const quad = math.polygon([1,0], [0,1], [-1,0], [0,-1]);
+	const quad = math.polygon([1, 0], [0, 1], [-1, 0], [0, -1]);
 	const horiz1 = [[1, 0], [-1, 1]];
 	const horiz2 = [[1, 0], [-1, -1]];
 	const vert1 = [[0, 1], [-1, -1]];
@@ -222,11 +246,13 @@ test("collinear core, segment", () => {
 test("collinear core, segment, spanning multiple points", () => {
 	const poly = [[0, 0], [5, 0], [5, 1], [5, 2], [5, 3], [5, 4], [5, 5], [0, 5]];
 	const seg = [[5, -1], [5, 6]];
-	const res = math.core.clipLineConvexPolygon(poly,
+	const res = math.core.clipLineConvexPolygon(
+		poly,
 		math.core.subtract(seg[1], seg[0]),
 		seg[0],
 		math.core.include,
-		math.core.includeS);
+		math.core.includeS,
+	);
 	expect(res[0][0]).toBe(5);
 	expect(res[0][1]).toBe(0);
 	expect(res[1][0]).toBe(5);
@@ -329,7 +355,8 @@ test("core clip", () => {
 	const poly = [...math.rect(-1, -1, 2, 2)];
 	const vector = [1, 1];
 	const origin = [0, 0];
-	[ clip_line_in_convex_poly_inclusive(poly, vector, origin),
+	[
+		clip_line_in_convex_poly_inclusive(poly, vector, origin),
 		clip_ray_in_convex_poly_exclusive(poly, vector, origin),
 		clip_ray_in_convex_poly_inclusive(poly, vector, origin),
 		clip_segment_in_convex_poly_exclusive(poly, vector, origin),
@@ -343,7 +370,8 @@ test("core no clip", () => {
 	const origin = [10, 0];
 	const seg0 = [10, 0];
 	const seg1 = [0, 10];
-	[ clip_line_in_convex_poly_inclusive(poly, vector, origin),
+	[
+		clip_line_in_convex_poly_inclusive(poly, vector, origin),
 		clip_ray_in_convex_poly_exclusive(poly, vector, origin),
 		clip_ray_in_convex_poly_inclusive(poly, vector, origin),
 		clip_segment_in_convex_poly_exclusive(poly, seg0, seg1),
@@ -366,7 +394,8 @@ test("core clip segments exclusive", () => {
 		[0.2, 0.2],
 		[10, 10],
 		math.core.include,
-		math.core.includeS);
+		math.core.includeS,
+	);
 	expect(result1).toBe(undefined);
 	// inside and collinear
 	const seg2 = [[0, 0], [1, 0]];
@@ -375,7 +404,8 @@ test("core clip segments exclusive", () => {
 		[1, 0],
 		[0, 0],
 		math.core.include,
-		math.core.includeS);
+		math.core.includeS,
+	);
 	expect(math.core.fnEpsilonEqualVectors(seg2[0], result2[0])).toBe(true);
 	expect(math.core.fnEpsilonEqualVectors(seg2[1], result2[1])).toBe(true);
 	// outside and collinear
@@ -386,7 +416,8 @@ test("core clip segments exclusive", () => {
 		[5, 0],
 		[1, 0],
 		math.core.exclude,
-		math.core.excludeS);
+		math.core.excludeS,
+	);
 	expect(result3).toBe(undefined);
 
 	// inside and collinear
@@ -420,7 +451,8 @@ test("core clip segments inclusive", () => {
 		[5, 0],
 		[1, 0],
 		math.core.include,
-		math.core.includeS);
+		math.core.includeS,
+	);
 	expect(result3).toBe(undefined);
 	// inside and collinear
 	const seg4 = [[-1, 0], [1, 0]];
@@ -428,4 +460,3 @@ test("core clip segments inclusive", () => {
 	expect(math.core.fnEpsilonEqualVectors(seg4[0], result4[0])).toBe(true);
 	expect(math.core.fnEpsilonEqualVectors(seg4[1], result4[1])).toBe(true);
 });
-

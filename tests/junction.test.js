@@ -1,3 +1,4 @@
+const { test, expect } = require("@jest/globals");
 const math = require("../math");
 
 test("empty", () => { expect(true).toBe(true); });
@@ -42,4 +43,3 @@ test("static fromRadians 2", () => {
 	expect(junction.vectors[2].y).toBeCloseTo(-1);
 });
 */
-

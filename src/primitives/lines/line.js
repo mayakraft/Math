@@ -54,7 +54,7 @@ export default {
 		}),
 
 		S: Object.assign({
-			fromNormalDistance: function() {
+			fromNormalDistance: function () {
 				return this.constructor(uniqueLineToRayLine(arguments[0]));
 			},
 		}, Static),

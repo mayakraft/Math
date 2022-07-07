@@ -1,8 +1,9 @@
+const { test, expect } = require("@jest/globals");
 const math = require("../math");
 
 // static
 test("static fromPoints", () => {
-	const r = math.rect.fromPoints([1,1], [3,2]);
+	const r = math.rect.fromPoints([1, 1], [3, 2]);
 	expect(r.width).toBe(2);
 	expect(r.height).toBe(1);
 });
@@ -53,7 +54,7 @@ test("contains", () => {
 });
 
 test("svg", () => {
-	const r = math.rect(1,2,3,4);
+	const r = math.rect(1, 2, 3, 4);
 	expect(r.svgPath()).toBe("M1 2h3v4h-3Z");
 });
 
