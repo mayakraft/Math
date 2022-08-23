@@ -104,10 +104,10 @@ export default {
 				const transform = makeMatrix3Rotate(radians, vector, origin);
 				return array_assign(this, multiplyMatrices3(this, transform));
 			},
-			scale: function (amount) {
+			scale: function (...args) {
 				return array_assign(
 					this,
-					multiplyMatrices3(this, makeMatrix3Scale(amount)),
+					multiplyMatrices3(this, makeMatrix3Scale(...args)),
 				);
 			},
 			reflectZ: function (vector, origin) {

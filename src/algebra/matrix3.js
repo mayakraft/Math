@@ -236,19 +236,13 @@ export const makeMatrix3Rotate = (angle, vector = [0, 0, 1], origin = [0, 0, 0])
  * @returns {number[]} one 3x4 matrix
  * @linkcode Math ./src/algebra/matrix3.js 237
  */
-export const makeMatrix3Scale = (scale = 1, origin = [0, 0, 0]) => [
-	scale,
-	0,
-	0,
-	0,
-	scale,
-	0,
-	0,
-	0,
-	scale,
-	scale * -origin[0] + origin[0],
-	scale * -origin[1] + origin[1],
-	scale * -origin[2] + origin[2],
+export const makeMatrix3Scale = (scale = [1, 1, 1], origin = [0, 0, 0]) => [
+	scale[0], 0, 0,
+	0, scale[1], 0,
+	0, 0, scale[2],
+	scale[0] * -origin[0] + origin[0],
+	scale[1] * -origin[1] + origin[1],
+	scale[2] * -origin[2] + origin[2],
 ];
 /**
  * @description make a 3x4 representing a reflection across a line in the XY plane

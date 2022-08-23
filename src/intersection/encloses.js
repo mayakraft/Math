@@ -6,6 +6,19 @@ import {
 } from "../algebra/functions";
 import overlapConvexPolygonPoint from "./overlap-polygon-point";
 /**
+ *
+ */
+export const enclosingBoundingBoxes = (outer, inner) => {
+	const dimensions = Math.min(outer.min.length, inner.min.length);
+	for (let d = 0; d < dimensions; d += 1) {
+		// if one minimum is above the other's maximum, or visa versa
+		if (inner.min[d] < outer.min[d] || inner.max[d] > outer.max[d]) {
+			return false;
+		}
+	}
+	return true;
+};
+/**
  * @description does one polygon (outer) completely enclose another polygon (inner),
  * currently, this only works for convex polygons.
  * @param {number[][]} outer a 2D convex polygon
@@ -14,9 +27,9 @@ import overlapConvexPolygonPoint from "./overlap-polygon-point";
  * @returns {boolean} is the "inner" polygon completely inside the "outer"
  *
  * @todo: should one function be include and the other exclude?
- * @linkcode Math ./src/intersection/enclose-polygons.js 17
+ * @linkcode Math ./src/intersection/encloses.js 30
  */
-const enclosingPolygonPolygon = (outer, inner, fnInclusive = include) => {
+export const enclosingPolygonPolygon = (outer, inner, fnInclusive = include) => {
 	// these points should be *not inside* (false)
 	const outerGoesInside = outer
 		.map(p => overlapConvexPolygonPoint(inner, p, fnInclusive))
@@ -27,5 +40,3 @@ const enclosingPolygonPolygon = (outer, inner, fnInclusive = include) => {
 		.reduce((a, b) => a && b, true);
 	return (!outerGoesInside && innerGoesOutside);
 };
-
-export default enclosingPolygonPolygon;

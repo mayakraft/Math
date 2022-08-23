@@ -21,6 +21,7 @@ import * as algebra from "./algebra/vectors";
 import * as sort from "./algebra/sort";
 import * as matrix2 from "./algebra/matrix2";
 import * as matrix3 from "./algebra/matrix3";
+import * as matrix4 from "./algebra/matrix4";
 import * as nearest from "./algebra/nearest";
 
 import clipLineConvexPolygon from "./geometry/clip-line-polygon";
@@ -33,9 +34,9 @@ import splitConvexPolygon from "./geometry/split-polygon";
 import straightSkeleton from "./geometry/straight-skeleton";
 
 import * as generalIntersect from "./intersection/general";
+import * as encloses from "./intersection/encloses";
 import intersect from "./intersection/intersect";
 import overlap from "./intersection/overlap";
-import enclosingPolygonPolygon from "./intersection/enclose-polygons";
 import intersectConvexPolygonLine from "./intersection/intersect-polygon-line";
 import intersectCircleCircle from "./intersection/intersect-circle-circle";
 import intersectCircleLine from "./intersection/intersect-circle-line";
@@ -82,11 +83,12 @@ math.core = Object.assign(
 
 	matrix2,
 	matrix3,
+	matrix4,
 	nearest,
 	parameterize,
 	generalIntersect,
+	encloses,
 	{
-		enclosingPolygonPolygon,
 		intersectConvexPolygonLine,
 		intersectCircleCircle,
 		intersectCircleLine,

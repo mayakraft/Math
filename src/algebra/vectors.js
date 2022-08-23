@@ -42,6 +42,13 @@ export const magnitude = v => Math.sqrt(v
  */
 export const magnitude2 = v => Math.sqrt(v[0] * v[0] + v[1] * v[1]);
 /**
+ * @description compute the magnitude a 3D vector
+ * @param {number[]} v one 3D vector
+ * @returns {number} one scalar
+ * @linkcode
+ */
+export const magnitude3 = v => Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+/**
  * @description compute the square-magnitude an n-dimensional vector
  * @param {number[]} v one vector, n-dimensions
  * @returns {number} one scalar
@@ -69,6 +76,16 @@ export const normalize = (v) => {
 export const normalize2 = (v) => {
 	const m = magnitude2(v);
 	return m === 0 ? v : [v[0] / m, v[1] / m];
+};
+/**
+ * @description normalize the input vector and return a new vector as a copy
+ * @param {number[]} v one 3D vector
+ * @returns {number[]} one 3D vector
+ * @linkcode
+ */
+export const normalize3 = (v) => {
+	const m = magnitude3(v);
+	return m === 0 ? v : [v[0] / m, v[1] / m, v[2] / m];
 };
 /**
  * @description scale an input vector by one number, return a copy.
@@ -105,6 +122,15 @@ export const add = (v, u) => v.map((n, i) => n + (u[i] || 0));
  */
 export const add2 = (v, u) => [v[0] + u[0], v[1] + u[1]];
 /**
+ * @description add two vectors and return the sum as another vector,
+ * do not modify the input vectors.
+ * @param {number[]} v one 3D vector
+ * @param {number[]} u one 3D vector
+ * @returns {number[]} one 3D vector
+ * @linkcode Math ./src/algebra/vectors.js 104
+ */
+export const add3 = (v, u) => [v[0] + u[0], v[1] + u[1], v[2] + u[2]];
+/**
  * @description subtract the second vector from the first, return the result as a copy.
  * @param {number[]} v one vector, n-dimensions
  * @param {number[]} u one vector, n-dimensions
@@ -120,6 +146,14 @@ export const subtract = (v, u) => v.map((n, i) => n - (u[i] || 0));
  * @linkcode Math ./src/algebra/vectors.js 120
  */
 export const subtract2 = (v, u) => [v[0] - u[0], v[1] - u[1]];
+/**
+ * @description subtract the second vector from the first, return the result as a copy.
+ * @param {number[]} v one 3D vector
+ * @param {number[]} u one 3D vector
+ * @returns {number[]} one 3D vector
+ * @linkcode Math ./src/algebra/vectors.js 120
+ */
+export const subtract3 = (v, u) => [v[0] - u[0], v[1] - u[1], v[2] - u[2]];
 /**
  * @description compute the dot product of two vectors.
  * @param {number[]} v one vector, n-dimensions

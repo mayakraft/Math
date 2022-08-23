@@ -91,13 +91,13 @@ export const makeMatrix2Translate = (x = 0, y = 0) => identity2x2.concat(x, y);
  * @returns {number[]} matrix
  * @linkcode Math ./src/algebra/matrix2.js 92
  */
-export const makeMatrix2Scale = (x, y, origin = [0, 0]) => [
-	x,
+export const makeMatrix2Scale = (scale = [1, 1], origin = [0, 0]) => [
+	scale[0],
 	0,
 	0,
-	y,
-	x * -origin[0] + origin[0],
-	y * -origin[1] + origin[1],
+	scale[1],
+	scale[0] * -origin[0] + origin[0],
+	scale[1] * -origin[1] + origin[1],
 ];
 /**
  * @param angle of rotation, origin of transformation

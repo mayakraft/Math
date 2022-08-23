@@ -59,7 +59,7 @@ test("rotate", () => {
 	expect(m[1]).toBeCloseTo(m[5]);
 });
 test("scale", () => {
-	expect(math.matrix().scale(0.5)[0]).toBe(0.5);
+	expect(math.matrix().scale([0.5, 0.5, 0.5])[0]).toBe(0.5);
 });
 test("combine operations", () => {
 	const ident = math.matrix();
@@ -80,13 +80,13 @@ test("transform", () => {
 });
 test("transformVector", () => {
 	const vector = math.vector(1, 2, 3);
-	expect(math.matrix().scale(0.5).transformVector(vector).x).toBeCloseTo(0.5);
-	expect(math.matrix().scale(0.5).transformVector(vector).y).toBeCloseTo(1);
-	expect(math.matrix().scale(0.5).transformVector(vector).z).toBeCloseTo(1.5);
+	expect(math.matrix().scale([0.5, 0.5, 0.5]).transformVector(vector).x).toBeCloseTo(0.5);
+	expect(math.matrix().scale([0.5, 0.5, 0.5]).transformVector(vector).y).toBeCloseTo(1);
+	expect(math.matrix().scale([0.5, 0.5, 0.5]).transformVector(vector).z).toBeCloseTo(1.5);
 });
 test("transformLine", () => {
 	const line = math.line([0.707, 0.707, 0], [1, 0, 0]);
-	const result = math.matrix().scale(0.5).transformLine(line);
+	const result = math.matrix().scale([0.5, 0.5, 0.5]).transformLine(line);
 	expect(result.vector.x).toBeCloseTo(0.3535);
 	expect(result.vector.y).toBeCloseTo(0.3535);
 	expect(result.vector.z).toBeCloseTo(0);
@@ -115,7 +115,7 @@ test("matrix 2 core", () => {
 	expect(r1[0]).toBe(1);
 	expect(r1[4]).toBe(0);
 	expect(r1[5]).toBe(0);
-	const r2 = math.core.makeMatrix2Scale(2, -1);
+	const r2 = math.core.makeMatrix2Scale([2, -1]);
 	expect(r2[0]).toBe(2);
 	expect(r2[3]).toBe(-1);
 });
