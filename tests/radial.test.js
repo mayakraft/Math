@@ -250,6 +250,44 @@ test("counterClockwiseSubsect2", () => {
 		.toBeCloseTo(Math.sqrt(2) / 2);
 });
 
+test("clockwiseSubsectRadians", () => {
+	testEqualVectors(math.clockwiseSubsectRadians(3, 3, 0), [4, 5]);
+	testEqualVectors(math.clockwiseSubsectRadians(3, 2, -1), [3, 4]);
+	testEqualVectors(math.clockwiseSubsectRadians(4, 2, -2), [3, 4, 5]);
+
+	expect(math.clockwiseSubsectRadians(4, -Math.PI, 0)[0])
+		.toBeCloseTo(-Math.PI * (3 / 4));
+	expect(math.clockwiseSubsectRadians(4, -Math.PI, 0)[1])
+		.toBeCloseTo(-Math.PI * (2 / 4));
+	expect(math.clockwiseSubsectRadians(4, -Math.PI, 0)[2])
+		.toBeCloseTo(-Math.PI * (1 / 4));
+
+	expect(math.clockwiseSubsectRadians(2, -Math.PI, 0)[0])
+		.toBeCloseTo(-Math.PI / 2);
+	expect(math.clockwiseSubsectRadians(1, -Math.PI, 0).length)
+		.toBe(0);
+});
+
+test("clockwiseSubsect2", () => {
+	expect(math.clockwiseSubsect2(2, [0, 1], [1, 0])[0][0])
+		.toBeCloseTo(-Math.sqrt(2) / 2);
+	expect(math.clockwiseSubsect2(2, [0, 1], [1, 0])[0][1])
+		.toBeCloseTo(Math.sqrt(2) / 2);
+
+	expect(math.clockwiseSubsect2(4, [-1, 0], [1, 0])[0][0])
+		.toBeCloseTo(-Math.sqrt(2) / 2);
+	expect(math.clockwiseSubsect2(4, [-1, 0], [1, 0])[0][1])
+		.toBeCloseTo(-Math.sqrt(2) / 2);
+	expect(math.clockwiseSubsect2(4, [-1, 0], [1, 0])[1][0])
+		.toBeCloseTo(0);
+	expect(math.clockwiseSubsect2(4, [-1, 0], [1, 0])[1][1])
+		.toBeCloseTo(-1);
+	expect(math.clockwiseSubsect2(4, [-1, 0], [1, 0])[2][0])
+		.toBeCloseTo(Math.sqrt(2) / 2);
+	expect(math.clockwiseSubsect2(4, [-1, 0], [1, 0])[2][1])
+		.toBeCloseTo(-Math.sqrt(2) / 2);
+});
+
 test("threePointTurnDirection", () => {
 	expect(math.threePointTurnDirection([0, 0], [1, 0], [2, 0])).toBe(0);
 	expect(math.threePointTurnDirection([0, 0], [1, 0], [2, 1])).toBe(1);

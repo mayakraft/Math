@@ -5,22 +5,39 @@ import { EPSILON } from "./constants.js";
 import {
 	normalize2,
 	distance2,
+	dot,
 	dot2,
 	subtract2,
 } from "./vectors.js";
 import { fnEpsilonEqual } from "./functions.js";
 import { minimum2DPointIndex } from "./nearest.js";
 /**
- * @description sort an array of 2D points along a 2D vector.
+ * @description Provide a comparison function and use it to sort an array
+ * of any type of object against a single item. The returned array will be
+ * the indices of the original array in sorted order.
+ * @param {any[]} array an array of elements to be sorted
+ * @param {any} item the item which to compare against all array elements
+ * @param {function} compareFn the comparison function to be run against
+ * every element in the array with the input item parameter, placing
+ * the array element first, the input item second: fn(arrayElem, paramItem)
+ * @returns {number[]} the indices of the original array, in sorted order
+ * @linkcode
+ */
+export const sortAgainstItem = (array, item, compareFn) => array
+	.map((el, i) => ({ i, n: compareFn(el, item) }))
+	.sort((a, b) => a.n - b.n)
+	.map(a => a.i);
+/**
+ * @description Sort an array of n-dimensional points along an
+ * n-dimensional vector, get the indices in sorted order.
  * @param {number[][]} points array of points (which are arrays of numbers)
- * @param {number[]} vector one 2D vector
- * @returns {number[][]} the same points, sorted.
+ * @param {number[]} vector one vector
+ * @returns {number[]} a list of sorted indices to the points array.
  * @linkcode Math ./src/algebra/sort.js 18
  */
-export const sortPointsAlongVector2 = (points, vector) => points
-	.map(point => ({ point, d: point[0] * vector[0] + point[1] * vector[1] }))
-	.sort((a, b) => a.d - b.d)
-	.map(a => a.point);
+export const sortPointsAlongVector = (points, vector) => (
+	sortAgainstItem(points, vector, dot)
+);
 /**
  * @description given an array of already-sorted values (so that comparisons only
  * need to happen between neighboring items), cluster the numbers which are similar
@@ -47,7 +64,7 @@ export const clusterIndicesOfSortedNumbers = (numbers, epsilon = EPSILON) => {
 	return clusters;
 };
 /**
- * @description radially sort point indices around the lowest-value point, clustering
+ * @description radially sort 2D point indices around the lowest-value point, clustering
  * similarly-angled points within an epsilon. Within these clusters, the points are
  * sorted by distance so the nearest point is listed first.
  * @param {number[][]} points an array of points
@@ -55,7 +72,7 @@ export const clusterIndicesOfSortedNumbers = (numbers, epsilon = EPSILON) => {
  * @returns {number[][]} this returns indices in clusters.
  * @linkcode Math ./src/algebra/sort.js 56
  */
-export const radialSortPointIndices = (points = [], epsilon = EPSILON) => {
+export const radialSortPointIndices2 = (points = [], epsilon = EPSILON) => {
 	const first = minimum2DPointIndex(points, epsilon);
 	const angles = points
 		.map(p => subtract2(p, points[first]))

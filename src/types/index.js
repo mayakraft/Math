@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import typeOf from "./typeof.js";
+// import typeOf from "./typeof.js";
 import * as resizers from "./resize.js";
 import * as getters from "./get.js";
 import * as parameterize from "./parameterize.js";
@@ -10,7 +10,7 @@ export default {
 	...resizers,
 	...parameterize,
 	...getters,
-	typeOf,
+	// typeOf,
 };
 
 /**

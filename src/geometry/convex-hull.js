@@ -2,7 +2,7 @@
  * Math (c) Kraft
  */
 import { EPSILON } from "../algebra/constants.js";
-import { radialSortPointIndices } from "../algebra/sort.js";
+import { radialSortPointIndices2 } from "../algebra/sort.js";
 import { threePointTurnDirection } from "./radial.js";
 /**
  * @description mirror an array and join it at the end, except
@@ -26,7 +26,7 @@ export const convexHullIndices = (points = [], includeCollinear = false, epsilon
 	// vertices so that it walks both directions, ie: 1,6,5,13,5,6,1.
 	// half of them will be ignored due to being rejected from the
 	// threePointTurnDirection call, and the correct half will be saved.
-	const order = radialSortPointIndices(points, epsilon)
+	const order = radialSortPointIndices2(points, epsilon)
 		.map(arr => (arr.length === 1 ? arr : mirror(arr)))
 		.flat();
 	order.push(order[0]);

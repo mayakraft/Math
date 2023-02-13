@@ -11,15 +11,9 @@ import {
 	normalize,
 } from "./vectors.js";
 import { multiplyMatrices4 } from "./matrix4.js";
-// const quaternionFromTwoVectors = (v1, v2) => {
-// 	// q.w = Math.sqrt((v1.Length ^ 2) * (v2.Length ^ 2)) + dotproduct(v1, v2);
-// 	const xyz = ear.math.cross3(v1, v2);
-// 	const w = Math.sqrt(ear.math.magSquared(v1) * ear.math.magSquared(v2)) + ear.math.dot(v1, v2);
-// 	return ear.math.normalize([...xyz, w]);
-// };
 /**
  * @description Create a quaternion which represents a rotation from
- * one 3D vector to another.
+ * one 3D vector to another. Quaternion encoded as 0:x, 1:y, 2:z, 3:w.
  * @param {number[]} u a 3D vector
  * @param {number[]} v a 3D vector
  * @returns {number[]} a quaternion representing a rotation
@@ -31,7 +25,8 @@ export const quaternionFromTwoVectors = (u, v) => {
 	return normalize(q);
 };
 /**
- * @description Create a 4x4 matrix from a quaternion
+ * @description Create a 4x4 matrix from a quaternion,
+ * the quaternion encoded as 0:x, 1:y, 2:z, 3:w.
  * @param {number[]} quaternion a quaternion
  * @returns {number[]} a 4x4 matrix (array of 16 numbers)
  */

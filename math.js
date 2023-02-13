@@ -217,15 +217,18 @@ const nearestPointOnPolygon = (polygon, point) => {
 		.map((p, i, arr) => subtract(arr[(i + 1) % arr.length], p));
 	return polygon
 		.map((p, i) => nearestPointOnLine(v[i], p, point, clampSegment))
-		.map((p, i) => ({ point: p, i, distance: distance(p, point) }))
+		.map((p, edge) => ({ point: p, edge, distance: distance(p, point) }))
 		.sort((a, b) => a.distance - b.distance)
 		.shift();
 };
 const nearestPointOnCircle = (radius, origin, point) => (
-	add(origin, scale(normalize(subtract(point, origin)), radius)));const nearest=/*#__PURE__*/Object.freeze({__proto__:null,smallestComparisonSearch,minimum2DPointIndex,nearestPoint2,nearestPoint,nearestPointOnLine,nearestPointOnPolygon,nearestPointOnCircle});const sortPointsAlongVector2 = (points, vector) => points
-	.map(point => ({ point, d: point[0] * vector[0] + point[1] * vector[1] }))
-	.sort((a, b) => a.d - b.d)
-	.map(a => a.point);
+	add(origin, scale(normalize(subtract(point, origin)), radius)));const nearest=/*#__PURE__*/Object.freeze({__proto__:null,smallestComparisonSearch,minimum2DPointIndex,nearestPoint2,nearestPoint,nearestPointOnLine,nearestPointOnPolygon,nearestPointOnCircle});const sortAgainstItem = (array, item, compareFn) => array
+	.map((el, i) => ({ i, n: compareFn(el, item) }))
+	.sort((a, b) => a.n - b.n)
+	.map(a => a.i);
+const sortPointsAlongVector = (points, vector) => (
+	sortAgainstItem(points, vector, dot)
+);
 const clusterIndicesOfSortedNumbers = (numbers, epsilon = EPSILON) => {
 	const clusters = [[0]];
 	let clusterIndex = 0;
@@ -239,7 +242,7 @@ const clusterIndicesOfSortedNumbers = (numbers, epsilon = EPSILON) => {
 	}
 	return clusters;
 };
-const radialSortPointIndices = (points = [], epsilon = EPSILON) => {
+const radialSortPointIndices2 = (points = [], epsilon = EPSILON) => {
 	const first = minimum2DPointIndex(points, epsilon);
 	const angles = points
 		.map(p => subtract2(p, points[first]))
@@ -257,7 +260,7 @@ const radialSortPointIndices = (points = [], epsilon = EPSILON) => {
 				.map(i => ({ i, len: distance2(points[i], points[first]) }))
 				.sort((a, b) => a.len - b.len)
 				.map(el => el.i))));
-};const sortMethods=/*#__PURE__*/Object.freeze({__proto__:null,sortPointsAlongVector2,clusterIndicesOfSortedNumbers,radialSortPointIndices});const identity2x2 = [1, 0, 0, 1];
+};const sortMethods=/*#__PURE__*/Object.freeze({__proto__:null,sortAgainstItem,sortPointsAlongVector,clusterIndicesOfSortedNumbers,radialSortPointIndices2});const identity2x2 = [1, 0, 0, 1];
 const identity2x3 = identity2x2.concat(0, 0);
 const multiplyMatrix2Vector2 = (matrix, vector) => [
 	matrix[0] * vector[0] + matrix[2] * vector[1] + matrix[4],
@@ -768,7 +771,7 @@ const threePointTurnDirection = (p0, p1, p2, epsilon = EPSILON) => {
 };const radialMethods=/*#__PURE__*/Object.freeze({__proto__:null,isCounterClockwiseBetween,clockwiseAngleRadians,counterClockwiseAngleRadians,clockwiseAngle2,counterClockwiseAngle2,clockwiseBisect2,counterClockwiseBisect2,clockwiseSubsectRadians,counterClockwiseSubsectRadians,clockwiseSubsect2,counterClockwiseSubsect2,bisectLines2,counterClockwiseOrderRadians,counterClockwiseOrder2,counterClockwiseSectorsRadians,counterClockwiseSectors2,threePointTurnDirection});const mirror = (arr) => arr.concat(arr.slice(0, -1).reverse());
 const convexHullIndices = (points = [], includeCollinear = false, epsilon = EPSILON) => {
 	if (points.length < 2) { return []; }
-	const order = radialSortPointIndices(points, epsilon)
+	const order = radialSortPointIndices2(points, epsilon)
 		.map(arr => (arr.length === 1 ? arr : mirror(arr)))
 		.flat();
 	order.push(order[0]);
@@ -1513,26 +1516,6 @@ const intersectCircleCircle = (c1_radius, c1_origin, c2_radius, c2_origin, epsil
 	overlapBoundingBoxes,
 	overlapLineLine,
 	overlapLinePoint,
-};const typeOf = function (obj) {
-	switch (obj.constructor.name) {
-	case "vector":
-	case "matrix":
-	case "segment":
-	case "ray":
-	case "line":
-	case "circle":
-	case "ellipse":
-	case "rect":
-	case "polygon": return obj.constructor.name;
-	}
-	if (typeof obj === "object") {
-		if (obj.radius != null) { return "circle"; }
-		if (obj.width != null) { return "rect"; }
-		if (obj.x != null || typeof obj[0] === "number") { return "vector"; }
-		if (obj[0] != null && obj[0].length && (typeof obj[0].x === "number" || typeof obj[0][0] === "number")) { return "segment"; }
-		if (obj.vector != null && obj.origin != null) { return "line"; }
-	}
-	return undefined;
 };const pointsToLine = (...args) => {
 	const points = getVectorOfVectors(...args);
 	return {
@@ -1553,7 +1536,6 @@ const uniqueLineToRayLine = ({ normal, distance }) => ({
 	...resizers,
 	...parameterize,
 	...getters,
-	typeOf,
 };const math = {
 	...algebra,
 	...geometry,

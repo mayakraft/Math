@@ -152,6 +152,7 @@ export const nearestPointOnLine = (vector, origin, point, limiterFunc, epsilon =
  * @param {number[][]} polygon an array of points (which are arrays of numbers)
  * @param {number[]} point the point to test nearness to
  * @returns {number[]} a point
+ * edge index matches vertices such that edge(N) = [vert(N), vert(N + 1)]
  * @linkcode Math ./src/algebra/nearest.js 133
  */
 export const nearestPointOnPolygon = (polygon, point) => {
@@ -159,7 +160,7 @@ export const nearestPointOnPolygon = (polygon, point) => {
 		.map((p, i, arr) => subtract(arr[(i + 1) % arr.length], p));
 	return polygon
 		.map((p, i) => nearestPointOnLine(v[i], p, point, clampSegment))
-		.map((p, i) => ({ point: p, i, distance: distance(p, point) }))
+		.map((p, edge) => ({ point: p, edge, distance: distance(p, point) }))
 		.sort((a, b) => a.distance - b.distance)
 		.shift();
 };
