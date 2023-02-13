@@ -1,13 +1,16 @@
-import { EPSILON } from "../algebra/constants.js";
+/**
+ * Math (c) Kraft
+ */
+import { EPSILON } from "../general/constants.js";
+import {
+	fnEpsilonEqual,
+	fnEpsilonEqualVectors,
+} from "../general/functions.js";
 import {
 	dot,
 	subtract,
 	normalize,
 } from "../algebra/vectors.js";
-import {
-	fnEpsilonEqual,
-	fnEpsilonEqualVectors,
-} from "../algebra/functions.js";
 /**
  * @description Check if a point is collinear and between two other points.
  * @param {number[]} p0 a segment point

@@ -9,10 +9,12 @@ import {
 	rotate90,
 	rotate270,
 } from "../algebra/vectors.js";
-import { boundingBox } from "../geometry/polygons.js";
 import { getVectorOfVectors } from "./get.js";
 /**
- *
+ * @description Give two points, create a vector-origin line representation
+ * of a line that passes through both points. This will work in n-dimensions.
+ * @param {number[][]} points two points, each point being an array of numbers.
+ * @returns {RayLine} an object with "vector" and "origin".
  */
 export const pointsToLine = (...args) => {
 	const points = getVectorOfVectors(...args);
@@ -21,11 +23,6 @@ export const pointsToLine = (...args) => {
 		origin: points[0],
 	};
 };
-// export const pointsToBoundingBox = (...args) => {
-// 	const box = boundingBox(getVectorOfVectors(...args));
-// 	return Constructors.rect(box.min[0], box.min[1], box.span[0], box.span[1]);
-// };
-
 /**
  * @notes in Robert Lang's U-D parameterization definition, U is defined
  * to be any vector made from an angle constrained between [0...180), meaning

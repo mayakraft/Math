@@ -1,6 +1,22 @@
 const { test, expect } = require("@jest/globals");
 const math = require("../math.js");
 
+const testEqualVectors = function (...args) {
+	expect(math.fnEpsilonEqualVectors(...args)).toBe(true);
+};
+
+test("nearest point", () => {
+	testEqualVectors([5, 5], math.nearestPoint2(
+		[10, 0],
+		[[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9]],
+	));
+	testEqualVectors([6, 6, 0], math.nearestPoint(
+		[10, 0, 0],
+		[[0, 0, 0], [1, 1, 0], [2, 2, 0], [3, 3, 0], [4, 4, 1],
+			[5, 5, 10], [6, 6, 0], [7, 7, 0], [8, 8, 0], [9, 9, 0]],
+	));
+});
+
 test("nearestPointOnPolygon", () => {
 	const polygon = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 	const result = math.nearestPointOnPolygon(polygon, [10, 10]);

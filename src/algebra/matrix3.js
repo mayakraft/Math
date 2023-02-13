@@ -5,10 +5,9 @@
  * 3x4 matrix methods. the fourth column is a translation vector
  * these methods depend on arrays of 12 items, 3x3 matrices won't work.
  */
-import { EPSILON } from "./constants.js";
-import { normalize } from "./vectors.js";
+import { EPSILON } from "../general/constants.js";
+import { normalize, resize } from "./vectors.js";
 import { makeMatrix2Reflect } from "./matrix2.js";
-import { resize } from "../types/resize.js";
 /**
  * @description the identity matrix for 3x3 matrices
  * @linkcode Math ./src/algebra/matrix3.js 13

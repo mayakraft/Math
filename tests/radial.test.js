@@ -25,13 +25,13 @@ test("isCounterClockwiseBetween", () => {
 test("interior angles", () => {
 	testEqualVectors(
 		[Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
-		[[1, 0], [0, 1], [-1, 0], [0, -1]].map((v, i, ar) => math
-			.counterClockwiseAngle2(v, ar[(i + 1) % ar.length])),
+		[[1, 0], [0, 1], [-1, 0], [0, -1]]
+			.map((v, i, ar) => math.counterClockwiseAngle2(v, ar[(i + 1) % ar.length])),
 	);
 	testEqualVectors(
 		[Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
-		[[1, 1], [-1, 1], [-1, -1], [1, -1]].map((v, i, ar) => math
-			.counterClockwiseAngle2(v, ar[(i + 1) % ar.length])),
+		[[1, 1], [-1, 1], [-1, -1], [1, -1]]
+			.map((v, i, ar) => math.counterClockwiseAngle2(v, ar[(i + 1) % ar.length])),
 	);
 });
 

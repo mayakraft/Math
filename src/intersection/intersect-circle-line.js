@@ -1,8 +1,8 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../algebra/constants.js";
-import { includeL } from "../algebra/functions.js";
+import { EPSILON } from "../general/constants.js";
+import { includeL } from "../general/functions.js";
 import {
 	subtract,
 	cross2,

@@ -1,14 +1,13 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../algebra/constants.js";
+import { EPSILON } from "../general/constants.js";
+import { exclude } from "../general/functions.js";
 import {
 	cross2,
 	subtract,
 	normalize,
 } from "../algebra/vectors.js";
-import { exclude } from "../algebra/functions.js";
-
 /**
  * exclusivity and inclusivity are flipped if the winding is flipped
  * these are intended for counter-clockwise winding.

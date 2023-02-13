@@ -10,7 +10,7 @@ import overlapLinePoint from "./overlap-line-point.js";
 import {
 	exclude, excludeL, excludeR, excludeS,
 	fnEpsilonEqualVectors,
-} from "../algebra/functions.js";
+} from "../general/functions.js";
 
 // all intersection functions expect primitives to be in a certain form
 // for example all lines are: vector, origin

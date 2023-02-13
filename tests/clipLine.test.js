@@ -1,16 +1,16 @@
 const { test, expect } = require("@jest/globals");
 const math = require("../math.js");
 
-const {
-	exclude,
-	include,
-	includeL,
-	excludeL,
-	includeR,
-	excludeR,
-	includeS,
-	excludeS,
-} = math;
+// const {
+// 	exclude,
+// 	include,
+// 	includeL,
+// 	excludeL,
+// 	includeR,
+// 	excludeR,
+// 	includeS,
+// 	excludeS,
+// } = math;
 
 const clip_line_in_convex_poly_inclusive = function () {
 	return math.clipLineConvexPolygon(
@@ -69,14 +69,54 @@ test("collinear line", () => {
 	const lineHoriz2 = [[1, 0], [0.5, 1]];
 	const lineVert1 = [[0, 1], [0, 0.5]];
 	const lineVert2 = [[0, 1], [1, 0.5]];
-	const result1 = math.clipLineConvexPolygon(rect, ...lineHoriz1, include, includeL);
-	const result2 = math.clipLineConvexPolygon(rect, ...lineHoriz2, include, includeL);
-	const result3 = math.clipLineConvexPolygon(rect, ...lineVert1, include, includeL);
-	const result4 = math.clipLineConvexPolygon(rect, ...lineVert2, include, includeL);
-	const result5 = math.clipLineConvexPolygon(rect, ...lineHoriz1, exclude, excludeL);
-	const result6 = math.clipLineConvexPolygon(rect, ...lineHoriz2, exclude, excludeL);
-	const result7 = math.clipLineConvexPolygon(rect, ...lineVert1, exclude, excludeL);
-	const result8 = math.clipLineConvexPolygon(rect, ...lineVert2, exclude, excludeL);
+	const result1 = math.clipLineConvexPolygon(
+		rect,
+		...lineHoriz1,
+		math.include,
+		math.includeL,
+	);
+	const result2 = math.clipLineConvexPolygon(
+		rect,
+		...lineHoriz2,
+		math.include,
+		math.includeL,
+	);
+	const result3 = math.clipLineConvexPolygon(
+		rect,
+		...lineVert1,
+		math.include,
+		math.includeL,
+	);
+	const result4 = math.clipLineConvexPolygon(
+		rect,
+		...lineVert2,
+		math.include,
+		math.includeL,
+	);
+	const result5 = math.clipLineConvexPolygon(
+		rect,
+		...lineHoriz1,
+		math.exclude,
+		math.excludeL,
+	);
+	const result6 = math.clipLineConvexPolygon(
+		rect,
+		...lineHoriz2,
+		math.exclude,
+		math.excludeL,
+	);
+	const result7 = math.clipLineConvexPolygon(
+		rect,
+		...lineVert1,
+		math.exclude,
+		math.excludeL,
+	);
+	const result8 = math.clipLineConvexPolygon(
+		rect,
+		...lineVert2,
+		math.exclude,
+		math.excludeL,
+	);
 	expect(result1.length).toBe(2);
 	expect(result2.length).toBe(2);
 	expect(result3.length).toBe(2);
@@ -99,14 +139,14 @@ test("vertex-incident line", () => {
 	const lineVert1 = [[0, 1], [-1, -1]];
 	const lineVert2 = [[0, 1], [1, -1]];
 	const results = [
-		math.clipLineConvexPolygon(quad, ...lineHoriz1, include, includeL),
-		math.clipLineConvexPolygon(quad, ...lineHoriz2, include, includeL),
-		math.clipLineConvexPolygon(quad, ...lineVert1, include, includeL),
-		math.clipLineConvexPolygon(quad, ...lineVert2, include, includeL),
-		math.clipLineConvexPolygon(quad, ...lineHoriz1, exclude, excludeL),
-		math.clipLineConvexPolygon(quad, ...lineHoriz2, exclude, excludeL),
-		math.clipLineConvexPolygon(quad, ...lineVert1, exclude, excludeL),
-		math.clipLineConvexPolygon(quad, ...lineVert2, exclude, excludeL),
+		math.clipLineConvexPolygon(quad, ...lineHoriz1, math.include, math.includeL),
+		math.clipLineConvexPolygon(quad, ...lineHoriz2, math.include, math.includeL),
+		math.clipLineConvexPolygon(quad, ...lineVert1, math.include, math.includeL),
+		math.clipLineConvexPolygon(quad, ...lineVert2, math.include, math.includeL),
+		math.clipLineConvexPolygon(quad, ...lineHoriz1, math.exclude, math.excludeL),
+		math.clipLineConvexPolygon(quad, ...lineHoriz2, math.exclude, math.excludeL),
+		math.clipLineConvexPolygon(quad, ...lineVert1, math.exclude, math.excludeL),
+		math.clipLineConvexPolygon(quad, ...lineVert2, math.exclude, math.excludeL),
 	];
 	results.forEach(res => expect(res).toBe(undefined));
 });
@@ -118,14 +158,14 @@ test("collinear core, segment", () => {
 	const segHoriz2 = [[1, 0], [-0.5, 0]];
 	const segVert1 = [[0, 1], [0, 0.5]];
 	const segVert2 = [[0, 1], [1, 0.5]];
-	const result1 = math.clipLineConvexPolygon(rect, ...segHoriz1, include, includeS);
-	const result2 = math.clipLineConvexPolygon(rect, ...segHoriz2, include, includeS);
-	const result3 = math.clipLineConvexPolygon(rect, ...segVert1, include, includeS);
-	const result4 = math.clipLineConvexPolygon(rect, ...segVert2, include, includeS);
-	const result5 = math.clipLineConvexPolygon(rect, ...segHoriz1, exclude, excludeS);
-	const result6 = math.clipLineConvexPolygon(rect, ...segHoriz2, exclude, excludeS);
-	const result7 = math.clipLineConvexPolygon(rect, ...segVert1, exclude, excludeS);
-	const result8 = math.clipLineConvexPolygon(rect, ...segVert2, exclude, excludeS);
+	const result1 = math.clipLineConvexPolygon(rect, ...segHoriz1, math.include, math.includeS);
+	const result2 = math.clipLineConvexPolygon(rect, ...segHoriz2, math.include, math.includeS);
+	const result3 = math.clipLineConvexPolygon(rect, ...segVert1, math.include, math.includeS);
+	const result4 = math.clipLineConvexPolygon(rect, ...segVert2, math.include, math.includeS);
+	const result5 = math.clipLineConvexPolygon(rect, ...segHoriz1, math.exclude, math.excludeS);
+	const result6 = math.clipLineConvexPolygon(rect, ...segHoriz2, math.exclude, math.excludeS);
+	const result7 = math.clipLineConvexPolygon(rect, ...segVert1, math.exclude, math.excludeS);
+	const result8 = math.clipLineConvexPolygon(rect, ...segVert2, math.exclude, math.excludeS);
 	expect(result1.length).toBe(2);
 	expect(result2.length).toBe(2);
 	expect(result3.length).toBe(2);
@@ -149,10 +189,10 @@ test("collinear core, segment", () => {
 	// remember these are VECTORS, ORIGIN
 	const segHoriz3 = [[0.5, 0], [0.25, 0]];
 	const segVert3 = [[0, 2], [0, -0.5]];
-	const result9 = math.clipLineConvexPolygon(rect, ...segHoriz3, include, includeS);
-	const result10 = math.clipLineConvexPolygon(rect, ...segVert3, include, includeS);
-	const result11 = math.clipLineConvexPolygon(rect, ...segHoriz3, exclude, excludeS);
-	const result12 = math.clipLineConvexPolygon(rect, ...segVert3, exclude, excludeS);
+	const result9 = math.clipLineConvexPolygon(rect, ...segHoriz3, math.include, math.includeS);
+	const result10 = math.clipLineConvexPolygon(rect, ...segVert3, math.include, math.includeS);
+	const result11 = math.clipLineConvexPolygon(rect, ...segHoriz3, math.exclude, math.excludeS);
+	const result12 = math.clipLineConvexPolygon(rect, ...segVert3, math.exclude, math.excludeS);
 	expect(result9[0][0]).toBe(0.25);
 	expect(result9[0][1]).toBe(0);
 	expect(result9[1][0]).toBe(0.75);
@@ -171,14 +211,14 @@ test("vertex-incident segment", () => {
 	const vert1 = [[0, 1], [-1, -1]];
 	const vert2 = [[0, 1], [1, -1]];
 	const results = [
-		math.clipLineConvexPolygon(quad, ...horiz1, include, includeS),
-		math.clipLineConvexPolygon(quad, ...horiz2, include, includeS),
-		math.clipLineConvexPolygon(quad, ...vert1, include, includeS),
-		math.clipLineConvexPolygon(quad, ...vert2, include, includeS),
-		math.clipLineConvexPolygon(quad, ...horiz1, exclude, excludeS),
-		math.clipLineConvexPolygon(quad, ...horiz2, exclude, excludeS),
-		math.clipLineConvexPolygon(quad, ...vert1, exclude, excludeS),
-		math.clipLineConvexPolygon(quad, ...vert2, exclude, excludeS),
+		math.clipLineConvexPolygon(quad, ...horiz1, math.include, math.includeS),
+		math.clipLineConvexPolygon(quad, ...horiz2, math.include, math.includeS),
+		math.clipLineConvexPolygon(quad, ...vert1, math.include, math.includeS),
+		math.clipLineConvexPolygon(quad, ...vert2, math.include, math.includeS),
+		math.clipLineConvexPolygon(quad, ...horiz1, math.exclude, math.excludeS),
+		math.clipLineConvexPolygon(quad, ...horiz2, math.exclude, math.excludeS),
+		math.clipLineConvexPolygon(quad, ...vert1, math.exclude, math.excludeS),
+		math.clipLineConvexPolygon(quad, ...vert2, math.exclude, math.excludeS),
 	];
 	results.forEach(res => expect(res).toBe(undefined));
 });
@@ -189,14 +229,14 @@ test("collinear core, ray", () => {
 	const rayHoriz2 = [[1, 0], [0.5, 1]];
 	const rayVert1 = [[0, 1], [0, 0.5]];
 	const rayVert2 = [[0, 1], [1, 0.5]];
-	const result1 = math.clipLineConvexPolygon(rect, ...rayHoriz1, include, includeR);
-	const result2 = math.clipLineConvexPolygon(rect, ...rayHoriz2, include, includeR);
-	const result3 = math.clipLineConvexPolygon(rect, ...rayVert1, include, includeR);
-	const result4 = math.clipLineConvexPolygon(rect, ...rayVert2, include, includeR);
-	const result5 = math.clipLineConvexPolygon(rect, ...rayHoriz1, exclude, excludeR);
-	const result6 = math.clipLineConvexPolygon(rect, ...rayHoriz2, exclude, excludeR);
-	const result7 = math.clipLineConvexPolygon(rect, ...rayVert1, exclude, excludeR);
-	const result8 = math.clipLineConvexPolygon(rect, ...rayVert2, exclude, excludeR);
+	const result1 = math.clipLineConvexPolygon(rect, ...rayHoriz1, math.include, math.includeR);
+	const result2 = math.clipLineConvexPolygon(rect, ...rayHoriz2, math.include, math.includeR);
+	const result3 = math.clipLineConvexPolygon(rect, ...rayVert1, math.include, math.includeR);
+	const result4 = math.clipLineConvexPolygon(rect, ...rayVert2, math.include, math.includeR);
+	const result5 = math.clipLineConvexPolygon(rect, ...rayHoriz1, math.exclude, math.excludeR);
+	const result6 = math.clipLineConvexPolygon(rect, ...rayHoriz2, math.exclude, math.excludeR);
+	const result7 = math.clipLineConvexPolygon(rect, ...rayVert1, math.exclude, math.excludeR);
+	const result8 = math.clipLineConvexPolygon(rect, ...rayVert2, math.exclude, math.excludeR);
 	expect(result1.length).toBe(2);
 	expect(result2.length).toBe(2);
 	expect(result3.length).toBe(2);
@@ -219,14 +259,14 @@ test("vertex-incident ray", () => {
 	const vert1 = [[0, 1], [-1, -1]];
 	const vert2 = [[0, 1], [1, -1]];
 	const results = [
-		math.clipLineConvexPolygon(quad, ...horiz1, include, includeR),
-		math.clipLineConvexPolygon(quad, ...horiz2, include, includeR),
-		math.clipLineConvexPolygon(quad, ...vert1, include, includeR),
-		math.clipLineConvexPolygon(quad, ...vert2, include, includeR),
-		math.clipLineConvexPolygon(quad, ...horiz1, exclude, excludeR),
-		math.clipLineConvexPolygon(quad, ...horiz2, exclude, excludeR),
-		math.clipLineConvexPolygon(quad, ...vert1, exclude, excludeR),
-		math.clipLineConvexPolygon(quad, ...vert2, exclude, excludeR),
+		math.clipLineConvexPolygon(quad, ...horiz1, math.include, math.includeR),
+		math.clipLineConvexPolygon(quad, ...horiz2, math.include, math.includeR),
+		math.clipLineConvexPolygon(quad, ...vert1, math.include, math.includeR),
+		math.clipLineConvexPolygon(quad, ...vert2, math.include, math.includeR),
+		math.clipLineConvexPolygon(quad, ...horiz1, math.exclude, math.excludeR),
+		math.clipLineConvexPolygon(quad, ...horiz2, math.exclude, math.excludeR),
+		math.clipLineConvexPolygon(quad, ...vert1, math.exclude, math.excludeR),
+		math.clipLineConvexPolygon(quad, ...vert2, math.exclude, math.excludeR),
 	];
 	results.forEach(res => expect(res).toBe(undefined));
 });

@@ -63,6 +63,24 @@ test("getLine", () => {
 	equalTest(math.getLine([1, 2], [2, 3]), { vector: [1, 2], origin: [2, 3] });
 	equalTest(math.getLine(), { vector: [], origin: [] });
 	equalTest(math.getLine({}), { vector: [], origin: [] });
+	equalTest(
+		math.getLine({ vector: [1], origin: [2] }),
+		{ vector: [1], origin: [2] },
+	);
+	equalTest(
+		math.getLine({ vector: [1, 2], origin: [2, 3] }),
+		{ vector: [1, 2], origin: [2, 3] },
+	);
+	equalTest(
+		math.getLine({ vector: [1] }),
+		{ vector: [1], origin: [] },
+	);
+	// "getLine" only looks for a "vector" key,
+	// this will result in an empty object
+	equalTest(
+		math.getLine({ origin: [1] }),
+		{ vector: [], origin: [] },
+	);
 });
 
 test("getVectorOfVectors", () => {

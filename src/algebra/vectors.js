@@ -1,12 +1,11 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "./constants.js";
+import { EPSILON } from "../general/constants.js";
 import {
 	fnSquare,
 	fnAdd,
-} from "./functions.js";
-
+} from "../general/functions.js";
 /**
  * algebra operations on vectors (mostly).
  *
@@ -24,7 +23,6 @@ import {
  * when a function name ends with a number (magnitude2) the input vector's
  * dimension is assumed to be this number.
  */
-
 /**
  * @description compute the magnitude an n-dimensional vector
  * @param {number[]} v one vector, n-dimensions
@@ -363,3 +361,37 @@ export const parallel = (v, u, epsilon = EPSILON) => parallelNormalized(
  */
 export const parallel2 = (v, u, epsilon = EPSILON) => Math
 	.abs(cross2(v, u)) < epsilon;
+/**
+ * @description Resize a vector to a particular length (duplicating it
+ * in memory in the process) by either lengthening or shortening it.
+ * In the case of lengthening, fill 0.
+ * @param {number} dimension the desired length
+ * @param {number[]} vector the vector to resize
+ * @returns {number[]} a copy of the vector resized to the desired length.
+ * @linkcode
+ */
+export const resize = (d, v) => (v.length === d
+	? v
+	: Array(d).fill(0).map((z, i) => (v[i] ? v[i] : z)));
+/**
+ * @description Make the two vectors match in dimension by appending the
+ * smaller vector with 0s to match the dimension of the larger vector.
+ * @param {number[]} a a vector
+ * @param {number[]} b a vector
+ * @param {number[][]} an array containing two vectors, a copy of
+ * each of the input parameters.
+ * @linkcode
+ */
+export const resizeUp = (a, b) => [a, b]
+	.map(v => resize(Math.max(a.length, b.length), v));
+/**
+ * @description Make the two vectors match in dimension by clamping the
+ * larger vector to match the dimension of the smaller vector.
+ * @param {number[]} a a vector
+ * @param {number[]} b a vector
+ * @param {number[][]} an array containing two vectors, a copy of
+ * each of the input parameters.
+ * @linkcode
+ */
+// export const resizeDown = (a, b) => [a, b]
+//   .map(v => resize(Math.min(a.length, b.length), v));

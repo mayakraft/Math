@@ -1,16 +1,13 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON, TWO_PI } from "../algebra/constants.js";
-import { cleanNumber } from "../types/resize.js";
-import {
-	fnAdd,
-} from "../algebra/functions.js";
+import { EPSILON, TWO_PI } from "../general/constants.js";
+import { fnAdd } from "../general/functions.js";
+import { cleanNumber } from "../general/numbers.js";
 import {
 	subtract,
 	parallel,
 } from "../algebra/vectors.js";
-
 /**
  * the radius parameter measures from the center to the midpoint of the edge
  * vertex-axis aligned

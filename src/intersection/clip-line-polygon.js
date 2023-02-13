@@ -1,13 +1,13 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../algebra/constants.js";
+import { EPSILON } from "../general/constants.js";
 import {
 	fnNotUndefined,
 	include,
 	includeL,
 	includeS,
-} from "../algebra/functions.js";
+} from "../general/functions.js";
 import {
 	normalize,
 	magnitude,
@@ -17,7 +17,7 @@ import {
 	scale,
 	flip,
 } from "../algebra/vectors.js";
-import overlapConvexPolygonPoint from "../intersection/overlap-polygon-point.js";
+import overlapConvexPolygonPoint from "./overlap-polygon-point.js";
 
 const lineLineParameter = (
 	lineVector,

@@ -1,12 +1,12 @@
 /**
  * Math (c) Kraft
  */
+import { EPSILON } from "../general/constants.js";
 import {
 	dot,
 	subtract,
 	rotate90,
 } from "../algebra/vectors.js";
-import { EPSILON } from "../algebra/constants.js";
 /**
  * @description find out if two convex polygons are overlapping by searching
  * for a dividing axis, which should be one side from one of the polygons.

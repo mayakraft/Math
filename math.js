@@ -12,7 +12,7 @@ const fnVec2Angle = v => Math.atan2(v[1], v[0]);
 const fnToVec2 = a => [Math.cos(a), Math.sin(a)];
 const fnEqual = (a, b) => a === b;
 const fnEpsilonEqual = (a, b, epsilon = EPSILON) => Math.abs(a - b) < epsilon;
-const fnEpsilonSort = (a, b, epsilon = EPSILON) => (
+const fnEpsilonCompare = (a, b, epsilon = EPSILON) => (
 	fnEpsilonEqual(a, b, epsilon) ? 0 : Math.sign(b - a)
 );
 const fnEpsilonEqualVectors = (a, b, epsilon = EPSILON) => {
@@ -35,7 +35,76 @@ const clampSegment = (dist) => {
 	if (dist < -EPSILON) { return 0; }
 	if (dist > 1 + EPSILON) { return 1; }
 	return dist;
-};const functions=/*#__PURE__*/Object.freeze({__proto__:null,fnTrue,fnSquare,fnAdd,fnNotUndefined,fnAnd,fnCat,fnVec2Angle,fnToVec2,fnEqual,fnEpsilonEqual,fnEpsilonSort,fnEpsilonEqualVectors,include,exclude,includeL,excludeL,includeR,excludeR,includeS,excludeS,clampLine,clampRay,clampSegment});const magnitude = v => Math.sqrt(v
+};const mathFunctions=/*#__PURE__*/Object.freeze({__proto__:null,fnTrue,fnSquare,fnAdd,fnNotUndefined,fnAnd,fnCat,fnVec2Angle,fnToVec2,fnEqual,fnEpsilonEqual,fnEpsilonCompare,fnEpsilonEqualVectors,include,exclude,includeL,excludeL,includeR,excludeR,includeS,excludeS,clampLine,clampRay,clampSegment});const isIterable = (obj) => obj != null
+	&& typeof obj[Symbol.iterator] === "function";
+const semiFlattenArrays = function () {
+	switch (arguments.length) {
+	case undefined:
+	case 0: return Array.from(arguments);
+	case 1: return isIterable(arguments[0]) && typeof arguments[0] !== "string"
+		? semiFlattenArrays(...arguments[0])
+		: [arguments[0]];
+	default:
+		return Array.from(arguments).map(a => (isIterable(a)
+			? [...semiFlattenArrays(a)]
+			: a));
+	}
+};
+const flattenArrays = function () {
+	switch (arguments.length) {
+	case undefined:
+	case 0: return Array.from(arguments);
+	case 1: return isIterable(arguments[0]) && typeof arguments[0] !== "string"
+		? flattenArrays(...arguments[0])
+		: [arguments[0]];
+	default:
+		return Array.from(arguments).map(a => (isIterable(a)
+			? [...flattenArrays(a)]
+			: a)).reduce((a, b) => a.concat(b), []);
+	}
+};const arrayMethods=/*#__PURE__*/Object.freeze({__proto__:null,semiFlattenArrays,flattenArrays});const countPlaces = function (num) {
+	const m = (`${num}`).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+	if (!m) { return 0; }
+	return Math.max(0, (m[1] ? m[1].length : 0) - (m[2] ? +m[2] : 0));
+};
+const cleanNumber = function (num, places = 15) {
+	if (typeof num !== "number") { return num; }
+	const crop = parseFloat(num.toFixed(places));
+	if (countPlaces(crop) === Math.min(places, countPlaces(num))) {
+		return num;
+	}
+	return crop;
+};const numberMethods=/*#__PURE__*/Object.freeze({__proto__:null,cleanNumber});const smallestComparisonSearch = (obj, array, compare_func) => {
+	const objs = array.map((o, i) => ({ i, d: compare_func(obj, o) }));
+	let index;
+	let smallest_value = Infinity;
+	for (let i = 0; i < objs.length; i += 1) {
+		if (objs[i].d < smallest_value) {
+			index = i;
+			smallest_value = objs[i].d;
+		}
+	}
+	return index;
+};
+const smallestVectorSearch = (vectors, axis = 0, compFn = fnEpsilonCompare, epsilon = EPSILON) => {
+	let smallSet = [0];
+	for (let i = 1; i < vectors.length; i += 1) {
+		switch (compFn(vectors[i][axis], vectors[smallSet[0]][axis], epsilon)) {
+		case 0: smallSet.push(i); break;
+		case 1: smallSet = [i]; break;
+		}
+	}
+	return smallSet;
+};
+const minimum2DPointIndex = (points, epsilon = EPSILON) => {
+	if (!points.length) { return undefined; }
+	const smallSet = smallestVectorSearch(points, 0, fnEpsilonCompare, epsilon);
+	let sm = 0;
+	for (let i = 1; i < smallSet.length; i += 1) {
+		if (points[smallSet[i]][1] < points[smallSet[sm]][1]) { sm = i; }
+	}
+	return smallSet[sm];
+};const searchMethods=/*#__PURE__*/Object.freeze({__proto__:null,smallestComparisonSearch,minimum2DPointIndex});const magnitude = v => Math.sqrt(v
 	.map(fnSquare)
 	.reduce(fnAdd, 0));
 const magnitude2 = v => Math.sqrt(v[0] * v[0] + v[1] * v[1]);
@@ -118,111 +187,12 @@ const parallel = (v, u, epsilon = EPSILON) => parallelNormalized(
 	epsilon,
 );
 const parallel2 = (v, u, epsilon = EPSILON) => Math
-	.abs(cross2(v, u)) < epsilon;const vectors=/*#__PURE__*/Object.freeze({__proto__:null,magnitude,magnitude2,magnitude3,magSquared,normalize,normalize2,normalize3,scale,scale2,scale3,add,add2,add3,subtract,subtract2,subtract3,dot,dot2,dot3,midpoint,midpoint2,midpoint3,average,lerp,cross2,cross3,distance,distance2,distance3,flip,rotate90,rotate270,degenerate,parallelNormalized,parallel,parallel2});const resize = (d, v) => (v.length === d
+	.abs(cross2(v, u)) < epsilon;
+const resize = (d, v) => (v.length === d
 	? v
 	: Array(d).fill(0).map((z, i) => (v[i] ? v[i] : z)));
 const resizeUp = (a, b) => [a, b]
-	.map(v => resize(Math.max(a.length, b.length), v));
-const countPlaces = function (num) {
-	const m = (`${num}`).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-	if (!m) { return 0; }
-	return Math.max(0, (m[1] ? m[1].length : 0) - (m[2] ? +m[2] : 0));
-};
-const cleanNumber = function (num, places = 15) {
-	if (typeof num !== "number") { return num; }
-	const crop = parseFloat(num.toFixed(places));
-	if (countPlaces(crop) === Math.min(places, countPlaces(num))) {
-		return num;
-	}
-	return crop;
-};
-const isIterable = (obj) => obj != null
-	&& typeof obj[Symbol.iterator] === "function";
-const semiFlattenArrays = function () {
-	switch (arguments.length) {
-	case undefined:
-	case 0: return Array.from(arguments);
-	case 1: return isIterable(arguments[0]) && typeof arguments[0] !== "string"
-		? semiFlattenArrays(...arguments[0])
-		: [arguments[0]];
-	default:
-		return Array.from(arguments).map(a => (isIterable(a)
-			? [...semiFlattenArrays(a)]
-			: a));
-	}
-};
-const flattenArrays = function () {
-	switch (arguments.length) {
-	case undefined:
-	case 0: return Array.from(arguments);
-	case 1: return isIterable(arguments[0]) && typeof arguments[0] !== "string"
-		? flattenArrays(...arguments[0])
-		: [arguments[0]];
-	default:
-		return Array.from(arguments).map(a => (isIterable(a)
-			? [...flattenArrays(a)]
-			: a)).reduce((a, b) => a.concat(b), []);
-	}
-};const resizers=/*#__PURE__*/Object.freeze({__proto__:null,resize,resizeUp,cleanNumber,semiFlattenArrays,flattenArrays});const smallestComparisonSearch = (obj, array, compare_func) => {
-	const objs = array.map((o, i) => ({ i, d: compare_func(obj, o) }));
-	let index;
-	let smallest_value = Infinity;
-	for (let i = 0; i < objs.length; i += 1) {
-		if (objs[i].d < smallest_value) {
-			index = i;
-			smallest_value = objs[i].d;
-		}
-	}
-	return index;
-};
-const minimumAxisIndices = (vectors, axis = 0, compFn = fnEpsilonSort, epsilon = EPSILON) => {
-	let smallSet = [0];
-	for (let i = 1; i < vectors.length; i += 1) {
-		switch (compFn(vectors[i][axis], vectors[smallSet[0]][axis], epsilon)) {
-		case 0: smallSet.push(i); break;
-		case 1: smallSet = [i]; break;
-		}
-	}
-	return smallSet;
-};
-const minimum2DPointIndex = (points, epsilon = EPSILON) => {
-	if (!points.length) { return undefined; }
-	const smallSet = minimumAxisIndices(points, 0, fnEpsilonSort, epsilon);
-	let sm = 0;
-	for (let i = 1; i < smallSet.length; i += 1) {
-		if (points[smallSet[i]][1] < points[smallSet[sm]][1]) { sm = i; }
-	}
-	return smallSet[sm];
-};
-const nearestPoint2 = (point, array_of_points) => {
-	const index = smallestComparisonSearch(point, array_of_points, distance2);
-	return index === undefined ? undefined : array_of_points[index];
-};
-const nearestPoint = (point, array_of_points) => {
-	const index = smallestComparisonSearch(point, array_of_points, distance);
-	return index === undefined ? undefined : array_of_points[index];
-};
-const nearestPointOnLine = (vector, origin, point, limiterFunc, epsilon = EPSILON) => {
-	origin = resize(vector.length, origin);
-	point = resize(vector.length, point);
-	const magSq = magSquared(vector);
-	const vectorToPoint = subtract(point, origin);
-	const dotProd = dot(vector, vectorToPoint);
-	const dist = dotProd / magSq;
-	const d = limiterFunc(dist, epsilon);
-	return add(origin, scale(vector, d));
-};
-const nearestPointOnPolygon = (polygon, point) => {
-	const v = polygon
-		.map((p, i, arr) => subtract(arr[(i + 1) % arr.length], p));
-	return polygon
-		.map((p, i) => nearestPointOnLine(v[i], p, point, clampSegment))
-		.map((p, edge) => ({ point: p, edge, distance: distance(p, point) }))
-		.sort((a, b) => a.distance - b.distance)
-		.shift();
-};
-const nearestPointOnCircle = (radius, origin, point) => (
-	add(origin, scale(normalize(subtract(point, origin)), radius)));const nearest=/*#__PURE__*/Object.freeze({__proto__:null,smallestComparisonSearch,minimum2DPointIndex,nearestPoint2,nearestPoint,nearestPointOnLine,nearestPointOnPolygon,nearestPointOnCircle});const sortAgainstItem = (array, item, compareFn) => array
+	.map(v => resize(Math.max(a.length, b.length), v));const vectors=/*#__PURE__*/Object.freeze({__proto__:null,magnitude,magnitude2,magnitude3,magSquared,normalize,normalize2,normalize3,scale,scale2,scale3,add,add2,add3,subtract,subtract2,subtract3,dot,dot2,dot3,midpoint,midpoint2,midpoint3,average,lerp,cross2,cross3,distance,distance2,distance3,flip,rotate90,rotate270,degenerate,parallelNormalized,parallel,parallel2,resize,resizeUp});const sortAgainstItem = (array, item, compareFn) => array
 	.map((el, i) => ({ i, n: compareFn(el, item) }))
 	.sort((a, b) => a.n - b.n)
 	.map(a => a.i);
@@ -260,7 +230,14 @@ const radialSortPointIndices2 = (points = [], epsilon = EPSILON) => {
 				.map(i => ({ i, len: distance2(points[i], points[first]) }))
 				.sort((a, b) => a.len - b.len)
 				.map(el => el.i))));
-};const sortMethods=/*#__PURE__*/Object.freeze({__proto__:null,sortAgainstItem,sortPointsAlongVector,clusterIndicesOfSortedNumbers,radialSortPointIndices2});const identity2x2 = [1, 0, 0, 1];
+};const sortMethods=/*#__PURE__*/Object.freeze({__proto__:null,sortAgainstItem,sortPointsAlongVector,clusterIndicesOfSortedNumbers,radialSortPointIndices2});const general = {
+	...constants,
+	...mathFunctions,
+	...arrayMethods,
+	...numberMethods,
+	...searchMethods,
+	...sortMethods,
+};const identity2x2 = [1, 0, 0, 1];
 const identity2x3 = identity2x2.concat(0, 0);
 const multiplyMatrix2Vector2 = (matrix, vector) => [
 	matrix[0] * vector[0] + matrix[2] * vector[1] + matrix[4],
@@ -448,7 +425,86 @@ const makeMatrix3Scale = (scale = [1, 1, 1], origin = [0, 0, 0]) => [
 const makeMatrix3ReflectZ = (vector, origin = [0, 0]) => {
 	const m = makeMatrix2Reflect(vector, origin);
 	return [m[0], m[1], 0, m[2], m[3], 0, 0, 0, 1, m[4], m[5], 0];
-};const matrix3=/*#__PURE__*/Object.freeze({__proto__:null,identity3x3,identity3x4,isIdentity3x4,multiplyMatrix3Vector3,multiplyMatrix3Line3,multiplyMatrices3,determinant3,invertMatrix3,makeMatrix3Translate,makeMatrix3RotateX,makeMatrix3RotateY,makeMatrix3RotateZ,makeMatrix3Rotate,makeMatrix3Scale,makeMatrix3ReflectZ});const identity4x4 = Object.freeze([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+};const matrix3=/*#__PURE__*/Object.freeze({__proto__:null,identity3x3,identity3x4,isIdentity3x4,multiplyMatrix3Vector3,multiplyMatrix3Line3,multiplyMatrices3,determinant3,invertMatrix3,makeMatrix3Translate,makeMatrix3RotateX,makeMatrix3RotateY,makeMatrix3RotateZ,makeMatrix3Rotate,makeMatrix3Scale,makeMatrix3ReflectZ});const vectorOriginForm = (vector, origin) => ({
+	vector: vector || [],
+	origin: origin || [],
+});
+const getVector = function () {
+	let list = flattenArrays(arguments);
+	if (list.length > 0
+		&& typeof list[0] === "object"
+		&& list[0] !== null
+		&& !Number.isNaN(list[0].x)) {
+		list = ["x", "y", "z"]
+			.map(c => list[0][c])
+			.filter(fnNotUndefined);
+	}
+	return list.filter(n => typeof n === "number");
+};
+const getVectorOfVectors = function () {
+	return semiFlattenArrays(arguments)
+		.map(el => getVector(el));
+};
+const getSegment = function () {
+	const args = semiFlattenArrays(arguments);
+	if (args.length === 4) {
+		return [
+			[args[0], args[1]],
+			[args[2], args[3]],
+		];
+	}
+	return args.map(el => getVector(el));
+};
+const getLine = function () {
+	const args = semiFlattenArrays(arguments);
+	if (args.length === 0) { return vectorOriginForm([], []); }
+	if (args[0].constructor === Object && args[0].vector !== undefined) {
+		return vectorOriginForm(args[0].vector || [], args[0].origin || []);
+	}
+	return typeof args[0] === "number"
+		? vectorOriginForm(getVector(args))
+		: vectorOriginForm(...args.map(a => getVector(a)));
+};
+const getRay = getLine;
+const maps3x4 = [
+	[0, 1, 3, 4, 9, 10],
+	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+	[0, 1, 2, undefined, 3, 4, 5, undefined, 6, 7, 8, undefined, 9, 10, 11],
+];
+[11, 7, 3].forEach(i => delete maps3x4[2][i]);
+const matrixMap3x4 = len => {
+	let i;
+	if (len < 8) i = 0;
+	else if (len < 13) i = 1;
+	else i = 2;
+	return maps3x4[i];
+};
+const getMatrix3x4 = function () {
+	const mat = flattenArrays(arguments);
+	const matrix = [...identity3x4];
+	matrixMap3x4(mat.length)
+		.forEach((n, i) => { if (mat[i] != null) { matrix[n] = mat[i]; } });
+	return matrix;
+};const getMethods=/*#__PURE__*/Object.freeze({__proto__:null,getVector,getVectorOfVectors,getSegment,getLine,getRay,getMatrix3x4});const pointsToLine = (...args) => {
+	const points = getVectorOfVectors(...args);
+	return {
+		vector: subtract(points[1], points[0]),
+		origin: points[0],
+	};
+};
+const rayLineToUniqueLine = ({ vector, origin }) => {
+	const mag = magnitude(vector);
+	const normal = rotate90(vector);
+	const distance = dot(origin, normal) / mag;
+	return { normal: scale(normal, 1 / mag), distance };
+};
+const uniqueLineToRayLine = ({ normal, distance }) => ({
+	vector: rotate270(normal),
+	origin: scale(normal, distance),
+});const convertMethods=/*#__PURE__*/Object.freeze({__proto__:null,pointsToLine,rayLineToUniqueLine,uniqueLineToRayLine});const types = {
+	...convertMethods,
+	...getMethods,
+};const identity4x4 = Object.freeze([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
 const isIdentity4x4 = m => identity4x4
 	.map((n, i) => Math.abs(n - m[i]) < EPSILON)
 	.reduce((a, b) => a && b, true);
@@ -637,15 +693,11 @@ const matrix4FromQuaternion = (quaternion) => multiplyMatrices4([
 	quaternion[1], -quaternion[0], quaternion[3], -quaternion[2],
 	quaternion[0], quaternion[1], quaternion[2], quaternion[3],
 ]);const quaternion=/*#__PURE__*/Object.freeze({__proto__:null,quaternionFromTwoVectors,matrix4FromQuaternion});const algebra = {
-	...constants,
-	...functions,
 	...vectors,
-	...sortMethods,
 	...matrix2,
 	...matrix3,
 	...matrix4,
 	...quaternion,
-	...nearest,
 };const isCounterClockwiseBetween = (angle, floor, ceiling) => {
 	while (ceiling < floor) { ceiling += TWO_PI; }
 	while (angle > floor) { angle -= TWO_PI; }
@@ -768,11 +820,11 @@ const threePointTurnDirection = (p0, p1, p2, epsilon = EPSILON) => {
 	return fnEpsilonEqual(distance2(p0, p1) + distance2(p1, p2), distance2(p0, p2))
 		? 0
 		: undefined;
-};const radialMethods=/*#__PURE__*/Object.freeze({__proto__:null,isCounterClockwiseBetween,clockwiseAngleRadians,counterClockwiseAngleRadians,clockwiseAngle2,counterClockwiseAngle2,clockwiseBisect2,counterClockwiseBisect2,clockwiseSubsectRadians,counterClockwiseSubsectRadians,clockwiseSubsect2,counterClockwiseSubsect2,bisectLines2,counterClockwiseOrderRadians,counterClockwiseOrder2,counterClockwiseSectorsRadians,counterClockwiseSectors2,threePointTurnDirection});const mirror = (arr) => arr.concat(arr.slice(0, -1).reverse());
+};const radialMethods=/*#__PURE__*/Object.freeze({__proto__:null,isCounterClockwiseBetween,clockwiseAngleRadians,counterClockwiseAngleRadians,clockwiseAngle2,counterClockwiseAngle2,clockwiseBisect2,counterClockwiseBisect2,clockwiseSubsectRadians,counterClockwiseSubsectRadians,clockwiseSubsect2,counterClockwiseSubsect2,bisectLines2,counterClockwiseOrderRadians,counterClockwiseOrder2,counterClockwiseSectorsRadians,counterClockwiseSectors2,threePointTurnDirection});const mirrorArray = (arr) => arr.concat(arr.slice(0, -1).reverse());
 const convexHullIndices = (points = [], includeCollinear = false, epsilon = EPSILON) => {
 	if (points.length < 2) { return []; }
 	const order = radialSortPointIndices2(points, epsilon)
-		.map(arr => (arr.length === 1 ? arr : mirror(arr)))
+		.map(arr => (arr.length === 1 ? arr : mirrorArray(arr)))
 		.flat();
 	order.push(order[0]);
 	const stack = [order[0]];
@@ -800,112 +852,7 @@ const convexHullIndices = (points = [], includeCollinear = false, epsilon = EPSI
 };
 const convexHull = (points = [], includeCollinear = false, epsilon = EPSILON) => (
 	convexHullIndices(points, includeCollinear, epsilon)
-		.map(i => points[i]));const convexHullMethods=/*#__PURE__*/Object.freeze({__proto__:null,convexHullIndices,convexHull});const vectorOriginForm = (vector, origin) => ({
-	vector: vector || [],
-	origin: origin || [],
-});
-const getVector = function () {
-	let list = flattenArrays(arguments);
-	if (list.length > 0
-		&& typeof list[0] === "object"
-		&& list[0] !== null
-		&& !Number.isNaN(list[0].x)) {
-		list = ["x", "y", "z"]
-			.map(c => list[0][c])
-			.filter(fnNotUndefined);
-	}
-	return list.filter(n => typeof n === "number");
-};
-const getVectorOfVectors = function () {
-	return semiFlattenArrays(arguments)
-		.map(el => getVector(el));
-};
-const getSegment = function () {
-	const args = semiFlattenArrays(arguments);
-	if (args.length === 4) {
-		return [
-			[args[0], args[1]],
-			[args[2], args[3]],
-		];
-	}
-	return args.map(el => getVector(el));
-};
-const getLine = function () {
-	const args = semiFlattenArrays(arguments);
-	if (args.length === 0) { return vectorOriginForm([], []); }
-	if (args[0].constructor === Object && args[0].vector !== undefined) {
-		return vectorOriginForm(args[0].vector || [], args[0].origin || []);
-	}
-	return typeof args[0] === "number"
-		? vectorOriginForm(getVector(args))
-		: vectorOriginForm(...args.map(a => getVector(a)));
-};
-const getRay = getLine;
-const getRectParams = (x = 0, y = 0, width = 0, height = 0) => ({
-	x, y, width, height,
-});
-const getRect = function () {
-	const list = flattenArrays(arguments);
-	if (list.length > 0
-		&& typeof list[0] === "object"
-		&& list[0] !== null
-		&& !Number.isNaN(list[0].width)) {
-		return getRectParams(...["x", "y", "width", "height"]
-			.map(c => list[0][c])
-			.filter(fnNotUndefined));
-	}
-	const numbers = list.filter(n => typeof n === "number");
-	const rectParams = numbers.length < 4
-		? [, , ...numbers]
-		: numbers;
-	return getRectParams(...rectParams);
-};
-const getCircleParams = (radius = 1, ...args) => ({
-	radius,
-	origin: [...args],
-});
-const getCircle = function () {
-	const vectors = getVectorOfVectors(arguments);
-	const numbers = flattenArrays(arguments).filter(a => typeof a === "number");
-	if (arguments.length === 2) {
-		if (vectors[1].length === 1) {
-			return getCircleParams(vectors[1][0], ...vectors[0]);
-		}
-		if (vectors[0].length === 1) {
-			return getCircleParams(vectors[0][0], ...vectors[1]);
-		}
-		if (vectors[0].length > 1 && vectors[1].length > 1) {
-			return getCircleParams(distance2(...vectors), ...vectors[0]);
-		}
-	} else {
-		switch (numbers.length) {
-		case 0: return getCircleParams(1, 0, 0, 0);
-		case 1: return getCircleParams(numbers[0], 0, 0, 0);
-		default: return getCircleParams(numbers.pop(), ...numbers);
-		}
-	}
-	return getCircleParams(1, 0, 0, 0);
-};
-const maps3x4 = [
-	[0, 1, 3, 4, 9, 10],
-	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-	[0, 1, 2, undefined, 3, 4, 5, undefined, 6, 7, 8, undefined, 9, 10, 11],
-];
-[11, 7, 3].forEach(i => delete maps3x4[2][i]);
-const matrixMap3x4 = len => {
-	let i;
-	if (len < 8) i = 0;
-	else if (len < 13) i = 1;
-	else i = 2;
-	return maps3x4[i];
-};
-const getMatrix3x4 = function () {
-	const mat = flattenArrays(arguments);
-	const matrix = [...identity3x4];
-	matrixMap3x4(mat.length)
-		.forEach((n, i) => { if (mat[i] != null) { matrix[n] = mat[i]; } });
-	return matrix;
-};const getters=/*#__PURE__*/Object.freeze({__proto__:null,getVector,getVectorOfVectors,getSegment,getLine,getRay,getRectParams,getRect,getCircle,getMatrix3x4});const intersectLineLine = (
+		.map(i => points[i]));const convexHullMethods=/*#__PURE__*/Object.freeze({__proto__:null,convexHullIndices,convexHull});const intersectLineLine = (
 	aVector,
 	aOrigin,
 	bVector,
@@ -927,7 +874,9 @@ const getMatrix3x4 = function () {
 		return add(aOrigin, scale(aVector, t0));
 	}
 	return undefined;
-};const pleatParallel = (count, a, b) => {
+};const lerpLines = (line1, line2, t) => {
+};
+const pleatParallel = (count, a, b) => {
 	const origins = Array.from(Array(count - 1))
 		.map((_, i) => (i + 1) / count)
 		.map(t => lerp(a.origin, b.origin, t));
@@ -947,7 +896,35 @@ const pleat = (count, a, b) => {
 	return parallel(lineA.vector, lineB.vector)
 		? pleatParallel(count, lineA, lineB)
 		: pleatAngle(count, lineA, lineB);
-};const pleatMethods=/*#__PURE__*/Object.freeze({__proto__:null,pleat});const angleArray = count => Array
+};const linesMethods=/*#__PURE__*/Object.freeze({__proto__:null,lerpLines,pleat});const nearestPoint2 = (point, array_of_points) => {
+	const index = smallestComparisonSearch(point, array_of_points, distance2);
+	return index === undefined ? undefined : array_of_points[index];
+};
+const nearestPoint = (point, array_of_points) => {
+	const index = smallestComparisonSearch(point, array_of_points, distance);
+	return index === undefined ? undefined : array_of_points[index];
+};
+const nearestPointOnLine = (vector, origin, point, limiterFunc, epsilon = EPSILON) => {
+	origin = resize(vector.length, origin);
+	point = resize(vector.length, point);
+	const magSq = magSquared(vector);
+	const vectorToPoint = subtract(point, origin);
+	const dotProd = dot(vector, vectorToPoint);
+	const dist = dotProd / magSq;
+	const d = limiterFunc(dist, epsilon);
+	return add(origin, scale(vector, d));
+};
+const nearestPointOnPolygon = (polygon, point) => {
+	const v = polygon
+		.map((p, i, arr) => subtract(arr[(i + 1) % arr.length], p));
+	return polygon
+		.map((p, i) => nearestPointOnLine(v[i], p, point, clampSegment))
+		.map((p, edge) => ({ point: p, edge, distance: distance(p, point) }))
+		.sort((a, b) => a.distance - b.distance)
+		.shift();
+};
+const nearestPointOnCircle = (radius, origin, point) => (
+	add(origin, scale(normalize(subtract(point, origin)), radius)));const nearestMethods=/*#__PURE__*/Object.freeze({__proto__:null,nearestPoint2,nearestPoint,nearestPointOnLine,nearestPointOnPolygon,nearestPointOnCircle});const angleArray = count => Array
 	.from(Array(Math.floor(count)))
 	.map((_, i) => TWO_PI * (i / count));
 const anglesToVecs = (angles, radius) => angles
@@ -1030,12 +1007,105 @@ const boundingBox = (points, padding = 0) => {
 		}));
 	const span = max.map((m, i) => m - min[i]);
 	return { min, max, span };
-};const polygonMethods=/*#__PURE__*/Object.freeze({__proto__:null,makePolygonCircumradius,makePolygonCircumradiusSide,makePolygonInradius,makePolygonInradiusSide,makePolygonSideLength,makePolygonSideLengthSide,makePolygonNonCollinear,circumcircle,signedArea,centroid,boundingBox});const overlapConvexPolygonPoint = (poly, point, func = exclude, epsilon = EPSILON) => poly
+};const polygonMethods=/*#__PURE__*/Object.freeze({__proto__:null,makePolygonCircumradius,makePolygonCircumradiusSide,makePolygonInradius,makePolygonInradiusSide,makePolygonSideLength,makePolygonSideLengthSide,makePolygonNonCollinear,circumcircle,signedArea,centroid,boundingBox});const recurseSkeleton = (points, lines, bisectors) => {
+	const intersects = points
+		.map((origin, i) => ({ vector: bisectors[i], origin }))
+		.map((ray, i, arr) => intersectLineLine(
+			ray.vector,
+			ray.origin,
+			arr[(i + 1) % arr.length].vector,
+			arr[(i + 1) % arr.length].origin,
+			excludeR,
+			excludeR,
+		));
+	const projections = lines.map((line, i) => (
+		nearestPointOnLine(line.vector, line.origin, intersects[i], a => a)
+	));
+	if (points.length === 3) {
+		return points.map(p => ({ type: "skeleton", points: [p, intersects[0]] }))
+			.concat([{ type: "perpendicular", points: [projections[0], intersects[0]] }]);
+	}
+	const projectionLengths = intersects
+		.map((intersect, i) => distance(intersect, projections[i]));
+	let shortest = 0;
+	projectionLengths.forEach((len, i) => {
+		if (len < projectionLengths[shortest]) { shortest = i; }
+	});
+	const solutions = [
+		{
+			type: "skeleton",
+			points: [points[shortest], intersects[shortest]],
+		},
+		{
+			type: "skeleton",
+			points: [points[(shortest + 1) % points.length], intersects[shortest]],
+		},
+		{ type: "perpendicular", points: [projections[shortest], intersects[shortest]] },
+	];
+	const newVector = clockwiseBisect2(
+		flip(lines[(shortest + lines.length - 1) % lines.length].vector),
+		lines[(shortest + 1) % lines.length].vector,
+	);
+	const shortest_is_last_index = shortest === points.length - 1;
+	points.splice(shortest, 2, intersects[shortest]);
+	lines.splice(shortest, 1);
+	bisectors.splice(shortest, 2, newVector);
+	if (shortest_is_last_index) {
+		points.splice(0, 1);
+		bisectors.splice(0, 1);
+		lines.push(lines.shift());
+	}
+	return solutions.concat(recurseSkeleton(points, lines, bisectors));
+};
+const straightSkeleton = (points) => {
+	const lines = points
+		.map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
+		.map(side => ({ vector: subtract(side[1], side[0]), origin: side[0] }));
+	const bisectors = points
+		.map((_, i, ar) => [(i - 1 + ar.length) % ar.length, i, (i + 1) % ar.length]
+			.map(j => ar[j]))
+		.map(p => [subtract(p[0], p[1]), subtract(p[2], p[1])])
+		.map(v => clockwiseBisect2(...v));
+	return recurseSkeleton([...points], lines, bisectors);
+};const geometry = {
+	...convexHullMethods,
+	...linesMethods,
+	...nearestMethods,
+	...polygonMethods,
+	...radialMethods,
+	straightSkeleton,
+};const collinearBetween = (p0, p1, p2, inclusive = false, epsilon = EPSILON) => {
+	const similar = [p0, p2]
+		.map(p => fnEpsilonEqualVectors(p1, p))
+		.reduce((a, b) => a || b, false);
+	if (similar) { return inclusive; }
+	const vectors = [[p0, p1], [p1, p2]]
+		.map(segment => subtract(segment[1], segment[0]))
+		.map(vector => normalize(vector));
+	return fnEpsilonEqual(1.0, dot(...vectors), epsilon);
+};const generalIntersect=/*#__PURE__*/Object.freeze({__proto__:null,collinearBetween});const overlapConvexPolygonPoint = (poly, point, func = exclude, epsilon = EPSILON) => poly
 	.map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
 	.map(s => cross2(normalize(subtract(s[1], s[0])), subtract(point, s[0])))
 	.map(side => func(side, epsilon))
 	.map((s, _, arr) => s === arr[0])
-	.reduce((prev, curr) => prev && curr, true);const lineLineParameter = (
+	.reduce((prev, curr) => prev && curr, true);const enclosingBoundingBoxes = (outer, inner) => {
+	const dimensions = Math.min(outer.min.length, inner.min.length);
+	for (let d = 0; d < dimensions; d += 1) {
+		if (inner.min[d] < outer.min[d] || inner.max[d] > outer.max[d]) {
+			return false;
+		}
+	}
+	return true;
+};
+const enclosingPolygonPolygon = (outer, inner, fnInclusive = include) => {
+	const outerGoesInside = outer
+		.map(p => overlapConvexPolygonPoint(inner, p, fnInclusive))
+		.reduce((a, b) => a || b, false);
+	const innerGoesOutside = inner
+		.map(p => overlapConvexPolygonPoint(inner, p, fnInclusive))
+		.reduce((a, b) => a && b, true);
+	return (!outerGoesInside && innerGoesOutside);
+};const encloses=/*#__PURE__*/Object.freeze({__proto__:null,enclosingBoundingBoxes,enclosingPolygonPolygon});const lineLineParameter = (
 	lineVector,
 	lineOrigin,
 	polyVector,
@@ -1111,14 +1181,10 @@ const clipLineConvexPolygon = (
 		? ends_clip.map(t => linePointFromParameter(vector, origin, t))
 		: undefined;
 };const clipPolygonPolygon = (polygon1, polygon2, epsilon = EPSILON) => {
-	let cp1;
-	let cp2;
-	let s;
-	let e;
-	const inside = (p) => (
+	const inside = (p, cp1, cp2) => (
 		(cp2[0] - cp1[0]) * (p[1] - cp1[1])) > ((cp2[1] - cp1[1]) * (p[0] - cp1[0]) + epsilon
 	);
-	const intersection = () => {
+	const intersection = (cp1, cp2, e, s) => {
 		const dc = [cp1[0] - cp2[0], cp1[1] - cp2[1]];
 		const dp = [s[0] - e[0], s[1] - e[1]];
 		const n1 = cp1[0] * cp2[1] - cp1[1] * cp2[0];
@@ -1127,188 +1193,28 @@ const clipLineConvexPolygon = (
 		return [(n1 * dp[0] - n2 * dc[0]) * n3, (n1 * dp[1] - n2 * dc[1]) * n3];
 	};
 	let outputList = polygon1;
-	cp1 = polygon2[polygon2.length - 1];
-	for (let j in polygon2) {
-		cp2 = polygon2[j];
+	let cp1 = polygon2[polygon2.length - 1];
+	for (let j = 0; j < polygon2.length; j += 1) {
+		const cp2 = polygon2[j];
 		const inputList = outputList;
 		outputList = [];
-		s = inputList[inputList.length - 1];
-		for (let i in inputList) {
-			e = inputList[i];
-			if (inside(e)) {
-				if (!inside(s)) {
-					outputList.push(intersection());
+		let s = inputList[inputList.length - 1];
+		for (let i = 0; i < inputList.length; i += 1) {
+			const e = inputList[i];
+			if (inside(e, cp1, cp2)) {
+				if (!inside(s, cp1, cp2)) {
+					outputList.push(intersection(cp1, cp2, e, s));
 				}
 				outputList.push(e);
-			} else if (inside(s)) {
-				outputList.push(intersection());
+			} else if (inside(s, cp1, cp2)) {
+				outputList.push(intersection(cp1, cp2, e, s));
 			}
 			s = e;
 		}
 		cp1 = cp2;
 	}
 	return outputList.length === 0 ? undefined : outputList;
-};const overlapLinePoint = (vector, origin, point, func = excludeL, epsilon = EPSILON) => {
-	const p2p = subtract(point, origin);
-	const lineMagSq = magSquared(vector);
-	const lineMag = Math.sqrt(lineMagSq);
-	if (lineMag < epsilon) { return false; }
-	const cross = cross2(p2p, vector.map(n => n / lineMag));
-	const proj = dot(p2p, vector) / lineMagSq;
-	return Math.abs(cross) < epsilon && func(proj, epsilon / lineMag);
-};const splitConvexPolygon = (poly, lineVector, linePoint) => {
-	const vertices_intersections = poly.map((v, i) => {
-		const intersection = overlapLinePoint(lineVector, linePoint, v, includeL);
-		return { point: intersection ? v : null, at_index: i };
-	}).filter(el => el.point != null);
-	const edges_intersections = poly.map((v, i, arr) => ({
-		point: intersectLineLine(
-			lineVector,
-			linePoint,
-			subtract(v, arr[(i + 1) % arr.length]),
-			arr[(i + 1) % arr.length],
-			excludeL,
-			excludeS,
-		),
-		at_index: i,
-	}))
-		.filter(el => el.point != null);
-	if (edges_intersections.length === 2) {
-		const sorted_edges = edges_intersections.slice()
-			.sort((a, b) => a.at_index - b.at_index);
-		const face_a = poly
-			.slice(sorted_edges[1].at_index + 1)
-			.concat(poly.slice(0, sorted_edges[0].at_index + 1));
-		face_a.push(sorted_edges[0].point);
-		face_a.push(sorted_edges[1].point);
-		const face_b = poly
-			.slice(sorted_edges[0].at_index + 1, sorted_edges[1].at_index + 1);
-		face_b.push(sorted_edges[1].point);
-		face_b.push(sorted_edges[0].point);
-		return [face_a, face_b];
-	}
-	if (edges_intersections.length === 1 && vertices_intersections.length === 1) {
-		vertices_intersections[0].type = "v";
-		edges_intersections[0].type = "e";
-		const sorted_geom = vertices_intersections.concat(edges_intersections)
-			.sort((a, b) => a.at_index - b.at_index);
-		const face_a = poly.slice(sorted_geom[1].at_index + 1)
-			.concat(poly.slice(0, sorted_geom[0].at_index + 1));
-		if (sorted_geom[0].type === "e") { face_a.push(sorted_geom[0].point); }
-		face_a.push(sorted_geom[1].point);
-		const face_b = poly
-			.slice(sorted_geom[0].at_index + 1, sorted_geom[1].at_index + 1);
-		if (sorted_geom[1].type === "e") { face_b.push(sorted_geom[1].point); }
-		face_b.push(sorted_geom[0].point);
-		return [face_a, face_b];
-	}
-	if (vertices_intersections.length === 2) {
-		const sorted_vertices = vertices_intersections.slice()
-			.sort((a, b) => a.at_index - b.at_index);
-		const face_a = poly
-			.slice(sorted_vertices[1].at_index)
-			.concat(poly.slice(0, sorted_vertices[0].at_index + 1));
-		const face_b = poly
-			.slice(sorted_vertices[0].at_index, sorted_vertices[1].at_index + 1);
-		return [face_a, face_b];
-	}
-	return [poly.slice()];
-};const recurseSkeleton = (points, lines, bisectors) => {
-	const intersects = points
-		.map((origin, i) => ({ vector: bisectors[i], origin }))
-		.map((ray, i, arr) => intersectLineLine(
-			ray.vector,
-			ray.origin,
-			arr[(i + 1) % arr.length].vector,
-			arr[(i + 1) % arr.length].origin,
-			excludeR,
-			excludeR,
-		));
-	const projections = lines.map((line, i) => (
-		nearestPointOnLine(line.vector, line.origin, intersects[i], a => a)
-	));
-	if (points.length === 3) {
-		return points.map(p => ({ type: "skeleton", points: [p, intersects[0]] }))
-			.concat([{ type: "perpendicular", points: [projections[0], intersects[0]] }]);
-	}
-	const projectionLengths = intersects
-		.map((intersect, i) => distance(intersect, projections[i]));
-	let shortest = 0;
-	projectionLengths.forEach((len, i) => {
-		if (len < projectionLengths[shortest]) { shortest = i; }
-	});
-	const solutions = [
-		{
-			type: "skeleton",
-			points: [points[shortest], intersects[shortest]],
-		},
-		{
-			type: "skeleton",
-			points: [points[(shortest + 1) % points.length], intersects[shortest]],
-		},
-		{ type: "perpendicular", points: [projections[shortest], intersects[shortest]] },
-	];
-	const newVector = clockwiseBisect2(
-		flip(lines[(shortest + lines.length - 1) % lines.length].vector),
-		lines[(shortest + 1) % lines.length].vector,
-	);
-	const shortest_is_last_index = shortest === points.length - 1;
-	points.splice(shortest, 2, intersects[shortest]);
-	lines.splice(shortest, 1);
-	bisectors.splice(shortest, 2, newVector);
-	if (shortest_is_last_index) {
-		points.splice(0, 1);
-		bisectors.splice(0, 1);
-		lines.push(lines.shift());
-	}
-	return solutions.concat(recurseSkeleton(points, lines, bisectors));
-};
-const straightSkeleton = (points) => {
-	const lines = points
-		.map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
-		.map(side => ({ vector: subtract(side[1], side[0]), origin: side[0] }));
-	const bisectors = points
-		.map((_, i, ar) => [(i - 1 + ar.length) % ar.length, i, (i + 1) % ar.length]
-			.map(j => ar[j]))
-		.map(p => [subtract(p[0], p[1]), subtract(p[2], p[1])])
-		.map(v => clockwiseBisect2(...v));
-	return recurseSkeleton([...points], lines, bisectors);
-};const geometry = {
-	...convexHullMethods,
-	...pleatMethods,
-	...polygonMethods,
-	...radialMethods,
-	clipLineConvexPolygon,
-	clipPolygonPolygon,
-	splitConvexPolygon,
-	straightSkeleton,
-};const collinearBetween = (p0, p1, p2, inclusive = false, epsilon = EPSILON) => {
-	const similar = [p0, p2]
-		.map(p => fnEpsilonEqualVectors(p1, p))
-		.reduce((a, b) => a || b, false);
-	if (similar) { return inclusive; }
-	const vectors = [[p0, p1], [p1, p2]]
-		.map(segment => subtract(segment[1], segment[0]))
-		.map(vector => normalize(vector));
-	return fnEpsilonEqual(1.0, dot(...vectors), epsilon);
-};const generalIntersect=/*#__PURE__*/Object.freeze({__proto__:null,collinearBetween});const enclosingBoundingBoxes = (outer, inner) => {
-	const dimensions = Math.min(outer.min.length, inner.min.length);
-	for (let d = 0; d < dimensions; d += 1) {
-		if (inner.min[d] < outer.min[d] || inner.max[d] > outer.max[d]) {
-			return false;
-		}
-	}
-	return true;
-};
-const enclosingPolygonPolygon = (outer, inner, fnInclusive = include) => {
-	const outerGoesInside = outer
-		.map(p => overlapConvexPolygonPoint(inner, p, fnInclusive))
-		.reduce((a, b) => a || b, false);
-	const innerGoesOutside = inner
-		.map(p => overlapConvexPolygonPoint(inner, p, fnInclusive))
-		.reduce((a, b) => a && b, true);
-	return (!outerGoesInside && innerGoesOutside);
-};const encloses=/*#__PURE__*/Object.freeze({__proto__:null,enclosingBoundingBoxes,enclosingPolygonPolygon});const getUniquePair = (intersections) => {
+};const getUniquePair = (intersections) => {
 	for (let i = 1; i < intersections.length; i += 1) {
 		if (!fnEpsilonEqualVectors(intersections[0], intersections[i])) {
 			return [intersections[0], intersections[i]];
@@ -1504,9 +1410,76 @@ const intersectCircleCircle = (c1_radius, c1_origin, c2_radius, c2_origin, epsil
 	const t1 = cross2(b2a, aVector) / denominator1;
 	return aFunction(t0, epsilon / magnitude(aVector))
 		&& bFunction(t1, epsilon / magnitude(bVector));
+};const overlapLinePoint = (vector, origin, point, func = excludeL, epsilon = EPSILON) => {
+	const p2p = subtract(point, origin);
+	const lineMagSq = magSquared(vector);
+	const lineMag = Math.sqrt(lineMagSq);
+	if (lineMag < epsilon) { return false; }
+	const cross = cross2(p2p, vector.map(n => n / lineMag));
+	const proj = dot(p2p, vector) / lineMagSq;
+	return Math.abs(cross) < epsilon && func(proj, epsilon / lineMag);
+};const splitConvexPolygon = (poly, lineVector, linePoint) => {
+	const vertices_intersections = poly.map((v, i) => {
+		const intersection = overlapLinePoint(lineVector, linePoint, v, includeL);
+		return { point: intersection ? v : null, at_index: i };
+	}).filter(el => el.point != null);
+	const edges_intersections = poly.map((v, i, arr) => ({
+		point: intersectLineLine(
+			lineVector,
+			linePoint,
+			subtract(v, arr[(i + 1) % arr.length]),
+			arr[(i + 1) % arr.length],
+			excludeL,
+			excludeS,
+		),
+		at_index: i,
+	}))
+		.filter(el => el.point != null);
+	if (edges_intersections.length === 2) {
+		const sorted_edges = edges_intersections.slice()
+			.sort((a, b) => a.at_index - b.at_index);
+		const face_a = poly
+			.slice(sorted_edges[1].at_index + 1)
+			.concat(poly.slice(0, sorted_edges[0].at_index + 1));
+		face_a.push(sorted_edges[0].point);
+		face_a.push(sorted_edges[1].point);
+		const face_b = poly
+			.slice(sorted_edges[0].at_index + 1, sorted_edges[1].at_index + 1);
+		face_b.push(sorted_edges[1].point);
+		face_b.push(sorted_edges[0].point);
+		return [face_a, face_b];
+	}
+	if (edges_intersections.length === 1 && vertices_intersections.length === 1) {
+		vertices_intersections[0].type = "v";
+		edges_intersections[0].type = "e";
+		const sorted_geom = vertices_intersections.concat(edges_intersections)
+			.sort((a, b) => a.at_index - b.at_index);
+		const face_a = poly.slice(sorted_geom[1].at_index + 1)
+			.concat(poly.slice(0, sorted_geom[0].at_index + 1));
+		if (sorted_geom[0].type === "e") { face_a.push(sorted_geom[0].point); }
+		face_a.push(sorted_geom[1].point);
+		const face_b = poly
+			.slice(sorted_geom[0].at_index + 1, sorted_geom[1].at_index + 1);
+		if (sorted_geom[1].type === "e") { face_b.push(sorted_geom[1].point); }
+		face_b.push(sorted_geom[0].point);
+		return [face_a, face_b];
+	}
+	if (vertices_intersections.length === 2) {
+		const sorted_vertices = vertices_intersections.slice()
+			.sort((a, b) => a.at_index - b.at_index);
+		const face_a = poly
+			.slice(sorted_vertices[1].at_index)
+			.concat(poly.slice(0, sorted_vertices[0].at_index + 1));
+		const face_b = poly
+			.slice(sorted_vertices[0].at_index, sorted_vertices[1].at_index + 1);
+		return [face_a, face_b];
+	}
+	return [poly.slice()];
 };const intersection = {
 	...generalIntersect,
 	...encloses,
+	clipLineConvexPolygon,
+	clipPolygonPolygon,
 	intersectConvexPolygonLine,
 	intersectCircleCircle,
 	intersectCircleLine,
@@ -1516,29 +1489,11 @@ const intersectCircleCircle = (c1_radius, c1_origin, c2_radius, c2_origin, epsil
 	overlapBoundingBoxes,
 	overlapLineLine,
 	overlapLinePoint,
-};const pointsToLine = (...args) => {
-	const points = getVectorOfVectors(...args);
-	return {
-		vector: subtract(points[1], points[0]),
-		origin: points[0],
-	};
-};
-const rayLineToUniqueLine = ({ vector, origin }) => {
-	const mag = magnitude(vector);
-	const normal = rotate90(vector);
-	const distance = dot(origin, normal) / mag;
-	return { normal: scale(normal, 1 / mag), distance };
-};
-const uniqueLineToRayLine = ({ normal, distance }) => ({
-	vector: rotate270(normal),
-	origin: scale(normal, distance),
-});const parameterize=/*#__PURE__*/Object.freeze({__proto__:null,pointsToLine,rayLineToUniqueLine,uniqueLineToRayLine});const types = {
-	...resizers,
-	...parameterize,
-	...getters,
+	splitConvexPolygon,
 };const math = {
+	...general,
+	...types,
 	...algebra,
 	...geometry,
 	...intersection,
-	...types,
 };return math;}));

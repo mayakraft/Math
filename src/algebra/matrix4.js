@@ -5,15 +5,15 @@
  * 4x4 matrix methods. the fourth column is a translation vector
  * these methods depend on arrays of 16 items.
  */
-import { EPSILON } from "./constants.js";
+import { EPSILON } from "../general/constants.js";
 import {
 	normalize,
 	normalize3,
 	subtract3,
 	cross3,
+	resize,
 } from "./vectors.js";
 import { makeMatrix2Reflect } from "./matrix2.js";
-import { resize } from "../types/resize.js";
 /**
  * @description the identity matrix for 3x3 matrices
  * @linkcode Math ./src/algebra/matrix4.js 18

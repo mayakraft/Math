@@ -1,11 +1,11 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../primitives/constructors.js";
+// import Constructors from "../primitives/constructors.js";
 import { identity3x4 } from "../algebra/matrix3.js";
-import { flattenArrays, semiFlattenArrays } from "./resize.js";
-import { fnNotUndefined } from "../algebra/functions.js";
-import { distance2 } from "../algebra/vectors.js";
+import { flattenArrays, semiFlattenArrays } from "../general/arrays.js";
+import { fnNotUndefined } from "../general/functions.js";
+// import { distance2 } from "../algebra/vectors.js";
 /**
  * @returns {object} in form { point:[], vector:[] }
 */
@@ -80,60 +80,62 @@ export const getLine = function () {
 
 export const getRay = getLine;
 
-export const getRectParams = (x = 0, y = 0, width = 0, height = 0) => ({
-	x, y, width, height,
-});
+// temporarily commenting this as it was used by the primitives.
 
-export const getRect = function () {
-	// if (arguments[0] instanceof Constructors.rect) { return arguments[0]; }
-	const list = flattenArrays(arguments); // .filter(fnNotUndefined);
-	if (list.length > 0
-		&& typeof list[0] === "object"
-		&& list[0] !== null
-		&& !Number.isNaN(list[0].width)) {
-		return getRectParams(...["x", "y", "width", "height"]
-			.map(c => list[0][c])
-			.filter(fnNotUndefined));
-	}
-	const numbers = list.filter(n => typeof n === "number");
-	const rectParams = numbers.length < 4
-		? [, , ...numbers]
-		: numbers;
-	return getRectParams(...rectParams);
-};
+// export const getRectParams = (x = 0, y = 0, width = 0, height = 0) => ({
+// 	x, y, width, height,
+// });
 
-/**
- * radius is the first parameter so that the origin can be N-dimensional
- * ...args is a list of numbers that become the origin.
- */
-const getCircleParams = (radius = 1, ...args) => ({
-	radius,
-	origin: [...args],
-});
+// export const getRect = function () {
+// 	// if (arguments[0] instanceof Constructors.rect) { return arguments[0]; }
+// 	const list = flattenArrays(arguments); // .filter(fnNotUndefined);
+// 	if (list.length > 0
+// 		&& typeof list[0] === "object"
+// 		&& list[0] !== null
+// 		&& !Number.isNaN(list[0].width)) {
+// 		return getRectParams(...["x", "y", "width", "height"]
+// 			.map(c => list[0][c])
+// 			.filter(fnNotUndefined));
+// 	}
+// 	const numbers = list.filter(n => typeof n === "number");
+// 	const rectParams = numbers.length < 4
+// 		? [, , ...numbers]
+// 		: numbers;
+// 	return getRectParams(...rectParams);
+// };
 
-export const getCircle = function () {
-	// if (arguments[0] instanceof Constructors.circle) { return arguments[0]; }
-	const vectors = getVectorOfVectors(arguments);
-	const numbers = flattenArrays(arguments).filter(a => typeof a === "number");
-	if (arguments.length === 2) {
-		if (vectors[1].length === 1) {
-			return getCircleParams(vectors[1][0], ...vectors[0]);
-		}
-		if (vectors[0].length === 1) {
-			return getCircleParams(vectors[0][0], ...vectors[1]);
-		}
-		if (vectors[0].length > 1 && vectors[1].length > 1) {
-			return getCircleParams(distance2(...vectors), ...vectors[0]);
-		}
-	} else {
-		switch (numbers.length) {
-		case 0: return getCircleParams(1, 0, 0, 0);
-		case 1: return getCircleParams(numbers[0], 0, 0, 0);
-		default: return getCircleParams(numbers.pop(), ...numbers);
-		}
-	}
-	return getCircleParams(1, 0, 0, 0);
-};
+// /**
+//  * radius is the first parameter so that the origin can be N-dimensional
+//  * ...args is a list of numbers that become the origin.
+//  */
+// const getCircleParams = (radius = 1, ...args) => ({
+// 	radius,
+// 	origin: [...args],
+// });
+
+// export const getCircle = function () {
+// 	// if (arguments[0] instanceof Constructors.circle) { return arguments[0]; }
+// 	const vectors = getVectorOfVectors(arguments);
+// 	const numbers = flattenArrays(arguments).filter(a => typeof a === "number");
+// 	if (arguments.length === 2) {
+// 		if (vectors[1].length === 1) {
+// 			return getCircleParams(vectors[1][0], ...vectors[0]);
+// 		}
+// 		if (vectors[0].length === 1) {
+// 			return getCircleParams(vectors[0][0], ...vectors[1]);
+// 		}
+// 		if (vectors[0].length > 1 && vectors[1].length > 1) {
+// 			return getCircleParams(distance2(...vectors), ...vectors[0]);
+// 		}
+// 	} else {
+// 		switch (numbers.length) {
+// 		case 0: return getCircleParams(1, 0, 0, 0);
+// 		case 1: return getCircleParams(numbers[0], 0, 0, 0);
+// 		default: return getCircleParams(numbers.pop(), ...numbers);
+// 		}
+// 	}
+// 	return getCircleParams(1, 0, 0, 0);
+// };
 
 const maps3x4 = [
 	[0, 1, 3, 4, 9, 10],

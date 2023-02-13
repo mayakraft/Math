@@ -1,13 +1,62 @@
 const { test, expect } = require("@jest/globals");
 const math = require("../math.js");
 
+test("collinearBetween", () => {
+	const [p0, p2] = [[0, 0], [1, 0]];
+	const p1 = [0.5, 0];
+	expect(math.collinearBetween(p0, p1, p2, false)).toBe(true);
+});
+
+test("collinearBetween on endpoint, inclusive", () => {
+	const [p0, p2] = [[0, 0], [1, 0]];
+	const p1 = [1e-12, 0];
+	expect(math.collinearBetween(p0, p1, p2, true)).toBe(true);
+});
+
+test("collinearBetween on endpoint, exclusive", () => {
+	const [p0, p2] = [[0, 0], [1, 0]];
+	const p1 = [1e-12, 0];
+	expect(math.collinearBetween(p0, p1, p2)).toBe(false);
+});
+
+test("collinearBetween almost near endpoint, exclusive", () => {
+	const [p0, p2] = [[0, 0], [1, 0]];
+	const p1 = [1e-4, 0];
+	expect(math.collinearBetween(p0, p1, p2)).toBe(true);
+});
+
+test("collinearBetween perpendicularly away too far", () => {
+	const [p0, p2] = [[0, 0], [1, 0]];
+	expect(math.collinearBetween(p0, [0.5, 1e-2], p2)).toBe(false);
+	expect(math.collinearBetween(p0, [0.5, 1e-3], p2)).toBe(false);
+	expect(math.collinearBetween(p0, [0.5, 1e-4], p2)).toBe(true);
+	expect(math.collinearBetween(p0, [0.5, 1e-5], p2)).toBe(true);
+});
+
+test("collinearBetween perpendicularly away near", () => {
+	const [p0, p2] = [[0, 0], [1, 0]];
+	const p1 = [0.5, 1e-12];
+	expect(math.collinearBetween(p0, p1, p2)).toBe(true);
+});
+
 test("intersectLineLine include exclude", () => {
-	const res0 = math
-		.intersectLineLine([0, 1], [1, 0], [1, 0], [0, 1]);
-	const res1 = math
-		.intersectLineLine([0, 1], [1, 0], [1, 0], [0, 1], math.includeS, math.includeS);
-	const res2 = math
-		.intersectLineLine([0, 1], [1, 0], [1, 0], [0, 1], math.excludeS, math.excludeS);
+	const res0 = math.intersectLineLine([0, 1], [1, 0], [1, 0], [0, 1]);
+	const res1 = math.intersectLineLine(
+		[0, 1],
+		[1, 0],
+		[1, 0],
+		[0, 1],
+		math.includeS,
+		math.includeS,
+	);
+	const res2 = math.intersectLineLine(
+		[0, 1],
+		[1, 0],
+		[1, 0],
+		[0, 1],
+		math.excludeS,
+		math.excludeS,
+	);
 	expect(res0).not.toBe(undefined);
 	expect(res1).not.toBe(undefined);
 	expect(res2).toBe(undefined);
@@ -335,8 +384,12 @@ test("collinear segment intersections", () => {
 });
 
 test("collinear segment intersections, types not core", () => {
-	const intersect = (a, b) => math
-		.intersectLineLine(a.vector, a.origin, b.vector, b.origin);
+	const intersect = (a, b) => math.intersectLineLine(
+		a.vector,
+		a.origin,
+		b.vector,
+		b.origin,
+	);
 	[
 		// horizontal
 		intersect(
@@ -470,4 +523,39 @@ test("polygon polygon collinear edge", () => {
 	];
 	const res1 = math.clipPolygonPolygon(polygon1, polygon2);
 	const res2 = math.clipPolygonPolygon(polygon2, polygon1);
+});
+
+test("intersect lines", () => {
+	const clipLine = math.intersectCircleLine(1, [0, 0], [0, 1], [0.5, 0]);
+	const shouldBeLine = [[0.5, -Math.sqrt(3) / 2], [0.5, Math.sqrt(3) / 2]];
+	math.fnEpsilonEqualVectors(clipLine[0], shouldBeLine[0]);
+	math.fnEpsilonEqualVectors(clipLine[1], shouldBeLine[1]);
+	// no intersect
+	expect(math.intersectCircleLine(1, [2, 2], [0, 1], [10, 0])).toBe(undefined);
+	// tangent
+	const tangent = math.intersectCircleLine(1, [2, 0], [0, 1], [3, 0]);
+	expect(tangent[0][0]).toBe(3);
+	expect(tangent[0][1]).toBe(0);
+
+	const shouldBeRay = [Math.SQRT1_2, Math.SQRT1_2];
+	const clipRay = math.intersectCircleLine(1, [0, 0], [0.1, 0.1], [0, 0], math.includeR);
+	math.fnEpsilonEqualVectors(shouldBeRay, clipRay[0]);
+
+	const shouldBeSeg = [Math.SQRT1_2, Math.SQRT1_2];
+	const clipSeg = math.intersectCircleLine(1, [0, 0], [10, 10], [0, 0], math.includeS);
+	math.fnEpsilonEqualVectors(shouldBeSeg, clipSeg[0]);
+});
+
+test("circle circle intersect", () => {
+	// same origin
+	expect(math.intersectCircleCircle(1, [0, 0], 2, [0, 0])).toBe(undefined);
+	// kissing circles
+	const result1 = math.intersectCircleCircle(1, [0, 0], 1, [2, 0]);
+	expect(result1[0][0]).toBe(1);
+	expect(result1[0][1]).toBe(0);
+	const result2 = math.intersectCircleCircle(1, [0, 0], 1, [Math.SQRT2, Math.SQRT2]);
+	expect(result2[0][0]).toBeCloseTo(Math.SQRT1_2);
+	expect(result2[0][1]).toBeCloseTo(Math.SQRT1_2);
+	// circles are contained
+	expect(math.intersectCircleCircle(10, [0, 0], 1, [2, 0])).toBe(undefined);
 });

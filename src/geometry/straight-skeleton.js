@@ -1,6 +1,7 @@
 /**
  * Math (c) Kraft
  */
+import { excludeR } from "../general/functions.js";
 import {
 	subtract,
 	distance,
@@ -9,11 +10,8 @@ import {
 import {
 	clockwiseBisect2,
 } from "./radial.js";
+import { nearestPointOnLine } from "./nearest.js";
 import intersectLineLine from "../intersection/intersect-line-line.js";
-import { nearestPointOnLine } from "../algebra/nearest.js";
-import {
-	excludeR,
-} from "../algebra/functions.js";
 /**
  * @description this recursive algorithm works outwards-to-inwards, each repeat
  * decreases the size of the polygon by one point/side. (removes 2, adds 1)

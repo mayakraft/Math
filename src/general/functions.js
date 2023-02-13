@@ -80,7 +80,7 @@ export const fnEqual = (a, b) => a === b;
  */
 export const fnEpsilonEqual = (a, b, epsilon = EPSILON) => Math.abs(a - b) < epsilon;
 /**
- * @description Sort two numbers within an epsilon of each other,
+ * @description Compare two numbers within an epsilon of each other,
  * so that "1": a < b, "-1": a > b, and "0": a ~= b (epsilon equal).
  * @param {number} a any number
  * @param {number} b any number
@@ -88,7 +88,7 @@ export const fnEpsilonEqual = (a, b, epsilon = EPSILON) => Math.abs(a - b) < eps
  * @returns {number} -1, 0, +1
  * @linkcode Math ./src/algebra/functions.js 89
  */
-export const fnEpsilonSort = (a, b, epsilon = EPSILON) => (
+export const fnEpsilonCompare = (a, b, epsilon = EPSILON) => (
 	fnEpsilonEqual(a, b, epsilon) ? 0 : Math.sign(b - a)
 );
 /**

@@ -2,15 +2,15 @@
  * Math (c) Kraft
  */
 import { EPSILON } from "./constants.js";
+import { fnEpsilonEqual } from "./functions.js";
 import {
 	normalize2,
 	distance2,
 	dot,
 	dot2,
 	subtract2,
-} from "./vectors.js";
-import { fnEpsilonEqual } from "./functions.js";
-import { minimum2DPointIndex } from "./nearest.js";
+} from "../algebra/vectors.js";
+import { minimum2DPointIndex } from "./search.js";
 /**
  * @description Provide a comparison function and use it to sort an array
  * of any type of object against a single item. The returned array will be

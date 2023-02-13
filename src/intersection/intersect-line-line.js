@@ -1,7 +1,8 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../algebra/constants.js";
+import { EPSILON } from "../general/constants.js";
+import { includeL } from "../general/functions.js";
 import {
 	add,
 	normalize,
@@ -9,9 +10,6 @@ import {
 	scale,
 	cross2,
 } from "../algebra/vectors.js";
-import {
-	includeL,
-} from "../algebra/functions.js";
 /**
  * @description Find the intersection of two lines. Lines can be lines/rays/segments,
  * and can be inclusve or exclusive in terms of their endpoints and the epsilon value.

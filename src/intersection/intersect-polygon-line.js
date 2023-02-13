@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../algebra/constants.js";
+import { EPSILON } from "../general/constants.js";
 import {
 	add,
 	subtract,
@@ -16,7 +16,7 @@ import {
 	excludeR,
 	excludeS,
 	fnEpsilonEqualVectors,
-} from "../algebra/functions.js";
+} from "../general/functions.js";
 import intersectLineLine from "./intersect-line-line.js";
 import overlapConvexPolygonPoint from "./overlap-polygon-point.js";
 

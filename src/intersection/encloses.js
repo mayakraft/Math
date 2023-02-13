@@ -1,9 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import {
-	include,
-} from "../algebra/functions.js";
+import { include } from "../general/functions.js";
 import overlapConvexPolygonPoint from "./overlap-polygon-point.js";
 /**
  *

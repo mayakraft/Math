@@ -1,15 +1,13 @@
 /**
  * Math (c) Kraft
  */
+import * as convertMethods from "./convert.js";
+import * as getMethods from "./get.js";
 // import typeOf from "./typeof.js";
-import * as resizers from "./resize.js";
-import * as getters from "./get.js";
-import * as parameterize from "./parameterize.js";
 
 export default {
-	...resizers,
-	...parameterize,
-	...getters,
+	...convertMethods,
+	...getMethods,
 	// typeOf,
 };
 

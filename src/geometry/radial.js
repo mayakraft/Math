@@ -4,7 +4,13 @@
 import {
 	EPSILON,
 	TWO_PI,
-} from "../algebra/constants.js";
+} from "../general/constants.js";
+import { semiFlattenArrays } from "../general/arrays.js";
+import {
+	fnVec2Angle,
+	fnToVec2,
+	fnEpsilonEqual,
+} from "../general/functions.js";
 import {
 	dot,
 	cross2,
@@ -16,14 +22,6 @@ import {
 	rotate90,
 	rotate270,
 } from "../algebra/vectors.js";
-import {
-	semiFlattenArrays,
-} from "../types/resize.js";
-import {
-	fnVec2Angle,
-	fnToVec2,
-	fnEpsilonEqual,
-} from "../algebra/functions.js";
 /**
  * measurements involving vectors and radians
  */

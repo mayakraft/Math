@@ -1,14 +1,14 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../algebra/constants.js";
+import { EPSILON } from "../general/constants.js";
+import { excludeL } from "../general/functions.js";
 import {
 	dot,
 	cross2,
 	add,
 	magnitude,
 } from "../algebra/vectors.js";
-import { excludeL } from "../algebra/functions.js";
 /**
  * @description 2D line intersection function, generalized and works for lines,
  * rays, segments.

@@ -1,21 +1,11 @@
 const { test, expect } = require("@jest/globals");
 const math = require("../math.js");
 
-const testEqualVectors = function (...args) {
-	expect(math.fnEpsilonEqualVectors(...args)).toBe(true);
+const testEqualVectorVectors = function (a, b) {
+	expect(a.length).toBe(b.length);
+	a.forEach((_, i) => expect(math.fnEpsilonEqualVectors(a[i], b[i]))
+		.toBe(true));
 };
-
-test("nearest point", () => {
-	testEqualVectors([5, 5], math.nearestPoint2(
-		[10, 0],
-		[[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9]],
-	));
-	testEqualVectors([6, 6, 0], math.nearestPoint(
-		[10, 0, 0],
-		[[0, 0, 0], [1, 1, 0], [2, 2, 0], [3, 3, 0], [4, 4, 1],
-			[5, 5, 10], [6, 6, 0], [7, 7, 0], [8, 8, 0], [9, 9, 0]],
-	));
-});
 
 test("circumcircle", () => {
 	const circle = math.circumcircle([1, 0], [0, 1], [-1, 0]);
@@ -108,75 +98,13 @@ test("make_polygon_side_length_s", () => {
 	expect(square2[0][0]).toBe(1);
 });
 
-// test("split_polygon", () => {
-//   math.split_polygon(poly, lineVector, linePoint)
-// });
-
-test("splitConvexPolygon", () => {
-	const rect_counter = [
-		[-1, -1],
-		[+1, -1],
-		[+1, +1],
-		[-1, +1],
-	];
-	const rect_clock = [
-		[-1, -1],
-		[-1, +1],
-		[+1, +1],
-		[+1, -1],
-	];
-	const res0 = math.splitConvexPolygon(rect_counter, [1, 2], [0, 0]);
-	[[-1, 1], [-1, -1], [-0.5, -1], [0.5, 1]].forEach((expected, i) => {
-		expect(JSON.stringify(expected)).toBe(JSON.stringify(res0[0][i]));
-	});
-	[[1, -1], [1, 1], [0.5, 1], [-0.5, -1]].forEach((expected, i) => {
-		expect(JSON.stringify(expected)).toBe(JSON.stringify(res0[1][i]));
-	});
-});
-
-test("splitConvexPolygon no overlap", () => {
-	const rect_counter = [
-		[-1, -1],
-		[+1, -1],
-		[+1, +1],
-		[-1, +1],
-	];
-	const result = math.splitConvexPolygon(rect_counter, [1, 2], [10, 0]);
-	rect_counter.forEach((expected, i) => {
-		expect(JSON.stringify(expected)).toBe(JSON.stringify(result[0][i]));
-	});
-});
-
-test("splitConvexPolygon vertex collinear", () => {
-	const rect_counter = [
-		[-1, -1],
-		[+1, -1],
-		[+1, +1],
-		[-1, +1],
-	];
-	const res0 = math.splitConvexPolygon(rect_counter, [1, 1], [0, 0]);
-	[[1, 1], [-1, 1], [-1, -1]].forEach((expected, i) => {
-		expect(JSON.stringify(expected)).toBe(JSON.stringify(res0[0][i]));
-	});
-	[[-1, -1], [1, -1], [1, 1]].forEach((expected, i) => {
-		expect(JSON.stringify(expected)).toBe(JSON.stringify(res0[1][i]));
-	});
-});
-
-test("splitConvexPolygon 1 edge and 1 vertex collinear", () => {
-	const rect_counter = [
-		[-1, -1],
-		[+1, -1],
-		[+1, +1],
-		[-1, +1],
-	];
-	const res0 = math.splitConvexPolygon(rect_counter, [1, 2], [-1, -1]);
-	[[-1, 1], [-1, -1], [0, 1]].forEach((expected, i) => {
-		expect(JSON.stringify(expected)).toBe(JSON.stringify(res0[0][i]));
-	});
-	[[1, -1], [1, 1], [0, 1], [-1, -1]].forEach((expected, i) => {
-		expect(JSON.stringify(expected)).toBe(JSON.stringify(res0[1][i]));
-	});
+test("makePolygonNonCollinear", () => {
+	const polygon = [[0, 0], [1, 0], [2, 0], [2, 2], [0, 2]];
+	const result = math.makePolygonNonCollinear(polygon);
+	testEqualVectorVectors(
+		[[0, 0], [2, 0], [2, 2], [0, 2]],
+		result,
+	);
 });
 
 test("straight skeleton triangle", () => {
@@ -185,12 +113,18 @@ test("straight skeleton triangle", () => {
 	expect(skeleton.length).toBe(4);
 	["skeleton", "skeleton", "skeleton", "perpendicular"]
 		.forEach((key, i) => expect(skeleton[i].type).toBe(key));
-	[[1, 0], [0, f1f]].forEach((pt, i) => math
-		.fnEpsilonEqualVectors(pt, skeleton[0].points[i]));
-	[[0, 1], [0, f1f]].forEach((pt, i) => math
-		.fnEpsilonEqualVectors(pt, skeleton[1].points[i]));
-	[[-1, 0], [0, f1f]].forEach((pt, i) => math
-		.fnEpsilonEqualVectors(pt, skeleton[2].points[i]));
+	[[1, 0], [0, f1f]].forEach((pt, i) => math.fnEpsilonEqualVectors(
+		pt,
+		skeleton[0].points[i],
+	));
+	[[0, 1], [0, f1f]].forEach((pt, i) => math.fnEpsilonEqualVectors(
+		pt,
+		skeleton[1].points[i],
+	));
+	[[-1, 0], [0, f1f]].forEach((pt, i) => math.fnEpsilonEqualVectors(
+		pt,
+		skeleton[2].points[i],
+	));
 });
 
 test("straight skeleton quad", () => {

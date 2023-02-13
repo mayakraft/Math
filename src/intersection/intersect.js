@@ -5,7 +5,7 @@ import typeOf from "../types/typeof.js";
 import {
 	exclude, includeS,
 	excludeL, excludeR, excludeS,
-} from "../algebra/functions.js";
+} from "../general/functions.js";
 import intersectLineLine from "./intersect-line-line.js";
 import intersectCircleCircle from "./intersect-circle-circle.js";
 import intersectCircleLine from "./intersect-circle-line.js";
