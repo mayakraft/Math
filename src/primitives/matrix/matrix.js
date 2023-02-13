@@ -1,17 +1,17 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
+import Constructors from "../constructors.js";
 
 import {
 	getVector,
 	getLine,
 	getMatrix3x4,
-} from "../../types/get";
+} from "../../types/get.js";
 
 import {
 	resize,
-} from "../../types/resize";
+} from "../../types/resize.js";
 
 import {
 	isIdentity3x4,
@@ -27,7 +27,7 @@ import {
 	makeMatrix3Rotate,
 	makeMatrix3Scale,
 	makeMatrix3ReflectZ,
-} from "../../algebra/matrix3";
+} from "../../algebra/matrix3.js";
 
 /**
  * 3D Matrix (3x4) with translation component in x,y,z. column-major order

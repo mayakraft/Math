@@ -1,16 +1,16 @@
 /**
  * Math (c) Kraft
  */
-import typeOf from "../types/typeof";
-import overlapConvexPolygons from "./overlap-polygons";
-import overlapConvexPolygonPoint from "./overlap-polygon-point";
-import { overlapCirclePoint } from "./overlap-circle";
-import overlapLineLine from "./overlap-line-line";
-import overlapLinePoint from "./overlap-line-point";
+import typeOf from "../types/typeof.js";
+import overlapConvexPolygons from "./overlap-polygons.js";
+import overlapConvexPolygonPoint from "./overlap-polygon-point.js";
+import { overlapCirclePoint } from "./overlap-circle.js";
+import overlapLineLine from "./overlap-line-line.js";
+import overlapLinePoint from "./overlap-line-point.js";
 import {
 	exclude, excludeL, excludeR, excludeS,
 	fnEpsilonEqualVectors,
-} from "../algebra/functions";
+} from "../algebra/functions.js";
 
 // all intersection functions expect primitives to be in a certain form
 // for example all lines are: vector, origin

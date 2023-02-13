@@ -1,12 +1,12 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
+import Constructors from "../constructors.js";
 import {
 	getVectorOfVectors,
 	getLine,
-} from "../../types/get";
-import Intersect from "../../intersection/intersect";
+} from "../../types/get.js";
+import Intersect from "../../intersection/intersect.js";
 
 // normal, origin definition
 export default {

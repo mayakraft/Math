@@ -1,23 +1,23 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
-import { resize } from "../../types/resize";
-import { getLine } from "../../types/get";
+import Constructors from "../constructors.js";
+import { resize } from "../../types/resize.js";
+import { getLine } from "../../types/get.js";
 import {
 	rayLineToUniqueLine,
 	uniqueLineToRayLine,
-} from "../../types/parameterize";
+} from "../../types/parameterize.js";
 import {
 	includeL,
 	excludeL,
-} from "../../algebra/functions";
+} from "../../algebra/functions.js";
 import {
 	add,
 	scale,
-} from "../../algebra/vectors";
-import Static from "./static";
-import methods from "./methods";
+} from "../../algebra/vectors.js";
+import Static from "./static.js";
+import methods from "./methods.js";
 
 export default {
 	line: {

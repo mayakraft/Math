@@ -1,19 +1,19 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
-import { fnEpsilonEqualVectors } from "../../algebra/functions";
-import { counterClockwiseBisect2 } from "../../geometry/radial";
+import Constructors from "../constructors.js";
+import { fnEpsilonEqualVectors } from "../../algebra/functions.js";
+import { counterClockwiseBisect2 } from "../../geometry/radial.js";
 
 import {
 	resize,
 	resizeUp,
-} from "../../types/resize";
+} from "../../types/resize.js";
 
 import {
 	getVector,
 	getMatrix3x4,
-} from "../../types/get";
+} from "../../types/get.js";
 
 import {
 	magnitude,
@@ -30,17 +30,17 @@ import {
 	rotate90,
 	rotate270,
 	parallel,
-} from "../../algebra/vectors";
+} from "../../algebra/vectors.js";
 
 import {
 	makeMatrix2Rotate,
-} from "../../algebra/matrix2";
+} from "../../algebra/matrix2.js";
 
 import {
 	multiplyMatrix3Vector3,
-} from "../../algebra/matrix3";
+} from "../../algebra/matrix3.js";
 
-import overlap from "../../intersection/overlap";
+import overlap from "../../intersection/overlap.js";
 
 const table = {
 	preserve: { // don't transform the return type. preserve it

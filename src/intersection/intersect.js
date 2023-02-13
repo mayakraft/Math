@@ -1,15 +1,15 @@
 /**
  * Math (c) Kraft
  */
-import typeOf from "../types/typeof";
+import typeOf from "../types/typeof.js";
 import {
 	exclude, includeS,
 	excludeL, excludeR, excludeS,
-} from "../algebra/functions";
-import intersectLineLine from "./intersect-line-line";
-import intersectCircleCircle from "./intersect-circle-circle";
-import intersectCircleLine from "./intersect-circle-line";
-import intersectConvexPolygonLine from "./intersect-polygon-line";
+} from "../algebra/functions.js";
+import intersectLineLine from "./intersect-line-line.js";
+import intersectCircleCircle from "./intersect-circle-circle.js";
+import intersectCircleLine from "./intersect-circle-line.js";
+import intersectConvexPolygonLine from "./intersect-polygon-line.js";
 
 // all intersection functions expect primitives to be in a certain form
 // for example all lines are: vector, origin

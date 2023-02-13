@@ -1,9 +1,9 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../algebra/constants";
-import { radialSortPointIndices } from "../algebra/sort";
-import { threePointTurnDirection } from "./radial";
+import { EPSILON } from "../algebra/constants.js";
+import { radialSortPointIndices } from "../algebra/sort.js";
+import { threePointTurnDirection } from "./radial.js";
 /**
  * @description mirror an array and join it at the end, except
  * do not duplicate the final element, it should only appear once.
@@ -20,6 +20,12 @@ const mirror = (arr) => arr.concat(arr.slice(0, -1).reverse());
  */
 export const convexHullIndices = (points = [], includeCollinear = false, epsilon = EPSILON) => {
 	if (points.length < 2) { return []; }
+	// if includeCollinear is true, we need to walk collinear points,
+	// problem is we don't know if we should be going towards or away from
+	// the origin point, so to work around that, make a mirror of all collinear
+	// vertices so that it walks both directions, ie: 1,6,5,13,5,6,1.
+	// half of them will be ignored due to being rejected from the
+	// threePointTurnDirection call, and the correct half will be saved.
 	const order = radialSortPointIndices(points, epsilon)
 		.map(arr => (arr.length === 1 ? arr : mirror(arr)))
 		.flat();
@@ -57,7 +63,7 @@ export const convexHullIndices = (points = [], includeCollinear = false, epsilon
  * @param {number} [epsilon=1e-6] undefined behavior when larger than 0.01
  * @returns {number[][]} the convex hull as a list of points,
  * where each point is an array of numbers
- * @linkcode Math ./src/geometry/convex-hull.js 60
+ * @linkcode Math ./src/geometry/convex-hull.js 66
  */
 export const convexHull = (points = [], includeCollinear = false, epsilon = EPSILON) => (
 	convexHullIndices(points, includeCollinear, epsilon)

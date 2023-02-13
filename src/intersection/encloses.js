@@ -3,8 +3,8 @@
  */
 import {
 	include,
-} from "../algebra/functions";
-import overlapConvexPolygonPoint from "./overlap-polygon-point";
+} from "../algebra/functions.js";
+import overlapConvexPolygonPoint from "./overlap-polygon-point.js";
 /**
  *
  */

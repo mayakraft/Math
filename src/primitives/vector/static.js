@@ -1,8 +1,8 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
-import { D2R } from "../../algebra/constants";
+import Constructors from "../constructors.js";
+import { D2R } from "../../algebra/constants.js";
 
 const VectorStatic = {
 	fromAngle: function (angle) {

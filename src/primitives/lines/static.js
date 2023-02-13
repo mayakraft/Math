@@ -6,11 +6,11 @@ import {
 	average,
 	subtract,
 	rotate90,
-} from "../../algebra/vectors";
+} from "../../algebra/vectors.js";
 
 import {
 	getVectorOfVectors,
-} from "../../types/get";
+} from "../../types/get.js";
 
 export default {
 	fromPoints: function () {

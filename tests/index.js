@@ -1,6 +1,6 @@
 // isomorphic
 var window;
-const math = (window !== undefined) ? window.math : require("../math");
+const math = (window !== undefined) ? window.math : require("../math.js");
 
 const verbose = true;
 const bar = "============================================================";
@@ -22,7 +22,7 @@ const testName = function (newName) {
  * such that the test "1e-8 is equivalent to 0" will come back true
  */
 const testEqual = function (...args) {
-	if (!math.core.equivalent(...args)) {
+	if (!math.equivalent(...args)) {
 		// test failed
 		const message = `xxx test failed. #${testNumber} of ${name}`;
 		failedTests.push({ message, args });
@@ -41,87 +41,87 @@ const testEqual = function (...args) {
  */
 testName("clean number");
 // this is the most decimal places javascript uses
-testEqual(true, math.core.cleanNumber(0.12345678912345678)
+testEqual(true, math.cleanNumber(0.12345678912345678)
 	=== 0.12345678912345678);
-testEqual(true, math.core.cleanNumber(0.12345678912345678, 5)
+testEqual(true, math.cleanNumber(0.12345678912345678, 5)
 	=== 0.12345678912345678);
-testEqual(true, math.core.cleanNumber(0.00000678912345678, 5)
+testEqual(true, math.cleanNumber(0.00000678912345678, 5)
 	=== 0.00000678912345678);
-testEqual(true, math.core.cleanNumber(0.00000078912345678, 5)
+testEqual(true, math.cleanNumber(0.00000078912345678, 5)
 	=== 0);
-testEqual(true, math.core.cleanNumber(0.00000000000000001)
+testEqual(true, math.cleanNumber(0.00000000000000001)
 	=== 0);
-testEqual(true, math.core.cleanNumber(0.0000000000000001)
+testEqual(true, math.cleanNumber(0.0000000000000001)
 	=== 0);
-testEqual(true, math.core.cleanNumber(0.000000000000001)
+testEqual(true, math.cleanNumber(0.000000000000001)
 	=== 0.000000000000001);
-testEqual(true, math.core.cleanNumber(0.00000000001, 9)
+testEqual(true, math.cleanNumber(0.00000000001, 9)
 	=== 0);
-testEqual(true, math.core.cleanNumber(0.0000000001, 9)
+testEqual(true, math.cleanNumber(0.0000000001, 9)
 	=== 0);
-testEqual(true, math.core.cleanNumber(0.000000001, 9)
+testEqual(true, math.cleanNumber(0.000000001, 9)
 	=== 0.000000001);
 
 /**
  * inputs and argument inference
  */
 testName("semi-flatten input");
-testEqual([{ x: 5, y: 3 }], math.core.semiFlattenArrays({ x: 5, y: 3 }));
-testEqual([{ x: 5, y: 3 }], math.core.semiFlattenArrays([[[{ x: 5, y: 3 }]]]));
-testEqual([5, 3], math.core.semiFlattenArrays([[[5, 3]]]));
-testEqual([[5], [3]], math.core.semiFlattenArrays([[[5], [3]]]));
-testEqual([[[5]], [[3]]], math.core.semiFlattenArrays([[[5]], [[3]]]));
-testEqual([[[[5]]], [[[3]]]], math.core.semiFlattenArrays([[[5]]], [[[3]]]));
-testEqual(true, undefined === math.core.getVector(undefined, undefined));
+testEqual([{ x: 5, y: 3 }], math.semiFlattenArrays({ x: 5, y: 3 }));
+testEqual([{ x: 5, y: 3 }], math.semiFlattenArrays([[[{ x: 5, y: 3 }]]]));
+testEqual([5, 3], math.semiFlattenArrays([[[5, 3]]]));
+testEqual([[5], [3]], math.semiFlattenArrays([[[5], [3]]]));
+testEqual([[[5]], [[3]]], math.semiFlattenArrays([[[5]], [[3]]]));
+testEqual([[[[5]]], [[[3]]]], math.semiFlattenArrays([[[5]]], [[[3]]]));
+testEqual(true, undefined === math.getVector(undefined, undefined));
 
 testName("flatten input");
-testEqual([1], math.core.flattenArrays([[[1]], []]));
-testEqual([1, 2, 3, 4], math.core.flattenArrays([[[1, 2, 3, 4]]]));
-testEqual([1, 2, 3, 4], math.core.flattenArrays(1, 2, 3, 4));
+testEqual([1], math.flattenArrays([[[1]], []]));
+testEqual([1, 2, 3, 4], math.flattenArrays([[[1, 2, 3, 4]]]));
+testEqual([1, 2, 3, 4], math.flattenArrays(1, 2, 3, 4));
 testEqual([1, 2, 3, 4, 2, 4],
-	math.core.flattenArrays([1, 2, 3, 4], [2, 4]));
+	math.flattenArrays([1, 2, 3, 4], [2, 4]));
 testEqual([1, 2, 3, 4, 6, 7, 6],
-	math.core.flattenArrays([1, 2, 3, 4], [6, 7], 6));
+	math.flattenArrays([1, 2, 3, 4], [6, 7], 6));
 testEqual([1, 2, 3, 4, 6, 7, 6, 2, 4, 5],
-	math.core.flattenArrays([1, 2, 3, 4], [6, 7], 6, 2, 4, 5));
-testEqual([{ x: 5, y: 3 }], math.core.flattenArrays({ x: 5, y: 3 }));
-testEqual([{ x: 5, y: 3 }], math.core.flattenArrays([[{ x: 5, y: 3 }]]));
+	math.flattenArrays([1, 2, 3, 4], [6, 7], 6, 2, 4, 5));
+testEqual([{ x: 5, y: 3 }], math.flattenArrays({ x: 5, y: 3 }));
+testEqual([{ x: 5, y: 3 }], math.flattenArrays([[{ x: 5, y: 3 }]]));
 testEqual([1, 2, 3, 4, 5, 6],
-	math.core.flattenArrays([[[1], [2, 3]]], 4, [5, 6]));
+	math.flattenArrays([[[1], [2, 3]]], 4, [5, 6]));
 
 testName("get vector");
-testEqual([1, 2, 3, 4], math.core.getVector([[[1, 2, 3, 4]]]));
-testEqual([1, 2, 3, 4], math.core.getVector(1, 2, 3, 4));
-testEqual([1, 2, 3, 4, 2, 4], math.core.getVector([1, 2, 3, 4], [2, 4]));
-testEqual([1, 2, 3, 4, 6, 7, 6], math.core.getVector([1, 2, 3, 4], [6, 7], 6));
-testEqual([1, 2, 3, 4, 6, 7, 6, 2, 4, 5], math.core.getVector([1, 2, 3, 4], [6, 7], 6, 2, 4, 5));
-testEqual([5, 3], math.core.getVector({ x: 5, y: 3 }));
-testEqual([5, 3], math.core.getVector([[[{ x: 5, y: 3 }]]]));
-testEqual([5, 3], math.core.getVector([[[5, 3]]]));
-testEqual([5, 3], math.core.getVector([[[5], [3]]]));
-testEqual([5, 3], math.core.getVector([[[5]], [[3]]]));
-testEqual([5, 3], math.core.getVector([[[5]]], [[[3]]]));
-testEqual([5, 3], math.core.getVector([[[5]]], 3));
+testEqual([1, 2, 3, 4], math.getVector([[[1, 2, 3, 4]]]));
+testEqual([1, 2, 3, 4], math.getVector(1, 2, 3, 4));
+testEqual([1, 2, 3, 4, 2, 4], math.getVector([1, 2, 3, 4], [2, 4]));
+testEqual([1, 2, 3, 4, 6, 7, 6], math.getVector([1, 2, 3, 4], [6, 7], 6));
+testEqual([1, 2, 3, 4, 6, 7, 6, 2, 4, 5], math.getVector([1, 2, 3, 4], [6, 7], 6, 2, 4, 5));
+testEqual([5, 3], math.getVector({ x: 5, y: 3 }));
+testEqual([5, 3], math.getVector([[[{ x: 5, y: 3 }]]]));
+testEqual([5, 3], math.getVector([[[5, 3]]]));
+testEqual([5, 3], math.getVector([[[5], [3]]]));
+testEqual([5, 3], math.getVector([[[5]], [[3]]]));
+testEqual([5, 3], math.getVector([[[5]]], [[[3]]]));
+testEqual([5, 3], math.getVector([[[5]]], 3));
 
 testName("get vector of vectors");
 testEqual([[1, 2], [3, 4]],
-	math.core.getVectorOfVectors({ x: 1, y: 2 }, { x: 3, y: 4 }));
+	math.getVectorOfVectors({ x: 1, y: 2 }, { x: 3, y: 4 }));
 testEqual([[1, 2], [3, 4]],
-	math.core.getVectorOfVectors([[[{ x: 1, y: 2 }, { x: 3, y: 4 }]]]));
+	math.getVectorOfVectors([[[{ x: 1, y: 2 }, { x: 3, y: 4 }]]]));
 testEqual([[1, 2], [3, 4]],
-	math.core.getVectorOfVectors([[[1, 2], [3, 4]]]));
+	math.getVectorOfVectors([[[1, 2], [3, 4]]]));
 testEqual([[1, 2], [3, 4]],
-	math.core.getVectorOfVectors([[[1, 2]], [[3, 4]]]));
+	math.getVectorOfVectors([[[1, 2]], [[3, 4]]]));
 testEqual([[1, 2], [3, 4]],
-	math.core.getVectorOfVectors([[[1, 2]]], [[[3, 4]]]));
+	math.getVectorOfVectors([[[1, 2]]], [[[3, 4]]]));
 testEqual([[1], [2], [3], [4]],
-	math.core.getVectorOfVectors([[[1], [2], [3], [4]]]));
+	math.getVectorOfVectors([[[1], [2], [3], [4]]]));
 testEqual([[1], [2], [3], [4]],
-	math.core.getVectorOfVectors([[[1]], [[2]], [[3]], [[4]]]));
+	math.getVectorOfVectors([[[1]], [[2]], [[3]], [[4]]]));
 testEqual([[1], [2], [3], [4]],
-	math.core.getVectorOfVectors([[[1]]], 2, 3, 4));
+	math.getVectorOfVectors([[[1]]], 2, 3, 4));
 testEqual([[1], [2], [3], [4]],
-	math.core.getVectorOfVectors([[[1, 2, 3, 4]]]));
+	math.getVectorOfVectors([[[1, 2, 3, 4]]]));
 
 testName("get two vectors");
 testEqual([[1, 2], [3, 4]], math.segment(1, 2, 3, 4));
@@ -130,41 +130,41 @@ testEqual([[1, 2], [3, 4]], math.segment([1, 2, 3, 4]));
 testEqual([[1, 2], [3, 4]], math.segment([[1, 2], [3, 4]]));
 
 testName("get matrix");
-testEqual([1, 2, 3, 4, 5, 6], math.core.getMatrix2([[[1, 2, 3, 4, 5, 6]]]));
-testEqual([1, 2, 3, 4, 0, 0], math.core.getMatrix2([[1, 2, 3, 4]]));
-testEqual([1, 2, 3, 1, 0, 0], math.core.getMatrix2(1, 2, 3));
-testEqual([1, 2, 3, 1, 0, 0], math.core.getMatrix2(math.matrix2(1, 2, 3, 1)));
+testEqual([1, 2, 3, 4, 5, 6], math.getMatrix2([[[1, 2, 3, 4, 5, 6]]]));
+testEqual([1, 2, 3, 4, 0, 0], math.getMatrix2([[1, 2, 3, 4]]));
+testEqual([1, 2, 3, 1, 0, 0], math.getMatrix2(1, 2, 3));
+testEqual([1, 2, 3, 1, 0, 0], math.getMatrix2(math.matrix2(1, 2, 3, 1)));
 
 /**
  * queries
  */
 
 testName("equivalent function");
-testEqual(true, math.core.equivalent(4, 4, 4));
-testEqual(false, math.core.equivalent(4, 4, 5));
-testEqual(true, math.core.equivalent([0], [0], [0]));
-testEqual(false, math.core.equivalent([0], [0, 0], [0]));
-testEqual(false, math.core.equivalent([0], [0], [1]));
-testEqual(false, math.core.equivalent([1], [0], [1]));
-testEqual(true, math.core.equivalent(1, 1, 0.99999999999));
-testEqual(true, math.core.equivalent([1], [1], [0.99999999999]));
-testEqual(false, math.core.equivalent([1], [1, 1], [1]));
-testEqual(false, math.core.equivalent([1], [1, 0], [1]));
-testEqual(true, math.core.equivalent(true, true, true, true));
-testEqual(true, math.core.equivalent(false, false, false, false));
-testEqual(false, math.core.equivalent(false, false, false, true));
+testEqual(true, math.equivalent(4, 4, 4));
+testEqual(false, math.equivalent(4, 4, 5));
+testEqual(true, math.equivalent([0], [0], [0]));
+testEqual(false, math.equivalent([0], [0, 0], [0]));
+testEqual(false, math.equivalent([0], [0], [1]));
+testEqual(false, math.equivalent([1], [0], [1]));
+testEqual(true, math.equivalent(1, 1, 0.99999999999));
+testEqual(true, math.equivalent([1], [1], [0.99999999999]));
+testEqual(false, math.equivalent([1], [1, 1], [1]));
+testEqual(false, math.equivalent([1], [1, 0], [1]));
+testEqual(true, math.equivalent(true, true, true, true));
+testEqual(true, math.equivalent(false, false, false, false));
+testEqual(false, math.equivalent(false, false, false, true));
 // equivalency has not yet been made to work with other types.
 // inside the equivalent function, it calls equivalent_vectors which calls
 // getVectorOfVectors, which is forcing the removal of data that isn't a number
 // tests 1 and 2 work, 3 doesn't
-// testEqual(true, math.core.equivalent("hi", "hi", "hi"));
-// testEqual(false, math.core.equivalent("hi", "hi", "bye"));
-// testEqual(false, math.core.equivalent(["hi", "hi"], ["hi", "hi", "hi"]));
+// testEqual(true, math.equivalent("hi", "hi", "hi"));
+// testEqual(false, math.equivalent("hi", "hi", "bye"));
+// testEqual(false, math.equivalent(["hi", "hi"], ["hi", "hi", "hi"]));
 
 testName("equivalent numbers");
-testEqual(true, math.core.equivalentNumbers([[[1, 1, 1, 1, 1]]]));
-testEqual(false, math.core.equivalentNumbers([[[1, 1, 1, 1, 1, 4]]]));
-testEqual(false, math.core.equivalentNumbers([1, 1, 1, 1, 1, 1], [1, 2]));
+testEqual(true, math.equivalentNumbers([[[1, 1, 1, 1, 1]]]));
+testEqual(false, math.equivalentNumbers([[[1, 1, 1, 1, 1, 4]]]));
+testEqual(false, math.equivalentNumbers([1, 1, 1, 1, 1, 1], [1, 2]));
 
 /**
  * algebra core
@@ -172,11 +172,11 @@ testEqual(false, math.core.equivalentNumbers([1, 1, 1, 1, 1, 1], [1, 2]));
 
 testName("average function");
 testEqual([3.75, 4.75],
-	math.core.average([4, 1], [5, 6], [4, 6], [2, 6]));
+	math.average([4, 1], [5, 6], [4, 6], [2, 6]));
 testEqual([4, 5, 3],
-	math.core.average([1, 2, 3], [4, 5, 6], [7, 8]));
+	math.average([1, 2, 3], [4, 5, 6], [7, 8]));
 testEqual([4, 5, 6],
-	math.core.average([1, 2, 3], [4, 5, 6], [7, 8, 9]));
+	math.average([1, 2, 3], [4, 5, 6], [7, 8, 9]));
 
 /**
  * vectors
@@ -210,41 +210,41 @@ testEqual([1, 2, 3], math.vector(1, 2, 3).copy().copy());
 
 // todo: test matrix3 methods (invert) with the translation component to make sure it carries over
 testName("matrix core");
-testEqual(12, math.core.determinant3([1, 2, 3, 2, 4, 8, 7, 8, 9]));
-testEqual(10, math.core.determinant3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
+testEqual(12, math.determinant3([1, 2, 3, 2, 4, 8, 7, 8, 9]));
+testEqual(10, math.determinant3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
 testEqual([4, 5, -8, -5, -6, 9, -2, -2, 3, 0, 0, 0],
-	math.core.invertMatrix3([0, 1, -3, -3, -4, 4, -2, -2, 1, 0, 0, 0]));
+	math.invertMatrix3([0, 1, -3, -3, -4, 4, -2, -2, 1, 0, 0, 0]));
 testEqual([0.2, -0.2, 0.2, 0.2, 0.3, -0.3, 0, 1, 0, 0, 0, 0],
-	math.core.invertMatrix3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
-const mat_3d_ref = math.core.makeMatrix3ReflectZ([1, -2], [12, 13]);
-testEqual(math.core.makeMatrix2Reflect([1, -2], [12, 13]),
+	math.invertMatrix3([3, 2, 0, 0, 0, 1, 2, -2, 1, 0, 0, 0]));
+const mat_3d_ref = math.makeMatrix3ReflectZ([1, -2], [12, 13]);
+testEqual(math.makeMatrix2Reflect([1, -2], [12, 13]),
 	[mat_3d_ref[0], mat_3d_ref[1], mat_3d_ref[3], mat_3d_ref[4], mat_3d_ref[9], mat_3d_ref[10]]);
 // rotate 360 degrees about an arbitrary axis and origin
 testEqual([1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-	math.core.makeMatrix3Rotate(Math.PI * 2,
+	math.makeMatrix3Rotate(Math.PI * 2,
 		[Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5],
 		[Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]));
 
-testEqual(math.core.make_matrix3_rotateX(Math.PI / 6),
-	math.core.makeMatrix3Rotate(Math.PI / 6, [1, 0, 0]));
-testEqual(math.core.make_matrix3_rotateY(Math.PI / 6),
-	math.core.makeMatrix3Rotate(Math.PI / 6, [0, 1, 0]));
-testEqual(math.core.make_matrix3_rotateZ(Math.PI / 6),
-	math.core.makeMatrix3Rotate(Math.PI / 6, [0, 0, 1]));
+testEqual(math.make_matrix3_rotateX(Math.PI / 6),
+	math.makeMatrix3Rotate(Math.PI / 6, [1, 0, 0]));
+testEqual(math.make_matrix3_rotateY(Math.PI / 6),
+	math.makeMatrix3Rotate(Math.PI / 6, [0, 1, 0]));
+testEqual(math.make_matrix3_rotateZ(Math.PI / 6),
+	math.makeMatrix3Rotate(Math.PI / 6, [0, 0, 1]));
 // source wikipedia https://en.wikipedia.org/wiki/Rotation_matrix#Examples
 testEqual([
 	0.35612209405955486, -0.8018106071106572, 0.47987165414043453,
 	0.47987165414043464, 0.5975763087872217, 0.6423595182829954,
 	-0.8018106071106572, 0.0015183876574496047, 0.5975763087872216,
 	0, 0, 0
-], math.core.makeMatrix3Rotate(-74 / 180 * Math.PI, [-1 / 3, 2 / 3, 2 / 3]));
+], math.makeMatrix3Rotate(-74 / 180 * Math.PI, [-1 / 3, 2 / 3, 2 / 3]));
 
 testEqual([1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0],
-	math.core.makeMatrix3Rotate(Math.PI / 6, [1, 0, 0]));
+	math.makeMatrix3Rotate(Math.PI / 6, [1, 0, 0]));
 
 // source wolfram alpha
 testEqual([-682, 3737, -5545, 2154, -549, -1951, 953, -3256, 4401, 0, 0, 0],
-	math.core.multiply_matrices3([5, -52, 85, 15, -9, -2, 32, 2, -50, 0, 0, 0],
+	math.multiply_matrices3([5, -52, 85, 15, -9, -2, 32, 2, -50, 0, 0, 0],
 		[-77, 25, -21, 3, 53, 42, 63, 2, 19, 0, 0, 0]));
 
 testName("matrices");
@@ -367,23 +367,23 @@ testEqual(4, math.polygon.regularPolygon(4).area());
 testName("interior angles");
 testEqual(
 	[Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
-	[[1, 0], [0, 1], [-1, 0], [0, -1]].map((v, i, ar) => math.core
+	[[1, 0], [0, 1], [-1, 0], [0, -1]].map((v, i, ar) => math
 		.counter_clockwise_angle2(v, ar[(i + 1) % ar.length]))
 );
 testEqual(
 	[Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
-	[[1, 1], [-1, 1], [-1, -1], [1, -1]].map((v, i, ar) => math.core
+	[[1, 1], [-1, 1], [-1, -1], [1, -1]].map((v, i, ar) => math
 		.counter_clockwise_angle2(v, ar[(i + 1) % ar.length]))
 );
 
 testName("counter-clockwise vector sorting");
 testEqual(
 	[0, 1, 2, 3],
-	math.core.counterClockwiseVectorOrder([1, 1], [-1, 1], [-1, -1], [1, -1])
+	math.counterClockwiseVectorOrder([1, 1], [-1, 1], [-1, -1], [1, -1])
 );
 testEqual(
 	[0, 3, 2, 1],
-	math.core.counterClockwiseVectorOrder([1, -1], [-1, -1], [-1, 1], [1, 1])
+	math.counterClockwiseVectorOrder([1, -1], [-1, -1], [-1, 1], [1, 1])
 );
 
 testName("sectors");
@@ -410,25 +410,25 @@ testEqual([Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2],
  */
 /*
 testName("kawasaki's theorem math");
-testEqual([16, 20], math.core.alternating_sum(1, 2, 3, 4, 5, 6, 7, 8));
-testEqual([0, 0], math.core.alternating_deviation(Math.PI, Math.PI));
-testEqual([0, 0], math.core.alternating_deviation(
+testEqual([16, 20], math.alternating_sum(1, 2, 3, 4, 5, 6, 7, 8));
+testEqual([0, 0], math.alternating_deviation(Math.PI, Math.PI));
+testEqual([0, 0], math.alternating_deviation(
 	Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2
 ));
 testEqual([1, -1],
-	math.core.alternating_deviation(Math.PI - 1, Math.PI + 1));
+	math.alternating_deviation(Math.PI - 1, Math.PI + 1));
 testEqual([1, -1],
-	math.core.alternating_deviation(
+	math.alternating_deviation(
 		Math.PI / 2 - 0.5,
 		Math.PI / 2 + 0.5,
 		Math.PI / 2 - 0.5,
 		Math.PI / 2 + 0.5
 	));
 testEqual([0, 0],
-	math.core.alternating_deviation(...math.core.interior_angles([1, 0], [0, 1], [-1, 0], [0, -1])));
+	math.alternating_deviation(...math.interior_angles([1, 0], [0, 1], [-1, 0], [0, -1])));
 testEqual(
 	[undefined, undefined, 1.25 * Math.PI],
-	math.core.kawasaki_solutions_radians(
+	math.kawasaki_solutions_radians(
 		0, Math.PI / 2, Math.PI / 4 * 3
 	)
 );
@@ -436,14 +436,14 @@ testEqual(
 	[[Math.cos(Math.PI * 1 / 3), Math.sin(Math.PI * 1 / 3)],
 		[Math.cos(Math.PI * 3 / 3), Math.sin(Math.PI * 3 / 3)],
 		[Math.cos(Math.PI * 5 / 3), Math.sin(Math.PI * 5 / 3)]],
-	math.core.kawasaki_solutions(
+	math.kawasaki_solutions(
 		[Math.cos(0), Math.sin(0)],
 		[Math.cos(Math.PI * 2 / 3), Math.sin(Math.PI * 2 / 3)],
 		[Math.cos(Math.PI * 4 / 3), Math.sin(Math.PI * 4 / 3)]
 	)
 );
 testEqual([undefined, undefined, [-sqrt05, -sqrt05]],
-	math.core.kawasaki_solutions(
+	math.kawasaki_solutions(
 		[Math.cos(0), Math.sin(0)],
 		[Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)],
 		[Math.cos(Math.PI / 2), Math.sin(Math.PI / 2)]
@@ -451,9 +451,9 @@ testEqual([undefined, undefined, [-sqrt05, -sqrt05]],
 */
 
 testName("nearest point");
-testEqual([5, 5], math.core.nearestPoint2([10, 0],
+testEqual([5, 5], math.nearestPoint2([10, 0],
 	[[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9]]));
-testEqual([6, 6, 0], math.core.nearestPoint([10, 0, 0],
+testEqual([6, 6, 0], math.nearestPoint([10, 0, 0],
 	[[0, 0, 0], [1, 1, 0], [2, 2, 0], [3, 3, 0], [4, 4, 1],
 		[5, 5, 10], [6, 6, 0], [7, 7, 0], [8, 8, 0], [9, 9, 0]]));
 

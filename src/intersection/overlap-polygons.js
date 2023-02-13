@@ -5,8 +5,8 @@ import {
 	dot,
 	subtract,
 	rotate90,
-} from "../algebra/vectors";
-import { EPSILON } from "../algebra/constants";
+} from "../algebra/vectors.js";
+import { EPSILON } from "../algebra/constants.js";
 /**
  * @description find out if two convex polygons are overlapping by searching
  * for a dividing axis, which should be one side from one of the polygons.

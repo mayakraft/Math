@@ -1,15 +1,15 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON, TWO_PI } from "../algebra/constants";
-import { cleanNumber } from "../types/resize";
+import { EPSILON, TWO_PI } from "../algebra/constants.js";
+import { cleanNumber } from "../types/resize.js";
 import {
 	fnAdd,
-} from "../algebra/functions";
+} from "../algebra/functions.js";
 import {
 	subtract,
 	parallel,
-} from "../algebra/vectors";
+} from "../algebra/vectors.js";
 
 /**
  * the radius parameter measures from the center to the midpoint of the edge
@@ -182,10 +182,12 @@ export const centroid = (points) => {
  * (positive=inclusive boundary, negative=exclusive boundary)
  * @param {number[][]} points an array of unsorted points, in any dimension
  * @param {number} [padding=0] optionally add padding around the box
- * @returns {BoundingBox} an object where "min" and "max" are two points and "span" is the lengths
- * @linkcode Math ./src/geometry/polygons.js 186
+ * @returns {BoundingBox?} an object where "min" and "max" are two points and
+ * "span" is the lengths. returns "undefined" if no points were provided.
+ * @linkcode Math ./src/geometry/polygons.js 187
  */
 export const boundingBox = (points, padding = 0) => {
+	if (!points || !points.length) { return undefined; }
 	const min = Array(points[0].length).fill(Infinity);
 	const max = Array(points[0].length).fill(-Infinity);
 	points.forEach(point => point

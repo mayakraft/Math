@@ -1,13 +1,13 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../algebra/constants";
-import { includeL } from "../algebra/functions";
+import { EPSILON } from "../algebra/constants.js";
+import { includeL } from "../algebra/functions.js";
 import {
 	subtract,
 	cross2,
 	rotate90,
-} from "../algebra/vectors";
+} from "../algebra/vectors.js";
 /**
  * @description Calculate the intersection of a circle and a line; the line can
  * be a line, ray, or segment.

@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import { getVector } from "../../types/get";
+import { getVector } from "../../types/get.js";
 
 const VectorArgs = function () {
 	this.push(...getVector(arguments));

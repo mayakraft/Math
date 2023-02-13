@@ -1,11 +1,11 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../primitives/constructors";
-import { identity3x4 } from "../algebra/matrix3";
-import { flattenArrays, semiFlattenArrays } from "./resize";
-import { fnNotUndefined } from "../algebra/functions";
-import { distance2 } from "../algebra/vectors";
+import Constructors from "../primitives/constructors.js";
+import { identity3x4 } from "../algebra/matrix3.js";
+import { flattenArrays, semiFlattenArrays } from "./resize.js";
+import { fnNotUndefined } from "../algebra/functions.js";
+import { distance2 } from "../algebra/vectors.js";
 /**
  * @returns {object} in form { point:[], vector:[] }
 */
@@ -21,7 +21,7 @@ const vectorOriginForm = (vector, origin) => ({
 */
 export const getVector = function () {
 	// todo, incorporate constructors.vector check to all indices. and below
-	if (arguments[0] instanceof Constructors.vector) { return arguments[0]; }
+	// if (arguments[0] instanceof Constructors.vector) { return arguments[0]; }
 	let list = flattenArrays(arguments); // .filter(fnNotUndefined);
 	if (list.length > 0
 		&& typeof list[0] === "object"
@@ -49,9 +49,9 @@ export const getVectorOfVectors = function () {
  * @returns {number[]} segment in array form [[a1, a2], [b1, b2]]
 */
 export const getSegment = function () {
-	if (arguments[0] instanceof Constructors.segment) {
-		return arguments[0];
-	}
+	// if (arguments[0] instanceof Constructors.segment) {
+	// 	return arguments[0];
+	// }
 	const args = semiFlattenArrays(arguments);
 	if (args.length === 4) {
 		return [
@@ -67,9 +67,9 @@ export const getSegment = function () {
 export const getLine = function () {
 	const args = semiFlattenArrays(arguments);
 	if (args.length === 0) { return vectorOriginForm([], []); }
-	if (args[0] instanceof Constructors.line
-		|| args[0] instanceof Constructors.ray
-		|| args[0] instanceof Constructors.segment) { return args[0]; }
+	// if (args[0] instanceof Constructors.line
+	// 	|| args[0] instanceof Constructors.ray
+	// 	|| args[0] instanceof Constructors.segment) { return args[0]; }
 	if (args[0].constructor === Object && args[0].vector !== undefined) {
 		return vectorOriginForm(args[0].vector || [], args[0].origin || []);
 	}
@@ -85,7 +85,7 @@ export const getRectParams = (x = 0, y = 0, width = 0, height = 0) => ({
 });
 
 export const getRect = function () {
-	if (arguments[0] instanceof Constructors.rect) { return arguments[0]; }
+	// if (arguments[0] instanceof Constructors.rect) { return arguments[0]; }
 	const list = flattenArrays(arguments); // .filter(fnNotUndefined);
 	if (list.length > 0
 		&& typeof list[0] === "object"
@@ -112,7 +112,7 @@ const getCircleParams = (radius = 1, ...args) => ({
 });
 
 export const getCircle = function () {
-	if (arguments[0] instanceof Constructors.circle) { return arguments[0]; }
+	// if (arguments[0] instanceof Constructors.circle) { return arguments[0]; }
 	const vectors = getVectorOfVectors(arguments);
 	const numbers = flattenArrays(arguments).filter(a => typeof a === "number");
 	if (arguments.length === 2) {

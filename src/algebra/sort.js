@@ -1,15 +1,15 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "./constants";
+import { EPSILON } from "./constants.js";
 import {
 	normalize2,
 	distance2,
 	dot2,
 	subtract2,
-} from "./vectors";
-import { fnEpsilonEqual } from "./functions";
-import { minimum2DPointIndex } from "./nearest";
+} from "./vectors.js";
+import { fnEpsilonEqual } from "./functions.js";
+import { minimum2DPointIndex } from "./nearest.js";
 /**
  * @description sort an array of 2D points along a 2D vector.
  * @param {number[][]} points array of points (which are arrays of numbers)

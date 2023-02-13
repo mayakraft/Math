@@ -1,13 +1,13 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../algebra/constants";
+import { EPSILON } from "../algebra/constants.js";
 import {
 	fnNotUndefined,
 	include,
 	includeL,
 	includeS,
-} from "../algebra/functions";
+} from "../algebra/functions.js";
 import {
 	normalize,
 	magnitude,
@@ -16,8 +16,8 @@ import {
 	subtract,
 	scale,
 	flip,
-} from "../algebra/vectors";
-import overlapConvexPolygonPoint from "../intersection/overlap-polygon-point";
+} from "../algebra/vectors.js";
+import overlapConvexPolygonPoint from "../intersection/overlap-polygon-point.js";
 
 const lineLineParameter = (
 	lineVector,
@@ -43,7 +43,9 @@ const lineLineParameter = (
 	return undefined;
 };
 
-const linePointFromParameter = (vector, origin, t) => add(origin, scale(vector, t));
+const linePointFromParameter = (vector, origin, t) => (
+	add(origin, scale(vector, t))
+);
 
 // get all intersections with polgyon faces using the polyLineFunc:
 // - includeS or excludeS

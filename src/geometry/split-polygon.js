@@ -1,14 +1,14 @@
 /**
  * Math (c) Kraft
  */
-import { subtract } from "../algebra/vectors";
-import overlapLinePoint from "../intersection/overlap-line-point";
-import intersectLineLine from "../intersection/intersect-line-line";
+import { subtract } from "../algebra/vectors.js";
+import overlapLinePoint from "../intersection/overlap-line-point.js";
+import intersectLineLine from "../intersection/intersect-line-line.js";
 import {
 	includeL,
 	excludeL,
 	excludeS,
-} from "../algebra/functions";
+} from "../algebra/functions.js";
 /**
  * @description Split a convex polygon by a line and rebuild each half into two convex polygons.
  * @param {number[][]} polygon an array of points, each point is an array of numbers

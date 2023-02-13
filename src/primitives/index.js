@@ -1,22 +1,22 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "./constructors";
-import Vector from "./vector/index";
-import Line from "./lines/line";
-import Ray from "./lines/ray";
-import Segment from "./lines/segment";
-import Circle from "./circle/index";
-import Ellipse from "./ellipse/index";
-import Rect from "./rect/index";
-import Polygon from "./polygon/index";
-import Polyline from "./polyline/index";
-import Matrix from "./matrix/matrix";
-// import Junction from "./junction/index";
-// import Plane from "./plane/index";
-// import Matrix2 from "./matrix/matrix2";
+import Constructors from "./constructors.js";
+import Vector from "./vector/index.js";
+import Line from "./lines/line.js";
+import Ray from "./lines/ray.js";
+import Segment from "./lines/segment.js";
+import Circle from "./circle/index.js";
+import Ellipse from "./ellipse/index.js";
+import Rect from "./rect/index.js";
+import Polygon from "./polygon/index.js";
+import Polyline from "./polyline/index.js";
+import Matrix from "./matrix/matrix.js";
+// import Junction from "./junction/index.js";
+// import Plane from "./plane/index.js";
+// import Matrix2 from "./matrix/matrix2.js";
 
-// import PolygonPrototype from "./prototypes/polygon";
+// import PolygonPrototype from "./prototypes/polygon.js";
 
 // Each primitive is defined by these key/values:
 // {
@@ -28,22 +28,21 @@ import Matrix from "./matrix/matrix";
 // }
 // keys are one letter to shrink minified compile size
 
-const Definitions = Object.assign(
-	{},
-	Vector,
-	Line,
-	Ray,
-	Segment,
-	Circle,
-	Ellipse,
-	Rect,
-	Polygon,
-	Polyline,
-	Matrix,
+const Definitions = {
+	...Vector,
+	...Line,
+	...Ray,
+	...Segment,
+	...Circle,
+	...Ellipse,
+	...Rect,
+	...Polygon,
+	...Polyline,
+	...Matrix,
 	// Junction,
 	// Plane,
 	// Matrix2,
-);
+};
 
 const create = function (primitiveName, args) {
 	const a = Object.create(Definitions[primitiveName].proto);

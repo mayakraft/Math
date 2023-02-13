@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "./constants";
+import { EPSILON } from "./constants.js";
 /**
  * common functions that get reused, especially inside of map/reduce etc...
  */
@@ -80,8 +80,8 @@ export const fnEqual = (a, b) => a === b;
  */
 export const fnEpsilonEqual = (a, b, epsilon = EPSILON) => Math.abs(a - b) < epsilon;
 /**
- * @description Sort two numbers within an epsilon of each other, so that "1": a < b,
- * "-1": a > b, and "0": a ~= b (epsilon equal).
+ * @description Sort two numbers within an epsilon of each other,
+ * so that "1": a < b, "-1": a > b, and "0": a ~= b (epsilon equal).
  * @param {number} a any number
  * @param {number} b any number
  * @param {number} [epsilon=1e-6] an optional epsilon
@@ -92,8 +92,11 @@ export const fnEpsilonSort = (a, b, epsilon = EPSILON) => (
 	fnEpsilonEqual(a, b, epsilon) ? 0 : Math.sign(b - a)
 );
 /**
- * @description are two vectors equal to each other within an epsilon. This method
- * uses a fast rectangle-area around each vector.
+ * @description are two vectors equal to each other within an epsilon.
+ * This method uses a axis-aligned bounding box to check equality
+ * for speed. If the two vectors are of differing lengths, assume
+ * the remaining values are zero, compare until the end of the
+ * longest vector.
  * @param {number[]} a an array of numbers
  * @param {number[]} b an array of numbers
  * @returns {boolean} true if the vectors are similar within an epsilon
@@ -153,10 +156,10 @@ export const excludeS = (t, e = EPSILON) => t > e && t < 1 - e;
  * @description These clamp functions process lines/rays/segments intersections.
  * The line method allows all values.
  * @param {number} t the length along the vector
- * @returns {number} the clamped input value
+ * @returns {number} the clamped input value (line does not clamp)
  * @linkcode Math ./src/algebra/functions.js 157
  */
-export const lineLimiter = dist => dist;
+export const clampLine = dist => dist;
 /**
  * @description These clamp functions process lines/rays/segments intersections.
  * The ray method clamps values below -epsilon to be 0.
@@ -164,7 +167,7 @@ export const lineLimiter = dist => dist;
  * @returns {number} the clamped input value
  * @linkcode Math ./src/algebra/functions.js 165
  */
-export const rayLimiter = dist => (dist < -EPSILON ? 0 : dist);
+export const clampRay = dist => (dist < -EPSILON ? 0 : dist);
 /**
  * @description These clamp functions process lines/rays/segments intersections.
  * The segment method clamps values below -epsilon to be 0 and above 1+epsilon to 1.
@@ -172,7 +175,7 @@ export const rayLimiter = dist => (dist < -EPSILON ? 0 : dist);
  * @returns {number} the clamped input value
  * @linkcode Math ./src/algebra/functions.js 173
  */
-export const segmentLimiter = (dist) => {
+export const clampSegment = (dist) => {
 	if (dist < -EPSILON) { return 0; }
 	if (dist > 1 + EPSILON) { return 1; }
 	return dist;

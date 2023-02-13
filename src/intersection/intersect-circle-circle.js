@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../algebra/constants";
+import { EPSILON } from "../algebra/constants.js";
 
 const acosSafe = (x) => {
 	if (x >= 1.0) return 0;

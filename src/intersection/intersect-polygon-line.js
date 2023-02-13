@@ -1,12 +1,12 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../algebra/constants";
+import { EPSILON } from "../algebra/constants.js";
 import {
 	add,
 	subtract,
 	midpoint,
-} from "../algebra/vectors";
+} from "../algebra/vectors.js";
 import {
 	exclude,
 	includeL,
@@ -16,9 +16,9 @@ import {
 	excludeR,
 	excludeS,
 	fnEpsilonEqualVectors,
-} from "../algebra/functions";
-import intersectLineLine from "./intersect-line-line";
-import overlapConvexPolygonPoint from "./overlap-polygon-point";
+} from "../algebra/functions.js";
+import intersectLineLine from "./intersect-line-line.js";
+import overlapConvexPolygonPoint from "./overlap-polygon-point.js";
 
 // todo, this is copied over in clip/polygon.js
 const getUniquePair = (intersections) => {

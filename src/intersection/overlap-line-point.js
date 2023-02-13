@@ -1,14 +1,14 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../algebra/constants";
+import { EPSILON } from "../algebra/constants.js";
 import {
 	dot,
 	cross2,
 	subtract,
 	magSquared,
-} from "../algebra/vectors";
-import { excludeL } from "../algebra/functions";
+} from "../algebra/vectors.js";
+import { excludeL } from "../algebra/functions.js";
 /**
  * @description check if a point lies collinear along a line, and specify if the
  * line is a line/ray/segment and test whether the point lies within endpoint(s).

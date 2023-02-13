@@ -1,18 +1,18 @@
 /**
  * Math (c) Kraft
  */
-import { getLine } from "../types/get";
+import { getLine } from "../types/get.js";
 import {
 	lerp,
 	parallel,
-} from "../algebra/vectors";
+} from "../algebra/vectors.js";
 import {
 	clockwiseAngle2,
 	counterClockwiseAngle2,
 	clockwiseSubsect2,
 	counterClockwiseSubsect2,
-} from "./radial";
-import intersectLineLine from "../intersection/intersect-line-line";
+} from "./radial.js";
+import intersectLineLine from "../intersection/intersect-line-line.js";
 
 const pleatParallel = (count, a, b) => {
 	const origins = Array.from(Array(count - 1))

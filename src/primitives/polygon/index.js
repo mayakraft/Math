@@ -1,12 +1,12 @@
 /**
  * Math (c) Kraft
  */
-import methods from "../shared/polygon";
-import { semiFlattenArrays } from "../../types/resize";
-import { include, exclude } from "../../algebra/functions";
-import { subtract } from "../../algebra/vectors";
-import { convexHull } from "../../geometry/convex-hull";
-import { makePolygonCircumradius } from "../../geometry/polygons";
+import methods from "../shared/polygon.js";
+import { semiFlattenArrays } from "../../types/resize.js";
+import { include, exclude } from "../../algebra/functions.js";
+import { subtract } from "../../algebra/vectors.js";
+import { convexHull } from "../../geometry/convex-hull.js";
+import { makePolygonCircumradius } from "../../geometry/polygons.js";
 
 export default {
 	polygon: {

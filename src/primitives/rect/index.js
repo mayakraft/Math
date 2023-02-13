@@ -1,14 +1,14 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
-import methods from "../shared/polygon";
-import { boundingBox } from "../../geometry/polygons";
-import { include, exclude } from "../../algebra/functions";
+import Constructors from "../constructors.js";
+import methods from "../shared/polygon.js";
+import { boundingBox } from "../../geometry/polygons.js";
+import { include, exclude } from "../../algebra/functions.js";
 import {
 	getRect,
 	getVectorOfVectors,
-} from "../../types/get";
+} from "../../types/get.js";
 
 /**
  * this Rectangle type is aligned to the axes for speedy calculation.

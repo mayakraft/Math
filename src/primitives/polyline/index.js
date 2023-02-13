@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import { semiFlattenArrays } from "../../types/resize";
+import { semiFlattenArrays } from "../../types/resize.js";
 
 export default {
 	polyline: {

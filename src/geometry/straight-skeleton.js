@@ -5,15 +5,15 @@ import {
 	subtract,
 	distance,
 	flip,
-} from "../algebra/vectors";
+} from "../algebra/vectors.js";
 import {
 	clockwiseBisect2,
-} from "./radial";
-import intersectLineLine from "../intersection/intersect-line-line";
-import { nearestPointOnLine } from "../algebra/nearest";
+} from "./radial.js";
+import intersectLineLine from "../intersection/intersect-line-line.js";
+import { nearestPointOnLine } from "../algebra/nearest.js";
 import {
 	excludeR,
-} from "../algebra/functions";
+} from "../algebra/functions.js";
 /**
  * @description this recursive algorithm works outwards-to-inwards, each repeat
  * decreases the size of the polygon by one point/side. (removes 2, adds 1)

@@ -1,32 +1,32 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
-import { multiplyMatrix3Vector3 } from "../../algebra/matrix3";
+import Constructors from "../constructors.js";
+import { multiplyMatrix3Vector3 } from "../../algebra/matrix3.js";
 import {
 	signedArea,
 	centroid,
 	boundingBox,
-} from "../../geometry/polygons";
-import splitConvexPolygon from "../../geometry/split-polygon";
-import straightSkeleton from "../../geometry/straight-skeleton";
+} from "../../geometry/polygons.js";
+import splitConvexPolygon from "../../geometry/split-polygon.js";
+import straightSkeleton from "../../geometry/straight-skeleton.js";
 import {
 	getVector,
 	getMatrix3x4,
 	getLine,
-} from "../../types/get";
+} from "../../types/get.js";
 import {
 	resize,
-} from "../../types/resize";
+} from "../../types/resize.js";
 import {
 	includeL,
-} from "../../algebra/functions";
-import Intersect from "../../intersection/intersect";
-import Overlap from "../../intersection/overlap";
-import clipLineConvexPolygon from "../../geometry/clip-line-polygon";
+} from "../../algebra/functions.js";
+import Intersect from "../../intersection/intersect.js";
+import Overlap from "../../intersection/overlap.js";
+import clipLineConvexPolygon from "../../geometry/clip-line-polygon.js";
 import {
 	nearestPointOnPolygon,
-} from "../../algebra/nearest";
+} from "../../algebra/nearest.js";
 
 // a polygon is expecting to have these properties:
 // this - an array of vectors in [] form

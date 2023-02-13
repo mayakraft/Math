@@ -1,11 +1,11 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "./constants";
+import { EPSILON } from "./constants.js";
 import {
 	fnSquare,
 	fnAdd,
-} from "./functions";
+} from "./functions.js";
 
 /**
  * algebra operations on vectors (mostly).
@@ -45,14 +45,14 @@ export const magnitude2 = v => Math.sqrt(v[0] * v[0] + v[1] * v[1]);
  * @description compute the magnitude a 3D vector
  * @param {number[]} v one 3D vector
  * @returns {number} one scalar
- * @linkcode
+ * @linkcode Math ./src/algebra/vectors.js 48
  */
 export const magnitude3 = v => Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 /**
  * @description compute the square-magnitude an n-dimensional vector
  * @param {number[]} v one vector, n-dimensions
  * @returns {number} one scalar
- * @linkcode Math ./src/algebra/vectors.js 48
+ * @linkcode Math ./src/algebra/vectors.js 55
  */
 export const magSquared = v => v
 	.map(fnSquare)
@@ -61,7 +61,7 @@ export const magSquared = v => v
  * @description normalize the input vector and return a new vector as a copy
  * @param {number[]} v one vector, n-dimensions
  * @returns {number[]} one vector, dimension matching the input vector
- * @linkcode Math ./src/algebra/vectors.js 57
+ * @linkcode Math ./src/algebra/vectors.js 64
  */
 export const normalize = (v) => {
 	const m = magnitude(v);
@@ -71,7 +71,7 @@ export const normalize = (v) => {
  * @description normalize the input vector and return a new vector as a copy
  * @param {number[]} v one 2D vector
  * @returns {number[]} one 2D vector
- * @linkcode Math ./src/algebra/vectors.js 67
+ * @linkcode Math ./src/algebra/vectors.js 74
  */
 export const normalize2 = (v) => {
 	const m = magnitude2(v);
@@ -81,7 +81,7 @@ export const normalize2 = (v) => {
  * @description normalize the input vector and return a new vector as a copy
  * @param {number[]} v one 3D vector
  * @returns {number[]} one 3D vector
- * @linkcode
+ * @linkcode Math ./src/algebra/vectors.js 84
  */
 export const normalize3 = (v) => {
 	const m = magnitude3(v);
@@ -92,7 +92,7 @@ export const normalize3 = (v) => {
  * @param {number[]} v one vector, n-dimensions
  * @param {number} s one scalar
  * @returns {number[]} one vector
- * @linkcode Math ./src/algebra/vectors.js 78
+ * @linkcode Math ./src/algebra/vectors.js 95
  */
 export const scale = (v, s) => v.map(n => n * s);
 /**
@@ -100,16 +100,24 @@ export const scale = (v, s) => v.map(n => n * s);
  * @param {number[]} v one 2D vector
  * @param {number} s one scalar
  * @returns {number[]} one 2D vector
- * @linkcode Math ./src/algebra/vectors.js 86
+ * @linkcode Math ./src/algebra/vectors.js 103
  */
 export const scale2 = (v, s) => [v[0] * s, v[1] * s];
+/**
+ * @description scale an input vector by one number, return a copy.
+ * @param {number[]} v one 3D vector
+ * @param {number} s one scalar
+ * @returns {number[]} one 3D vector
+ * @linkcode
+ */
+export const scale3 = (v, s) => [v[0] * s, v[1] * s, v[2] * s];
 /**
  * @description add two vectors and return the sum as another vector,
  * do not modify the input vectors.
  * @param {number[]} v one vector, n-dimensions
  * @param {number[]} u one vector, n-dimensions
  * @returns {number[]} one vector, dimension matching first parameter
- * @linkcode Math ./src/algebra/vectors.js 95
+ * @linkcode Math ./src/algebra/vectors.js 112
  */
 export const add = (v, u) => v.map((n, i) => n + (u[i] || 0));
 /**
@@ -118,7 +126,7 @@ export const add = (v, u) => v.map((n, i) => n + (u[i] || 0));
  * @param {number[]} v one 2D vector
  * @param {number[]} u one 2D vector
  * @returns {number[]} one 2D vector
- * @linkcode Math ./src/algebra/vectors.js 104
+ * @linkcode Math ./src/algebra/vectors.js 121
  */
 export const add2 = (v, u) => [v[0] + u[0], v[1] + u[1]];
 /**
@@ -127,7 +135,7 @@ export const add2 = (v, u) => [v[0] + u[0], v[1] + u[1]];
  * @param {number[]} v one 3D vector
  * @param {number[]} u one 3D vector
  * @returns {number[]} one 3D vector
- * @linkcode Math ./src/algebra/vectors.js 104
+ * @linkcode Math ./src/algebra/vectors.js 130
  */
 export const add3 = (v, u) => [v[0] + u[0], v[1] + u[1], v[2] + u[2]];
 /**
@@ -135,7 +143,7 @@ export const add3 = (v, u) => [v[0] + u[0], v[1] + u[1], v[2] + u[2]];
  * @param {number[]} v one vector, n-dimensions
  * @param {number[]} u one vector, n-dimensions
  * @returns {number[]} one vector, dimension matching first parameter
- * @linkcode Math ./src/algebra/vectors.js 112
+ * @linkcode Math ./src/algebra/vectors.js 138
  */
 export const subtract = (v, u) => v.map((n, i) => n - (u[i] || 0));
 /**
@@ -143,7 +151,7 @@ export const subtract = (v, u) => v.map((n, i) => n - (u[i] || 0));
  * @param {number[]} v one 2D vector
  * @param {number[]} u one 2D vector
  * @returns {number[]} one 2D vector
- * @linkcode Math ./src/algebra/vectors.js 120
+ * @linkcode Math ./src/algebra/vectors.js 146
  */
 export const subtract2 = (v, u) => [v[0] - u[0], v[1] - u[1]];
 /**
@@ -151,7 +159,7 @@ export const subtract2 = (v, u) => [v[0] - u[0], v[1] - u[1]];
  * @param {number[]} v one 3D vector
  * @param {number[]} u one 3D vector
  * @returns {number[]} one 3D vector
- * @linkcode Math ./src/algebra/vectors.js 120
+ * @linkcode Math ./src/algebra/vectors.js 154
  */
 export const subtract3 = (v, u) => [v[0] - u[0], v[1] - u[1], v[2] - u[2]];
 /**
@@ -159,7 +167,7 @@ export const subtract3 = (v, u) => [v[0] - u[0], v[1] - u[1], v[2] - u[2]];
  * @param {number[]} v one vector, n-dimensions
  * @param {number[]} u one vector, n-dimensions
  * @returns {number} one scalar
- * @linkcode Math ./src/algebra/vectors.js 128
+ * @linkcode Math ./src/algebra/vectors.js 162
  */
 export const dot = (v, u) => v
 	.map((_, i) => v[i] * u[i])
@@ -169,15 +177,23 @@ export const dot = (v, u) => v
  * @param {number[]} v one 2D vector
  * @param {number[]} u one 2D vector
  * @returns {number} one scalar
- * @linkcode Math ./src/algebra/vectors.js 138
+ * @linkcode Math ./src/algebra/vectors.js 172
  */
 export const dot2 = (v, u) => v[0] * u[0] + v[1] * u[1];
+/**
+ * @description compute the dot product of two 3D vectors.
+ * @param {number[]} v one 3D vector
+ * @param {number[]} u one 3D vector
+ * @returns {number} one scalar
+ * @linkcode Math ./src/algebra/vectors.js 172
+ */
+export const dot3 = (v, u) => v[0] * u[0] + v[1] * u[1] + v[2] * u[2];
 /**
  * @description compute the midpoint of two vectors.
  * @param {number[]} v one vector, n-dimensions
  * @param {number[]} u one vector, n-dimensions
  * @returns {number} one vector, dimension matching first parameter
- * @linkcode Math ./src/algebra/vectors.js 146
+ * @linkcode Math ./src/algebra/vectors.js 180
  */
 export const midpoint = (v, u) => v.map((n, i) => (n + u[i]) / 2);
 /**
@@ -185,15 +201,23 @@ export const midpoint = (v, u) => v.map((n, i) => (n + u[i]) / 2);
  * @param {number[]} v one 2D vector
  * @param {number[]} u one 2D vector
  * @returns {number} one 2D vector
- * @linkcode Math ./src/algebra/vectors.js 154
+ * @linkcode Math ./src/algebra/vectors.js 188
  */
 export const midpoint2 = (v, u) => scale2(add2(v, u), 0.5);
 /**
- * @description the average of N number of vectors, similar to midpoint,
- * but can accept more than 2 inputs
+ * @description compute the midpoint of two 2D vectors.
+ * @param {number[]} v one 2D vector
+ * @param {number[]} u one 2D vector
+ * @returns {number} one 2D vector
+ * @linkcode Math ./src/algebra/vectors.js 188
+ */
+export const midpoint3 = (v, u) => scale3(add3(v, u), 0.5);
+/**
+ * @description the average of N number of vectors (not numbers),
+ * similar to midpoint but this can accept more than 2 inputs.
  * @param {number[]} ...args any number of input vectors
  * @returns {number[]} one vector, dimension matching first parameter
- * @linkcode Math ./src/algebra/vectors.js 162
+ * @linkcode Math ./src/algebra/vectors.js 196
  */
 export const average = function () {
 	if (arguments.length === 0) { return []; }
@@ -209,7 +233,7 @@ export const average = function () {
  * @param {number[]} u one vector, n-dimensions
  * @param {number} t one scalar between 0 and 1 (not clamped)
  * @returns {number[]} one vector, dimensions matching first parameter
- * @linkcode Math ./src/algebra/vectors.js 178
+ * @linkcode Math ./src/algebra/vectors.js 212
  */
 export const lerp = (v, u, t) => {
 	const inv = 1.0 - t;
@@ -221,7 +245,7 @@ export const lerp = (v, u, t) => {
  * @param {number[]} v one 2D vector
  * @param {number[]} u one 2D vector
  * @returns {number} one scalar; the determinant; the magnitude of the vector
- * @linkcode Math ./src/algebra/vectors.js 190
+ * @linkcode Math ./src/algebra/vectors.js 224
  */
 export const cross2 = (v, u) => v[0] * u[1] - v[1] * u[0];
 /**
@@ -229,7 +253,7 @@ export const cross2 = (v, u) => v[0] * u[1] - v[1] * u[0];
  * @param {number[]} v one 3D vector
  * @param {number[]} u one 3D vector
  * @returns {number[]} one 3D vector
- * @linkcode Math ./src/algebra/vectors.js 198
+ * @linkcode Math ./src/algebra/vectors.js 232
  */
 export const cross3 = (v, u) => [
 	v[1] * u[2] - v[2] * u[1],
@@ -241,7 +265,7 @@ export const cross3 = (v, u) => [
  * @param {number[]} v one vector, n-dimensions
  * @param {number[]} u one vector, n-dimensions
  * @returns {number} one scalar
- * @linkcode Math ./src/algebra/vectors.js 210
+ * @linkcode Math ./src/algebra/vectors.js 244
  */
 export const distance = (v, u) => Math.sqrt(v
 	.map((_, i) => (v[i] - u[i]) ** 2)
@@ -251,7 +275,7 @@ export const distance = (v, u) => Math.sqrt(v
  * @param {number[]} v one 2D vector
  * @param {number[]} u one 2D vector
  * @returns {number} one scalar
- * @linkcode Math ./src/algebra/vectors.js 220
+ * @linkcode Math ./src/algebra/vectors.js 254
  */
 export const distance2 = (v, u) => {
 	const p = v[0] - u[0];
@@ -263,7 +287,7 @@ export const distance2 = (v, u) => {
  * @param {number[]} v one 3D vector
  * @param {number[]} u one 3D vector
  * @returns {number} one scalar
- * @linkcode Math ./src/algebra/vectors.js 232
+ * @linkcode Math ./src/algebra/vectors.js 266
  */
 export const distance3 = (v, u) => {
 	const a = v[0] - u[0];
@@ -275,21 +299,21 @@ export const distance3 = (v, u) => {
  * @description return a copy of the input vector where each element's sign flipped
  * @param {number[]} v one vector, n-dimensions
  * @returns {number[]} one vector, dimensions matching input parameter
- * @linkcode Math ./src/algebra/vectors.js 244
+ * @linkcode Math ./src/algebra/vectors.js 278
  */
 export const flip = v => v.map(n => -n);
 /**
  * @description return a copy of the input vector rotated 90 degrees counter-clockwise
  * @param {number[]} v one 2D vector
  * @returns {number[]} one 2D vector
- * @linkcode Math ./src/algebra/vectors.js 251
+ * @linkcode Math ./src/algebra/vectors.js 285
  */
 export const rotate90 = v => [-v[1], v[0]];
 /**
  * @description return a copy of the input vector rotated 270 degrees counter-clockwise
  * @param {number[]} v one 2D vector
  * @returns {number[]} one 2D vector
- * @linkcode Math ./src/algebra/vectors.js 258
+ * @linkcode Math ./src/algebra/vectors.js 292
  */
 export const rotate270 = v => [v[1], -v[0]];
 /**
@@ -297,28 +321,45 @@ export const rotate270 = v => [v[1], -v[0]];
  * @param {number[]} v one vector, n-dimensions
  * @param {number} [epsilon=1e-6] an optional epsilon with a default value of 1e-6
  * @returns {boolean} is the magnitude of the vector smaller than the epsilon?
- * @linkcode Math ./src/algebra/vectors.js 266
+ * @linkcode Math ./src/algebra/vectors.js 300
  */
 export const degenerate = (v, epsilon = EPSILON) => v
 	.map(n => Math.abs(n))
 	.reduce(fnAdd, 0) < epsilon;
 /**
- * @description check if two vectors are parallel to each other within an epsilon
+ * @description check if two already normalized vectors are parallel
+ * to each other, within an epsilon. Parallel includes the case where
+ * the vectors are exactly 180 degrees flipped from one another.
  * @param {number[]} v one vector, n-dimensions
  * @param {number[]} u one vector, n-dimensions
  * @param {number} [epsilon=1e-6] an optional epsilon with a default value of 1e-6
  * @returns {boolean} are the two vectors parallel within an epsilon?
- * @linkcode Math ./src/algebra/vectors.js 277
+ * @linkcode Math ./src/algebra/vectors.js 311
  */
-export const parallel = (v, u, epsilon = EPSILON) => 1 - Math
-	.abs(dot(normalize(v), normalize(u))) < epsilon;
+export const parallelNormalized = (v, u, epsilon = EPSILON) => 1 - Math
+	.abs(dot(v, u)) < epsilon;
+/**
+ * @description check if two vectors are parallel to each other,
+ * within an epsilon. Parallel includes the case where the
+ * vectors are exactly 180 degrees flipped from one another.
+ * @param {number[]} v one vector, n-dimensions
+ * @param {number[]} u one vector, n-dimensions
+ * @param {number} [epsilon=1e-6] an optional epsilon with a default value of 1e-6
+ * @returns {boolean} are the two vectors parallel within an epsilon?
+ * @linkcode Math ./src/algebra/vectors.js 311
+ */
+export const parallel = (v, u, epsilon = EPSILON) => parallelNormalized(
+	normalize(v),
+	normalize(u),
+	epsilon,
+);
 /**
  * @description check if two 2D vectors are parallel to each other within an epsilon
  * @param {number[]} v one 2D vector
  * @param {number[]} u one 2D vector
  * @param {number} [epsilon=1e-6] an optional epsilon with a default value of 1e-6
  * @returns {boolean} are the two vectors parallel within an epsilon?
- * @linkcode Math ./src/algebra/vectors.js 287
+ * @linkcode Math ./src/algebra/vectors.js 321
  */
 export const parallel2 = (v, u, epsilon = EPSILON) => Math
 	.abs(cross2(v, u)) < epsilon;

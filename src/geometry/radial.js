@@ -4,7 +4,7 @@
 import {
 	EPSILON,
 	TWO_PI,
-} from "../algebra/constants";
+} from "../algebra/constants.js";
 import {
 	dot,
 	cross2,
@@ -15,16 +15,15 @@ import {
 	distance2,
 	rotate90,
 	rotate270,
-} from "../algebra/vectors";
-import { getVectorOfVectors } from "../types/get";
+} from "../algebra/vectors.js";
 import {
 	semiFlattenArrays,
-} from "../types/resize";
+} from "../types/resize.js";
 import {
 	fnVec2Angle,
 	fnToVec2,
 	fnEpsilonEqual,
-} from "../algebra/functions";
+} from "../algebra/functions.js";
 /**
  * measurements involving vectors and radians
  */
@@ -282,7 +281,7 @@ export const counterClockwiseSectorsRadians = function () {
  */
 export const counterClockwiseSectors2 = function () {
 	return counterClockwiseSectorsRadians(
-		getVectorOfVectors(arguments).map(fnVec2Angle),
+		semiFlattenArrays(arguments).map(fnVec2Angle),
 	);
 };
 /**

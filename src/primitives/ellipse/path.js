@@ -3,7 +3,7 @@
  */
 import {
 	cleanNumber,
-} from "../../types/resize";
+} from "../../types/resize.js";
 
 export const pointOnEllipse = function (cx, cy, rx, ry, zRotation, arcAngle) {
 	const cos_rotate = Math.cos(zRotation);
