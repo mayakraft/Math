@@ -18,6 +18,7 @@ export default [{
 			objectShorthand: true,
 		},
 	},
+	// plugins: [cleanup()],
 	plugins: [cleanup(), terser()],
 }, {
 	input,

@@ -11,12 +11,15 @@ import {
 	add2,
 } from "../algebra/vectors.js";
 /**
- * @description Find the intersection of two lines. Lines can be lines/rays/segments,
- * and can be inclusve or exclusive in terms of their endpoints and the epsilon value.
+ * @description Find the intersection of two lines. Lines can be
+ * lines/rays/segments, and can be inclusve or exclusive in terms
+ * of their endpoints and the epsilon value.
  * @param {RayLine} lineA line object with "vector" and "origin"
  * @param {RayLine} lineB line object with "vector" and "origin"
- * @param {function} [aFunction=includeL] first line's boolean test normalized value lies collinear
- * @param {function} [bFunction=includeL] second line's boolean test normalized value lies collinear
+ * @param {function} [aFunction=includeL] first line's boolean test
+ * normalized value lies collinear
+ * @param {function} [bFunction=includeL] second line's boolean test
+ * normalized value lies collinear
  * @param {number} [epsilon=1e-6] optional epsilon
  * @returns {number[]|undefined} one 2D point or undefined
  * @linkcode Math ./src/intersection/intersect-line-line.js 26
