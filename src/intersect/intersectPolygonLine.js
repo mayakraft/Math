@@ -17,8 +17,8 @@ import {
 	excludeS,
 	fnEpsilonEqualVectors,
 } from "../general/functions.js";
-import intersectLineLine from "./intersect-line-line.js";
-import overlapConvexPolygonPoint from "./overlap-polygon-point.js";
+import intersectLineLine from "./intersectLineLine.js";
+import overlapConvexPolygonPoint from "./overlapPolygonPoint.js";
 
 // todo, this is copied over in clip/polygon.js
 const getUniquePair = (intersections) => {
@@ -37,8 +37,7 @@ const getUniquePair = (intersections) => {
  */
 const intersectConvexPolygonLineInclusive = (
 	poly,
-	vector,
-	origin,
+	{ vector, origin },
 	fn_poly = includeS,
 	fn_line = includeL,
 	epsilon = EPSILON,
@@ -46,10 +45,8 @@ const intersectConvexPolygonLineInclusive = (
 	const intersections = poly
 		.map((p, i, arr) => [p, arr[(i + 1) % arr.length]]) // into segment pairs
 		.map(side => intersectLineLine(
-			subtract(side[1], side[0]),
-			side[0],
-			vector,
-			origin,
+			{ vector: subtract(side[1], side[0]), origin: side[0] },
+			{ vector, origin },
 			fn_poly,
 			fn_line,
 			epsilon,
@@ -79,16 +76,14 @@ const intersectConvexPolygonLineInclusive = (
  */
 const intersectConvexPolygonLine = (
 	poly,
-	vector,
-	origin,
+	{ vector, origin },
 	fn_poly = includeS,
 	fn_line = excludeL,
 	epsilon = EPSILON,
 ) => {
 	const sects = intersectConvexPolygonLineInclusive(
 		poly,
-		vector,
-		origin,
+		{ vector, origin },
 		fn_poly,
 		fn_line,
 		epsilon,
@@ -106,8 +101,7 @@ const intersectConvexPolygonLine = (
 	// repeat the computation but include intersections with the polygon's vertices.
 	const includes = intersectConvexPolygonLineInclusive(
 		poly,
-		vector,
-		origin,
+		{ vector, origin },
 		includeS,
 		altFunc,
 		epsilon,

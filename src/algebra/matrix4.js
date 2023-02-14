@@ -92,7 +92,7 @@ export const multiplyMatrices4 = (m1, m2) => [
  * @returns {number} the determinant of the matrix
  * @linkcode Math ./src/algebra/matrix4.js 92
  */
-export const determinant4 = m => {
+export const determinant4 = (m) => {
 	const A2323 = m[10] * m[15] - m[11] * m[14];
 	const A1323 = m[9] * m[15] - m[11] * m[13];
 	const A1223 = m[9] * m[14] - m[10] * m[13];

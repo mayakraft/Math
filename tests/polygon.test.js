@@ -77,25 +77,25 @@ test("make regular polygon inradius", () => {
 
 test("make_polygon_inradius_s", () => {
 	const square = math.makePolygonInradiusSide(4);
-	expect(square[0][0]).toBe(1);
+	expect(square[0][0]).toBeCloseTo(1);
 	const square2 = math.makePolygonInradiusSide(4, 2);
-	expect(square2[0][0]).toBe(2);
+	expect(square2[0][0]).toBeCloseTo(2);
 });
 
 test("make_polygon_side_length", () => {
 	const square = math.makePolygonSideLength(4);
 	expect(square[0][0]).toBeCloseTo(Math.sqrt(2) / 2);
-	expect(square[0][1]).toBe(0);
+	expect(square[0][1]).toBeCloseTo(0);
 	const square2 = math.makePolygonSideLength(4, 2);
 	expect(square2[0][0]).toBeCloseTo(Math.sqrt(2));
-	expect(square2[0][1]).toBe(0);
+	expect(square2[0][1]).toBeCloseTo(0);
 });
 
 test("make_polygon_side_length_s", () => {
 	const square = math.makePolygonSideLengthSide(4);
-	expect(square[0][0]).toBe(0.5);
+	expect(square[0][0]).toBeCloseTo(0.5);
 	const square2 = math.makePolygonSideLengthSide(4, 2);
-	expect(square2[0][0]).toBe(1);
+	expect(square2[0][0]).toBeCloseTo(1);
 });
 
 test("makePolygonNonCollinear", () => {

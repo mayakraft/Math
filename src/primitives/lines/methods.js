@@ -52,7 +52,7 @@ const LinesMethods = {
 	},
 	isCollinear: function () {
 		const line = getLine(arguments);
-		return overlapLinePoint(this.vector, this.origin, line.origin)
+		return overlapLinePoint({ vector: this.vector, origin: this.origin }, line.origin)
 			&& parallel(...resizeUp(this.vector, line.vector));
 	},
 	isDegenerate: function (epsilon = EPSILON) {

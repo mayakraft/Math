@@ -12,15 +12,10 @@ import {
 	fnEpsilonEqual,
 } from "../general/functions.js";
 import {
-	dot,
 	cross2,
-	normalize,
 	normalize2,
-	midpoint,
 	subtract2,
 	distance2,
-	rotate90,
-	rotate270,
 } from "../algebra/vectors.js";
 /**
  * measurements involving vectors and radians
@@ -144,7 +139,7 @@ export const counterClockwiseBisect2 = (a, b) => (
  * @returns {number[]} array of angles in radians
  * @linkcode Math ./src/geometry/radial.js 148
  */
-export const clockwiseSubsectRadians = (divisions, angleA, angleB) => {
+export const clockwiseSubsectRadians = (angleA, angleB, divisions) => {
 	const angle = clockwiseAngleRadians(angleA, angleB) / divisions;
 	return Array.from(Array(divisions - 1))
 		.map((_, i) => angleA + angle * (i + 1));
@@ -157,7 +152,7 @@ export const clockwiseSubsectRadians = (divisions, angleA, angleB) => {
  * @returns {number[]} array of angles in radians
  * @linkcode Math ./src/geometry/radial.js 161
  */
-export const counterClockwiseSubsectRadians = (divisions, angleA, angleB) => {
+export const counterClockwiseSubsectRadians = (angleA, angleB, divisions) => {
 	const angle = counterClockwiseAngleRadians(angleA, angleB) / divisions;
 	return Array.from(Array(divisions - 1))
 		.map((_, i) => angleA + angle * (i + 1));
@@ -170,10 +165,10 @@ export const counterClockwiseSubsectRadians = (divisions, angleA, angleB) => {
  * @returns {number[][]} array of vectors (which are arrays of numbers)
  * @linkcode Math ./src/geometry/radial.js 174
  */
-export const clockwiseSubsect2 = (divisions, vectorA, vectorB) => {
+export const clockwiseSubsect2 = (vectorA, vectorB, divisions) => {
 	const angleA = Math.atan2(vectorA[1], vectorA[0]);
 	const angleB = Math.atan2(vectorB[1], vectorB[0]);
-	return clockwiseSubsectRadians(divisions, angleA, angleB)
+	return clockwiseSubsectRadians(angleA, angleB, divisions)
 		.map(fnToVec2);
 };
 /**
@@ -184,42 +179,11 @@ export const clockwiseSubsect2 = (divisions, vectorA, vectorB) => {
  * @returns {number[][]} array of vectors (which are arrays of numbers)
  * @linkcode Math ./src/geometry/radial.js 188
  */
-export const counterClockwiseSubsect2 = (divisions, vectorA, vectorB) => {
+export const counterClockwiseSubsect2 = (vectorA, vectorB, divisions) => {
 	const angleA = Math.atan2(vectorA[1], vectorA[0]);
 	const angleB = Math.atan2(vectorB[1], vectorB[0]);
-	return counterClockwiseSubsectRadians(divisions, angleA, angleB)
+	return counterClockwiseSubsectRadians(angleA, angleB, divisions)
 		.map(fnToVec2);
-};
-/**
- * @description given two lines, find two lines which bisect the given lines,
- * if the given lines have an intersection, or return one line if they are parallel.
- * @param {number[]} vectorA the vector of the first line, as an array of numbers
- * @param {number[]} originA the origin of the first line, as an array of numbers
- * @param {number[]} vectorB the vector of the first line, as an array of numbers
- * @param {number[]} originB the origin of the first line, as an array of numbers
- * @param {number} [epsilon=1e-6] an optional epsilon for testing parallel-ness.
- * @returns {object[]} an array of objects with "vector" and "origin" keys defining a line
- * @linkcode Math ./src/geometry/radial.js 205
- */
-export const bisectLines2 = (vectorA, originA, vectorB, originB, epsilon = EPSILON) => {
-	const determinant = cross2(vectorA, vectorB);
-	const dotProd = dot(vectorA, vectorB);
-	const bisects = determinant > -epsilon
-		? [counterClockwiseBisect2(vectorA, vectorB)]
-		: [clockwiseBisect2(vectorA, vectorB)];
-	bisects[1] = determinant > -epsilon
-		? rotate90(bisects[0])
-		: rotate270(bisects[0]);
-	const numerator = (originB[0] - originA[0]) * vectorB[1] - vectorB[0] * (originB[1] - originA[1]);
-	const t = numerator / determinant;
-	const normalized = [vectorA, vectorB].map(vec => normalize(vec));
-	const isParallel = Math.abs(cross2(...normalized)) < epsilon;
-	const origin = isParallel
-		? midpoint(originA, originB)
-		: [originA[0] + vectorA[0] * t, originA[1] + vectorA[1] * t];
-	const solution = bisects.map(vector => ({ vector, origin }));
-	if (isParallel) { delete solution[(dotProd > -epsilon ? 1 : 0)]; }
-	return solution;
 };
 /**
  * @description sort an array of angles in radians by getting an array of

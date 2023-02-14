@@ -4,18 +4,17 @@
 import { EPSILON } from "../general/constants.js";
 import { excludeL } from "../general/functions.js";
 import {
-	dot,
+	dot2,
+	magnitude2,
 	cross2,
-	add,
-	magnitude,
+	add2,
+	subtract2,
 } from "../algebra/vectors.js";
 /**
  * @description 2D line intersection function, generalized and works for lines,
  * rays, segments.
- * @param {number[]} array of 2 numbers, the first line's vector
- * @param {number[]} array of 2 numbers, the first line's origin
- * @param {number[]} array of 2 numbers, the second line's vector
- * @param {number[]} array of 2 numbers, the second line's origin
+ * @param {RayLine} lineA a line as an object with "vector" and "origin"
+ * @param {RayLine} lineB a line as an object with "vector" and "origin"
  * @param {function} first line's boolean test normalized value lies collinear
  * @param {function} seconde line's boolean test normalized value lies collinear
  * @linkcode Math ./src/intersection/overlap-line-line.js 21
@@ -24,25 +23,23 @@ import {
 // export const exclude_s = (t, e = EPSILON) => t > e && t < 1 - e;
 
 const overlapLineLine = (
-	aVector,
-	aOrigin,
-	bVector,
-	bOrigin,
+	a,
+	b,
 	aFunction = excludeL,
 	bFunction = excludeL,
 	epsilon = EPSILON,
 ) => {
-	const denominator0 = cross2(aVector, bVector);
+	const denominator0 = cross2(a.vector, b.vector);
 	const denominator1 = -denominator0;
-	const a2b = [bOrigin[0] - aOrigin[0], bOrigin[1] - aOrigin[1]];
+	const a2b = subtract2(b.origin, a.origin);
 	if (Math.abs(denominator0) < epsilon) { // parallel
-		if (Math.abs(cross2(a2b, aVector)) > epsilon) { return false; }
+		if (Math.abs(cross2(a2b, a.vector)) > epsilon) { return false; }
 		const bPt1 = a2b;
-		const bPt2 = add(bPt1, bVector);
+		const bPt2 = add2(bPt1, b.vector);
 		// a will be between 0 and 1
-		const aProjLen = dot(aVector, aVector);
-		const bProj1 = dot(bPt1, aVector) / aProjLen;
-		const bProj2 = dot(bPt2, aVector) / aProjLen;
+		const aProjLen = dot2(a.vector, a.vector);
+		const bProj1 = dot2(bPt1, a.vector) / aProjLen;
+		const bProj2 = dot2(bPt2, a.vector) / aProjLen;
 		const bProjSm = bProj1 < bProj2 ? bProj1 : bProj2;
 		const bProjLg = bProj1 < bProj2 ? bProj2 : bProj1;
 		const bOutside1 = bProjSm > 1 - epsilon;
@@ -51,10 +48,10 @@ const overlapLineLine = (
 		return true;
 	}
 	const b2a = [-a2b[0], -a2b[1]];
-	const t0 = cross2(a2b, bVector) / denominator0;
-	const t1 = cross2(b2a, aVector) / denominator1;
-	return aFunction(t0, epsilon / magnitude(aVector))
-		&& bFunction(t1, epsilon / magnitude(bVector));
+	const t0 = cross2(a2b, b.vector) / denominator0;
+	const t1 = cross2(b2a, a.vector) / denominator1;
+	return aFunction(t0, epsilon / magnitude2(a.vector))
+		&& bFunction(t1, epsilon / magnitude2(b.vector));
 };
 
 export default overlapLineLine;

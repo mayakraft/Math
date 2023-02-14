@@ -17,7 +17,7 @@ import {
 	scale,
 	flip,
 } from "../algebra/vectors.js";
-import overlapConvexPolygonPoint from "./overlap-polygon-point.js";
+import overlapConvexPolygonPoint from "./overlapPolygonPoint.js";
 
 const lineLineParameter = (
 	lineVector,
@@ -95,8 +95,7 @@ const getMinMax = (numbers, func, scaled_epsilon) => {
  */
 const clipLineConvexPolygon = (
 	poly,
-	vector,
-	origin,
+	{ vector, origin },
 	fnPoly = include,
 	fnLine = includeL,
 	epsilon = EPSILON,

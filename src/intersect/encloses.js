@@ -2,7 +2,7 @@
  * Math (c) Kraft
  */
 import { include } from "../general/functions.js";
-import overlapConvexPolygonPoint from "./overlap-polygon-point.js";
+import overlapConvexPolygonPoint from "./overlapPolygonPoint.js";
 /**
  *
  */

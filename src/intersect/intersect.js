@@ -6,10 +6,10 @@ import {
 	exclude, includeS,
 	excludeL, excludeR, excludeS,
 } from "../general/functions.js";
-import intersectLineLine from "./intersect-line-line.js";
-import intersectCircleCircle from "./intersect-circle-circle.js";
-import intersectCircleLine from "./intersect-circle-line.js";
-import intersectConvexPolygonLine from "./intersect-polygon-line.js";
+import intersectLineLine from "./intersectLineLine.js";
+import intersectCircleCircle from "./intersectCircleCircle.js";
+import intersectCircleLine from "./intersectCircleLine.js";
+import intersectConvexPolygonLine from "./intersectPolygonLine.js";
 
 // all intersection functions expect primitives to be in a certain form
 // for example all lines are: vector, origin

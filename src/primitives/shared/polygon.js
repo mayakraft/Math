@@ -105,7 +105,7 @@ const PolygonMethods = {
 		const line = getLine(...arguments);
 		// const split_func = this.isConvex ? splitConvexPolygon : split_polygon;
 		const split_func = splitConvexPolygon;
-		return split_func(this, line.vector, line.origin)
+		return split_func(this, line)
 			.map(poly => Constructors.polygon(poly));
 	},
 	overlap: function () {
@@ -118,8 +118,7 @@ const PolygonMethods = {
 		const fn_line = line_type.domain_function ? line_type.domain_function : includeL;
 		const segment = clipLineConvexPolygon(
 			this,
-			line_type.vector,
-			line_type.origin,
+			line_type,
 			this.domain_function,
 			fn_line,
 			epsilon,

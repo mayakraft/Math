@@ -2,8 +2,8 @@
  * Math (c) Kraft
  */
 import { subtract } from "../algebra/vectors.js";
-import overlapLinePoint from "./overlap-line-point.js";
-import intersectLineLine from "./intersect-line-line.js";
+import overlapLinePoint from "./overlapLinePoint.js";
+import intersectLineLine from "./intersectLineLine.js";
 import {
 	includeL,
 	excludeL,
@@ -13,35 +13,32 @@ import {
  * @description Split a convex polygon by a line and rebuild each
  * half into two convex polygons.
  * @param {number[][]} polygon an array of points, each point is an array of numbers
- * @param {number[]} vector the vector component of the line
+ * @param {RayLine} line a line object with "vector" and "origin"
  * @param {number[]} origin the origin component of the line
  * @returns {number[][][]} an array of one or two polygons, each polygon is an array of points,
  * each point is an array of numbers.
  * @linkcode Math ./src/geometry/split-polygon.js 19
  */
-const splitConvexPolygon = (poly, lineVector, linePoint) => {
+const splitConvexPolygon = (poly, line) => {
 	// todo: should this return undefined if no intersection?
 	//       or the original poly?
 
 	//    point: intersection [x,y] point or null if no intersection
 	// at_index: where in the polygon this occurs
 	const vertices_intersections = poly.map((v, i) => {
-		const intersection = overlapLinePoint(lineVector, linePoint, v, includeL);
+		const intersection = overlapLinePoint(line, v, includeL);
 		return { point: intersection ? v : null, at_index: i };
 	}).filter(el => el.point != null);
-	const edges_intersections = poly.map((v, i, arr) => ({
-		point: intersectLineLine(
-			lineVector,
-			linePoint,
-			subtract(v, arr[(i + 1) % arr.length]),
-			arr[(i + 1) % arr.length],
-			excludeL,
-			excludeS,
-		),
-		at_index: i,
-	}))
+	const edges_intersections = poly
+		.map((v, i, arr) => ({
+			vector: subtract(v, arr[(i + 1) % arr.length]),
+			origin: arr[(i + 1) % arr.length],
+		}))
+		.map((polyLine, i) => ({
+			point: intersectLineLine(line, polyLine, excludeL, excludeS),
+			at_index: i,
+		}))
 		.filter(el => el.point != null);
-
 	// three cases: intersection at 2 edges, 2 points, 1 edge and 1 point
 	if (edges_intersections.length === 2) {
 		const sorted_edges = edges_intersections.slice()

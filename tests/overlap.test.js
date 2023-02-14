@@ -58,81 +58,148 @@ const math = require("../math.js");
 // });
 
 test("point on line", () => {
-	expect(math.overlapLinePoint([5, 5], [0, 0], [2, 2])).toBe(true);
-	expect(math.overlapLinePoint([1, 1], [0, 0], [2, 2])).toBe(true);
-	expect(math.overlapLinePoint([2, 2], [0, 0], [2.1, 2.1])).toBe(true);
-	expect(math.overlapLinePoint([2, 2], [0, 0], [2.000000001, 2.000000001])).toBe(true);
-	expect(math.overlapLinePoint([2, 2], [0, 0], [-1, -1])).toBe(true);
+	expect(math.overlapLinePoint({ vector: [5, 5], origin: [0, 0] }, [2, 2])).toBe(true);
+	expect(math.overlapLinePoint({ vector: [1, 1], origin: [0, 0] }, [2, 2])).toBe(true);
+	expect(math.overlapLinePoint({ vector: [2, 2], origin: [0, 0] }, [2.1, 2.1])).toBe(true);
+	expect(math.overlapLinePoint({ vector: [2, 2], origin: [0, 0] }, [2.000000001, 2.000000001]))
+		.toBe(true);
+	expect(math.overlapLinePoint({ vector: [2, 2], origin: [0, 0] }, [-1, -1])).toBe(true);
 
 	expect(math.overlapLinePoint(
-		[5, 5], [0, 0], [2, 2], math.includeR)).toBe(true);
+		{ vector: [5, 5], origin: [0, 0] },
+		[2, 2],
+		math.includeR,
+	)).toBe(true);
 	expect(math.overlapLinePoint(
-		[1, 1], [0, 0], [2, 2], math.includeR)).toBe(true);
+		{ vector: [1, 1], origin: [0, 0] },
+		[2, 2],
+		math.includeR,
+	)).toBe(true);
 	expect(math.overlapLinePoint(
-		[2, 2], [0, 0], [2.1, 2.1], math.includeR)).toBe(true);
+		{ vector: [2, 2], origin: [0, 0] },
+		[2.1, 2.1],
+		math.includeR,
+	)).toBe(true);
 	expect(math.overlapLinePoint(
-		[2, 2], [0, 0], [2.000000001, 2.000000001], math.includeR)).toBe(true);
+		{ vector: [2, 2], origin: [0, 0] },
+		[2.000000001, 2.000000001],
+		math.includeR,
+	)).toBe(true);
 	expect(math.overlapLinePoint(
-		[-1, -1], [0, 0], [2, 2], math.includeR)).toBe(false);
+		{ vector: [-1, -1], origin: [0, 0] },
+		[2, 2],
+		math.includeR,
+	)).toBe(false);
 	expect(math.overlapLinePoint(
-		[1, 1], [0, 0], [-0.1, -0.1], math.includeR)).toBe(false);
+		{ vector: [1, 1], origin: [0, 0] },
+		[-0.1, -0.1],
+		math.includeR,
+	)).toBe(false);
 	expect(math.overlapLinePoint(
-		[1, 1], [0, 0], [-0.000000001, -0.000000001], math.includeR)).toBe(true);
+		{ vector: [1, 1], origin: [0, 0] },
+		[-0.000000001, -0.000000001],
+		math.includeR,
+	)).toBe(true);
 	expect(math.overlapLinePoint(
-		[1, 1], [0, 0], [-0.000000001, -0.000000001], math.excludeR)).toBe(false);
+		{ vector: [1, 1], origin: [0, 0] },
+		[-0.000000001, -0.000000001],
+		math.excludeR,
+	)).toBe(false);
 
 	expect(math.overlapLinePoint(
-		[5, 5], [0, 0], [2, 2], math.includeS)).toBe(true);
+		{ vector: [5, 5], origin: [0, 0] },
+		[2, 2],
+		math.includeS,
+	)).toBe(true);
 	expect(math.overlapLinePoint(
-		[1, 1], [0, 0], [2, 2], math.includeS)).toBe(false);
+		{ vector: [1, 1], origin: [0, 0] },
+		[2, 2],
+		math.includeS,
+	)).toBe(false);
 	expect(math.overlapLinePoint(
-		[2, 2], [0, 0], [2.1, 2.1], math.includeS)).toBe(false);
+		{ vector: [2, 2], origin: [0, 0] },
+		[2.1, 2.1],
+		math.includeS,
+	)).toBe(false);
 	expect(math.overlapLinePoint(
-		[2, 2], [0, 0], [2.000000001, 2.000000001], math.includeS)).toBe(true);
+		{ vector: [2, 2], origin: [0, 0] },
+		[2.000000001, 2.000000001],
+		math.includeS,
+	)).toBe(true);
 	expect(math.overlapLinePoint(
-		[-1, -1], [0, 0], [2, 2], math.includeS)).toBe(false);
+		{ vector: [-1, -1], origin: [0, 0] },
+		[2, 2],
+		math.includeS,
+	)).toBe(false);
 	expect(math.overlapLinePoint(
-		[2, 2], [0, 0], [2.000000001, 2.000000001], math.excludeS)).toBe(false);
+		{ vector: [2, 2], origin: [0, 0] },
+		[2.000000001, 2.000000001],
+		math.excludeS,
+	)).toBe(false);
 });
 
 test("overlap.point_on_segment_inclusive", () => {
 	expect(math.overlapLinePoint(
-		[3, 0], [3, 3], [4, 3], math.includeS
+		{ vector: [3, 0], origin: [3, 3] },
+		[4, 3],
+		math.includeS,
 	)).toBe(true);
 	expect(math.overlapLinePoint(
-		[3, 0], [3, 3], [3, 3], math.includeS
+		{ vector: [3, 0], origin: [3, 3] },
+		[3, 3],
+		math.includeS,
 	)).toBe(true);
 	expect(math.overlapLinePoint(
-		[3, 0], [3, 3], [2.9, 3], math.includeS
+		{ vector: [3, 0], origin: [3, 3] },
+		[2.9, 3],
+		math.includeS,
 	)).toBe(false);
 	expect(math.overlapLinePoint(
-		[3, 0], [3, 3], [2.9999999999, 3], math.includeS
+		{ vector: [3, 0], origin: [3, 3] },
+		[2.9999999999, 3],
+		math.includeS,
 	)).toBe(true);
 	expect(math.overlapLinePoint(
-		[3, 0], [3, 3], [6.1, 3], math.includeS
+		{ vector: [3, 0], origin: [3, 3] },
+		[6.1, 3],
+		math.includeS,
 	)).toBe(false);
 	expect(math.overlapLinePoint(
-		[3, 0], [3, 3], [6.0000000001, 3], math.includeS
+		{ vector: [3, 0], origin: [3, 3] },
+		[6.0000000001, 3],
+		math.includeS,
 	)).toBe(true);
 
 	expect(math.overlapLinePoint(
-		[2, 2], [2, 2], [3.5, 3.5], math.includeS
+		{ vector: [2, 2], origin: [2, 2] },
+		[3.5, 3.5],
+		math.includeS,
 	)).toBe(true);
 	expect(math.overlapLinePoint(
-		[2, 2], [2, 2], [2.9, 3.1], math.includeS
+		{ vector: [2, 2], origin: [2, 2] },
+		[2.9, 3.1],
+		math.includeS,
 	)).toBe(false);
 	expect(math.overlapLinePoint(
-		[2, 2], [2, 2], [2.99999999, 3.000000001], math.includeS
+		{ vector: [2, 2], origin: [2, 2] },
+		[2.99999999, 3.000000001],
+		math.includeS,
 	)).toBe(true);
 	// degenerate edge returns false
 	expect(math.overlapLinePoint(
-		[0, 0], [2, 2], [2, 2], math.includeS
+		{ vector: [0, 0], origin: [2, 2] },
+		[2, 2],
+		math.includeS,
 	)).toBe(false);
 	expect(math.overlapLinePoint(
-		[0, 0], [2, 2], [2.1, 2.1], math.includeS
+		{ vector: [0, 0], origin: [2, 2] },
+		[2.1, 2.1],
+		math.includeS,
 	)).toBe(false);
 	expect(math.overlapLinePoint(
-		[0, 0], [2, 2], [2.000000001, 2.00000001], math.includeS
+		{ vector: [0, 0], origin: [2, 2] },
+		[2.000000001, 2.00000001],
+		math.includeS,
 	)).toBe(false);
 });
 
@@ -246,79 +313,97 @@ test("overlap lines", () => {
 	const b1 = [2, 2];
 
 	expect(
-		math.overlapLineLine(aV, aP, bV, bP, math.includeL, math.includeL),
-	).toBe(true);
-	expect(
-		math.overlapLineLine(aV, aP, bV, bP, math.includeL, math.includeR),
+		math.overlapLineLine(
+			{ vector: aV, origin: aP },
+			{ vector: bV, origin: bP },
+			math.includeL,
+			math.includeL,
+		),
 	).toBe(true);
 	expect(
 		math.overlapLineLine(
-			aV,
-			aP,
-			math.subtract(b1, b0),
-			b0,
+			{ vector: aV, origin: aP },
+			{ vector: bV, origin: bP },
+			math.includeL,
+			math.includeR,
+		),
+	).toBe(true);
+	expect(
+		math.overlapLineLine(
+			{ vector: aV, origin: aP },
+			{ vector: math.subtract(b1, b0), origin: b0 },
 			math.includeL,
 			math.includeS,
 		),
 	).toBe(false);
 	expect(
-		math.overlapLineLine(aV, aP, bV, bP, math.includeR, math.includeR),
+		math.overlapLineLine(
+			{ vector: aV, origin: aP },
+			{ vector: bV, origin: bP },
+			math.includeR,
+			math.includeR,
+		),
 	).toBe(true);
 	expect(
 		math.overlapLineLine(
-			aV,
-			aP,
-			math.subtract(b1, b0),
-			b0,
+			{ vector: aV, origin: aP },
+			{ vector: math.subtract(b1, b0), origin: b0 },
 			math.includeR,
 			math.includeS,
 		),
 	).toBe(false);
 	expect(
 		math.overlapLineLine(
-			math.subtract(a1, a0),
-			a0,
-			math.subtract(b1, b0),
-			b0,
+			{ vector: math.subtract(a1, a0), origin: a0 },
+			{ vector: math.subtract(b1, b0), origin: b0 },
 			math.includeS,
 			math.includeS,
 		),
 	).toBe(false);
 	expect(
-		math.overlapLineLine(aV, aP, bV, bP, math.excludeL, math.excludeL),
-	).toBe(true);
-	expect(
-		math.overlapLineLine(aV, aP, bV, bP, math.excludeL, math.excludeR),
+		math.overlapLineLine(
+			{ vector: aV, origin: aP },
+			{ vector: bV, origin: bP },
+			math.excludeL,
+			math.excludeL,
+		),
 	).toBe(true);
 	expect(
 		math.overlapLineLine(
-			aV,
-			aP,
-			math.subtract(b1, b0),
-			b0,
+			{ vector: aV, origin: aP },
+			{ vector: bV, origin: bP },
+			math.excludeL,
+			math.excludeR,
+		),
+	).toBe(true);
+	expect(
+		math.overlapLineLine(
+			{ vector: aV, origin: aP },
+			{ vector: math.subtract(b1, b0), origin: b0 },
 			math.excludeL,
 			math.excludeS,
 		),
 	).toBe(false);
 	expect(
-		math.overlapLineLine(aV, aP, bV, bP, math.excludeR, math.excludeR),
+		math.overlapLineLine(
+			{ vector: aV, origin: aP },
+			{ vector: bV, origin: bP },
+			math.excludeR,
+			math.excludeR,
+		),
 	).toBe(true);
 	expect(
 		math.overlapLineLine(
-			aV,
-			aP,
-			math.subtract(b1, b0),
-			b0,
+			{ vector: aV, origin: aP },
+			{ vector: math.subtract(b1, b0), origin: b0 },
 			math.excludeR,
 			math.excludeS,
 		),
 	).toBe(false);
 	expect(
 		math.overlapLineLine(
-			math.subtract(a1, a0),
-			a0,
-			math.subtract(b1, b0),
-			b0,
+			{ vector: math.subtract(a1, a0), origin: a0 },
+			{ vector: math.subtract(b1, b0), origin: b0 },
 			math.excludeS,
 			math.excludeS,
 		),

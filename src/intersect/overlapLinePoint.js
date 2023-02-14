@@ -21,7 +21,7 @@ import {
  * does the point lie within the bounds of the ray/segment?
  * @linkcode Math ./src/intersection/overlap-line-point.js 22
  */
-const overlapLinePoint = (vector, origin, point, func = excludeL, epsilon = EPSILON) => {
+const overlapLinePoint = ({ vector, origin }, point, func = excludeL, epsilon = EPSILON) => {
 	const p2p = subtract(point, origin);
 	const lineMagSq = magSquared(vector);
 	const lineMag = Math.sqrt(lineMagSq);

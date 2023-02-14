@@ -2,11 +2,11 @@
  * Math (c) Kraft
  */
 import typeOf from "../types/typeof.js";
-import overlapConvexPolygons from "./overlap-polygons.js";
-import overlapConvexPolygonPoint from "./overlap-polygon-point.js";
-import { overlapCirclePoint } from "./overlap-circle.js";
-import overlapLineLine from "./overlap-line-line.js";
-import overlapLinePoint from "./overlap-line-point.js";
+import overlapConvexPolygons from "./overlapPolygons.js";
+import overlapConvexPolygonPoint from "./overlapPolygonPoint.js";
+import { overlapCirclePoint } from "./overlapCircle.js";
+import overlapLineLine from "./overlapLineLine.js";
+import overlapLinePoint from "./overlapLinePoint.js";
 import {
 	exclude, excludeL, excludeR, excludeS,
 	fnEpsilonEqualVectors,

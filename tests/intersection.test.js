@@ -40,20 +40,19 @@ test("collinearBetween perpendicularly away near", () => {
 });
 
 test("intersectLineLine include exclude", () => {
-	const res0 = math.intersectLineLine([0, 1], [1, 0], [1, 0], [0, 1]);
+	const res0 = math.intersectLineLine(
+		{ vector: [0, 1], origin: [1, 0] },
+		{ vector: [1, 0], origin: [0, 1] },
+	);
 	const res1 = math.intersectLineLine(
-		[0, 1],
-		[1, 0],
-		[1, 0],
-		[0, 1],
+		{ vector: [0, 1], origin: [1, 0] },
+		{ vector: [1, 0], origin: [0, 1] },
 		math.includeS,
 		math.includeS,
 	);
 	const res2 = math.intersectLineLine(
-		[0, 1],
-		[1, 0],
-		[1, 0],
-		[0, 1],
+		{ vector: [0, 1], origin: [1, 0] },
+		{ vector: [1, 0], origin: [0, 1] },
 		math.excludeS,
 		math.excludeS,
 	);
@@ -67,44 +66,38 @@ test("intersectConvexPolygonLine include exclude vertex aligned", () => {
 	// two lines, vertex aligned
 	const res0 = math.intersectConvexPolygonLine(
 		poly,
-		[0, 1],
-		[1, -5],
+		{ vector: [0, 1], origin: [1, -5] },
 		math.includeS,
 		math.includeL,
 	);
 	const res1 = math.intersectConvexPolygonLine(
 		poly,
-		[0, 1],
-		[1, -5],
+		{ vector: [0, 1], origin: [1, -5] },
 		math.excludeS,
 		math.excludeL,
 	);
 	// two segements endpoint on vertex
 	const res2 = math.intersectConvexPolygonLine(
 		poly,
-		[0, 1],
-		[1, -1],
+		{ vector: [0, 1], origin: [1, -1] },
 		math.includeS,
 		math.includeS,
 	);
 	const res3 = math.intersectConvexPolygonLine(
 		poly,
-		[0, 1],
-		[1, -1],
+		{ vector: [0, 1], origin: [1, -1] },
 		math.includeS,
 		math.excludeS,
 	);
 	const res4 = math.intersectConvexPolygonLine(
 		poly,
-		[0, 1],
-		[1, -1],
+		{ vector: [0, 1], origin: [1, -1] },
 		math.excludeS,
 		math.includeS,
 	);
 	const res5 = math.intersectConvexPolygonLine(
 		poly,
-		[0, 1],
-		[1, -1],
+		{ vector: [0, 1], origin: [1, -1] },
 		math.excludeS,
 		math.excludeS,
 	);
@@ -123,15 +116,13 @@ test("intersectConvexPolygonLine include exclude edge aligned", () => {
 	const poly = [[0, 0], [1, 0], [1, 1], [0, 1]];
 	const res0 = math.intersectConvexPolygonLine(
 		poly,
-		[0, 1],
-		[1, -5],
+		{ vector: [0, 1], origin: [1, -5] },
 		math.includeS,
 		math.excludeL,
 	);
 	const res1 = math.intersectConvexPolygonLine(
 		poly,
-		[0, 1],
-		[1, -5],
+		{ vector: [0, 1], origin: [1, -5] },
 		math.excludeS,
 		math.excludeL,
 	);
@@ -141,48 +132,42 @@ test("intersectConvexPolygonLine include exclude edge aligned", () => {
 
 const convexPolyLineInclusive = (poly, vec, org, ep) => math.intersectConvexPolygonLine(
 	poly,
-	vec,
-	org,
+	{ vector: vec, origin: org },
 	math.includeS,
 	math.includeL,
 	ep,
 );
 const convexPolyRayInclusive = (poly, vec, org, ep) => math.intersectConvexPolygonLine(
 	poly,
-	vec,
-	org,
+	{ vector: vec, origin: org },
 	math.includeS,
 	math.includeR,
 	ep,
 );
 const convexPolySegmentInclusive = (poly, pt0, pt1, ep) => math.intersectConvexPolygonLine(
 	poly,
-	math.subtract(pt1, pt0),
-	pt0,
+	{ vector: math.subtract(pt1, pt0), origin: pt0 },
 	math.includeS,
 	math.includeS,
 	ep,
 );
 const convexPolyLineExclusive = (poly, vec, org, ep) => math.intersectConvexPolygonLine(
 	poly,
-	vec,
-	org,
+	{ vector: vec, origin: org },
 	math.excludeS,
 	math.excludeL,
 	ep,
 );
 const convexPolyRayExclusive = (poly, vec, org, ep) => math.intersectConvexPolygonLine(
 	poly,
-	vec,
-	org,
+	{ vector: vec, origin: org },
 	math.excludeS,
 	math.excludeR,
 	ep,
 );
 const convexPolySegmentExclusive = (poly, pt0, pt1, ep) => math.intersectConvexPolygonLine(
 	poly,
-	math.subtract(pt1, pt0),
-	pt0,
+	{ vector: math.subtract(pt1, pt0), origin: pt0 },
 	math.excludeS,
 	math.excludeS,
 	ep,
@@ -294,7 +279,11 @@ test("core polygon intersection lines, no intersections", () => {
 // });
 
 test("collinear line intersections", () => {
-	const intersect = math.intersectLineLine;
+	const intersect = (a, b, c, d, ...args) => math.intersectLineLine(
+		{ vector: a, origin: b },
+		{ vector: c, origin: d },
+		...args,
+	);
 	[
 		// INCLUDE horizontal
 		intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.includeL, math.includeL),
@@ -324,7 +313,11 @@ test("collinear line intersections", () => {
 });
 
 test("collinear ray intersections", () => {
-	const intersect = math.intersectLineLine;
+	const intersect = (a, b, c, d, ...args) => math.intersectLineLine(
+		{ vector: a, origin: b },
+		{ vector: c, origin: d },
+		...args,
+	);
 	[
 		// INCLUDE horizontal
 		intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.includeR, math.includeR),
@@ -354,7 +347,11 @@ test("collinear ray intersections", () => {
 });
 
 test("collinear segment intersections", () => {
-	const intersect = math.intersectLineLine;
+	const intersect = (a, b, c, d, ...args) => math.intersectLineLine(
+		{ vector: a, origin: b },
+		{ vector: c, origin: d },
+		...args,
+	);
 	[
 		// INCLUDE horizontal
 		intersect([1, 0], [2, 2], [1, 0], [-1, 2], math.includeS, math.includeS),
@@ -384,12 +381,7 @@ test("collinear segment intersections", () => {
 });
 
 test("collinear segment intersections, types not core", () => {
-	const intersect = (a, b) => math.intersectLineLine(
-		a.vector,
-		a.origin,
-		b.vector,
-		b.origin,
-	);
+	const intersect = (a, b) => math.intersectLineLine(a, b);
 	[
 		// horizontal
 		intersect(
@@ -526,36 +518,65 @@ test("polygon polygon collinear edge", () => {
 });
 
 test("intersect lines", () => {
-	const clipLine = math.intersectCircleLine(1, [0, 0], [0, 1], [0.5, 0]);
+	const clipLine = math.intersectCircleLine(
+		{ radius: 1, origin: [0, 0] },
+		{ vector: [0, 1], origin: [0.5, 0] },
+	);
 	const shouldBeLine = [[0.5, -Math.sqrt(3) / 2], [0.5, Math.sqrt(3) / 2]];
 	math.fnEpsilonEqualVectors(clipLine[0], shouldBeLine[0]);
 	math.fnEpsilonEqualVectors(clipLine[1], shouldBeLine[1]);
 	// no intersect
-	expect(math.intersectCircleLine(1, [2, 2], [0, 1], [10, 0])).toBe(undefined);
+	expect(math.intersectCircleLine(
+		{ radius: 1, origin: [2, 2] },
+		{ vector: [0, 1], origin: [10, 0] },
+	)).toBe(undefined);
 	// tangent
-	const tangent = math.intersectCircleLine(1, [2, 0], [0, 1], [3, 0]);
+	const tangent = math.intersectCircleLine(
+		{ radius: 1, origin: [2, 0] },
+		{ vector: [0, 1], origin: [3, 0] },
+	);
 	expect(tangent[0][0]).toBe(3);
 	expect(tangent[0][1]).toBe(0);
 
 	const shouldBeRay = [Math.SQRT1_2, Math.SQRT1_2];
-	const clipRay = math.intersectCircleLine(1, [0, 0], [0.1, 0.1], [0, 0], math.includeR);
+	const clipRay = math.intersectCircleLine(
+		{ radius: 1, origin: [0, 0] },
+		{ vector: [0.1, 0.1], origin: [0, 0] },
+		math.includeR,
+	);
 	math.fnEpsilonEqualVectors(shouldBeRay, clipRay[0]);
 
 	const shouldBeSeg = [Math.SQRT1_2, Math.SQRT1_2];
-	const clipSeg = math.intersectCircleLine(1, [0, 0], [10, 10], [0, 0], math.includeS);
+	const clipSeg = math.intersectCircleLine(
+		{ radius: 1, origin: [0, 0] },
+		{ vector: [10, 10], origin: [0, 0] },
+		math.includeS,
+	);
 	math.fnEpsilonEqualVectors(shouldBeSeg, clipSeg[0]);
 });
 
 test("circle circle intersect", () => {
 	// same origin
-	expect(math.intersectCircleCircle(1, [0, 0], 2, [0, 0])).toBe(undefined);
+	expect(math.intersectCircleCircle(
+		{ radius: 1, origin: [0, 0] },
+		{ radius: 2, origin: [0, 0] },
+	)).toBe(undefined);
 	// kissing circles
-	const result1 = math.intersectCircleCircle(1, [0, 0], 1, [2, 0]);
+	const result1 = math.intersectCircleCircle(
+		{ radius: 1, origin: [0, 0] },
+		{ radius: 1, origin: [2, 0] },
+	);
 	expect(result1[0][0]).toBe(1);
 	expect(result1[0][1]).toBe(0);
-	const result2 = math.intersectCircleCircle(1, [0, 0], 1, [Math.SQRT2, Math.SQRT2]);
+	const result2 = math.intersectCircleCircle(
+		{ radius: 1, origin: [0, 0] },
+		{ radius: 1, origin: [Math.SQRT2, Math.SQRT2] },
+	);
 	expect(result2[0][0]).toBeCloseTo(Math.SQRT1_2);
 	expect(result2[0][1]).toBeCloseTo(Math.SQRT1_2);
 	// circles are contained
-	expect(math.intersectCircleCircle(10, [0, 0], 1, [2, 0])).toBe(undefined);
+	expect(math.intersectCircleCircle(
+		{ radius: 10, origin: [0, 0] },
+		{ radius: 1, origin: [2, 0] },
+	)).toBe(undefined);
 });

@@ -16,7 +16,7 @@ import { fnEpsilonCompare } from "./functions.js";
  * @returns {number[]} the index from the set which minimizes the compare function
  * @linkcode Math ./src/algebra/nearest.js 29
  */
-export const smallestComparisonSearch = (obj, array, compare_func) => {
+export const smallestComparisonSearch = (array, obj, compare_func) => {
 	const objs = array.map((o, i) => ({ i, d: compare_func(obj, o) }));
 	let index;
 	let smallest_value = Infinity;

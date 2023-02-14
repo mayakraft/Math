@@ -19,20 +19,18 @@ const rotateVector2 = (center, pt, a) => {
 /**
  * @description calculate the intersection of two circles, resulting in either no intersection,
  * or one or two points.
- * @param {number} radius1 the first circle's radius
- * @param {number[]} origin1 the first circle's origin
- * @param {number} radius2 the second circle's radius
- * @param {number[]} origin2 the second circle's origin
+ * @param {object} c1 circle object with "radius" (number) and "origin" (vector)
+ * @param {object} c2 circle object with "radius" (number) and "origin" (vector)
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number[][]|undefined} an array of one or two points, or undefined if no intersection
  * @linkcode Math ./src/intersection/intersect-circle-circle.js 28
  */
-const intersectCircleCircle = (c1_radius, c1_origin, c2_radius, c2_origin, epsilon = EPSILON) => {
+const intersectCircleCircle = (c1, c2, epsilon = EPSILON) => {
 	// sort by largest-smallest radius
-	const r = (c1_radius < c2_radius) ? c1_radius : c2_radius;
-	const R = (c1_radius < c2_radius) ? c2_radius : c1_radius;
-	const smCenter = (c1_radius < c2_radius) ? c1_origin : c2_origin;
-	const bgCenter = (c1_radius < c2_radius) ? c2_origin : c1_origin;
+	const r = (c1.radius < c2.radius) ? c1.radius : c2.radius;
+	const R = (c1.radius < c2.radius) ? c2.radius : c1.radius;
+	const smCenter = (c1.radius < c2.radius) ? c1.origin : c2.origin;
+	const bgCenter = (c1.radius < c2.radius) ? c2.origin : c1.origin;
 	// this is also the starting vector to rotate around the big circle
 	const vec = [smCenter[0] - bgCenter[0], smCenter[1] - bgCenter[1]];
 	const d = Math.sqrt((vec[0] ** 2) + (vec[1] ** 2));

@@ -27,11 +27,7 @@ import Constructors from "../constructors.js";
 
 const CircleMethods = {
 	nearestPoint: function () {
-		return Constructors.vector(nearestPointOnCircle(
-			this.radius,
-			this.origin,
-			getVector(arguments),
-		));
+		return Constructors.vector(nearestPointOnCircle(this, getVector(arguments)));
 	},
 
 	intersect: function (object) {

@@ -188,103 +188,130 @@ test("counterClockwiseBisect2", () => {
 });
 
 test("bisectLines2", () => {
-	expect(math.bisectLines2([0, 1], [0, 0], [0, 1], [1, 0])[1])
+	expect(math.bisectLines2(
+		{ vector: [0, 1], origin: [0, 0] },
+		{ vector: [0, 1], origin: [1, 0] },
+	)[1])
 		.toBe(undefined);
-	expect(math.bisectLines2([0, 1], [0, 0], [0, 1], [1, 0])[0].vector[0])
+	expect(math.bisectLines2(
+		{ vector: [0, 1], origin: [0, 0] },
+		{ vector: [0, 1], origin: [1, 0] },
+	)[0].vector[0])
 		.toBeCloseTo(0);
-	expect(math.bisectLines2([0, 1], [0, 0], [0, 1], [1, 0])[0].vector[1])
+	expect(math.bisectLines2(
+		{ vector: [0, 1], origin: [0, 0] },
+		{ vector: [0, 1], origin: [1, 0] },
+	)[0].vector[1])
 		.toBeCloseTo(1);
-	expect(math.bisectLines2([0, 1], [0, 0], [0, 1], [1, 0])[0].origin[0])
+	expect(math.bisectLines2(
+		{ vector: [0, 1], origin: [0, 0] },
+		{ vector: [0, 1], origin: [1, 0] },
+	)[0].origin[0])
 		.toBeCloseTo(0.5);
-	expect(math.bisectLines2([0, 1], [0, 0], [0, 1], [1, 0])[0].origin[1])
+	expect(math.bisectLines2(
+		{ vector: [0, 1], origin: [0, 0] },
+		{ vector: [0, 1], origin: [1, 0] },
+	)[0].origin[1])
 		.toBeCloseTo(0);
 
-	expect(math.bisectLines2([0, 1], [0, 0], [1, 1], [1, 0])[0].vector[0])
+	expect(math.bisectLines2(
+		{ vector: [0, 1], origin: [0, 0] },
+		{ vector: [1, 1], origin: [1, 0] },
+	)[0].vector[0])
 		.toBeCloseTo(0.3826834323650897);
-	expect(math.bisectLines2([0, 1], [0, 0], [1, 1], [1, 0])[0].vector[1])
+	expect(math.bisectLines2(
+		{ vector: [0, 1], origin: [0, 0] },
+		{ vector: [1, 1], origin: [1, 0] },
+	)[0].vector[1])
 		.toBeCloseTo(0.9238795325112867);
-	expect(math.bisectLines2([0, 1], [0, 0], [1, 1], [1, 0])[0].origin[0])
+	expect(math.bisectLines2(
+		{ vector: [0, 1], origin: [0, 0] },
+		{ vector: [1, 1], origin: [1, 0] },
+	)[0].origin[0])
 		.toBeCloseTo(0);
-	expect(math.bisectLines2([0, 1], [0, 0], [1, 1], [1, 0])[0].origin[1])
+	expect(math.bisectLines2(
+		{ vector: [0, 1], origin: [0, 0] },
+		{ vector: [1, 1], origin: [1, 0] },
+	)[0].origin[1])
 		.toBeCloseTo(-1);
 });
 
 test("counterClockwiseSubsectRadians", () => {
 	testEqualVectors(
-		math.counterClockwiseSubsectRadians(3, 0, 3),
+		math.counterClockwiseSubsectRadians(0, 3, 3),
 		[1, 2],
 	);
 	testEqualVectors(
-		math.counterClockwiseSubsectRadians(3, -1, 2),
+		math.counterClockwiseSubsectRadians(-1, 2, 3),
 		[0, 1],
 	);
-	expect(math.counterClockwiseSubsectRadians(4, 0, -Math.PI)[0])
+	expect(math.counterClockwiseSubsectRadians(0, -Math.PI, 4)[0])
 		.toBeCloseTo(Math.PI * (1 / 4));
-	expect(math.counterClockwiseSubsectRadians(4, 0, -Math.PI)[1])
+	expect(math.counterClockwiseSubsectRadians(0, -Math.PI, 4)[1])
 		.toBeCloseTo(Math.PI * (2 / 4));
-	expect(math.counterClockwiseSubsectRadians(4, 0, -Math.PI)[2])
+	expect(math.counterClockwiseSubsectRadians(0, -Math.PI, 4)[2])
 		.toBeCloseTo(Math.PI * (3 / 4));
-	expect(math.counterClockwiseSubsectRadians(2, 0, -Math.PI)[0])
+	expect(math.counterClockwiseSubsectRadians(0, -Math.PI, 2)[0])
 		.toBeCloseTo(Math.PI / 2);
-	expect(math.counterClockwiseSubsectRadians(1, 0, -Math.PI).length)
+	expect(math.counterClockwiseSubsectRadians(0, -Math.PI, 1).length)
 		.toBe(0);
 });
 
 test("counterClockwiseSubsect2", () => {
-	expect(math.counterClockwiseSubsect2(2, [1, 0], [0, 1])[0][0])
+	expect(math.counterClockwiseSubsect2([1, 0], [0, 1], 2)[0][0])
 		.toBeCloseTo(Math.sqrt(2) / 2);
-	expect(math.counterClockwiseSubsect2(2, [1, 0], [0, 1])[0][1])
+	expect(math.counterClockwiseSubsect2([1, 0], [0, 1], 2)[0][1])
 		.toBeCloseTo(Math.sqrt(2) / 2);
 
-	expect(math.counterClockwiseSubsect2(4, [1, 0], [-1, 0])[0][0])
+	expect(math.counterClockwiseSubsect2([1, 0], [-1, 0], 4)[0][0])
 		.toBeCloseTo(Math.sqrt(2) / 2);
-	expect(math.counterClockwiseSubsect2(4, [1, 0], [-1, 0])[0][1])
+	expect(math.counterClockwiseSubsect2([1, 0], [-1, 0], 4)[0][1])
 		.toBeCloseTo(Math.sqrt(2) / 2);
-	expect(math.counterClockwiseSubsect2(4, [1, 0], [-1, 0])[1][0])
+	expect(math.counterClockwiseSubsect2([1, 0], [-1, 0], 4)[1][0])
 		.toBeCloseTo(0);
-	expect(math.counterClockwiseSubsect2(4, [1, 0], [-1, 0])[1][1])
+	expect(math.counterClockwiseSubsect2([1, 0], [-1, 0], 4)[1][1])
 		.toBeCloseTo(1);
-	expect(math.counterClockwiseSubsect2(4, [1, 0], [-1, 0])[2][0])
+	expect(math.counterClockwiseSubsect2([1, 0], [-1, 0], 4)[2][0])
 		.toBeCloseTo(-Math.sqrt(2) / 2);
-	expect(math.counterClockwiseSubsect2(4, [1, 0], [-1, 0])[2][1])
+	expect(math.counterClockwiseSubsect2([1, 0], [-1, 0], 4)[2][1])
 		.toBeCloseTo(Math.sqrt(2) / 2);
 });
 
 test("clockwiseSubsectRadians", () => {
-	testEqualVectors(math.clockwiseSubsectRadians(3, 3, 0), [4, 5]);
-	testEqualVectors(math.clockwiseSubsectRadians(3, 2, -1), [3, 4]);
-	testEqualVectors(math.clockwiseSubsectRadians(4, 2, -2), [3, 4, 5]);
+	testEqualVectors(math.clockwiseSubsectRadians(3, 0, 3), [4, 5]);
+	testEqualVectors(math.clockwiseSubsectRadians(2, -1, 3), [3, 4]);
+	testEqualVectors(math.clockwiseSubsectRadians(2, -2, 4), [3, 4, 5]);
 
-	expect(math.clockwiseSubsectRadians(4, -Math.PI, 0)[0])
+	expect(math.clockwiseSubsectRadians(-Math.PI, 0, 4)[0])
 		.toBeCloseTo(-Math.PI * (3 / 4));
-	expect(math.clockwiseSubsectRadians(4, -Math.PI, 0)[1])
+	expect(math.clockwiseSubsectRadians(-Math.PI, 0, 4)[1])
 		.toBeCloseTo(-Math.PI * (2 / 4));
-	expect(math.clockwiseSubsectRadians(4, -Math.PI, 0)[2])
+	expect(math.clockwiseSubsectRadians(-Math.PI, 0, 4)[2])
 		.toBeCloseTo(-Math.PI * (1 / 4));
 
-	expect(math.clockwiseSubsectRadians(2, -Math.PI, 0)[0])
+	expect(math.clockwiseSubsectRadians(-Math.PI, 0, 2)[0])
 		.toBeCloseTo(-Math.PI / 2);
-	expect(math.clockwiseSubsectRadians(1, -Math.PI, 0).length)
+	expect(math.clockwiseSubsectRadians(-Math.PI, 0, 1).length)
 		.toBe(0);
 });
 
 test("clockwiseSubsect2", () => {
-	expect(math.clockwiseSubsect2(2, [0, 1], [1, 0])[0][0])
+	expect(math.clockwiseSubsect2([0, 1], [1, 0], 2)[0][0])
 		.toBeCloseTo(-Math.sqrt(2) / 2);
-	expect(math.clockwiseSubsect2(2, [0, 1], [1, 0])[0][1])
+	expect(math.clockwiseSubsect2([0, 1], [1, 0], 2)[0][1])
 		.toBeCloseTo(Math.sqrt(2) / 2);
 
-	expect(math.clockwiseSubsect2(4, [-1, 0], [1, 0])[0][0])
+	expect(math.clockwiseSubsect2([-1, 0], [1, 0], 4)[0][0])
 		.toBeCloseTo(-Math.sqrt(2) / 2);
-	expect(math.clockwiseSubsect2(4, [-1, 0], [1, 0])[0][1])
+	expect(math.clockwiseSubsect2([-1, 0], [1, 0], 4)[0][1])
 		.toBeCloseTo(-Math.sqrt(2) / 2);
-	expect(math.clockwiseSubsect2(4, [-1, 0], [1, 0])[1][0])
+	expect(math.clockwiseSubsect2([-1, 0], [1, 0], 4)[1][0])
 		.toBeCloseTo(0);
-	expect(math.clockwiseSubsect2(4, [-1, 0], [1, 0])[1][1])
+	expect(math.clockwiseSubsect2([-1, 0], [1, 0], 4)[1][1])
 		.toBeCloseTo(-1);
-	expect(math.clockwiseSubsect2(4, [-1, 0], [1, 0])[2][0])
+	expect(math.clockwiseSubsect2([-1, 0], [1, 0], 4)[2][0])
 		.toBeCloseTo(Math.sqrt(2) / 2);
-	expect(math.clockwiseSubsect2(4, [-1, 0], [1, 0])[2][1])
+	expect(math.clockwiseSubsect2([-1, 0], [1, 0], 4)[2][1])
 		.toBeCloseTo(-Math.sqrt(2) / 2);
 });
 

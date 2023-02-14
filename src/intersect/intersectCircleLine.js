@@ -20,27 +20,25 @@ import {
  * @linkcode Math ./src/intersection/intersect-circle-line.js 20
  */
 const intersectCircleLine = (
-	circle_radius,
-	circle_origin,
-	line_vector,
-	line_origin,
+	circle,
+	line,
 	line_func = includeL,
 	epsilon = EPSILON,
 ) => {
-	const magSq = line_vector[0] ** 2 + line_vector[1] ** 2;
+	const magSq = line.vector[0] ** 2 + line.vector[1] ** 2;
 	const mag = Math.sqrt(magSq);
-	const norm = mag === 0 ? line_vector : line_vector.map(c => c / mag);
+	const norm = mag === 0 ? line.vector : line.vector.map(c => c / mag);
 	const rot90 = rotate90(norm);
-	const bvec = subtract(line_origin, circle_origin);
+	const bvec = subtract(line.origin, circle.origin);
 	const det = cross2(bvec, norm);
-	if (Math.abs(det) > circle_radius + epsilon) { return undefined; }
-	const side = Math.sqrt((circle_radius ** 2) - (det ** 2));
-	const f = (s, i) => circle_origin[i] - rot90[i] * det + norm[i] * s;
-	const results = Math.abs(circle_radius - Math.abs(det)) < epsilon
+	if (Math.abs(det) > circle.radius + epsilon) { return undefined; }
+	const side = Math.sqrt((circle.radius ** 2) - (det ** 2));
+	const f = (s, i) => circle.origin[i] - rot90[i] * det + norm[i] * s;
+	const results = Math.abs(circle.radius - Math.abs(det)) < epsilon
 		? [side].map((s) => [s, s].map(f)) // tangent to circle
 		: [-side, side].map((s) => [s, s].map(f));
-	const ts = results.map(res => res.map((n, i) => n - line_origin[i]))
-		.map(v => v[0] * line_vector[0] + line_vector[1] * v[1])
+	const ts = results.map(res => res.map((n, i) => n - line.origin[i]))
+		.map(v => v[0] * line.vector[0] + line.vector[1] * v[1])
 		.map(d => d / magSq);
 	return results.filter((_, i) => line_func(ts[i], epsilon));
 };

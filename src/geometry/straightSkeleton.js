@@ -11,7 +11,7 @@ import {
 	clockwiseBisect2,
 } from "./radial.js";
 import { nearestPointOnLine } from "./nearest.js";
-import intersectLineLine from "../intersection/intersect-line-line.js";
+import intersectLineLine from "../intersect/intersectLineLine.js";
 /**
  * @description this recursive algorithm works outwards-to-inwards, each repeat
  * decreases the size of the polygon by one point/side. (removes 2, adds 1)
@@ -37,17 +37,15 @@ const recurseSkeleton = (points, lines, bisectors) => {
 		// .map((ray, i, arr) => ray.intersect(arr[(i + 1) % arr.length]));
 		.map((origin, i) => ({ vector: bisectors[i], origin }))
 		.map((ray, i, arr) => intersectLineLine(
-			ray.vector,
-			ray.origin,
-			arr[(i + 1) % arr.length].vector,
-			arr[(i + 1) % arr.length].origin,
+			ray,
+			arr[(i + 1) % arr.length],
 			excludeR,
 			excludeR,
 		));
 	// project each intersection point down perpendicular to the edge of the polygon
 	// const projections = lines.map((line, i) => line.nearestPoint(intersects[i]));
 	const projections = lines.map((line, i) => (
-		nearestPointOnLine(line.vector, line.origin, intersects[i], a => a)
+		nearestPointOnLine(line, intersects[i], a => a)
 	));
 	// when we reach only 3 points remaining, we are at the end. we can return early
 	// and skip unnecessary calculations, all 3 projection lengths will be the same.

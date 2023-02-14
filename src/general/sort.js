@@ -39,9 +39,10 @@ export const sortPointsAlongVector = (points, vector) => (
 	sortAgainstItem(points, vector, dot)
 );
 /**
- * @description given an array of already-sorted values (so that comparisons only
- * need to happen between neighboring items), cluster the numbers which are similar
- * within an epsilon. isolated values still get put in length-1 arrays. (all values returned)
+ * @description given an array of already-sorted values (so that
+ * comparisons only need to happen between neighboring items),
+ * cluster the numbers which are similar within an epsilon.
+ * Isolated values still get put in length-1 arrays. (all values returned)
  * and the clusters contain the indices from the param array, not the values.
  * @param {numbers[]} an array of sorted numbers
  * @param {numbers} [epsilon=1e-6] an optional epsilon
@@ -64,9 +65,10 @@ export const clusterIndicesOfSortedNumbers = (numbers, epsilon = EPSILON) => {
 	return clusters;
 };
 /**
- * @description radially sort 2D point indices around the lowest-value point, clustering
- * similarly-angled points within an epsilon. Within these clusters, the points are
- * sorted by distance so the nearest point is listed first.
+ * @description radially sort 2D point indices around the lowest-
+ * value point, clustering similarly-angled points within an epsilon.
+ * Within these clusters, the points are sorted by distance so the
+ * nearest point is listed first.
  * @param {number[][]} points an array of points
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number[][]} this returns indices in clusters.

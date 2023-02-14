@@ -7,13 +7,13 @@ const testEqualVectors = function (...args) {
 
 test("nearest point", () => {
 	testEqualVectors([5, 5], math.nearestPoint2(
-		[10, 0],
 		[[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9]],
+		[10, 0],
 	));
 	testEqualVectors([6, 6, 0], math.nearestPoint(
-		[10, 0, 0],
 		[[0, 0, 0], [1, 1, 0], [2, 2, 0], [3, 3, 0], [4, 4, 1],
 			[5, 5, 10], [6, 6, 0], [7, 7, 0], [8, 8, 0], [9, 9, 0]],
+		[10, 0, 0],
 	));
 });
 
@@ -57,17 +57,17 @@ test("nearestPointOnPolygon nearest to vertex", () => {
 });
 
 test("nearestPointOnCircle", () => {
-	const circle = { r: 1, o: [0, 0] };
+	const circle = { radius: 1, origin: [0, 0] };
 
-	const result1 = math.nearestPointOnCircle(circle.r, circle.o, [10, 0]);
-	const result2 = math.nearestPointOnCircle(circle.r, circle.o, [0, 10]);
-	const result3 = math.nearestPointOnCircle(circle.r, circle.o, [-10, 0]);
-	const result4 = math.nearestPointOnCircle(circle.r, circle.o, [0, -10]);
+	const result1 = math.nearestPointOnCircle(circle, [10, 0]);
+	const result2 = math.nearestPointOnCircle(circle, [0, 10]);
+	const result3 = math.nearestPointOnCircle(circle, [-10, 0]);
+	const result4 = math.nearestPointOnCircle(circle, [0, -10]);
 
-	const result5 = math.nearestPointOnCircle(circle.r, circle.o, [10, 10]);
-	const result6 = math.nearestPointOnCircle(circle.r, circle.o, [-10, 10]);
-	const result7 = math.nearestPointOnCircle(circle.r, circle.o, [-10, -10]);
-	const result8 = math.nearestPointOnCircle(circle.r, circle.o, [10, -10]);
+	const result5 = math.nearestPointOnCircle(circle, [10, 10]);
+	const result6 = math.nearestPointOnCircle(circle, [-10, 10]);
+	const result7 = math.nearestPointOnCircle(circle, [-10, -10]);
+	const result8 = math.nearestPointOnCircle(circle, [10, -10]);
 
 	expect(result1[0]).toBeCloseTo(1);
 	expect(result1[1]).toBeCloseTo(0);
