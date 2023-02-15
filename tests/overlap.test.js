@@ -1,6 +1,53 @@
 const { test, expect } = require("@jest/globals");
 const math = require("../math.js");
 
+test("enclosingBoundingBoxes fully enclosed", () => {
+	const box1 = { min: [0, 0], max: [1, 1] };
+	const box2 = { min: [0.25, 0.25], max: [0.75, 0.75] };
+	expect(math.enclosingBoundingBoxes(box1, box2)).toBe(true);
+});
+
+test("enclosingBoundingBoxes edge collinear", () => {
+	const box1 = { min: [0, 0], max: [1, 1] };
+	const box2 = { min: [0, 0], max: [0.5, 0.5] };
+	expect(math.enclosingBoundingBoxes(box1, box2)).toBe(true);
+});
+
+test("enclosingBoundingBoxes edge collinear epsilon", () => {
+	const box1 = { min: [0, 0], max: [1, 1] };
+	const box2 = { min: [0, 0], max: [0.5, 0.5] };
+	expect(math.enclosingBoundingBoxes(box1, box2, -1e-4)).toBe(false);
+	expect(math.enclosingBoundingBoxes(box1, box2, 1e-4)).toBe(true);
+	const box3 = { min: [-1e-3, -1e-3], max: [0.5, 0.5] };
+	expect(math.enclosingBoundingBoxes(box1, box3, -1e-4)).toBe(false);
+	expect(math.enclosingBoundingBoxes(box1, box3, 1e-4)).toBe(false);
+	expect(math.enclosingBoundingBoxes(box1, box3, 1e-2)).toBe(true);
+});
+
+test("overlapBoundingBoxes, point overlap", () => {
+	const box1 = { min: [0, 0], max: [1, 1] };
+	const box2 = { min: [0.9, 0.9], max: [2, 2] };
+	expect(math.overlapBoundingBoxes(box1, box2)).toBe(true);
+});
+
+test("overlapBoundingBoxes, edge overlap", () => {
+	const box1 = { min: [0, 0], max: [1, 1] };
+	const box2 = { min: [1, 0], max: [2, 1] };
+	expect(math.overlapBoundingBoxes(box1, box2)).toBe(true);
+});
+
+test("overlapBoundingBoxes, point overlap, epsilon away", () => {
+	const box1 = { min: [0, 0], max: [1, 1] };
+	const box2 = { min: [1 + 1e-2, 1 + 1e-2], max: [2, 2] };
+	expect(math.overlapBoundingBoxes(box1, box2)).toBe(false);
+});
+
+test("overlapBoundingBoxes, edge overlap", () => {
+	const box1 = { min: [0, 0], max: [1, 1] };
+	const box2 = { min: [1 + 1e-2, 0], max: [2, 1] };
+	expect(math.overlapBoundingBoxes(box1, box2)).toBe(false);
+});
+
 // test("overlap on member types", () => {
 // 	const polygon = math.polygon([0, 1.15], [-1, -0.577], [1, -0.577]);
 // 	const circle = math.circle(1);
@@ -409,6 +456,128 @@ test("overlap lines", () => {
 		),
 	).toBe(false);
 });
+
+test("overlap lines parallel", () => {
+	expect(
+		math.overlapLineLine(
+			{ vector: [1, 0], origin: [0, 0] },
+			{ vector: [1, 0], origin: [0, 1] },
+			math.includeL,
+			math.includeL,
+		),
+	).toBe(false);
+	expect(
+		math.overlapLineLine(
+			{ vector: [1, 0], origin: [0, 0] },
+			{ vector: [1, 0], origin: [0, 0] },
+			math.includeL,
+			math.includeL,
+		),
+	).toBe(true);
+	expect(
+		math.overlapLineLine(
+			{ vector: [3, 0], origin: [0, 0] },
+			{ vector: [3, 0], origin: [8, 0] },
+			math.includeL,
+			math.includeL,
+		),
+	).toBe(true);
+	expect(
+		math.overlapLineLine(
+			{ vector: [3, 0], origin: [0, 0] },
+			{ vector: [3, 0], origin: [8, 0] },
+			math.includeS,
+			math.includeS,
+		),
+	).toBe(false);
+	expect(
+		math.overlapLineLine(
+			{ vector: [3, 0], origin: [0, 0] },
+			{ vector: [3, 0], origin: [8, 0] },
+			math.includeR,
+			math.includeS,
+		),
+	).toBe(true);
+	expect(
+		math.overlapLineLine(
+			{ vector: [3, 0], origin: [0, 0] },
+			{ vector: [3, 0], origin: [8, 0] },
+			math.includeS,
+			math.includeR,
+		),
+	).toBe(false);
+	// segments
+	expect(
+		math.overlapLineLine(
+			{ vector: [3, 0], origin: [0, 0] },
+			{ vector: [3, 0], origin: [3, 0] },
+			math.includeS,
+			math.includeS,
+		),
+	).toBe(true);
+	expect(
+		math.overlapLineLine(
+			{ vector: [3, 0], origin: [0, 0] },
+			{ vector: [3, 0], origin: [3, 0] },
+			math.includeS,
+			math.excludeS,
+		),
+	).toBe(true);
+	expect(
+		math.overlapLineLine(
+			{ vector: [3, 0], origin: [0, 0] },
+			{ vector: [3, 0], origin: [3, 0] },
+			math.excludeS,
+			math.includeS,
+		),
+	).toBe(true);
+	expect(
+		math.overlapLineLine(
+			{ vector: [3, 0], origin: [0, 0] },
+			{ vector: [3, 0], origin: [3, 0] },
+			math.excludeS,
+			math.excludeS,
+		),
+	).toBe(false);
+});
+
+test("overlap circle point", () => {
+	expect(
+		math.overlapCirclePoint(
+			{ radius: 1, origin: [0, 0] },
+			[0.5, 0.5],
+		),
+	).toBe(true);
+	expect(
+		math.overlapCirclePoint(
+			{ radius: 1, origin: [0, 0] },
+			[Math.SQRT1_2, Math.SQRT1_2],
+			math.include,
+		),
+	).toBe(true);
+	expect(
+		math.overlapCirclePoint(
+			{ radius: 1, origin: [0, 0] },
+			[Math.SQRT1_2, Math.SQRT1_2],
+			math.exclude,
+		),
+	).toBe(false);
+	expect(
+		math.overlapCirclePoint(
+			{ radius: 1, origin: [10, 0] },
+			[10 + Math.SQRT1_2, Math.SQRT1_2],
+			math.include,
+		),
+	).toBe(true);
+	expect(
+		math.overlapCirclePoint(
+			{ radius: 1, origin: [10, 0] },
+			[10 + Math.SQRT1_2, Math.SQRT1_2],
+			math.exclude,
+		),
+	).toBe(false);
+});
+
 // if we choose to bring back exclusive / inclusive polygon overlap
 // test("convex polygons overlap with point inside each other", () => {
 // 	const poly1 = [[0, 0], [1, 0], [1, 1], [0, 1]];

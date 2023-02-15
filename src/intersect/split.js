@@ -2,8 +2,8 @@
  * Math (c) Kraft
  */
 import { subtract } from "../algebra/vectors.js";
-import overlapLinePoint from "./overlapLinePoint.js";
-import intersectLineLine from "./intersectLineLine.js";
+import { overlapLinePoint } from "./overlap.js";
+import { intersectLineLine } from "./intersect.js";
 import {
 	includeL,
 	excludeL,
@@ -19,7 +19,7 @@ import {
  * each point is an array of numbers.
  * @linkcode Math ./src/geometry/split-polygon.js 19
  */
-const splitConvexPolygon = (poly, line) => {
+export const splitConvexPolygon = (poly, line) => {
 	// todo: should this return undefined if no intersection?
 	//       or the original poly?
 
@@ -85,5 +85,3 @@ const splitConvexPolygon = (poly, line) => {
 	}
 	return [poly.slice()];
 };
-
-export default splitConvexPolygon;

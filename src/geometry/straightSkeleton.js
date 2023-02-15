@@ -11,7 +11,7 @@ import {
 	clockwiseBisect2,
 } from "./radial.js";
 import { nearestPointOnLine } from "./nearest.js";
-import intersectLineLine from "../intersect/intersectLineLine.js";
+import { intersectLineLine } from "../intersect/intersect.js";
 /**
  * @description this recursive algorithm works outwards-to-inwards, each repeat
  * decreases the size of the polygon by one point/side. (removes 2, adds 1)

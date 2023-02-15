@@ -7,8 +7,8 @@ import {
 } from "../general/constants.js";
 import { semiFlattenArrays } from "../general/arrays.js";
 import {
-	fnVec2Angle,
-	fnToVec2,
+	fnVecToAngle,
+	fnAngleToVec,
 	fnEpsilonEqual,
 } from "../general/functions.js";
 import {
@@ -120,7 +120,7 @@ export const counterClockwiseAngle2 = (a, b) => {
  * @returns {number[]} one 2D vector
  * @linkcode Math ./src/geometry/radial.js 129
  */
-export const clockwiseBisect2 = (a, b) => fnToVec2(fnVec2Angle(a) - clockwiseAngle2(a, b) / 2);
+export const clockwiseBisect2 = (a, b) => fnAngleToVec(fnVecToAngle(a) - clockwiseAngle2(a, b) / 2);
 /**
  * @description calculate the angle bisection counter-clockwise from the first vector to the second.
  * @param {number[]} a one 2D vector
@@ -129,7 +129,7 @@ export const clockwiseBisect2 = (a, b) => fnToVec2(fnVec2Angle(a) - clockwiseAng
  * @linkcode Math ./src/geometry/radial.js 137
  */
 export const counterClockwiseBisect2 = (a, b) => (
-	fnToVec2(fnVec2Angle(a) + counterClockwiseAngle2(a, b) / 2)
+	fnAngleToVec(fnVecToAngle(a) + counterClockwiseAngle2(a, b) / 2)
 );
 /**
  * @description subsect into n-divisions the angle clockwise from one angle to the next
@@ -169,7 +169,7 @@ export const clockwiseSubsect2 = (vectorA, vectorB, divisions) => {
 	const angleA = Math.atan2(vectorA[1], vectorA[0]);
 	const angleB = Math.atan2(vectorB[1], vectorB[0]);
 	return clockwiseSubsectRadians(angleA, angleB, divisions)
-		.map(fnToVec2);
+		.map(fnAngleToVec);
 };
 /**
  * @description subsect into n-divisions the angle counter-clockwise from one vector to the next
@@ -183,7 +183,7 @@ export const counterClockwiseSubsect2 = (vectorA, vectorB, divisions) => {
 	const angleA = Math.atan2(vectorA[1], vectorA[0]);
 	const angleB = Math.atan2(vectorB[1], vectorB[0]);
 	return counterClockwiseSubsectRadians(angleA, angleB, divisions)
-		.map(fnToVec2);
+		.map(fnAngleToVec);
 };
 /**
  * @description sort an array of angles in radians by getting an array of
@@ -217,7 +217,7 @@ export const counterClockwiseOrderRadians = function () {
  */
 export const counterClockwiseOrder2 = function () {
 	return counterClockwiseOrderRadians(
-		semiFlattenArrays(arguments).map(fnVec2Angle),
+		semiFlattenArrays(arguments).map(fnVecToAngle),
 	);
 };
 /**
@@ -243,7 +243,7 @@ export const counterClockwiseSectorsRadians = function () {
  */
 export const counterClockwiseSectors2 = function () {
 	return counterClockwiseSectorsRadians(
-		semiFlattenArrays(arguments).map(fnVec2Angle),
+		semiFlattenArrays(arguments).map(fnVecToAngle),
 	);
 };
 /**

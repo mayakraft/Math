@@ -40,29 +40,21 @@ export const fnNotUndefined = a => a !== undefined;
  * @returns {boolean} the AND of both inputs
  * @linkcode Math ./src/algebra/functions.js 41
  */
-export const fnAnd = (a, b) => a && b;
-/**
- * @description concat the two arrays, resulting in one joined array
- * @param {Array} a any array input
- * @param {Array} b any array input
- * @returns {Array} one joined array
- * @linkcode Math ./src/algebra/functions.js 49
- */
-export const fnCat = (a, b) => a.concat(b);
+// export const fnAnd = (a, b) => a && b;
 /**
  * @description Convert a 2D vector to an angle in radians.
  * @param {number[]} v an input vector
  * @returns {number} the angle in radians
  * @linkcode Math ./src/algebra/functions.js 56
  */
-export const fnVec2Angle = v => Math.atan2(v[1], v[0]);
+export const fnVecToAngle = v => Math.atan2(v[1], v[0]);
 /**
  * @description Convert an angle in radians to a 2D vector.
  * @param {number} a the angle in radians
  * @returns {number[]} a 2D vector
  * @linkcode Math ./src/algebra/functions.js 63
  */
-export const fnToVec2 = a => [Math.cos(a), Math.sin(a)];
+export const fnAngleToVec = a => [Math.cos(a), Math.sin(a)];
 /**
  * @description Are two inputs equal using Javascript's triple equals?
  * @param {any} a any input
@@ -70,7 +62,7 @@ export const fnToVec2 = a => [Math.cos(a), Math.sin(a)];
  * @returns {boolean} true if the inputs are equal
  * @linkcode Math ./src/algebra/functions.js 71
  */
-export const fnEqual = (a, b) => a === b;
+// export const fnEqual = (a, b) => a === b;
 /**
  * @description Are two inputs equal within an epsilon of each other?
  * @param {number} a any number input

@@ -1,16 +1,26 @@
 /**
  * Math (c) Kraft
  */
+import { EPSILON } from "../general/constants.js";
 import { include } from "../general/functions.js";
-import overlapConvexPolygonPoint from "./overlapPolygonPoint.js";
+import { overlapConvexPolygonPoint } from "./overlap.js";
 /**
- *
+ * @description does one bounding box (outer) completely enclose
+ * another bounding box (inner)?
+ * @param {object} outer an n-dimensional bounding box
+ * @param {object} inner an n-dimensional bounding box
+ * @param {number} [epsilon=1e-6] an optional epsilon to pad the area
+ * around the outer bounding box; a negative number will make
+ * the boundary exclusive.
+ * @returns {boolean} is the "inner" polygon completely inside the "outer"
+ * @linkcode
  */
-export const enclosingBoundingBoxes = (outer, inner) => {
+export const enclosingBoundingBoxes = (outer, inner, epsilon = EPSILON) => {
 	const dimensions = Math.min(outer.min.length, inner.min.length);
 	for (let d = 0; d < dimensions; d += 1) {
 		// if one minimum is above the other's maximum, or visa versa
-		if (inner.min[d] < outer.min[d] || inner.max[d] > outer.max[d]) {
+		if (inner.min[d] < outer.min[d] - epsilon
+			|| inner.max[d] > outer.max[d] + epsilon) {
 			return false;
 		}
 	}
