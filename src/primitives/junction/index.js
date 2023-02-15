@@ -1,18 +1,18 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
+import Constructors from "../constructors.js";
 // import {
 // 	alternatingSum,
-// } from "../../geometry/radial";
+// } from "../../geometry/radial.js";
 import {
 	counterClockwiseAngleRadians,
 	counterClockwiseOrderRadians,
-} from "../../geometry/radial";
+} from "../../geometry/radial.js";
 import {
 	getVector,
 	getVectorOfVectors,
-} from "../../types/get";
+} from "../../types/get.js";
 
 const invertOrderArray = (arr) => {
 	const new_arr = [];

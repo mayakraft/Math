@@ -1,16 +1,13 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON, TWO_PI } from "../algebra/constants";
-import { cleanNumber } from "../types/resize";
-import {
-	fnAdd,
-} from "../algebra/functions";
+import { EPSILON, TWO_PI } from "../general/constants.js";
+import { fnAdd } from "../general/functions.js";
+// import { cleanNumber } from "../general/numbers.js";
 import {
 	subtract,
 	parallel,
-} from "../algebra/vectors";
-
+} from "../algebra/vectors.js";
 /**
  * the radius parameter measures from the center to the midpoint of the edge
  * vertex-axis aligned
@@ -22,8 +19,8 @@ const angleArray = count => Array
 	.map((_, i) => TWO_PI * (i / count));
 
 const anglesToVecs = (angles, radius) => angles
-	.map(a => [radius * Math.cos(a), radius * Math.sin(a)])
-	.map(pt => pt.map(n => cleanNumber(n, 14))); // this step is costly!
+	.map(a => [radius * Math.cos(a), radius * Math.sin(a)]);
+	// .map(pt => pt.map(n => cleanNumber(n, 14))); // this step is costly!
 // a = 2r tan(π/n)
 /**
  * @description Make a regular polygon from a circumradius,
@@ -111,14 +108,15 @@ export const makePolygonNonCollinear = (polygon, epsilon = EPSILON) => {
 		.filter((vertex, v) => vertex_collinear[v]);
 };
 /**
- * @description Calculates the circumcircle which lies on three points.
+ * @description Calculates the circumcircle with a boundary that
+ * lies on three points provided by the user.
  * @param {number[]} a one 2D point as an array of numbers
  * @param {number[]} b one 2D point as an array of numbers
  * @param {number[]} c one 2D point as an array of numbers
  * @returns {circle} one circle with keys "radius" (number) and "origin" (number[])
  * @linkcode Math ./src/geometry/polygons.js 119
  */
-export const circumcircle = function (a, b, c) {
+export const circumcircle = (a, b, c) => {
 	const A = b[0] - a[0];
 	const B = b[1] - a[1];
 	const C = c[0] - a[0];
@@ -182,10 +180,12 @@ export const centroid = (points) => {
  * (positive=inclusive boundary, negative=exclusive boundary)
  * @param {number[][]} points an array of unsorted points, in any dimension
  * @param {number} [padding=0] optionally add padding around the box
- * @returns {BoundingBox} an object where "min" and "max" are two points and "span" is the lengths
- * @linkcode Math ./src/geometry/polygons.js 186
+ * @returns {BoundingBox?} an object where "min" and "max" are two points and
+ * "span" is the lengths. returns "undefined" if no points were provided.
+ * @linkcode Math ./src/geometry/polygons.js 187
  */
 export const boundingBox = (points, padding = 0) => {
+	if (!points || !points.length) { return undefined; }
 	const min = Array(points[0].length).fill(Infinity);
 	const max = Array(points[0].length).fill(-Infinity);
 	points.forEach(point => point

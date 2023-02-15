@@ -1,10 +1,10 @@
 /**
  * Math (c) Kraft
  */
-import A from "./args";
-import G from "./getters";
-import M from "./methods";
-import S from "./static";
+import A from "./args.js";
+import G from "./getters.js";
+import M from "./methods.js";
+import S from "./static.js";
 
 export default {
 	circle: {

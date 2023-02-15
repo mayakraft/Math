@@ -1,0 +1,81 @@
+/**
+ * Math (c) Kraft
+ */
+/**
+ * type checking
+ */
+/**
+ * one way to improve these input finders is to search in all indices
+ * of the arguments list, right now it assumes THIS is the only thing
+ * you're passing in. in the case that it isn't and there's an object
+ * in the first slot, it won't find the valid data in the second.
+ */
+/**
+ * @description get the type of an object, which includes the custom types in this library.
+ * @param {any} any object
+ * @returns {string} the type name
+ * @linkcode Math ./src/types/typeof.js 17
+ */
+const typeOf = function (obj) {
+	switch (obj.constructor.name) {
+	case "vector":
+	case "matrix":
+	case "segment":
+	case "ray":
+	case "line":
+	case "circle":
+	case "ellipse":
+	case "rect":
+	case "polygon": return obj.constructor.name;
+	default: break;
+	}
+	if (typeof obj === "object") {
+		if (obj.radius != null) { return "circle"; }
+		if (obj.width != null) { return "rect"; }
+		if (obj.x != null || typeof obj[0] === "number") { return "vector"; }
+		// line ray segment
+		if (obj[0] != null && obj[0].length && (typeof obj[0].x === "number" || typeof obj[0][0] === "number")) { return "segment"; }
+		if (obj.vector != null && obj.origin != null) { return "line"; } // or ray
+	}
+	return undefined;
+};
+
+/**
+ * @typedef BoundingBox
+ * @type {object}
+ * @description An n-dimensional axis-aligned bounding box that ecloses a space.
+ * @property {number[]} min the corner point of the box that is a minima along all axes.
+ * @property {number[]} max the corner point of the box that is a maxima along all axes.
+ * @property {number[]} span the lengths of the box along all dimensions,
+ * the difference between the maxima and minima.
+ * @example
+ * {
+ *   min: [-3, -10],
+ *   max: [5, -1],
+ *   span: [8, 9],
+ * }
+ */
+
+/**
+ * @typedef RayLine
+ * @type {object}
+ * @description an object with a vector and an origin, representing a line or a ray.
+ * @property {number[]} vector - the line's direction vector
+ * @property {number[]} origin - one point that intersects with the line
+ * @example
+ * {
+ *   vector: [0.0, 1.0],
+ *   origin: [0.5, 0.5]
+ * }
+ */
+
+/**
+ * @typedef UniqueLine
+ * @type {object}
+ * @description This is a parameterization of an infinite line which gives each line a
+ * unique parameterization, making checking for duplicates easily.
+ * @property {number[]} normal - the line's normal vector
+ * @property {number} distance - the shortest distance from the origin to the line
+ */
+
+export default typeOf;

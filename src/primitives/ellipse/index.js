@@ -1,17 +1,17 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
+import Constructors from "../constructors.js";
 import {
 	resize,
 	flattenArrays,
-} from "../../types/resize";
+} from "../../types/resize.js";
 
 import {
 	pathInfo,
 	pointOnEllipse,
 	ellipticalArcTo,
-} from "./path";
+} from "./path.js";
 
 const getFoci = function (center, rx, ry, spin) {
 	const order = rx > ry;

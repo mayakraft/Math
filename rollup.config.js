@@ -12,7 +12,13 @@ export default [{
 		file: "math.js",
 		format: "umd",
 		banner,
+		compact: true,
+		generatedCode: {
+			constBindings: true,
+			objectShorthand: true,
+		},
 	},
+	// plugins: [cleanup()],
 	plugins: [cleanup(), terser()],
 }, {
 	input,
@@ -21,6 +27,24 @@ export default [{
 		file: "math.module.js",
 		format: "es",
 		banner,
+		generatedCode: {
+			constBindings: true,
+			objectShorthand: true,
+		},
+	},
+	plugins: [cleanup()],
+}, {
+	input,
+	output: {
+		name,
+		dir: "module/",
+		format: "es",
+		banner,
+		preserveModules: true,
+		generatedCode: {
+			constBindings: true,
+			objectShorthand: true,
+		},
 	},
 	plugins: [cleanup()],
 }, {
@@ -30,5 +54,9 @@ export default [{
 		file: "math.module.comments.js",
 		format: "es",
 		banner,
+		generatedCode: {
+			constBindings: true,
+			objectShorthand: true,
+		},
 	},
 }];

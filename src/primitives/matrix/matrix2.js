@@ -1,14 +1,14 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
+import Constructors from "../constructors.js";
 
 import {
 	getVector,
 	getMatrix2,
-} from "../../types/get";
+} from "../../types/get.js";
 
-import { cleanNumber } from "../../types/resize";
+import { cleanNumber } from "../../types/resize.js";
 
 import {
 	multiplyMatrix2Vector2,
@@ -20,7 +20,7 @@ import {
 	makeMatrix2Scale,
 	makeMatrix2Rotate,
 	makeMatrix2Reflect,
-} from "../../algebra/matrix2";
+} from "../../algebra/matrix2.js";
 
 /**
  * 2D Matrix (2x3) with translation component in x,y

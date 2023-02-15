@@ -1,26 +1,26 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
+import Constructors from "../constructors.js";
 import {
 	add,
 	subtract,
 	average,
 	magnitude,
-} from "../../algebra/vectors";
-import { multiplyMatrix3Vector3 } from "../../algebra/matrix3";
-import { resize, resizeUp } from "../../types/resize";
+} from "../../algebra/vectors.js";
+import { multiplyMatrix3Vector3 } from "../../algebra/matrix3.js";
+import { resize, resizeUp } from "../../types/resize.js";
 import {
 	includeS,
 	excludeS,
-	segmentLimiter,
-} from "../../algebra/functions";
+	clampSegment,
+} from "../../algebra/functions.js";
 import {
 	getMatrix3x4,
 	getSegment,
 	getVector,
-} from "../../types/get";
-import methods from "./methods";
+} from "../../types/get.js";
+import methods from "./methods.js";
 
 export default {
 	segment: {
@@ -50,7 +50,7 @@ export default {
 		M: Object.assign({}, methods, {
 			inclusive: function () { this.domain_function = includeS; return this; },
 			exclusive: function () { this.domain_function = excludeS; return this; },
-			clip_function: segmentLimiter,
+			clip_function: clampSegment,
 			transform: function (...innerArgs) {
 				const dim = this.points[0].length;
 				const mat = getMatrix3x4(innerArgs);

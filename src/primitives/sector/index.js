@@ -1,15 +1,15 @@
 // /**
 //  * Math (c) Kraft
 //  */
-// import Constructors from "../constructors";
+// import Constructors from "../constructors.js";
 // import {
 // 	get_vector_of_vectors,
-// } from "../../types/get";
+// } from "../../types/get.js";
 // import {
 // 	counter_clockwise_angle2,
 // 	counter_clockwise_bisect2,
 // 	subsect,
-// } from "../../geometry/radial";
+// } from "../../geometry/radial.js";
 
 // export default {
 // 	sector: {

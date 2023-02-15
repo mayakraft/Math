@@ -3,15 +3,15 @@
  */
 import {
 	getVector,
-} from "../../types/get";
+} from "../../types/get.js";
 import {
 	pathInfo,
 	ellipticalArcTo,
-} from "../ellipse/path";
-import { nearestPointOnCircle } from "../../algebra/nearest";
-import Intersect from "../../intersection/intersect";
-import Overlap from "../../intersection/overlap";
-import Constructors from "../constructors";
+} from "../ellipse/path.js";
+import { nearestPointOnCircle } from "../../algebra/nearest.js";
+import Intersect from "../../intersection/intersect.js";
+import Overlap from "../../intersection/overlap.js";
+import Constructors from "../constructors.js";
 
 // // (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
 // const circleArcTo = (radius, end) =>
@@ -27,11 +27,7 @@ import Constructors from "../constructors";
 
 const CircleMethods = {
 	nearestPoint: function () {
-		return Constructors.vector(nearestPointOnCircle(
-			this.radius,
-			this.origin,
-			getVector(arguments),
-		));
+		return Constructors.vector(nearestPointOnCircle(this, getVector(arguments)));
 	},
 
 	intersect: function (object) {

@@ -1,17 +1,17 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
-import { resize } from "../../types/resize";
-import { getLine } from "../../types/get";
+import Constructors from "../constructors.js";
+import { resize } from "../../types/resize.js";
+import { getLine } from "../../types/get.js";
 import {
 	includeR,
 	excludeR,
-	rayLimiter,
-} from "../../algebra/functions";
-import { flip } from "../../algebra/vectors";
-import Static from "./static";
-import methods from "./methods";
+	clampRay,
+} from "../../algebra/functions.js";
+import { flip } from "../../algebra/vectors.js";
+import Static from "./static.js";
+import methods from "./methods.js";
 
 // LineProto.prototype.constructor = LineProto;
 
@@ -48,7 +48,7 @@ export default {
 				return Constructors.ray(this.vector.normalize(), this.origin);
 			},
 			// distance is between 0 and 1, representing the vector between start and end. cap accordingly
-			clip_function: rayLimiter,
+			clip_function: clampRay,
 			svgPath: function (length = 10000) {
 				const end = this.vector.scale(length);
 				return `M${this.origin[0]} ${this.origin[1]}l${end[0]} ${end[1]}`;

@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import { circumcircle } from "../../geometry/polygons";
+import { circumcircle } from "../../geometry/polygons.js";
 
 const CircleStatic = {
 	fromPoints: function () {

@@ -1,35 +1,35 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../../algebra/constants";
-import { bisectLines2 } from "../../geometry/radial";
-import { nearestPointOnLine } from "../../algebra/nearest";
-import Constructors from "../constructors";
-import intersect from "../../intersection/intersect";
-import overlap from "../../intersection/overlap";
-import overlapLinePoint from "../../intersection/overlap-line-point";
+import { EPSILON } from "../../algebra/constants.js";
+import { bisectLines2 } from "../../geometry/radial.js";
+import { nearestPointOnLine } from "../../algebra/nearest.js";
+import Constructors from "../constructors.js";
+import intersect from "../../intersection/intersect.js";
+import overlap from "../../intersection/overlap.js";
+import overlapLinePoint from "../../intersection/overlap-line-point.js";
 
 import {
 	resize,
 	resizeUp,
-} from "../../types/resize";
+} from "../../types/resize.js";
 
 import {
 	getVector,
 	getLine,
 	getMatrix3x4,
-} from "../../types/get";
+} from "../../types/get.js";
 
 import {
 	add,
 	parallel,
 	degenerate,
-} from "../../algebra/vectors";
+} from "../../algebra/vectors.js";
 
 import {
 	multiplyMatrix3Line3,
 	makeMatrix3ReflectZ,
-} from "../../algebra/matrix3";
+} from "../../algebra/matrix3.js";
 
 // do not define object methods as arrow functions in here
 
@@ -52,7 +52,7 @@ const LinesMethods = {
 	},
 	isCollinear: function () {
 		const line = getLine(arguments);
-		return overlapLinePoint(this.vector, this.origin, line.origin)
+		return overlapLinePoint({ vector: this.vector, origin: this.origin }, line.origin)
 			&& parallel(...resizeUp(this.vector, line.vector));
 	},
 	isDegenerate: function (epsilon = EPSILON) {

@@ -1,32 +1,32 @@
 /**
  * Math (c) Kraft
  */
-import Constructors from "../constructors";
-import { multiplyMatrix3Vector3 } from "../../algebra/matrix3";
+import Constructors from "../constructors.js";
+import { multiplyMatrix3Vector3 } from "../../algebra/matrix3.js";
 import {
 	signedArea,
 	centroid,
 	boundingBox,
-} from "../../geometry/polygons";
-import splitConvexPolygon from "../../geometry/split-polygon";
-import straightSkeleton from "../../geometry/straight-skeleton";
+} from "../../geometry/polygons.js";
+import splitConvexPolygon from "../../geometry/split-polygon.js";
+import straightSkeleton from "../../geometry/straight-skeleton.js";
 import {
 	getVector,
 	getMatrix3x4,
 	getLine,
-} from "../../types/get";
+} from "../../types/get.js";
 import {
 	resize,
-} from "../../types/resize";
+} from "../../types/resize.js";
 import {
 	includeL,
-} from "../../algebra/functions";
-import Intersect from "../../intersection/intersect";
-import Overlap from "../../intersection/overlap";
-import clipLineConvexPolygon from "../../geometry/clip-line-polygon";
+} from "../../algebra/functions.js";
+import Intersect from "../../intersection/intersect.js";
+import Overlap from "../../intersection/overlap.js";
+import clipLineConvexPolygon from "../../geometry/clip-line-polygon.js";
 import {
 	nearestPointOnPolygon,
-} from "../../algebra/nearest";
+} from "../../algebra/nearest.js";
 
 // a polygon is expecting to have these properties:
 // this - an array of vectors in [] form
@@ -105,7 +105,7 @@ const PolygonMethods = {
 		const line = getLine(...arguments);
 		// const split_func = this.isConvex ? splitConvexPolygon : split_polygon;
 		const split_func = splitConvexPolygon;
-		return split_func(this, line.vector, line.origin)
+		return split_func(this, line)
 			.map(poly => Constructors.polygon(poly));
 	},
 	overlap: function () {
@@ -118,8 +118,7 @@ const PolygonMethods = {
 		const fn_line = line_type.domain_function ? line_type.domain_function : includeL;
 		const segment = clipLineConvexPolygon(
 			this,
-			line_type.vector,
-			line_type.origin,
+			line_type,
 			this.domain_function,
 			fn_line,
 			epsilon,
