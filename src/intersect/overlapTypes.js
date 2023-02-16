@@ -79,7 +79,7 @@ const similar_overlap_types = {
 	vector: "vector",
 };
 
-const default_overlap_domain_function = {
+const default_overlap_domain = {
 	polygon: exclude,
 	rect: exclude,
 	circle: exclude, // not used
@@ -102,8 +102,8 @@ const overlap = function (a, b, epsilon) {
 	const type_b = typeOf(b);
 	const aT = similar_overlap_types[type_a];
 	const bT = similar_overlap_types[type_b];
-	const domain_a = a.domain_function || default_overlap_domain_function[type_a];
-	const domain_b = b.domain_function || default_overlap_domain_function[type_b];
+	const domain_a = a.domain || default_overlap_domain[type_a];
+	const domain_b = b.domain || default_overlap_domain[type_b];
 	return overlap_func[aT][bT](a, b, domain_a, domain_b, epsilon);
 };
 

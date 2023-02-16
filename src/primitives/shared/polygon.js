@@ -115,11 +115,11 @@ const PolygonMethods = {
 		return Intersect(this, ...arguments);
 	},
 	clip: function (line_type, epsilon) {
-		const fn_line = line_type.domain_function ? line_type.domain_function : includeL;
+		const fn_line = line_type.domain ? line_type.domain : includeL;
 		const segment = clipLineConvexPolygon(
 			this,
 			line_type,
-			this.domain_function,
+			this.domain,
 			fn_line,
 			epsilon,
 		);

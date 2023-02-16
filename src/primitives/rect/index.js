@@ -37,7 +37,7 @@ export default {
 			this.height = r.height;
 			this.origin = Constructors.vector(r.x, r.y);
 			this.push(...rectToPoints(this));
-			Object.defineProperty(this, "domain_function", { writable: true, value: include });
+			Object.defineProperty(this, "domain", { writable: true, value: include });
 		},
 		G: {
 			x: function () { return this.origin[0]; },
@@ -50,8 +50,8 @@ export default {
 			},
 		},
 		M: Object.assign({}, methods, {
-			inclusive: function () { this.domain_function = include; return this; },
-			exclusive: function () { this.domain_function = exclude; return this; },
+			inclusive: function () { this.domain = include; return this; },
+			exclusive: function () { this.domain = exclude; return this; },
 			area: function () { return this.width * this.height; },
 			segments: function () { return rectToSides(this); },
 			svgPath: function () {

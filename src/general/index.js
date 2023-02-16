@@ -9,6 +9,7 @@ import * as arrayMethods from "./arrays.js";
 import * as numberMethods from "./numbers.js";
 import * as searchMethods from "./search.js";
 import * as sortMethods from "./sort.js";
+import typeOf from "./typeOf.js";
 
 export default {
 	...constants,
@@ -19,4 +20,5 @@ export default {
 	...numberMethods,
 	...searchMethods,
 	...sortMethods,
+	typeof: typeOf,
 };

@@ -38,7 +38,7 @@ import {
  * it's counting on each type having defined:
  * - an origin
  * - a vector
- * - domain_function which takes one or two inputs (t0, epsilon) and returns
+ * - domain which takes one or two inputs (t0, epsilon) and returns
  *   true if t0 lies inside the boundary of the line, t0 is scaled to vector
  * - similarly, clip_function, takes two inputs (d, epsilon)
  *   and returns a modified d for what is considered valid space between 0-1

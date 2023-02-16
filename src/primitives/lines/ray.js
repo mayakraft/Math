@@ -23,7 +23,7 @@ export default {
 			const ray = getLine(...arguments);
 			this.vector = Constructors.vector(ray.vector);
 			this.origin = Constructors.vector(resize(this.vector.length, ray.origin));
-			Object.defineProperty(this, "domain_function", { writable: true, value: includeR });
+			Object.defineProperty(this, "domain", { writable: true, value: includeR });
 		},
 
 		G: {
@@ -36,8 +36,8 @@ export default {
 		},
 
 		M: Object.assign({}, methods, {
-			inclusive: function () { this.domain_function = includeR; return this; },
-			exclusive: function () { this.domain_function = excludeR; return this; },
+			inclusive: function () { this.domain = includeR; return this; },
+			exclusive: function () { this.domain = excludeR; return this; },
 			flip: function () {
 				return Constructors.ray(flip(this.vector), this.origin);
 			},

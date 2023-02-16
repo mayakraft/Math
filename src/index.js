@@ -13,7 +13,7 @@
 import general from "./general/index.js";
 import algebra from "./algebra/index.js";
 import geometry from "./geometry/index.js";
-import intersect from "./intersect/index.js";
+import intersectMethods from "./intersect/index.js";
 // import primitives from "./primitives/index.js";
 
 /**
@@ -40,7 +40,7 @@ const math = {
 	...general,
 	...algebra,
 	...geometry,
-	...intersect,
+	...intersectMethods,
 };
 // const math = primitives;
 // const math = Object.create(null);

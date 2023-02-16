@@ -396,6 +396,18 @@ const sortMethods = /*#__PURE__*/Object.freeze({
 	radialSortPointIndices2
 });
 
+const typeOf = (obj) => {
+	if (typeof obj !== "object") { return typeof obj; }
+	if (obj.radius !== undefined) { return "circle"; }
+	if (obj.width !== undefined) { return "rect"; }
+	if (typeof obj[0] === "number") { return "vector"; }
+	if (obj.vector !== undefined && obj.origin !== undefined) { return "line"; }
+	if (obj[0] !== undefined && obj[0].length && typeof obj[0][0] === "number") {
+		return obj.length === 2 ? "segment" : "polygon";
+	}
+	return "object";
+};
+
 const general = {
 	...constants,
 	...mathFunctions,
@@ -405,6 +417,7 @@ const general = {
 	...numberMethods,
 	...searchMethods,
 	...sortMethods,
+	typeof: typeOf,
 };
 
 const identity2x2 = [1, 0, 0, 1];
@@ -474,7 +487,7 @@ const makeMatrix2Reflect = (vector, origin = [0, 0]) => {
 	const angle = Math.atan2(vector[1], vector[0]);
 	const cosAngle = Math.cos(angle);
 	const sinAngle = Math.sin(angle);
-	const cos_Angle = -cosAngle;
+	const cos_Angle = Math.cos(-angle);
 	const sin_Angle = Math.sin(-angle);
 	const a = cosAngle * cos_Angle + sinAngle * sin_Angle;
 	const b = cosAngle * -sin_Angle + sinAngle * cos_Angle;
@@ -1217,20 +1230,25 @@ const polygonMethods = /*#__PURE__*/Object.freeze({
 	boundingBox
 });
 
-const overlapLinePoint = ({ vector, origin }, point, func = excludeL, epsilon = EPSILON) => {
+const overlapLinePoint = (
+	{ vector, origin },
+	point,
+	lineDomain = excludeL,
+	epsilon = EPSILON,
+) => {
 	const p2p = subtract2(point, origin);
 	const lineMagSq = magSquared(vector);
 	const lineMag = Math.sqrt(lineMagSq);
 	if (lineMag < epsilon) { return false; }
 	const cross = cross2(p2p, vector.map(n => n / lineMag));
 	const proj = dot2(p2p, vector) / lineMagSq;
-	return Math.abs(cross) < epsilon && func(proj, epsilon / lineMag);
+	return Math.abs(cross) < epsilon && lineDomain(proj, epsilon / lineMag);
 };
 const overlapLineLine = (
 	a,
 	b,
-	aFunction = excludeL,
-	bFunction = excludeL,
+	aDomain = excludeL,
+	bDomain = excludeL,
 	epsilon = EPSILON,
 ) => {
 	const denominator0 = cross2(a.vector, b.vector);
@@ -1249,21 +1267,31 @@ const overlapLineLine = (
 		const aProj2 = dot2(aPt2, b.vector) / bProjLen;
 		const bProj1 = dot2(bPt1, a.vector) / aProjLen;
 		const bProj2 = dot2(bPt2, a.vector) / aProjLen;
-		return aFunction(bProj1, epsilon) || aFunction(bProj2, epsilon)
-			|| bFunction(aProj1, epsilon) || bFunction(aProj2, epsilon);
+		return aDomain(bProj1, epsilon) || aDomain(bProj2, epsilon)
+			|| bDomain(aProj1, epsilon) || bDomain(aProj2, epsilon);
 	}
 	const t0 = cross2(a2b, b.vector) / denominator0;
 	const t1 = cross2(b2a, a.vector) / denominator1;
-	return aFunction(t0, epsilon / magnitude2(a.vector))
-		&& bFunction(t1, epsilon / magnitude2(b.vector));
+	return aDomain(t0, epsilon / magnitude2(a.vector))
+		&& bDomain(t1, epsilon / magnitude2(b.vector));
 };
-const overlapCirclePoint = ({ radius, origin }, point, fn = exclude, epsilon = EPSILON) => (
-	fn(radius - distance2(origin, point), epsilon)
+const overlapCirclePoint = (
+	{ radius, origin },
+	point,
+	circleDomain = exclude,
+	epsilon = EPSILON,
+) => (
+	circleDomain(radius - distance2(origin, point), epsilon)
 );
-const overlapConvexPolygonPoint = (poly, point, func = exclude, epsilon = EPSILON) => poly
+const overlapConvexPolygonPoint = (
+	poly,
+	point,
+	polyDomain = exclude,
+	epsilon = EPSILON,
+) => poly
 	.map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
 	.map(s => cross2(normalize2(subtract2(s[1], s[0])), subtract2(point, s[0])))
-	.map(side => func(side, epsilon))
+	.map(side => polyDomain(side, epsilon))
 	.map((s, _, arr) => s === arr[0])
 	.reduce((prev, curr) => prev && curr, true);
 const overlapConvexPolygons = (poly1, poly2, epsilon = EPSILON) => {
@@ -1298,7 +1326,7 @@ const overlapBoundingBoxes = (box1, box2, epsilon = EPSILON) => {
 	return true;
 };
 
-const overlap = /*#__PURE__*/Object.freeze({
+const overlapMethods = /*#__PURE__*/Object.freeze({
 	__proto__: null,
 	overlapLinePoint,
 	overlapLineLine,
@@ -1311,8 +1339,8 @@ const overlap = /*#__PURE__*/Object.freeze({
 const intersectLineLine = (
 	a,
 	b,
-	aFunction = includeL,
-	bFunction = includeL,
+	aDomain = includeL,
+	bDomain = includeL,
 	epsilon = EPSILON,
 ) => {
 	const det_norm = cross2(normalize2(a.vector), normalize2(b.vector));
@@ -1323,8 +1351,8 @@ const intersectLineLine = (
 	const b2a = [-a2b[0], -a2b[1]];
 	const t0 = cross2(a2b, b.vector) / determinant0;
 	const t1 = cross2(b2a, a.vector) / determinant1;
-	if (aFunction(t0, epsilon / magnitude2(a.vector))
-		&& bFunction(t1, epsilon / magnitude2(b.vector))) {
+	if (aDomain(t0, epsilon / magnitude2(a.vector))
+		&& bDomain(t1, epsilon / magnitude2(b.vector))) {
 		return add2(a.origin, scale2(a.vector, t0));
 	}
 	return undefined;
@@ -1332,7 +1360,8 @@ const intersectLineLine = (
 const intersectCircleLine = (
 	circle,
 	line,
-	line_func = includeL,
+	circleDomain = include,
+	lineDomain = includeL,
 	epsilon = EPSILON,
 ) => {
 	const magSq = line.vector[0] ** 2 + line.vector[1] ** 2;
@@ -1350,7 +1379,7 @@ const intersectCircleLine = (
 	const ts = results.map(res => res.map((n, i) => n - line.origin[i]))
 		.map(v => v[0] * line.vector[0] + line.vector[1] * v[1])
 		.map(d => d / magSq);
-	return results.filter((_, i) => line_func(ts[i], epsilon));
+	return results.filter((_, i) => lineDomain(ts[i], epsilon));
 };
 const acosSafe = (x) => {
 	if (x >= 1.0) return 0;
@@ -1364,7 +1393,13 @@ const rotateVector2 = (center, pt, a) => {
 	const yRot = y * Math.cos(a) - x * Math.sin(a);
 	return [center[0] + xRot, center[1] + yRot];
 };
-const intersectCircleCircle = (c1, c2, epsilon = EPSILON) => {
+const intersectCircleCircle = (
+	c1,
+	c2,
+	c1Domain = include,
+	c2Domain = include,
+	epsilon = EPSILON,
+) => {
 	const r = (c1.radius < c2.radius) ? c1.radius : c2.radius;
 	const R = (c1.radius < c2.radius) ? c2.radius : c1.radius;
 	const smCenter = (c1.radius < c2.radius) ? c1.origin : c2.origin;
@@ -1462,7 +1497,7 @@ const intersectConvexPolygonLine = (
 		: sects;
 };
 
-const intersect$1 = /*#__PURE__*/Object.freeze({
+const intersectMethods$1 = /*#__PURE__*/Object.freeze({
 	__proto__: null,
 	intersectLineLine,
 	intersectCircleLine,
@@ -1744,19 +1779,44 @@ const split = /*#__PURE__*/Object.freeze({
 	splitConvexPolygon
 });
 
-const intersect = {
+const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+const defaultDomain = {
+	polygon: includeS,
+	circle: include,
+	line: includeL,
+	ray: includeR,
+	segment: includeS,
+};
+const intersect = (a, b, epsilon = EPSILON) => {
+	const nameType = s => (s === "polygon" ? "ConvexPolygon" : capitalize(s));
+	const types = [a, b].map(typeOf);
+	const methods = [types, types.slice().reverse()]
+		.map(pair => pair.map(nameType).join(""))
+		.map(str => intersectMethods$1[`intersect${str}`]);
+	const doms = [a.domain, b.domain]
+		.map((d, i) => d || defaultDomain[types[i]]);
+	const parameters = [[a, b, ...doms], [b, a, ...doms.slice().reverse()]];
+	const match = methods
+		.map((fn, i) => ({ fn, params: parameters[i] }))
+		.filter(el => el.fn)
+		.shift();
+	return match ? match.fn(...match.params, epsilon) : undefined;
+};
+
+const intersectMethods = {
 	...encloses,
-	...overlap,
-	...intersect$1,
+	...overlapMethods,
+	...intersectMethods$1,
 	...clip,
 	...split,
+	intersect,
 };
 
 const math = {
 	...general,
 	...algebra,
 	...geometry,
-	...intersect,
+	...intersectMethods,
 };
 
 export { math as default };

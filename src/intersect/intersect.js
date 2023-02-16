@@ -13,6 +13,7 @@ import {
 	rotate90,
 } from "../algebra/vectors.js";
 import {
+	include,
 	exclude,
 	includeL,
 	includeR,
@@ -29,9 +30,9 @@ import { overlapConvexPolygonPoint } from "./overlap.js";
  * of their endpoints and the epsilon value.
  * @param {RayLine} lineA line object with "vector" and "origin"
  * @param {RayLine} lineB line object with "vector" and "origin"
- * @param {function} [aFunction=includeL] first line's boolean test
+ * @param {function} [aDomain=includeL] first line's boolean test
  * normalized value lies collinear
- * @param {function} [bFunction=includeL] second line's boolean test
+ * @param {function} [bDomain=includeL] second line's boolean test
  * normalized value lies collinear
  * @param {number} [epsilon=1e-6] optional epsilon
  * @returns {number[]|undefined} one 2D point or undefined
@@ -40,8 +41,8 @@ import { overlapConvexPolygonPoint } from "./overlap.js";
 export const intersectLineLine = (
 	a,
 	b,
-	aFunction = includeL,
-	bFunction = includeL,
+	aDomain = includeL,
+	bDomain = includeL,
 	epsilon = EPSILON,
 ) => {
 	// a normalized determinant gives consistent values across all epsilon ranges
@@ -54,8 +55,8 @@ export const intersectLineLine = (
 	const b2a = [-a2b[0], -a2b[1]];
 	const t0 = cross2(a2b, b.vector) / determinant0;
 	const t1 = cross2(b2a, a.vector) / determinant1;
-	if (aFunction(t0, epsilon / magnitude2(a.vector))
-		&& bFunction(t1, epsilon / magnitude2(b.vector))) {
+	if (aDomain(t0, epsilon / magnitude2(a.vector))
+		&& bDomain(t1, epsilon / magnitude2(b.vector))) {
 		return add2(a.origin, scale2(a.vector, t0));
 	}
 	return undefined;
@@ -75,7 +76,8 @@ export const intersectLineLine = (
 export const intersectCircleLine = (
 	circle,
 	line,
-	line_func = includeL,
+	circleDomain = include,
+	lineDomain = includeL,
 	epsilon = EPSILON,
 ) => {
 	const magSq = line.vector[0] ** 2 + line.vector[1] ** 2;
@@ -93,7 +95,7 @@ export const intersectCircleLine = (
 	const ts = results.map(res => res.map((n, i) => n - line.origin[i]))
 		.map(v => v[0] * line.vector[0] + line.vector[1] * v[1])
 		.map(d => d / magSq);
-	return results.filter((_, i) => line_func(ts[i], epsilon));
+	return results.filter((_, i) => lineDomain(ts[i], epsilon));
 };
 
 const acosSafe = (x) => {
@@ -118,7 +120,13 @@ const rotateVector2 = (center, pt, a) => {
  * @returns {number[][]|undefined} an array of one or two points, or undefined if no intersection
  * @linkcode Math ./src/intersection/intersect-circle-circle.js 28
  */
-export const intersectCircleCircle = (c1, c2, epsilon = EPSILON) => {
+export const intersectCircleCircle = (
+	c1,
+	c2,
+	c1Domain = include,
+	c2Domain = include,
+	epsilon = EPSILON,
+) => {
 	// sort by largest-smallest radius
 	const r = (c1.radius < c2.radius) ? c1.radius : c2.radius;
 	const R = (c1.radius < c2.radius) ? c2.radius : c1.radius;

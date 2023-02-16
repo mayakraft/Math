@@ -23,13 +23,18 @@ import {
  * @param {number[]} vector the vector component of the line
  * @param {number[]} origin the origin component of the line
  * @param {number[]} point one 2D point
- * @parma {function} [func=excludeL] specify line/ray/segment and inclusive/exclusive
+ * @parma {function} [lineDomain=excludeL] specify line/ray/segment and inclusive/exclusive
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {boolean} is the point collinear to the line, and in the case of ray/segment,
  * does the point lie within the bounds of the ray/segment?
  * @linkcode Math ./src/intersection/overlap-line-point.js 22
  */
-export const overlapLinePoint = ({ vector, origin }, point, func = excludeL, epsilon = EPSILON) => {
+export const overlapLinePoint = (
+	{ vector, origin },
+	point,
+	lineDomain = excludeL,
+	epsilon = EPSILON,
+) => {
 	const p2p = subtract2(point, origin);
 	const lineMagSq = magSquared(vector);
 	const lineMag = Math.sqrt(lineMagSq);
@@ -37,7 +42,7 @@ export const overlapLinePoint = ({ vector, origin }, point, func = excludeL, eps
 	if (lineMag < epsilon) { return false; }
 	const cross = cross2(p2p, vector.map(n => n / lineMag));
 	const proj = dot2(p2p, vector) / lineMagSq;
-	return Math.abs(cross) < epsilon && func(proj, epsilon / lineMag);
+	return Math.abs(cross) < epsilon && lineDomain(proj, epsilon / lineMag);
 };
 /**
  * @description Test if two lines overlap each other, generalized
@@ -52,8 +57,8 @@ export const overlapLinePoint = ({ vector, origin }, point, func = excludeL, eps
 export const overlapLineLine = (
 	a,
 	b,
-	aFunction = excludeL,
-	bFunction = excludeL,
+	aDomain = excludeL,
+	bDomain = excludeL,
 	epsilon = EPSILON,
 ) => {
 	const denominator0 = cross2(a.vector, b.vector);
@@ -77,13 +82,13 @@ export const overlapLineLine = (
 		// use the supplied function parameters to allow line/ray/segment
 		// clamping and check if either point from either line is inside
 		// the other line's vector, and if the function (l/r/s) allows it
-		return aFunction(bProj1, epsilon) || aFunction(bProj2, epsilon)
-			|| bFunction(aProj1, epsilon) || bFunction(aProj2, epsilon);
+		return aDomain(bProj1, epsilon) || aDomain(bProj2, epsilon)
+			|| bDomain(aProj1, epsilon) || bDomain(aProj2, epsilon);
 	}
 	const t0 = cross2(a2b, b.vector) / denominator0;
 	const t1 = cross2(b2a, a.vector) / denominator1;
-	return aFunction(t0, epsilon / magnitude2(a.vector))
-		&& bFunction(t1, epsilon / magnitude2(b.vector));
+	return aDomain(t0, epsilon / magnitude2(a.vector))
+		&& bDomain(t1, epsilon / magnitude2(b.vector));
 };
 /**
  * @description Test if a point lies inside of a circle.
@@ -93,8 +98,13 @@ export const overlapLineLine = (
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @linkcode Math ./src/intersection/overlap-line-line.js 21
 */
-export const overlapCirclePoint = ({ radius, origin }, point, fn = exclude, epsilon = EPSILON) => (
-	fn(radius - distance2(origin, point), epsilon)
+export const overlapCirclePoint = (
+	{ radius, origin },
+	point,
+	circleDomain = exclude,
+	epsilon = EPSILON,
+) => (
+	circleDomain(radius - distance2(origin, point), epsilon)
 );
 /**
  * @description tests if a point is inside a convex polygon. Polygon is
@@ -106,10 +116,15 @@ export const overlapCirclePoint = ({ radius, origin }, point, fn = exclude, epsi
  * @returns {boolean} is the point inside the polygon?
  * @linkcode Math ./src/intersection/overlap-polygon-point.js 23
  */
-export const overlapConvexPolygonPoint = (poly, point, func = exclude, epsilon = EPSILON) => poly
+export const overlapConvexPolygonPoint = (
+	poly,
+	point,
+	polyDomain = exclude,
+	epsilon = EPSILON,
+) => poly
 	.map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
 	.map(s => cross2(normalize2(subtract2(s[1], s[0])), subtract2(point, s[0])))
-	.map(side => func(side, epsilon))
+	.map(side => polyDomain(side, epsilon))
 	.map((s, _, arr) => s === arr[0])
 	.reduce((prev, curr) => prev && curr, true);
 /**

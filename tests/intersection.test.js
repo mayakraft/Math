@@ -542,6 +542,7 @@ test("intersect lines", () => {
 	const clipRay = math.intersectCircleLine(
 		{ radius: 1, origin: [0, 0] },
 		{ vector: [0.1, 0.1], origin: [0, 0] },
+		math.include,
 		math.includeR,
 	);
 	math.epsilonEqualVectors(shouldBeRay, clipRay[0]);
@@ -550,6 +551,7 @@ test("intersect lines", () => {
 	const clipSeg = math.intersectCircleLine(
 		{ radius: 1, origin: [0, 0] },
 		{ vector: [10, 10], origin: [0, 0] },
+		math.include,
 		math.includeS,
 	);
 	math.epsilonEqualVectors(shouldBeSeg, clipSeg[0]);

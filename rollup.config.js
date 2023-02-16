@@ -19,6 +19,7 @@ export default [{
 		},
 	},
 	plugins: [cleanup(), terser()],
+	// plugins: [cleanup()],
 }, {
 	input,
 	output: {

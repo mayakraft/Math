@@ -30,7 +30,7 @@ export default {
 			const alt = rayLineToUniqueLine({ vector: this.vector, origin: this.origin });
 			this.normal = alt.normal;
 			this.distance = alt.distance;
-			Object.defineProperty(this, "domain_function", { writable: true, value: includeL });
+			Object.defineProperty(this, "domain", { writable: true, value: includeL });
 		},
 
 		G: {
@@ -43,8 +43,8 @@ export default {
 		},
 
 		M: Object.assign({}, methods, {
-			inclusive: function () { this.domain_function = includeL; return this; },
-			exclusive: function () { this.domain_function = excludeL; return this; },
+			inclusive: function () { this.domain = includeL; return this; },
+			exclusive: function () { this.domain = excludeL; return this; },
 			clip_function: dist => dist,
 			svgPath: function (length = 20000) {
 				const start = add(this.origin, scale(this.vector, -length / 2));

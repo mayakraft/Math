@@ -34,7 +34,7 @@ export default {
 			// this.push(a[0], a[1]);
 			// this.vector = subtract(this[1], this[0]);
 			this.origin = this[0];
-			Object.defineProperty(this, "domain_function", { writable: true, value: includeS });
+			Object.defineProperty(this, "domain", { writable: true, value: includeS });
 		},
 
 		G: {
@@ -48,8 +48,8 @@ export default {
 		},
 
 		M: Object.assign({}, methods, {
-			inclusive: function () { this.domain_function = includeS; return this; },
-			exclusive: function () { this.domain_function = excludeS; return this; },
+			inclusive: function () { this.domain = includeS; return this; },
+			exclusive: function () { this.domain = excludeS; return this; },
 			clip_function: clampSegment,
 			transform: function (...innerArgs) {
 				const dim = this.points[0].length;
