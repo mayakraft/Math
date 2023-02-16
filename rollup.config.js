@@ -46,7 +46,7 @@ export default [{
 			objectShorthand: true,
 		},
 	},
-	plugins: [cleanup()],
+	// plugins: [cleanup()],
 }, {
 	input,
 	output: {

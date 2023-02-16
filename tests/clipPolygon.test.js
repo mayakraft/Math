@@ -3,7 +3,7 @@ const math = require("../math.js");
 
 const testEqualVectorVectors = function (a, b) {
 	expect(a.length).toBe(b.length);
-	a.forEach((_, i) => expect(math.fnEpsilonEqualVectors(a[i], b[i]))
+	a.forEach((_, i) => expect(math.epsilonEqualVectors(a[i], b[i]))
 		.toBe(true));
 };
 

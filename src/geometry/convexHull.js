@@ -21,7 +21,7 @@ const mirrorArray = (arr) => arr.concat(arr.slice(0, -1).reverse());
  * of points in your "points" array
  * @linkcode Math ./src/geometry/convex-hull.js 19
  */
-export const convexHullIndices = (points = [], includeCollinear = false, epsilon = EPSILON) => {
+export const convexHull = (points = [], includeCollinear = false, epsilon = EPSILON) => {
 	if (points.length < 2) { return []; }
 	// if includeCollinear is true, we need to walk collinear points,
 	// problem is we don't know if we should be going towards or away from
@@ -70,6 +70,6 @@ export const convexHullIndices = (points = [], includeCollinear = false, epsilon
  * where each point is an array of numbers
  * @linkcode Math ./src/geometry/convex-hull.js 66
  */
-export const convexHull = (points = [], includeCollinear = false, epsilon = EPSILON) => (
-	convexHullIndices(points, includeCollinear, epsilon)
-		.map(i => points[i]));
+// export const convexHullAsPoints = (points = [], includeCollinear = false, epsilon = EPSILON) => (
+// 	convexHull(points, includeCollinear, epsilon)
+// 		.map(i => points[i]));

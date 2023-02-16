@@ -2,7 +2,7 @@
  * Math (c) Kraft
  */
 import { EPSILON } from "./constants.js";
-import { fnEpsilonEqual } from "./functions.js";
+import { epsilonEqual } from "./functions.js";
 import {
 	normalize2,
 	distance2,
@@ -55,7 +55,7 @@ export const clusterIndicesOfSortedNumbers = (numbers, epsilon = EPSILON) => {
 	let clusterIndex = 0;
 	for (let i = 1; i < numbers.length; i += 1) {
 		// if this scalar fits inside the current cluster
-		if (fnEpsilonEqual(numbers[i], numbers[i - 1], epsilon)) {
+		if (epsilonEqual(numbers[i], numbers[i - 1], epsilon)) {
 			clusters[clusterIndex].push(i);
 		} else {
 			clusterIndex = clusters.length;

@@ -3,7 +3,6 @@
  */
 import { EPSILON } from "../general/constants.js";
 import {
-	fnNotUndefined,
 	include,
 	includeL,
 	includeS,
@@ -61,7 +60,7 @@ const getIntersectParameters = (poly, vector, origin, polyLineFunc, epsilon) => 
 		polyLineFunc,
 		epsilon,
 	))
-	.filter(fnNotUndefined)
+	.filter(a => a !== undefined)
 	.sort((a, b) => a - b);
 
 // we have already done the test that numbers is a valid array

@@ -5,11 +5,13 @@ import {
 	EPSILON,
 	TWO_PI,
 } from "../general/constants.js";
+import {
+	vectorToAngle,
+	angleToVector,
+} from "../general/convert.js";
 import { semiFlattenArrays } from "../general/arrays.js";
 import {
-	fnVecToAngle,
-	fnAngleToVec,
-	fnEpsilonEqual,
+	epsilonEqual,
 } from "../general/functions.js";
 import {
 	cross2,
@@ -120,7 +122,7 @@ export const counterClockwiseAngle2 = (a, b) => {
  * @returns {number[]} one 2D vector
  * @linkcode Math ./src/geometry/radial.js 129
  */
-export const clockwiseBisect2 = (a, b) => fnAngleToVec(fnVecToAngle(a) - clockwiseAngle2(a, b) / 2);
+export const clockwiseBisect2 = (a, b) => angleToVector(vectorToAngle(a) - clockwiseAngle2(a, b) / 2);
 /**
  * @description calculate the angle bisection counter-clockwise from the first vector to the second.
  * @param {number[]} a one 2D vector
@@ -129,7 +131,7 @@ export const clockwiseBisect2 = (a, b) => fnAngleToVec(fnVecToAngle(a) - clockwi
  * @linkcode Math ./src/geometry/radial.js 137
  */
 export const counterClockwiseBisect2 = (a, b) => (
-	fnAngleToVec(fnVecToAngle(a) + counterClockwiseAngle2(a, b) / 2)
+	angleToVector(vectorToAngle(a) + counterClockwiseAngle2(a, b) / 2)
 );
 /**
  * @description subsect into n-divisions the angle clockwise from one angle to the next
@@ -169,7 +171,7 @@ export const clockwiseSubsect2 = (vectorA, vectorB, divisions) => {
 	const angleA = Math.atan2(vectorA[1], vectorA[0]);
 	const angleB = Math.atan2(vectorB[1], vectorB[0]);
 	return clockwiseSubsectRadians(angleA, angleB, divisions)
-		.map(fnAngleToVec);
+		.map(angleToVector);
 };
 /**
  * @description subsect into n-divisions the angle counter-clockwise from one vector to the next
@@ -183,7 +185,7 @@ export const counterClockwiseSubsect2 = (vectorA, vectorB, divisions) => {
 	const angleA = Math.atan2(vectorA[1], vectorA[0]);
 	const angleB = Math.atan2(vectorB[1], vectorB[0]);
 	return counterClockwiseSubsectRadians(angleA, angleB, divisions)
-		.map(fnAngleToVec);
+		.map(angleToVector);
 };
 /**
  * @description sort an array of angles in radians by getting an array of
@@ -217,7 +219,7 @@ export const counterClockwiseOrderRadians = function () {
  */
 export const counterClockwiseOrder2 = function () {
 	return counterClockwiseOrderRadians(
-		semiFlattenArrays(arguments).map(fnVecToAngle),
+		semiFlattenArrays(arguments).map(vectorToAngle),
 	);
 };
 /**
@@ -243,7 +245,7 @@ export const counterClockwiseSectorsRadians = function () {
  */
 export const counterClockwiseSectors2 = function () {
 	return counterClockwiseSectorsRadians(
-		semiFlattenArrays(arguments).map(fnVecToAngle),
+		semiFlattenArrays(arguments).map(vectorToAngle),
 	);
 };
 /**
@@ -284,12 +286,12 @@ export const threePointTurnDirection = (p0, p1, p2, epsilon = EPSILON) => {
 	const u = normalize2(subtract2(p2, p0));
 	// not collinear
 	const cross = cross2(v, u);
-	if (!fnEpsilonEqual(cross, 0, epsilon)) {
+	if (!epsilonEqual(cross, 0, epsilon)) {
 		return Math.sign(cross);
 	}
 	// collinear. now we have to ensure the order is 0, 1, 2, and point
 	// 1 lies between 0 and 2. otherwise we made a 180 degree turn (return undefined)
-	return fnEpsilonEqual(distance2(p0, p1) + distance2(p1, p2), distance2(p0, p2))
+	return epsilonEqual(distance2(p0, p1) + distance2(p1, p2), distance2(p0, p2))
 		? 0
 		: undefined;
 };

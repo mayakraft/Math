@@ -2,7 +2,7 @@
  * Math (c) Kraft
  */
 import { EPSILON } from "./constants.js";
-import { fnEpsilonCompare } from "./functions.js";
+import { epsilonCompare } from "./functions.js";
 /**
  * @description Given a single object against which to compare,
  * iterate through an array of the same type and run a custom
@@ -35,7 +35,7 @@ export const smallestComparisonSearch = (array, obj, compare_func) => {
  * @returns {number[]} array of indices which all have the lowest X value.
  * @linkcode Math ./src/algebra/nearest.js 48
  */
-const smallestVectorSearch = (vectors, axis = 0, compFn = fnEpsilonCompare, epsilon = EPSILON) => {
+const smallestVectorSearch = (vectors, axis = 0, compFn = epsilonCompare, epsilon = EPSILON) => {
 	// find the set of all vectors that share the smallest X value within an epsilon
 	let smallSet = [0];
 	for (let i = 1; i < vectors.length; i += 1) {
@@ -63,8 +63,8 @@ export const minimum2DPointIndex = (points, epsilon = EPSILON) => {
 // export const minimumPointIndex = (points, epsilon = EPSILON) => {
 	if (!points.length) { return undefined; }
 	// find the set of all points that share the smallest X value
-	// const smallSet = minimumXIndices(points, fnEpsilonCompare, epsilon);
-	const smallSet = smallestVectorSearch(points, 0, fnEpsilonCompare, epsilon);
+	// const smallSet = minimumXIndices(points, epsilonCompare, epsilon);
+	const smallSet = smallestVectorSearch(points, 0, epsilonCompare, epsilon);
 	// from this set, find the point with the smallest Y value
 	let sm = 0;
 	for (let i = 1; i < smallSet.length; i += 1) {
@@ -79,7 +79,7 @@ export const minimum2DPointIndex = (points, epsilon = EPSILON) => {
 	// for (let d = 0; d < dimensions; d += 1) {
 	// 	const indices = levelMap[0].map((_, i) => i);
 	// 	levelMap.forEach(map => indices.forEach((s, i) => { indices[i] = map[s]; }));
-	// 	set = smallestVectorSearch(indices.map(i => points[i]), d, fnEpsilonCompare, epsilon);
+	// 	set = smallestVectorSearch(indices.map(i => points[i]), d, epsilonCompare, epsilon);
 	// 	levelMap.push(set);
 	// }
 	// console.log("levelMap", levelMap);

@@ -2,9 +2,10 @@
  * Math (c) Kraft
  */
 import { EPSILON, TWO_PI } from "../general/constants.js";
-import { fnAdd } from "../general/functions.js";
-// import { cleanNumber } from "../general/numbers.js";
 import {
+	cross2,
+	scale2,
+	add2,
 	subtract,
 	parallel,
 } from "../algebra/vectors.js";
@@ -20,7 +21,6 @@ const angleArray = count => Array
 
 const anglesToVecs = (angles, radius) => angles
 	.map(a => [radius * Math.cos(a), radius * Math.sin(a)]);
-	// .map(pt => pt.map(n => cleanNumber(n, 14))); // this step is costly!
 // a = 2r tan(π/n)
 /**
  * @description Make a regular polygon from a circumradius,
@@ -152,10 +152,9 @@ export const circumcircle = (a, b, c) => {
  * @linkcode Math ./src/geometry/polygons.js 154
  */
 export const signedArea = points => 0.5 * points
-	.map((el, i, arr) => {
-		const next = arr[(i + 1) % arr.length];
-		return el[0] * next[1] - next[0] * el[1];
-	}).reduce(fnAdd, 0);
+	.map((el, i, arr) => [el, arr[(i + 1) % arr.length]])
+	.map(pair => cross2(...pair))
+	.reduce((a, b) => a + b, 0);
 /**
  * @description Calculates the centroid or the center of mass of the polygon.
  * @param {number[][]} points an array of 2D points, which are arrays of numbers
@@ -166,11 +165,10 @@ export const signedArea = points => 0.5 * points
  */
 export const centroid = (points) => {
 	const sixthArea = 1 / (6 * signedArea(points));
-	return points.map((el, i, arr) => {
-		const next = arr[(i + 1) % arr.length];
-		const mag = el[0] * next[1] - next[0] * el[1];
-		return [(el[0] + next[0]) * mag, (el[1] + next[1]) * mag];
-	}).reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0])
+	return points
+		.map((el, i, arr) => [el, arr[(i + 1) % arr.length]])
+		.map(pair => scale2(add2(...pair), cross2(...pair)))
+		.reduce((a, b) => add2(a, b), [0, 0])
 		.map(c => c * sixthArea);
 };
 /**

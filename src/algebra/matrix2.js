@@ -136,7 +136,7 @@ export const makeMatrix2Reflect = (vector, origin = [0, 0]) => {
 	const angle = Math.atan2(vector[1], vector[0]);
 	const cosAngle = Math.cos(angle);
 	const sinAngle = Math.sin(angle);
-	const cos_Angle = Math.cos(-angle);
+	const cos_Angle = -cosAngle;
 	const sin_Angle = Math.sin(-angle);
 	const a = cosAngle * cos_Angle + sinAngle * sin_Angle;
 	const b = cosAngle * -sin_Angle + sinAngle * cos_Angle;

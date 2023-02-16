@@ -2,7 +2,7 @@ const { test, expect } = require("@jest/globals");
 const math = require("../math.js");
 
 const testEqualVectors = function (...args) {
-	expect(math.fnEpsilonEqualVectors(...args)).toBe(true);
+	expect(math.epsilonEqualVectors(...args)).toBe(true);
 };
 
 test("nearest point", () => {

@@ -18,41 +18,35 @@ import {
 	rotate90,
 } from "../algebra/vectors.js";
 /**
- * @description Test if two axis-aligned bounding boxes overlap each other.
- * @param {BoundingBox} box1 an axis-aligned bounding box, the result of calling boundingBox(...)
- * @param {BoundingBox} box2 an axis-aligned bounding box, the result of calling boundingBox(...)
- * @returns {boolean} true if the bounding boxes overlap each other
- * @linkcode Math ./src/intersection/overlap-bounding-boxes.js 9
+ * @description check if a point lies collinear along a line, and specify if the
+ * line is a line/ray/segment and test whether the point lies within endpoint(s).
+ * @param {number[]} vector the vector component of the line
+ * @param {number[]} origin the origin component of the line
+ * @param {number[]} point one 2D point
+ * @parma {function} [func=excludeL] specify line/ray/segment and inclusive/exclusive
+ * @param {number} [epsilon=1e-6] an optional epsilon
+ * @returns {boolean} is the point collinear to the line, and in the case of ray/segment,
+ * does the point lie within the bounds of the ray/segment?
+ * @linkcode Math ./src/intersection/overlap-line-point.js 22
  */
-export const overlapBoundingBoxes = (box1, box2, epsilon = EPSILON) => {
-	const dimensions = Math.min(box1.min.length, box2.min.length);
-	for (let d = 0; d < dimensions; d += 1) {
-		// if one minimum is above the other's maximum, or visa versa
-		if (box1.min[d] > box2.max[d] + epsilon
-			|| box1.max[d] < box2.min[d] - epsilon) {
-			return false;
-		}
-	}
-	return true;
+export const overlapLinePoint = ({ vector, origin }, point, func = excludeL, epsilon = EPSILON) => {
+	const p2p = subtract2(point, origin);
+	const lineMagSq = magSquared(vector);
+	const lineMag = Math.sqrt(lineMagSq);
+	// the line is degenerate
+	if (lineMag < epsilon) { return false; }
+	const cross = cross2(p2p, vector.map(n => n / lineMag));
+	const proj = dot2(p2p, vector) / lineMagSq;
+	return Math.abs(cross) < epsilon && func(proj, epsilon / lineMag);
 };
-/**
- * @description Test if a point lies inside of a circle.
- * @param {RayLine} lineA a line as an object with "vector" and "origin"
- * @param {RayLine} lineB a line as an object with "vector" and "origin"
- * @param {function} first line's boolean test normalized value lies collinear
- * @param {function} seconde line's boolean test normalized value lies collinear
- * @linkcode Math ./src/intersection/overlap-line-line.js 21
-*/
-export const overlapCirclePoint = ({ radius, origin }, point, fn = exclude, epsilon = EPSILON) => (
-	fn(radius - distance2(origin, point), epsilon)
-);
 /**
  * @description Test if two lines overlap each other, generalized
  * and works for lines, rays, and segments.
  * @param {RayLine} lineA a line as an object with "vector" and "origin"
  * @param {RayLine} lineB a line as an object with "vector" and "origin"
- * @param {function} first line's boolean test normalized value lies collinear
- * @param {function} seconde line's boolean test normalized value lies collinear
+ * @param {function} aFn first line's boolean test normalized value lies collinear
+ * @param {function} bFn second line's boolean test normalized value lies collinear
+ * @param {number} [epsilon=1e-6] an optional epsilon
  * @linkcode Math ./src/intersection/overlap-line-line.js 21
 */
 export const overlapLineLine = (
@@ -65,10 +59,11 @@ export const overlapLineLine = (
 	const denominator0 = cross2(a.vector, b.vector);
 	const denominator1 = -denominator0;
 	const a2b = subtract2(b.origin, a.origin);
+	const b2a = [-a2b[0], -a2b[1]];
 	if (Math.abs(denominator0) < epsilon) { // parallel
 		if (Math.abs(cross2(a2b, a.vector)) > epsilon) { return false; }
 		// project each line's two endpoints onto the vector of the other line.
-		const aPt1 = subtract2(a.origin, b.origin);
+		const aPt1 = b2a;
 		const aPt2 = add2(aPt1, a.vector);
 		const bPt1 = a2b;
 		const bPt2 = add2(bPt1, b.vector);
@@ -85,40 +80,29 @@ export const overlapLineLine = (
 		return aFunction(bProj1, epsilon) || aFunction(bProj2, epsilon)
 			|| bFunction(aProj1, epsilon) || bFunction(aProj2, epsilon);
 	}
-	const b2a = [-a2b[0], -a2b[1]];
 	const t0 = cross2(a2b, b.vector) / denominator0;
 	const t1 = cross2(b2a, a.vector) / denominator1;
 	return aFunction(t0, epsilon / magnitude2(a.vector))
 		&& bFunction(t1, epsilon / magnitude2(b.vector));
 };
 /**
- * @description check if a point lies collinear along a line, and specify if the
- * line is a line/ray/segment and test whether the point lies within endpoint(s).
- * @param {number[]} vector the vector component of the line
- * @param {number[]} origin the origin component of the line
- * @param {number[]} point one 2D point
- * @parma {function} [func=excludeL] specify line/ray/segment and inclusive/exclusive
- * @param {number} [epsilon=1e-6] an optional epsilon with a default value of 1e-6
- * @returns {boolean} is the point collinear to the line, and in the case of ray/segment,
- * does the point lie within the bounds of the ray/segment?
- * @linkcode Math ./src/intersection/overlap-line-point.js 22
- */
-export const overlapLinePoint = ({ vector, origin }, point, func = excludeL, epsilon = EPSILON) => {
-	const p2p = subtract2(point, origin);
-	const lineMagSq = magSquared(vector);
-	const lineMag = Math.sqrt(lineMagSq);
-	// the line is degenerate
-	if (lineMag < epsilon) { return false; }
-	const cross = cross2(p2p, vector.map(n => n / lineMag));
-	const proj = dot2(p2p, vector) / lineMagSq;
-	return Math.abs(cross) < epsilon && func(proj, epsilon / lineMag);
-};
+ * @description Test if a point lies inside of a circle.
+ * @param {object} circle object with radius and origin
+ * @param {number[]} point a point in array form
+ * @param {function} fn is the circle's boundary inclusive or exclusive
+ * @param {number} [epsilon=1e-6] an optional epsilon
+ * @linkcode Math ./src/intersection/overlap-line-line.js 21
+*/
+export const overlapCirclePoint = ({ radius, origin }, point, fn = exclude, epsilon = EPSILON) => (
+	fn(radius - distance2(origin, point), epsilon)
+);
 /**
  * @description tests if a point is inside a convex polygon. Polygon is
  * expected to be counter-clockwise winding.
  * @param {number[]} point in array form
  * @param {number[][]} polygon in array of array form
- * @param {function} true for positive numbers, in/exclude near zero
+ * @param {function} fn is the boundary of the polygon inclusive or exclusive
+ * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {boolean} is the point inside the polygon?
  * @linkcode Math ./src/intersection/overlap-polygon-point.js 23
  */
@@ -131,6 +115,9 @@ export const overlapConvexPolygonPoint = (poly, point, func = exclude, epsilon =
 /**
  * @description find out if two convex polygons are overlapping by searching
  * for a dividing axis, which should be one side from one of the polygons.
+ * @param {number[][]} polygon in array of array form
+ * @param {number[][]} polygon in array of array form
+ * @param {number} [epsilon=1e-6] an optional epsilon
  * @linkcode Math ./src/intersection/overlap-polygons.js 13
  */
 export const overlapConvexPolygons = (poly1, poly2, epsilon = EPSILON) => {
@@ -165,7 +152,25 @@ export const overlapConvexPolygons = (poly1, poly2, epsilon = EPSILON) => {
 	}
 	return true;
 };
-
+/**
+ * @description Test if two axis-aligned bounding boxes overlap each other.
+ * @param {BoundingBox} box1 an axis-aligned bounding box, the result of calling boundingBox(...)
+ * @param {BoundingBox} box2 an axis-aligned bounding box, the result of calling boundingBox(...)
+ * @param {number} [epsilon=1e-6] an optional epsilon
+ * @returns {boolean} true if the bounding boxes overlap each other
+ * @linkcode Math ./src/intersection/overlap-bounding-boxes.js 9
+ */
+export const overlapBoundingBoxes = (box1, box2, epsilon = EPSILON) => {
+	const dimensions = Math.min(box1.min.length, box2.min.length);
+	for (let d = 0; d < dimensions; d += 1) {
+		// if one minimum is above the other's maximum, or visa versa
+		if (box1.min[d] > box2.max[d] + epsilon
+			|| box1.max[d] < box2.min[d] - epsilon) {
+			return false;
+		}
+	}
+	return true;
+};
 // really great function and it works for non-convex polygons
 // but it has inconsistencies around inclusive and exclusive points
 // when the lie along the polygon edge.

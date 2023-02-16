@@ -2,10 +2,6 @@
  * Math (c) Kraft
  */
 import { EPSILON } from "../general/constants.js";
-import {
-	fnSquare,
-	fnAdd,
-} from "../general/functions.js";
 /**
  * algebra operations on vectors (mostly).
  *
@@ -24,14 +20,20 @@ import {
  * dimension is assumed to be this number.
  */
 /**
+ * @description many methods here are operations on two arrays where
+ * the first array determines the number of loops. it's possible the
+ * array sizes mismatch, in which case, fill in any empty data with 0.
+ */
+const safeAdd = (a, b) => a + (b || 0);
+/**
  * @description compute the magnitude an n-dimensional vector
  * @param {number[]} v one vector, n-dimensions
  * @returns {number} one scalar
  * @linkcode Math ./src/algebra/vectors.js 32
  */
 export const magnitude = v => Math.sqrt(v
-	.map(fnSquare)
-	.reduce(fnAdd, 0));
+	.map(n => n * n)
+	.reduce(safeAdd, 0));
 /**
  * @description compute the magnitude a 2D vector
  * @param {number[]} v one 2D vector
@@ -53,8 +55,8 @@ export const magnitude3 = v => Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]
  * @linkcode Math ./src/algebra/vectors.js 55
  */
 export const magSquared = v => v
-	.map(fnSquare)
-	.reduce(fnAdd, 0);
+	.map(n => n * n)
+	.reduce(safeAdd, 0);
 /**
  * @description normalize the input vector and return a new vector as a copy
  * @param {number[]} v one vector, n-dimensions
@@ -169,7 +171,7 @@ export const subtract3 = (v, u) => [v[0] - u[0], v[1] - u[1], v[2] - u[2]];
  */
 export const dot = (v, u) => v
 	.map((_, i) => v[i] * u[i])
-	.reduce(fnAdd, 0);
+	.reduce(safeAdd, 0);
 /**
  * @description compute the dot product of two 2D vectors.
  * @param {number[]} v one 2D vector
@@ -222,7 +224,8 @@ export const average = function () {
 	const dimension = (arguments[0].length > 0) ? arguments[0].length : 0;
 	const sum = Array(dimension).fill(0);
 	Array.from(arguments)
-		.forEach(vec => sum.forEach((_, i) => { sum[i] += vec[i] || 0; }));
+		.forEach(vec => sum
+			.forEach((_, i) => { sum[i] += vec[i] || 0; }));
 	return sum.map(n => n / arguments.length);
 };
 /**
@@ -267,7 +270,7 @@ export const cross3 = (v, u) => [
  */
 export const distance = (v, u) => Math.sqrt(v
 	.map((_, i) => (v[i] - u[i]) ** 2)
-	.reduce(fnAdd, 0));
+	.reduce(safeAdd, 0));
 /**
  * @description compute the distance between two 2D vectors
  * @param {number[]} v one 2D vector
@@ -323,7 +326,7 @@ export const rotate270 = v => [v[1], -v[0]];
  */
 export const degenerate = (v, epsilon = EPSILON) => v
 	.map(n => Math.abs(n))
-	.reduce(fnAdd, 0) < epsilon;
+	.reduce(safeAdd, 0) < epsilon;
 /**
  * @description check if two already normalized vectors are parallel
  * to each other, within an epsilon. Parallel includes the case where

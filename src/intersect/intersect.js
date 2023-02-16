@@ -20,7 +20,7 @@ import {
 	excludeL,
 	excludeR,
 	excludeS,
-	fnEpsilonEqualVectors,
+	epsilonEqualVectors,
 } from "../general/functions.js";
 import { overlapConvexPolygonPoint } from "./overlap.js";
 /**
@@ -146,13 +146,12 @@ export const intersectCircleCircle = (c1, c2, epsilon = EPSILON) => {
 // todo, this is copied over in clip/polygon.js
 const getUniquePair = (intersections) => {
 	for (let i = 1; i < intersections.length; i += 1) {
-		if (!fnEpsilonEqualVectors(intersections[0], intersections[i])) {
+		if (!epsilonEqualVectors(intersections[0], intersections[i])) {
 			return [intersections[0], intersections[i]];
 		}
 	}
 	return undefined;
 };
-
 /**
  * generalized line-ray-segment intersection with convex polygon function
  * for lines and rays, line1 and line2 are the vector, origin in that order.

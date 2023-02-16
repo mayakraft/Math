@@ -3,7 +3,7 @@ const math = require("../math.js");
 
 const testEqualVectorVectors = function (a, b) {
 	expect(a.length).toBe(b.length);
-	a.forEach((_, i) => expect(math.fnEpsilonEqualVectors(a[i], b[i]))
+	a.forEach((_, i) => expect(math.epsilonEqualVectors(a[i], b[i]))
 		.toBe(true));
 };
 
@@ -113,15 +113,15 @@ test("straight skeleton triangle", () => {
 	expect(skeleton.length).toBe(4);
 	["skeleton", "skeleton", "skeleton", "perpendicular"]
 		.forEach((key, i) => expect(skeleton[i].type).toBe(key));
-	[[1, 0], [0, f1f]].forEach((pt, i) => math.fnEpsilonEqualVectors(
+	[[1, 0], [0, f1f]].forEach((pt, i) => math.epsilonEqualVectors(
 		pt,
 		skeleton[0].points[i],
 	));
-	[[0, 1], [0, f1f]].forEach((pt, i) => math.fnEpsilonEqualVectors(
+	[[0, 1], [0, f1f]].forEach((pt, i) => math.epsilonEqualVectors(
 		pt,
 		skeleton[1].points[i],
 	));
-	[[-1, 0], [0, f1f]].forEach((pt, i) => math.fnEpsilonEqualVectors(
+	[[-1, 0], [0, f1f]].forEach((pt, i) => math.epsilonEqualVectors(
 		pt,
 		skeleton[2].points[i],
 	));

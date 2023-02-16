@@ -3,8 +3,8 @@
  */
 import { EPSILON } from "../general/constants.js";
 import {
-	fnEpsilonEqual,
-	fnEpsilonEqualVectors,
+	epsilonEqual,
+	epsilonEqualVectors,
 } from "../general/functions.js";
 import {
 	dot,
@@ -30,13 +30,13 @@ import { counterClockwiseSubsect2 } from "./radial.js";
  */
 export const collinearBetween = (p0, p1, p2, inclusive = false, epsilon = EPSILON) => {
 	const similar = [p0, p2]
-		.map(p => fnEpsilonEqualVectors(p1, p))
+		.map(p => epsilonEqualVectors(p1, p))
 		.reduce((a, b) => a || b, false);
 	if (similar) { return inclusive; }
 	const vectors = [[p0, p1], [p1, p2]]
 		.map(segment => subtract(segment[1], segment[0]))
 		.map(vector => normalize(vector));
-	return fnEpsilonEqual(1.0, dot(...vectors), epsilon);
+	return epsilonEqual(1.0, dot(...vectors), epsilon);
 };
 /**
  * @description linear interpolate between two lines
