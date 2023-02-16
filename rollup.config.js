@@ -1,5 +1,5 @@
 import cleanup from "rollup-plugin-cleanup";
-import { terser } from "rollup-plugin-terser";
+import terser from "@rollup/plugin-terser";
 
 const input = "src/index.js";
 const name = "math";
@@ -18,7 +18,6 @@ export default [{
 			objectShorthand: true,
 		},
 	},
-	// plugins: [cleanup()],
 	plugins: [cleanup(), terser()],
 }, {
 	input,
@@ -41,19 +40,6 @@ export default [{
 		format: "es",
 		banner,
 		preserveModules: true,
-		generatedCode: {
-			constBindings: true,
-			objectShorthand: true,
-		},
-	},
-	// plugins: [cleanup()],
-}, {
-	input,
-	output: {
-		name,
-		file: "math.module.comments.js",
-		format: "es",
-		banner,
 		generatedCode: {
 			constBindings: true,
 			objectShorthand: true,
