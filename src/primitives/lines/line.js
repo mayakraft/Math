@@ -5,17 +5,17 @@ import Constructors from "../constructors.js";
 import { resize } from "../../types/resize.js";
 import { getLine } from "../../types/get.js";
 import {
-	rayLineToUniqueLine,
-	uniqueLineToRayLine,
+	vecLineToUniqueLine,
+	uniqueLineToVecLine,
 } from "../../types/parameterize.js";
 import {
 	includeL,
 	excludeL,
-} from "../../algebra/functions.js";
+} from "../../algebra/function.js";
 import {
 	add,
 	scale,
-} from "../../algebra/vectors.js";
+} from "../../algebra/vector.js";
 import Static from "./static.js";
 import methods from "./methods.js";
 
@@ -27,7 +27,7 @@ export default {
 			const l = getLine(...arguments);
 			this.vector = Constructors.vector(l.vector);
 			this.origin = Constructors.vector(resize(this.vector.length, l.origin));
-			const alt = rayLineToUniqueLine({ vector: this.vector, origin: this.origin });
+			const alt = vecLineToUniqueLine({ vector: this.vector, origin: this.origin });
 			this.normal = alt.normal;
 			this.distance = alt.distance;
 			Object.defineProperty(this, "domain", { writable: true, value: includeL });
@@ -55,7 +55,7 @@ export default {
 
 		S: Object.assign({
 			fromNormalDistance: function () {
-				return this.constructor(uniqueLineToRayLine(arguments[0]));
+				return this.constructor(uniqueLineToVecLine(arguments[0]));
 			},
 		}, Static),
 

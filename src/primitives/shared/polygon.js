@@ -20,7 +20,7 @@ import {
 } from "../../types/resize.js";
 import {
 	includeL,
-} from "../../algebra/functions.js";
+} from "../../algebra/function.js";
 import Intersect from "../../intersection/intersect.js";
 import Overlap from "../../intersection/overlap.js";
 import clipLineConvexPolygon from "../../geometry/clip-line-polygon.js";

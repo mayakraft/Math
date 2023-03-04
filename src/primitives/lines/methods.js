@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../../algebra/constants.js";
+import { EPSILON } from "../../algebra/constant.js";
 import { bisectLines2 } from "../../geometry/radial.js";
 import { nearestPointOnLine } from "../../algebra/nearest.js";
 import Constructors from "../constructors.js";
@@ -24,7 +24,7 @@ import {
 	add,
 	parallel,
 	degenerate,
-} from "../../algebra/vectors.js";
+} from "../../algebra/vector.js";
 
 import {
 	multiplyMatrix3Line3,

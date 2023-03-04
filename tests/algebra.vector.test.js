@@ -46,6 +46,9 @@ test("normalize", () => {
 	expect(math.normalize2([1, 1, 10])[2]).toBe(undefined);
 
 	expect(math.normalize3([]).length).toBe(3);
+	expect(math.normalize3([0, 0, 0])[0]).toBeCloseTo(0);
+	expect(math.normalize3([0, 0, 0])[1]).toBeCloseTo(0);
+	expect(math.normalize3([0, 0, 0])[2]).toBeCloseTo(0);
 	expect(math.normalize3([1, 1, 1])[0]).toBeCloseTo(Math.sqrt(3) / 3);
 	expect(math.normalize3([1, 1, 1])[1]).toBeCloseTo(Math.sqrt(3) / 3);
 	expect(math.normalize3([1, 1, 1])[2]).toBeCloseTo(Math.sqrt(3) / 3);
@@ -246,6 +249,7 @@ test("flip", () => {
 });
 
 test("degenerate", () => {
+	expect(math.degenerate([1])).toBe(false);
 	expect(math.degenerate([1], 1)).toBe(false);
 	expect(math.degenerate([1], 1 + math.EPSILON)).toBe(true);
 	expect(math.degenerate([1, 1], 2)).toBe(false);
@@ -261,6 +265,18 @@ test("parallel", () => {
 	// this is the parallel test using cross product
 	expect(math.parallel2([1, 0], [1, 0.0000009])).toBe(true);
 	expect(math.parallel2([1, 0], [1, 0.0000010])).toBe(false);
+});
+
+test("parallelNormalized", () => {
+	expect(math.parallelNormalized([1, 0], [0, 1])).toBe(false);
+	expect(math.parallelNormalized([1, 0], [1, 0])).toBe(true);
+	expect(math.parallelNormalized([1, 0], [-1, 0])).toBe(true);
+	// unintended usage
+	expect(math.parallelNormalized([3, 0], [3, 0])).toBe(true);
+	expect(math.parallelNormalized([2, 0], [1, 0])).toBe(true);
+	expect(math.parallelNormalized([-2, 0], [1, 0])).toBe(true);
+	expect(math.parallelNormalized([1, 0], [2, 0])).toBe(true);
+	expect(math.parallelNormalized([1, 0], [-2, 0])).toBe(true);
 });
 
 /*

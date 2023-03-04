@@ -6,7 +6,7 @@ import {
 	average,
 	subtract,
 	rotate90,
-} from "../../algebra/vectors.js";
+} from "../../algebra/vector.js";
 
 import {
 	getVectorOfVectors,

@@ -2,7 +2,7 @@
  * Math (c) Kraft
  */
 import Constructors from "../constructors.js";
-import { epsilonEqualVectors } from "../../algebra/functions.js";
+import { epsilonEqualVectors } from "../../algebra/function.js";
 import { counterClockwiseBisect2 } from "../../geometry/radial.js";
 
 import {
@@ -30,7 +30,7 @@ import {
 	rotate90,
 	rotate270,
 	parallel,
-} from "../../algebra/vectors.js";
+} from "../../algebra/vector.js";
 
 import {
 	makeMatrix2Rotate,

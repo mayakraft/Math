@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../general/constants.js";
+import { EPSILON } from "../general/constant.js";
 import {
 	magnitude2,
 	normalize2,
@@ -11,7 +11,7 @@ import {
 	subtract2,
 	midpoint2,
 	rotate90,
-} from "../algebra/vectors.js";
+} from "../algebra/vector.js";
 import {
 	include,
 	exclude,
@@ -22,21 +22,19 @@ import {
 	excludeR,
 	excludeS,
 	epsilonEqualVectors,
-} from "../general/functions.js";
+} from "../general/function.js";
 import { overlapConvexPolygonPoint } from "./overlap.js";
 /**
  * @description Find the intersection of two lines. Lines can be
- * lines/rays/segments, and can be inclusve or exclusive in terms
+ * lines/rays/segments, and can be inclusive or exclusive in terms
  * of their endpoints and the epsilon value.
- * @param {RayLine} lineA line object with "vector" and "origin"
- * @param {RayLine} lineB line object with "vector" and "origin"
- * @param {function} [aDomain=includeL] first line's boolean test
- * normalized value lies collinear
- * @param {function} [bDomain=includeL] second line's boolean test
- * normalized value lies collinear
+ * @param {VecLine} a line object with "vector" and "origin"
+ * @param {VecLine} b line object with "vector" and "origin"
+ * @param {function} [aDomain=includeL] the domain of the first line
+ * @param {function} [bDomain=includeL] the domain of the second line
  * @param {number} [epsilon=1e-6] optional epsilon
  * @returns {number[]|undefined} one 2D point or undefined
- * @linkcode Math ./src/intersection/intersect-line-line.js 26
+ * @linkcode Math ./src/intersect/intersect.js 39
 */
 export const intersectLineLine = (
 	a,
@@ -64,14 +62,14 @@ export const intersectLineLine = (
 /**
  * @description Calculate the intersection of a circle and a line;
  * the line can be a line, ray, or segment.
- * @param {number} circleRadius the circle's radius
- * @param {number[]} circleOrigin the center of the circle
- * @param {number[]} lineVector the vector component of the line
- * @param {number[]} lineOrigin the origin component of the line
+ * @param {Circle} circle a circle in "radius" "origin" form
+ * @param {VecLine} line a line in "vector" "origin" form
+ * @param {function} [circleDomain=include] the inclusivity of
+ * the circle boundary (currently not used).
  * @param {function} [lineFunc=includeL] set the line/ray/segment
  * and inclusive/exclusive
  * @param {number} [epsilon=1e-6] an optional epsilon
- * @linkcode Math ./src/intersection/intersect-circle-line.js 20
+ * @linkcode Math ./src/intersect/intersect.js 74
  */
 export const intersectCircleLine = (
 	circle,
@@ -114,11 +112,15 @@ const rotateVector2 = (center, pt, a) => {
 /**
  * @description calculate the intersection of two circles, resulting
  * in either no intersection, or one or two points.
- * @param {object} c1 circle object with "radius" (number) and "origin" (vector)
- * @param {object} c2 circle object with "radius" (number) and "origin" (vector)
+ * @param {Circle} c1 circle in "radius" "origin" form
+ * @param {Circle} c2 circle in "radius" "origin" form
+ * @param {function} [circleDomain=include] the inclusivity of
+ * the first circle parameter (currently not used).
+ * @param {function} [circleDomain=include] the inclusivity of
+ * the second circle parameter (currently not used).
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number[][]|undefined} an array of one or two points, or undefined if no intersection
- * @linkcode Math ./src/intersection/intersect-circle-circle.js 28
+ * @linkcode Math ./src/intersect/intersect.js 121
  */
 export const intersectCircleCircle = (
 	c1,
@@ -195,13 +197,18 @@ const intersectConvexPolygonLineInclusive = (
 	}
 };
 /**
- * @description generalized line-ray-segment intersection with convex polygon function
- * for lines and rays, line1 and line2 are the vector, origin in that order.
- * for segments, line1 and line2 are the two endpoints.
- *
- * this doubles as the exclusive condition, and the main export since it
- * checks for exclusive/inclusive and can early-return
- * @linkcode Math ./src/intersection/intersect-polygon-line.js 78
+ * @description Generalized line-ray-segment intersection with convex
+ * polygons.
+ * @param {number[][]} poly a polygon as an array of points
+ * @param {VecLine} line a line in "vector" "origin" form.
+ * @param {function} [fn_poly=includeS] the inclusivity of
+ * the edges of the polygon
+ * @param {function} [aDomain=includeL] the domain of the line
+ * @returns {number[][]} an array of one or two points, or
+ * undefined if there is no intersection.
+ * @note this doubles as the exclusive condition, and the main export
+ * since it checks for exclusive/inclusive and can early-return
+ * @linkcode Math ./src/intersect/intersect.js 204
  */
 export const intersectConvexPolygonLine = (
 	poly,

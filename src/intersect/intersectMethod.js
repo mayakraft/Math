@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../general/constants.js";
+import { EPSILON } from "../general/constant.js";
 import * as Intersect from "./intersect.js";
 import typeOf from "../general/typeOf.js";
 import {
@@ -9,7 +9,7 @@ import {
 	includeL,
 	includeR,
 	includeS,
-} from "../general/functions.js";
+} from "../general/function.js";
 
 const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 

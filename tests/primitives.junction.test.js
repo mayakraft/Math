@@ -1,5 +1,5 @@
 const { test, expect } = require("@jest/globals");
-const math = require("../math.js");
+// const math = require("../math.js");
 
 test("empty", () => { expect(true).toBe(true); });
 

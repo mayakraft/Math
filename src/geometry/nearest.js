@@ -1,11 +1,11 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../general/constants.js";
+import { EPSILON } from "../general/constant.js";
 import {
 	clampLine,
 	clampSegment,
-} from "../general/functions.js";
+} from "../general/function.js";
 import { smallestComparisonSearch } from "../general/search.js";
 import {
 	magSquared,
@@ -17,13 +17,13 @@ import {
 	dot,
 	scale,
 	resize,
-} from "../algebra/vectors.js";
+} from "../algebra/vector.js";
 /**
  * @description find the one point in an array of 2D points closest to a 2D point.
  * @param {number[][]} array_of_points an array of 2D points to test against
  * @param {number[]} point the 2D point to test nearness to
  * @returns {number[]} one point from the array of points
- * @linkcode Math ./src/algebra/nearest.js 86
+ * @linkcode Math ./src/geometry/nearest.js 26
  */
 export const nearestPoint2 = (array_of_points, point) => {
 	// todo speed up with partitioning
@@ -35,7 +35,7 @@ export const nearestPoint2 = (array_of_points, point) => {
  * @param {number[][]} array_of_points an array of points to test against
  * @param {number[]} point the point to test nearness to
  * @returns {number[]} one point from the array of points
- * @linkcode Math ./src/algebra/nearest.js 98
+ * @linkcode Math ./src/geometry/nearest.js 38
  */
 export const nearestPoint = (array_of_points, point) => {
 	// todo speed up with partitioning
@@ -51,7 +51,7 @@ export const nearestPoint = (array_of_points, point) => {
  * for segments, greater than 0 for rays, or unbounded for lines.
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number[]} a point
- * @linkcode Math ./src/algebra/nearest.js 114
+ * @linkcode Math ./src/geometry/nearest.js 54
  */
 export const nearestPointOnLine = (
 	{ vector, origin },
@@ -76,7 +76,7 @@ export const nearestPointOnLine = (
  * @param {number[]} point the point to test nearness to
  * @returns {number[]} a point
  * edge index matches vertices such that edge(N) = [vert(N), vert(N + 1)]
- * @linkcode Math ./src/algebra/nearest.js 133
+ * @linkcode Math ./src/geometry/nearest.js 79
  */
 export const nearestPointOnPolygon = (polygon, point) => polygon
 	.map((p, i, arr) => subtract(arr[(i + 1) % arr.length], p))
@@ -88,14 +88,15 @@ export const nearestPointOnPolygon = (polygon, point) => polygon
 /**
  * @description find the nearest point on the boundary of a circle to another point
  * that is closest to the provided point.
- * @param {object} circle object with "radius" (number) and "origin" (number[])
+ * @param {Circle} circle object with "radius" (number) and "origin" (number[])
  * @param {number[]} origin the origin of the circle as an array of numbers.
  * @param {number[]} point the point to test nearness to
  * @returns {number[]} a point
- * @linkcode Math ./src/algebra/nearest.js 151
+ * @linkcode Math ./src/geometry/nearest.js 95
  */
 export const nearestPointOnCircle = ({ radius, origin }, point) => (
-	add(origin, scale(normalize(subtract(point, origin)), radius)));
+	add(origin, scale(normalize(subtract(point, origin)), radius))
+);
 
 // todo
 // const nearestPointOnEllipse = () => false;

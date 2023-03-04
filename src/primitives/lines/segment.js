@@ -7,14 +7,14 @@ import {
 	subtract,
 	average,
 	magnitude,
-} from "../../algebra/vectors.js";
+} from "../../algebra/vector.js";
 import { multiplyMatrix3Vector3 } from "../../algebra/matrix3.js";
 import { resize, resizeUp } from "../../types/resize.js";
 import {
 	includeS,
 	excludeS,
 	clampSegment,
-} from "../../algebra/functions.js";
+} from "../../algebra/function.js";
 import {
 	getMatrix3x4,
 	getSegment,

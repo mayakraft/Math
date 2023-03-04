@@ -6,9 +6,9 @@ const TWO_PI = Math.PI * 2;
 
 const constants = /*#__PURE__*/Object.freeze({
 	__proto__: null,
+	D2R,
 	EPSILON,
 	R2D,
-	D2R,
 	TWO_PI
 });
 
@@ -28,8 +28,8 @@ const includeL = () => true;
 const excludeL = () => true;
 const includeR = include;
 const excludeR = exclude;
-const includeS = (t, e = EPSILON) => t > -e && t < 1 + e;
-const excludeS = (t, e = EPSILON) => t > e && t < 1 - e;
+const includeS = (n, e = EPSILON) => n > -e && n < 1 + e;
+const excludeS = (n, e = EPSILON) => n > e && n < 1 - e;
 const clampLine = dist => dist;
 const clampRay = dist => (dist < -EPSILON ? 0 : dist);
 const clampSegment = (dist) => {
@@ -40,27 +40,26 @@ const clampSegment = (dist) => {
 
 const mathFunctions = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	epsilonEqual,
-	epsilonCompare,
-	epsilonEqualVectors,
-	include,
-	exclude,
-	includeL,
-	excludeL,
-	includeR,
-	excludeR,
-	includeS,
-	excludeS,
 	clampLine,
 	clampRay,
-	clampSegment
+	clampSegment,
+	epsilonCompare,
+	epsilonEqual,
+	epsilonEqualVectors,
+	exclude,
+	excludeL,
+	excludeR,
+	excludeS,
+	include,
+	includeL,
+	includeR,
+	includeS
 });
 
 const isIterable = (obj) => obj != null
 	&& typeof obj[Symbol.iterator] === "function";
 const semiFlattenArrays = function () {
 	switch (arguments.length) {
-	case undefined:
 	case 0: return Array.from(arguments);
 	case 1: return isIterable(arguments[0]) && typeof arguments[0] !== "string"
 		? semiFlattenArrays(...arguments[0])
@@ -73,7 +72,6 @@ const semiFlattenArrays = function () {
 };
 const flattenArrays = function () {
 	switch (arguments.length) {
-	case undefined:
 	case 0: return Array.from(arguments);
 	case 1: return isIterable(arguments[0]) && typeof arguments[0] !== "string"
 		? flattenArrays(...arguments[0])
@@ -81,21 +79,21 @@ const flattenArrays = function () {
 	default:
 		return Array.from(arguments).map(a => (isIterable(a)
 			? [...flattenArrays(a)]
-			: a)).reduce((a, b) => a.concat(b), []);
+			: a)).flat();
 	}
 };
 
 const arrayMethods = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	semiFlattenArrays,
-	flattenArrays
+	flattenArrays,
+	semiFlattenArrays
 });
 
 const getVector = function () {
 	let list = flattenArrays(arguments);
 	const a = list[0];
 	if (typeof a === "object" && a !== null && !Number.isNaN(a.x)) {
-		list = ["x", "y", "z"].map(c => a[c]).filter(a => a !== undefined);
+		list = ["x", "y", "z"].map(c => a[c]).filter(b => b !== undefined);
 	}
 	return list.filter(n => typeof n === "number");
 };
@@ -108,12 +106,12 @@ const getSegment = function () {
 		? [[0, 1], [2, 3]].map(s => s.map(i => args[i]))
 		: args.map(el => getVector(el));
 };
-const vectorOriginForm = (vector = [], origin = []) => ({ vector, origin });
+const vectorOriginForm = (vector, origin = []) => ({ vector, origin });
 const getLine = function () {
 	const args = semiFlattenArrays(arguments);
-	if (args.length === 0) { return vectorOriginForm([], []); }
+	if (args.length === 0 || args[0] == null) { return vectorOriginForm([], []); }
 	if (args[0].constructor === Object && args[0].vector !== undefined) {
-		return vectorOriginForm(args[0].vector || [], args[0].origin || []);
+		return vectorOriginForm(args[0].vector, args[0].origin || []);
 	}
 	return typeof args[0] === "number"
 		? vectorOriginForm(getVector(args))
@@ -122,10 +120,10 @@ const getLine = function () {
 
 const getMethods = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	getVector,
 	getArrayOfVectors,
+	getLine,
 	getSegment,
-	getLine
+	getVector
 });
 
 const safeAdd = (a, b) => a + (b || 0);
@@ -214,52 +212,52 @@ const parallel = (v, u, epsilon = EPSILON) => parallelNormalized(
 );
 const parallel2 = (v, u, epsilon = EPSILON) => Math
 	.abs(cross2(v, u)) < epsilon;
-const resize = (d, v) => (v.length === d
-	? v
-	: Array(d).fill(0).map((z, i) => (v[i] ? v[i] : z)));
+const resize = (dimension, vector) => (vector.length === dimension
+	? vector
+	: Array(dimension).fill(0).map((z, i) => (vector[i] ? vector[i] : z)));
 const resizeUp = (a, b) => [a, b]
 	.map(v => resize(Math.max(a.length, b.length), v));
 
-const vectors = /*#__PURE__*/Object.freeze({
+const vector = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	magnitude,
-	magnitude2,
-	magnitude3,
-	magSquared,
-	normalize,
-	normalize2,
-	normalize3,
-	scale,
-	scale2,
-	scale3,
 	add,
 	add2,
 	add3,
-	subtract,
-	subtract2,
-	subtract3,
-	dot,
-	dot2,
-	dot3,
-	midpoint,
-	midpoint2,
-	midpoint3,
 	average,
-	lerp,
 	cross2,
 	cross3,
+	degenerate,
 	distance,
 	distance2,
 	distance3,
+	dot,
+	dot2,
+	dot3,
 	flip,
-	rotate90,
-	rotate270,
-	degenerate,
-	parallelNormalized,
+	lerp,
+	magSquared,
+	magnitude,
+	magnitude2,
+	magnitude3,
+	midpoint,
+	midpoint2,
+	midpoint3,
+	normalize,
+	normalize2,
+	normalize3,
 	parallel,
 	parallel2,
+	parallelNormalized,
 	resize,
-	resizeUp
+	resizeUp,
+	rotate270,
+	rotate90,
+	scale,
+	scale2,
+	scale3,
+	subtract,
+	subtract2,
+	subtract3
 });
 
 const vectorToAngle = v => Math.atan2(v[1], v[0]);
@@ -271,29 +269,28 @@ const pointsToLine = (...args) => {
 		origin: points[0],
 	};
 };
-const rayLineToUniqueLine = ({ vector, origin }) => {
+const vecLineToUniqueLine = ({ vector, origin }) => {
 	const mag = magnitude(vector);
 	const normal = rotate90(vector);
 	const distance = dot(origin, normal) / mag;
 	return { normal: scale(normal, 1 / mag), distance };
 };
-const uniqueLineToRayLine = ({ normal, distance }) => ({
+const uniqueLineToVecLine = ({ normal, distance }) => ({
 	vector: rotate270(normal),
 	origin: scale(normal, distance),
 });
 
 const convertMethods = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	vectorToAngle,
 	angleToVector,
 	pointsToLine,
-	rayLineToUniqueLine,
-	uniqueLineToRayLine
+	uniqueLineToVecLine,
+	vecLineToUniqueLine,
+	vectorToAngle
 });
 
 const countPlaces = function (num) {
 	const m = (`${num}`).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-	if (!m) { return 0; }
 	return Math.max(0, (m[1] ? m[1].length : 0) - (m[2] ? +m[2] : 0));
 };
 const cleanNumber = function (num, places = 15) {
@@ -322,7 +319,7 @@ const smallestComparisonSearch = (array, obj, compare_func) => {
 	}
 	return index;
 };
-const smallestVectorSearch = (vectors, axis = 0, compFn = epsilonCompare, epsilon = EPSILON) => {
+const smallestVectorSearch = (vectors, axis, compFn, epsilon) => {
 	let smallSet = [0];
 	for (let i = 1; i < vectors.length; i += 1) {
 		switch (compFn(vectors[i][axis], vectors[smallSet[0]][axis], epsilon)) {
@@ -333,7 +330,7 @@ const smallestVectorSearch = (vectors, axis = 0, compFn = epsilonCompare, epsilo
 	return smallSet;
 };
 const minimum2DPointIndex = (points, epsilon = EPSILON) => {
-	if (!points.length) { return undefined; }
+	if (!points || !points.length) { return undefined; }
 	const smallSet = smallestVectorSearch(points, 0, epsilonCompare, epsilon);
 	let sm = 0;
 	for (let i = 1; i < smallSet.length; i += 1) {
@@ -344,8 +341,8 @@ const minimum2DPointIndex = (points, epsilon = EPSILON) => {
 
 const searchMethods = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	smallestComparisonSearch,
-	minimum2DPointIndex
+	minimum2DPointIndex,
+	smallestComparisonSearch
 });
 
 const sortAgainstItem = (array, item, compareFn) => array
@@ -368,8 +365,9 @@ const clusterIndicesOfSortedNumbers = (numbers, epsilon = EPSILON) => {
 	}
 	return clusters;
 };
-const radialSortPointIndices2 = (points = [], epsilon = EPSILON) => {
+const radialSortPointIndices2 = (points, epsilon = EPSILON) => {
 	const first = minimum2DPointIndex(points, epsilon);
+	if (first === undefined) { return []; }
 	const angles = points
 		.map(p => subtract2(p, points[first]))
 		.map(v => normalize2(v))
@@ -390,16 +388,16 @@ const radialSortPointIndices2 = (points = [], epsilon = EPSILON) => {
 
 const sortMethods = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	sortAgainstItem,
-	sortPointsAlongVector,
 	clusterIndicesOfSortedNumbers,
-	radialSortPointIndices2
+	radialSortPointIndices2,
+	sortAgainstItem,
+	sortPointsAlongVector
 });
 
 const typeOf = (obj) => {
 	if (typeof obj !== "object") { return typeof obj; }
 	if (obj.radius !== undefined) { return "circle"; }
-	if (obj.width !== undefined) { return "rect"; }
+	if (obj.min && obj.max && obj.span) { return "box"; }
 	if (typeof obj[0] === "number") { return "vector"; }
 	if (obj.vector !== undefined && obj.origin !== undefined) { return "line"; }
 	if (obj[0] !== undefined && obj[0].length && typeof obj[0][0] === "number") {
@@ -471,6 +469,9 @@ const makeMatrix2Scale = (scale = [1, 1], origin = [0, 0]) => [
 	scale[0] * -origin[0] + origin[0],
 	scale[1] * -origin[1] + origin[1],
 ];
+const makeMatrix2UniformScale = (scale = 1, origin = [0, 0]) => (
+	makeMatrix2Scale([scale, scale], origin)
+);
 const makeMatrix2Rotate = (angle, origin = [0, 0]) => {
 	const cos = Math.cos(angle);
 	const sin = Math.sin(angle);
@@ -500,17 +501,18 @@ const makeMatrix2Reflect = (vector, origin = [0, 0]) => {
 
 const matrix2 = /*#__PURE__*/Object.freeze({
 	__proto__: null,
+	determinant2,
 	identity2x2,
 	identity2x3,
-	multiplyMatrix2Vector2,
-	multiplyMatrix2Line2,
-	multiplyMatrices2,
-	determinant2,
 	invertMatrix2,
-	makeMatrix2Translate,
-	makeMatrix2Scale,
+	makeMatrix2Reflect,
 	makeMatrix2Rotate,
-	makeMatrix2Reflect
+	makeMatrix2Scale,
+	makeMatrix2Translate,
+	makeMatrix2UniformScale,
+	multiplyMatrices2,
+	multiplyMatrix2Line2,
+	multiplyMatrix2Vector2
 });
 
 const identity3x3 = Object.freeze([1, 0, 0, 0, 1, 0, 0, 0, 1]);
@@ -622,6 +624,9 @@ const makeMatrix3Scale = (scale = [1, 1, 1], origin = [0, 0, 0]) => [
 	scale[1] * -origin[1] + origin[1],
 	scale[2] * -origin[2] + origin[2],
 ];
+const makeMatrix3UniformScale = (scale = 1, origin = [0, 0, 0]) => (
+	makeMatrix3Scale([scale, scale, scale], origin)
+);
 const makeMatrix3ReflectZ = (vector, origin = [0, 0]) => {
 	const m = makeMatrix2Reflect(vector, origin);
 	return [m[0], m[1], 0, m[2], m[3], 0, 0, 0, 1, m[4], m[5], 0];
@@ -629,21 +634,22 @@ const makeMatrix3ReflectZ = (vector, origin = [0, 0]) => {
 
 const matrix3 = /*#__PURE__*/Object.freeze({
 	__proto__: null,
+	determinant3,
 	identity3x3,
 	identity3x4,
-	isIdentity3x4,
-	multiplyMatrix3Vector3,
-	multiplyMatrix3Line3,
-	multiplyMatrices3,
-	determinant3,
 	invertMatrix3,
-	makeMatrix3Translate,
+	isIdentity3x4,
+	makeMatrix3ReflectZ,
+	makeMatrix3Rotate,
 	makeMatrix3RotateX,
 	makeMatrix3RotateY,
 	makeMatrix3RotateZ,
-	makeMatrix3Rotate,
 	makeMatrix3Scale,
-	makeMatrix3ReflectZ
+	makeMatrix3Translate,
+	makeMatrix3UniformScale,
+	multiplyMatrices3,
+	multiplyMatrix3Line3,
+	multiplyMatrix3Vector3
 });
 
 const identity4x4 = Object.freeze([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
@@ -785,6 +791,9 @@ const makeMatrix4Scale = (scale = [1, 1, 1], origin = [0, 0, 0]) => [
 	scale[2] * -origin[2] + origin[2],
 	1,
 ];
+const makeMatrix4UniformScale = (scale = 1, origin = [0, 0, 0]) => (
+	makeMatrix4Scale([scale, scale, scale], origin)
+);
 const makeMatrix4ReflectZ = (vector, origin = [0, 0]) => {
 	const m = makeMatrix2Reflect(vector, origin);
 	return [m[0], m[1], 0, 0, m[2], m[3], 0, 0, 0, 0, 1, 0, m[4], m[5], 0, 1];
@@ -822,23 +831,24 @@ const makeLookAtMatrix4 = (position, target, up) => {
 
 const matrix4 = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	identity4x4,
-	isIdentity4x4,
-	multiplyMatrix4Vector3,
-	multiplyMatrix4Line3,
-	multiplyMatrices4,
 	determinant4,
+	identity4x4,
 	invertMatrix4,
-	makeMatrix4Translate,
+	isIdentity4x4,
+	makeLookAtMatrix4,
+	makeMatrix4ReflectZ,
+	makeMatrix4Rotate,
 	makeMatrix4RotateX,
 	makeMatrix4RotateY,
 	makeMatrix4RotateZ,
-	makeMatrix4Rotate,
 	makeMatrix4Scale,
-	makeMatrix4ReflectZ,
-	makePerspectiveMatrix4,
+	makeMatrix4Translate,
+	makeMatrix4UniformScale,
 	makeOrthographicMatrix4,
-	makeLookAtMatrix4
+	makePerspectiveMatrix4,
+	multiplyMatrices4,
+	multiplyMatrix4Line3,
+	multiplyMatrix4Vector3
 });
 
 const quaternionFromTwoVectors = (u, v) => {
@@ -861,12 +871,12 @@ const matrix4FromQuaternion = (quaternion) => multiplyMatrices4([
 
 const quaternion = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	quaternionFromTwoVectors,
-	matrix4FromQuaternion
+	matrix4FromQuaternion,
+	quaternionFromTwoVectors
 });
 
 const algebra = {
-	...vectors,
+	...vector,
 	...matrix2,
 	...matrix3,
 	...matrix4,
@@ -913,7 +923,9 @@ const counterClockwiseAngle2 = (a, b) => {
 	if (angle < 0) { angle += TWO_PI; }
 	return angle;
 };
-const clockwiseBisect2 = (a, b) => angleToVector(vectorToAngle(a) - clockwiseAngle2(a, b) / 2);
+const clockwiseBisect2 = (a, b) => (
+	angleToVector(vectorToAngle(a) - clockwiseAngle2(a, b) / 2)
+);
 const counterClockwiseBisect2 = (a, b) => (
 	angleToVector(vectorToAngle(a) + counterClockwiseAngle2(a, b) / 2)
 );
@@ -939,8 +951,8 @@ const counterClockwiseSubsect2 = (vectorA, vectorB, divisions) => {
 	return counterClockwiseSubsectRadians(angleA, angleB, divisions)
 		.map(angleToVector);
 };
-const counterClockwiseOrderRadians = function () {
-	const radians = Array.from(arguments).flat();
+const counterClockwiseOrderRadians = (...args) => {
+	const radians = args.flat();
 	const counter_clockwise = radians
 		.map((_, i) => i)
 		.sort((a, b) => radians[a] - radians[b]);
@@ -979,21 +991,21 @@ const threePointTurnDirection = (p0, p1, p2, epsilon = EPSILON) => {
 
 const radialMethods = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	isCounterClockwiseBetween,
-	clockwiseAngleRadians,
-	counterClockwiseAngleRadians,
 	clockwiseAngle2,
-	counterClockwiseAngle2,
+	clockwiseAngleRadians,
 	clockwiseBisect2,
-	counterClockwiseBisect2,
-	clockwiseSubsectRadians,
-	counterClockwiseSubsectRadians,
 	clockwiseSubsect2,
-	counterClockwiseSubsect2,
-	counterClockwiseOrderRadians,
+	clockwiseSubsectRadians,
+	counterClockwiseAngle2,
+	counterClockwiseAngleRadians,
+	counterClockwiseBisect2,
 	counterClockwiseOrder2,
-	counterClockwiseSectorsRadians,
+	counterClockwiseOrderRadians,
 	counterClockwiseSectors2,
+	counterClockwiseSectorsRadians,
+	counterClockwiseSubsect2,
+	counterClockwiseSubsectRadians,
+	isCounterClockwiseBetween,
 	threePointTurnDirection
 });
 
@@ -1083,12 +1095,12 @@ const bisectLines2 = (a, b, epsilon = EPSILON) => {
 	return solution;
 };
 
-const linesMethods = /*#__PURE__*/Object.freeze({
+const lineMethods = /*#__PURE__*/Object.freeze({
 	__proto__: null,
+	bisectLines2,
 	collinearBetween,
 	lerpLines,
-	pleat,
-	bisectLines2
+	pleat
 });
 
 const nearestPoint2 = (array_of_points, point) => {
@@ -1122,15 +1134,16 @@ const nearestPointOnPolygon = (polygon, point) => polygon
 	.sort((a, b) => a.distance - b.distance)
 	.shift();
 const nearestPointOnCircle = ({ radius, origin }, point) => (
-	add(origin, scale(normalize(subtract(point, origin)), radius)));
+	add(origin, scale(normalize(subtract(point, origin)), radius))
+);
 
 const nearestMethods = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	nearestPoint2,
 	nearestPoint,
+	nearestPoint2,
+	nearestPointOnCircle,
 	nearestPointOnLine,
-	nearestPointOnPolygon,
-	nearestPointOnCircle
+	nearestPointOnPolygon
 });
 
 const angleArray = count => Array
@@ -1138,18 +1151,18 @@ const angleArray = count => Array
 	.map((_, i) => TWO_PI * (i / count));
 const anglesToVecs = (angles, radius) => angles
 	.map(a => [radius * Math.cos(a), radius * Math.sin(a)]);
-const makePolygonCircumradius = (sides = 3, radius = 1) => (
-	anglesToVecs(angleArray(sides), radius)
+const makePolygonCircumradius = (sides = 3, circumradius = 1) => (
+	anglesToVecs(angleArray(sides), circumradius)
 );
-const makePolygonCircumradiusSide = (sides = 3, radius = 1) => {
+const makePolygonCircumradiusSide = (sides = 3, circumradius = 1) => {
 	const halfwedge = Math.PI / sides;
 	const angles = angleArray(sides).map(a => a + halfwedge);
-	return anglesToVecs(angles, radius);
+	return anglesToVecs(angles, circumradius);
 };
-const makePolygonInradius = (sides = 3, radius = 1) => (
-	makePolygonCircumradius(sides, radius / Math.cos(Math.PI / sides)));
-const makePolygonInradiusSide = (sides = 3, radius = 1) => (
-	makePolygonCircumradiusSide(sides, radius / Math.cos(Math.PI / sides)));
+const makePolygonInradius = (sides = 3, inradius = 1) => (
+	makePolygonCircumradius(sides, inradius / Math.cos(Math.PI / sides)));
+const makePolygonInradiusSide = (sides = 3, inradius = 1) => (
+	makePolygonCircumradiusSide(sides, inradius / Math.cos(Math.PI / sides)));
 const makePolygonSideLength = (sides = 3, length = 1) => (
 	makePolygonCircumradius(sides, (length / 2) / Math.sin(Math.PI / sides)));
 const makePolygonSideLengthSide = (sides = 3, length = 1) => (
@@ -1217,17 +1230,17 @@ const boundingBox = (points, padding = 0) => {
 
 const polygonMethods = /*#__PURE__*/Object.freeze({
 	__proto__: null,
+	boundingBox,
+	centroid,
+	circumcircle,
 	makePolygonCircumradius,
 	makePolygonCircumradiusSide,
 	makePolygonInradius,
 	makePolygonInradiusSide,
+	makePolygonNonCollinear,
 	makePolygonSideLength,
 	makePolygonSideLengthSide,
-	makePolygonNonCollinear,
-	circumcircle,
-	signedArea,
-	centroid,
-	boundingBox
+	signedArea
 });
 
 const overlapLinePoint = (
@@ -1284,11 +1297,11 @@ const overlapCirclePoint = (
 	circleDomain(radius - distance2(origin, point), epsilon)
 );
 const overlapConvexPolygonPoint = (
-	poly,
+	polygon,
 	point,
 	polyDomain = exclude,
 	epsilon = EPSILON,
-) => poly
+) => polygon
 	.map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
 	.map(s => cross2(normalize2(subtract2(s[1], s[0])), subtract2(point, s[0])))
 	.map(side => polyDomain(side, epsilon))
@@ -1328,12 +1341,12 @@ const overlapBoundingBoxes = (box1, box2, epsilon = EPSILON) => {
 
 const overlapMethods = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	overlapLinePoint,
-	overlapLineLine,
+	overlapBoundingBoxes,
 	overlapCirclePoint,
 	overlapConvexPolygonPoint,
 	overlapConvexPolygons,
-	overlapBoundingBoxes
+	overlapLineLine,
+	overlapLinePoint
 });
 
 const intersectLineLine = (
@@ -1499,10 +1512,10 @@ const intersectConvexPolygonLine = (
 
 const intersectMethods$1 = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	intersectLineLine,
-	intersectCircleLine,
 	intersectCircleCircle,
-	intersectConvexPolygonLine
+	intersectCircleLine,
+	intersectConvexPolygonLine,
+	intersectLineLine
 });
 
 const recurseSkeleton = (points, lines, bisectors) => {
@@ -1567,7 +1580,7 @@ const straightSkeleton = (points) => {
 
 const geometry = {
 	...convexHullMethods,
-	...linesMethods,
+	...lineMethods,
 	...nearestMethods,
 	...polygonMethods,
 	...radialMethods,

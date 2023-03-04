@@ -16,6 +16,37 @@ test("matrix 2 core", () => {
 	expect(r2[3]).toBe(-1);
 });
 
+test("matrix 2 transform line", () => {
+	const result = math.multiplyMatrix2Line2(
+		math.makeMatrix2Scale([0.5, 0.5, 0.5]),
+		[1, 1],
+		[1, 0],
+	);
+	expect(result.vector[0]).toBeCloseTo(0.5);
+	expect(result.vector[1]).toBeCloseTo(0.5);
+	expect(result.origin[0]).toBeCloseTo(0.5);
+	expect(result.origin[1]).toBeCloseTo(0);
+});
+
+test("makeMatrix2Scale", () => {
+	testEqualVectors(
+		math.makeMatrix2Scale(),
+		[1, 0, 0, 1, 0, 0],
+	);
+	testEqualVectors(
+		math.makeMatrix2Scale([0.5, 0.5]),
+		[0.5, 0, 0, 0.5, 0, 0],
+	);
+	testEqualVectors(
+		math.makeMatrix2UniformScale(),
+		[1, 0, 0, 1, 0, 0],
+	);
+	testEqualVectors(
+		math.makeMatrix2UniformScale(0.5),
+		[0.5, 0, 0, 0.5, 0, 0],
+	);
+});
+
 test("matrix 2", () => {
 	// top level types
 	testEqualVectors([1, 0, 0, 1, 6, 7], math.makeMatrix2Translate(6, 7));

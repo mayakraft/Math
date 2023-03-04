@@ -15,7 +15,7 @@ import {
 	excludeR,
 	excludeS,
 	epsilonEqualVectors,
-} from "../general/functions.js";
+} from "../general/function.js";
 
 const overlap_func = {
 	polygon: {
@@ -95,7 +95,7 @@ const default_overlap_domain = {
  * @param {any} b any geometry object
  * @param {number} [epsilon=1e-6] optional epsilon
  * @returns {boolean} true if the two objects overlap.
- * @linkcode Math ./src/intersection/overlap.js 106
+ * @linkcode Math ./src/intersect/overlapTypes.js 98
  */
 const overlap = function (a, b, epsilon) {
 	const type_a = typeOf(a);

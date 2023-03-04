@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "./constants.js";
+import { EPSILON } from "./constant.js";
 /**
  * common functions that get reused, especially inside of map/reduce etc...
  */
@@ -10,7 +10,7 @@ import { EPSILON } from "./constants.js";
  * @param {number} a any number input
  * @param {number} b any number input
  * @returns {boolean} true if the numbers are near each other
- * @linkcode Math ./src/algebra/functions.js 79
+ * @linkcode Math ./src/general/functions.js 13
  */
 export const epsilonEqual = (a, b, epsilon = EPSILON) => Math.abs(a - b) < epsilon;
 /**
@@ -20,7 +20,7 @@ export const epsilonEqual = (a, b, epsilon = EPSILON) => Math.abs(a - b) < epsil
  * @param {number} b any number
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number} -1, 0, +1
- * @linkcode Math ./src/algebra/functions.js 89
+ * @linkcode Math ./src/general/functions.js 23
  */
 export const epsilonCompare = (a, b, epsilon = EPSILON) => (
 	epsilonEqual(a, b, epsilon) ? 0 : Math.sign(b - a)
@@ -33,8 +33,9 @@ export const epsilonCompare = (a, b, epsilon = EPSILON) => (
  * longest vector.
  * @param {number[]} a an array of numbers
  * @param {number[]} b an array of numbers
+ * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {boolean} true if the vectors are similar within an epsilon
- * @linkcode Math ./src/algebra/functions.js 100
+ * @linkcode Math ./src/general/functions.js 37
  */
 export const epsilonEqualVectors = (a, b, epsilon = EPSILON) => {
 	for (let i = 0; i < Math.max(a.length, b.length); i += 1) {
@@ -45,69 +46,79 @@ export const epsilonEqualVectors = (a, b, epsilon = EPSILON) => {
 /**
  * @description the inclusive test used in intersection algorithms, returns
  * true if the number is positive, including the epsilon between -epsilon and 0.
+ * @param {number} n the number to test against
+ * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {boolean} -Infinity...{false}...-epsilon...{true}...+Infinity
- * @linkcode Math ./src/algebra/functions.js 112
+ * @linkcode Math ./src/general/functions.js 49
  */
 export const include = (n, epsilon = EPSILON) => n > -epsilon;
 /**
  * @description the exclusive test used in intersection algorithms, returns
  * true if the number is positive, excluding the epsilon between 0 and +epsilon.
+ * @param {number} n the number to test against
+ * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {boolean} -Infinity...{false}...+epsilon...{true}...+Infinity
- * @linkcode Math ./src/algebra/functions.js 119
+ * @linkcode Math ./src/general/functions.js 56
  */
 export const exclude = (n, epsilon = EPSILON) => n > epsilon;
 /**
  * @description the function parameter for an inclusive line
- * @linkcode Math ./src/algebra/functions.js 124
+ * @returns {boolean} true
+ * @linkcode Math ./src/general/functions.js 61
  */
 export const includeL = () => true;
 /**
  * @description the function parameter for an exclusive line
- * @linkcode Math ./src/algebra/functions.js 129
+ * @returns {boolean} true
+ * @linkcode Math ./src/general/functions.js 66
  */
 export const excludeL = () => true;
 /**
  * @description the function parameter for an inclusive ray
- * @linkcode Math ./src/algebra/functions.js 134
+ * @linkcode Math ./src/general/functions.js 71
  */
 export const includeR = include;
 /**
  * @description the function parameter for an exclusive ray
- * @linkcode Math ./src/algebra/functions.js 139
+ * @linkcode Math ./src/general/functions.js 76
  */
 export const excludeR = exclude;
 /**
  * @description the function parameter for an inclusive segment
- * @linkcode Math ./src/algebra/functions.js 144
+ * @param {number} n the number to test against
+ * @param {number} [e=1e-6] an optional epsilon
+ * @linkcode Math ./src/general/functions.js 81
  */
-export const includeS = (t, e = EPSILON) => t > -e && t < 1 + e;
+export const includeS = (n, e = EPSILON) => n > -e && n < 1 + e;
 /**
  * @description the function parameter for an exclusive segment
- * @linkcode Math ./src/algebra/functions.js 149
+ * @param {number} n the number to test against
+ * @param {number} [e=1e-6] an optional epsilon
+ * @linkcode Math ./src/general/functions.js 86
  */
-export const excludeS = (t, e = EPSILON) => t > e && t < 1 - e;
+export const excludeS = (n, e = EPSILON) => n > e && n < 1 - e;
 /**
  * @description These clamp functions process lines/rays/segments intersections.
  * The line method allows all values.
- * @param {number} t the length along the vector
+ * @param {number} dist the length along the vector
  * @returns {number} the clamped input value (line does not clamp)
- * @linkcode Math ./src/algebra/functions.js 157
+ * @linkcode Math ./src/general/functions.js 94
  */
 export const clampLine = dist => dist;
 /**
  * @description These clamp functions process lines/rays/segments intersections.
  * The ray method clamps values below -epsilon to be 0.
- * @param {number} t the length along the vector
+ * @param {number} dist the length along the vector
  * @returns {number} the clamped input value
- * @linkcode Math ./src/algebra/functions.js 165
+ * @linkcode Math ./src/general/functions.js 102
  */
 export const clampRay = dist => (dist < -EPSILON ? 0 : dist);
 /**
  * @description These clamp functions process lines/rays/segments intersections.
  * The segment method clamps values below -epsilon to be 0 and above 1+epsilon to 1.
- * @param {number} t the length along the vector
+ * @param {number} dist the length along the vector
  * @returns {number} the clamped input value
- * @linkcode Math ./src/algebra/functions.js 173
+ * @linkcode Math ./src/general/functions.js 110
  */
 export const clampSegment = (dist) => {
 	if (dist < -EPSILON) { return 0; }

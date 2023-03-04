@@ -1,12 +1,12 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../general/constants.js";
+import { EPSILON } from "../general/constant.js";
 import {
 	include,
 	includeL,
 	includeS,
-} from "../general/functions.js";
+} from "../general/function.js";
 import {
 	normalize2,
 	magnitude2,
@@ -15,7 +15,7 @@ import {
 	subtract2,
 	scale2,
 	flip,
-} from "../algebra/vectors.js";
+} from "../algebra/vector.js";
 import { overlapConvexPolygonPoint } from "./overlap.js";
 
 const lineLineParameter = (
@@ -84,13 +84,12 @@ const getMinMax = (numbers, func, scaled_epsilon) => {
  * clip the line into a segment (two endpoints) or return undefined if no overlap.
  * The input line can be a line, ray, or segment, as determined by "fnLine".
  * @param {number[][]} poly array of points (which are arrays of numbers)
- * @param {number[]} vector the vector of the line
- * @param {number[]} origin the origin of the line
+ * @param {VecLine} line a line in "vector" "origin" form
  * @param {function} [fnPoly=include] include or exclude polygon boundary in clip
  * @param {function} [fnLine=includeL] function to determine line/ray/segment,
  * and inclusive or exclusive.
  * @param {number} [epsilon=1e-6] optional epsilon
- * @linkcode Math ./src/geometry/clip-line-polygon.js 92
+ * @linkcode Math ./src/intersect/clip.js 93
  */
 export const clipLineConvexPolygon = (
 	poly,
@@ -127,7 +126,7 @@ export const clipLineConvexPolygon = (
 		: undefined;
 };
 /**
- * @description clip two polygons and return their union. this works
+ * @description Clip two 2D polygons and return their union. This works
  * for non-convex poylgons, but both polygons must have counter-clockwise
  * winding; will not work even if both are similarly-clockwise.
  * Sutherland-Hodgman algorithm.
@@ -140,7 +139,7 @@ export const clipLineConvexPolygon = (
  * is an array of numbers.
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {number[][]} a polygon as an array of points.
- * @linkcode Math ./src/geometry/clip-polygon-polygon.js 15
+ * @linkcode Math ./src/intersect/clip.js 143
  */
 export const clipPolygonPolygon = (polygon1, polygon2, epsilon = EPSILON) => {
 	const inside = (p, cp1, cp2) => (

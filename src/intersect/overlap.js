@@ -1,11 +1,11 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../general/constants.js";
+import { EPSILON } from "../general/constant.js";
 import {
 	exclude,
 	excludeL,
-} from "../general/functions.js";
+} from "../general/function.js";
 import {
 	normalize2,
 	dot2,
@@ -16,18 +16,19 @@ import {
 	add2,
 	subtract2,
 	rotate90,
-} from "../algebra/vectors.js";
+} from "../algebra/vector.js";
 /**
- * @description check if a point lies collinear along a line, and specify if the
- * line is a line/ray/segment and test whether the point lies within endpoint(s).
- * @param {number[]} vector the vector component of the line
- * @param {number[]} origin the origin component of the line
+ * @description check if a point lies collinear along a line,
+ * and specify if the line is a line/ray/segment and test whether
+ * the point lies within endpoint(s).
+ * @param {VecLine} line a line in "vector" "origin" form
  * @param {number[]} point one 2D point
- * @parma {function} [lineDomain=excludeL] specify line/ray/segment and inclusive/exclusive
+ * @parma {function} [lineDomain=excludeL] the domain of the line
  * @param {number} [epsilon=1e-6] an optional epsilon
- * @returns {boolean} is the point collinear to the line, and in the case of ray/segment,
+ * @returns {boolean} is the point collinear to the line,
+ * and in the case of ray/segment,
  * does the point lie within the bounds of the ray/segment?
- * @linkcode Math ./src/intersection/overlap-line-point.js 22
+ * @linkcode Math ./src/intersect/overlap.js 30
  */
 export const overlapLinePoint = (
 	{ vector, origin },
@@ -47,12 +48,12 @@ export const overlapLinePoint = (
 /**
  * @description Test if two lines overlap each other, generalized
  * and works for lines, rays, and segments.
- * @param {RayLine} lineA a line as an object with "vector" and "origin"
- * @param {RayLine} lineB a line as an object with "vector" and "origin"
- * @param {function} aFn first line's boolean test normalized value lies collinear
- * @param {function} bFn second line's boolean test normalized value lies collinear
+ * @param {VecLine} a a line in "vector" "origin" form
+ * @param {VecLine} b a line in "vector" "origin" form
+ * @param {function} aFn the domain of the first line parameter
+ * @param {function} bFn the domain of the second line parameter
  * @param {number} [epsilon=1e-6] an optional epsilon
- * @linkcode Math ./src/intersection/overlap-line-line.js 21
+ * @linkcode Math ./src/intersect/overlap.js 55
 */
 export const overlapLineLine = (
 	a,
@@ -92,11 +93,11 @@ export const overlapLineLine = (
 };
 /**
  * @description Test if a point lies inside of a circle.
- * @param {object} circle object with radius and origin
+ * @param {Circle} circle a circle in radius origin form
  * @param {number[]} point a point in array form
  * @param {function} fn is the circle's boundary inclusive or exclusive
  * @param {number} [epsilon=1e-6] an optional epsilon
- * @linkcode Math ./src/intersection/overlap-line-line.js 21
+ * @linkcode Math ./src/intersect/overlap.js 99
 */
 export const overlapCirclePoint = (
 	{ radius, origin },
@@ -109,31 +110,32 @@ export const overlapCirclePoint = (
 /**
  * @description tests if a point is inside a convex polygon. Polygon is
  * expected to be counter-clockwise winding.
- * @param {number[]} point in array form
- * @param {number[][]} polygon in array of array form
- * @param {function} fn is the boundary of the polygon inclusive or exclusive
+ * @param {number[][]} polygon a polygon in array of array form
+ * @param {number[]} point a point in array form
+ * @param {function} polyDomain determines if the polygon boundary
+ * is inclusive or exclusive
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {boolean} is the point inside the polygon?
- * @linkcode Math ./src/intersection/overlap-polygon-point.js 23
+ * @linkcode Math ./src/intersect/overlap.js 117
  */
 export const overlapConvexPolygonPoint = (
-	poly,
+	polygon,
 	point,
 	polyDomain = exclude,
 	epsilon = EPSILON,
-) => poly
+) => polygon
 	.map((p, i, arr) => [p, arr[(i + 1) % arr.length]])
 	.map(s => cross2(normalize2(subtract2(s[1], s[0])), subtract2(point, s[0])))
 	.map(side => polyDomain(side, epsilon))
 	.map((s, _, arr) => s === arr[0])
 	.reduce((prev, curr) => prev && curr, true);
 /**
- * @description find out if two convex polygons are overlapping by searching
+ * @description Find out if two convex polygons are overlapping by searching
  * for a dividing axis, which should be one side from one of the polygons.
- * @param {number[][]} polygon in array of array form
- * @param {number[][]} polygon in array of array form
+ * @param {number[][]} poly1 a polygon as an array of points
+ * @param {number[][]} poly2 a polygon as an array of points
  * @param {number} [epsilon=1e-6] an optional epsilon
- * @linkcode Math ./src/intersection/overlap-polygons.js 13
+ * @linkcode Math ./src/intersect/overlap.js 136
  */
 export const overlapConvexPolygons = (poly1, poly2, epsilon = EPSILON) => {
 	for (let p = 0; p < 2; p += 1) {
@@ -169,11 +171,11 @@ export const overlapConvexPolygons = (poly1, poly2, epsilon = EPSILON) => {
 };
 /**
  * @description Test if two axis-aligned bounding boxes overlap each other.
- * @param {BoundingBox} box1 an axis-aligned bounding box, the result of calling boundingBox(...)
- * @param {BoundingBox} box2 an axis-aligned bounding box, the result of calling boundingBox(...)
+ * @param {Box} box1 an axis-aligned bounding box
+ * @param {Box} box2 an axis-aligned bounding box
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {boolean} true if the bounding boxes overlap each other
- * @linkcode Math ./src/intersection/overlap-bounding-boxes.js 9
+ * @linkcode Math ./src/intersect/overlap.js 176
  */
 export const overlapBoundingBoxes = (box1, box2, epsilon = EPSILON) => {
 	const dimensions = Math.min(box1.min.length, box2.min.length);

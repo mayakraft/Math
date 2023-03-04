@@ -88,6 +88,21 @@ test("scale", () => {
 		.forEach((a, i) => expect(a).toBeCloseTo(m[i]));
 });
 
+test("makeMatrix4Scale", () => {
+	const m0 = math.makeMatrix4Scale();
+	[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+		.forEach((n, i) => expect(n).toBeCloseTo(m0[i]));
+	const m1 = math.makeMatrix4Scale([0.5, 0.5, 0.5]);
+	[0.5, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 1]
+		.forEach((n, i) => expect(n).toBeCloseTo(m1[i]));
+	const m2 = math.makeMatrix4UniformScale();
+	[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+		.forEach((n, i) => expect(n).toBeCloseTo(m2[i]));
+	const m3 = math.makeMatrix4UniformScale(0.5);
+	[0.5, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 1]
+		.forEach((n, i) => expect(n).toBeCloseTo(m3[i]));
+});
+
 test("combine operations", () => {
 	const result = math.multiplyMatrices4(
 		math.makeMatrix4RotateX(Math.PI / 2),

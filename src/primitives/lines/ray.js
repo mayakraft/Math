@@ -8,8 +8,8 @@ import {
 	includeR,
 	excludeR,
 	clampRay,
-} from "../../algebra/functions.js";
-import { flip } from "../../algebra/vectors.js";
+} from "../../algebra/function.js";
+import { flip } from "../../algebra/vector.js";
 import Static from "./static.js";
 import methods from "./methods.js";
 

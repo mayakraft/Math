@@ -9,7 +9,7 @@ import {
 	cross3,
 	magnitude,
 	normalize,
-} from "./vectors.js";
+} from "./vector.js";
 import { multiplyMatrices4 } from "./matrix4.js";
 /**
  * @description Create a quaternion which represents a rotation from

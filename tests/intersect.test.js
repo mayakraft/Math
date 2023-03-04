@@ -1,44 +1,6 @@
 const { test, expect } = require("@jest/globals");
 const math = require("../math.js");
 
-test("collinearBetween", () => {
-	const [p0, p2] = [[0, 0], [1, 0]];
-	const p1 = [0.5, 0];
-	expect(math.collinearBetween(p0, p1, p2, false)).toBe(true);
-});
-
-test("collinearBetween on endpoint, inclusive", () => {
-	const [p0, p2] = [[0, 0], [1, 0]];
-	const p1 = [1e-12, 0];
-	expect(math.collinearBetween(p0, p1, p2, true)).toBe(true);
-});
-
-test("collinearBetween on endpoint, exclusive", () => {
-	const [p0, p2] = [[0, 0], [1, 0]];
-	const p1 = [1e-12, 0];
-	expect(math.collinearBetween(p0, p1, p2)).toBe(false);
-});
-
-test("collinearBetween almost near endpoint, exclusive", () => {
-	const [p0, p2] = [[0, 0], [1, 0]];
-	const p1 = [1e-4, 0];
-	expect(math.collinearBetween(p0, p1, p2)).toBe(true);
-});
-
-test("collinearBetween perpendicularly away too far", () => {
-	const [p0, p2] = [[0, 0], [1, 0]];
-	expect(math.collinearBetween(p0, [0.5, 1e-2], p2)).toBe(false);
-	expect(math.collinearBetween(p0, [0.5, 1e-3], p2)).toBe(false);
-	expect(math.collinearBetween(p0, [0.5, 1e-4], p2)).toBe(true);
-	expect(math.collinearBetween(p0, [0.5, 1e-5], p2)).toBe(true);
-});
-
-test("collinearBetween perpendicularly away near", () => {
-	const [p0, p2] = [[0, 0], [1, 0]];
-	const p1 = [0.5, 1e-12];
-	expect(math.collinearBetween(p0, p1, p2)).toBe(true);
-});
-
 test("intersectLineLine include exclude", () => {
 	const res0 = math.intersectLineLine(
 		{ vector: [0, 1], origin: [1, 0] },

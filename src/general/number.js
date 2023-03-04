@@ -5,11 +5,10 @@
  * @description Count the number of places deep past the decimal point.
  * @param {number} num any number
  * @returns {number} an integer, the number of decimal digits.
- * @linkcode
+ * @linkcode Math ./src/general/numbers.js 8
  */
 const countPlaces = function (num) {
 	const m = (`${num}`).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-	if (!m) { return 0; }
 	return Math.max(0, (m[1] ? m[1].length : 0) - (m[2] ? +m[2] : 0));
 };
 /**

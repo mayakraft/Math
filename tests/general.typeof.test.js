@@ -10,6 +10,8 @@ test("type guessing", () => {
 	const polygon2 = [[1, 2], [4, 5], [6, 7]];
 	const polygon3 = [[1], [2], [3], [4]];
 	const circle = { radius: 1, origin: [1, 2] };
+	const boundingBox1 = { min: [1, 2], max: [6, 8], span: [5, 6] };
+	const boundingBox2 = { min: [3], max: [5], span: [2] };
 
 	expect(math.typeof(vector1)).toBe("vector");
 	expect(math.typeof(vector2)).toBe("vector");
@@ -19,6 +21,8 @@ test("type guessing", () => {
 	expect(math.typeof(polygon2)).toBe("polygon");
 	expect(math.typeof(polygon3)).toBe("polygon");
 	expect(math.typeof(circle)).toBe("circle");
+	expect(math.typeof(boundingBox1)).toBe("box");
+	expect(math.typeof(boundingBox2)).toBe("box");
 	// Javascript primitives
 	expect(math.typeof({})).toBe("object");
 	expect(math.typeof([])).toBe("object");

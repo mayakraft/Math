@@ -81,6 +81,16 @@ test("getLine", () => {
 		math.getLine({ origin: [1] }),
 		{ vector: [], origin: [] },
 	);
+	equalTest(math.getLine(), { vector: [], origin: [] });
+	equalTest(math.getLine({}), { vector: [], origin: [] });
+	equalTest(math.getLine([]), { vector: [], origin: [] });
+	equalTest(math.getLine([{}]), { vector: [], origin: [] });
+	equalTest(math.getLine(undefined), { vector: [], origin: [] });
+	equalTest(math.getLine([undefined]), { vector: [], origin: [] });
+	equalTest(math.getLine(null), { vector: [], origin: [] });
+	equalTest(math.getLine([null]), { vector: [], origin: [] });
+	equalTest(math.getLine(NaN), { vector: [NaN], origin: [] });
+	equalTest(math.getLine([NaN]), { vector: [NaN], origin: [] });
 });
 
 test("getArrayOfVectors", () => {

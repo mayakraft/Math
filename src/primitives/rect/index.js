@@ -4,7 +4,7 @@
 import Constructors from "../constructors.js";
 import methods from "../shared/polygon.js";
 import { boundingBox } from "../../geometry/polygons.js";
-import { include, exclude } from "../../algebra/functions.js";
+import { include, exclude } from "../../algebra/function.js";
 import {
 	getRect,
 	getVectorOfVectors,

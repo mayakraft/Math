@@ -1,11 +1,11 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../general/constants.js";
+import { EPSILON } from "../general/constant.js";
 import {
 	epsilonEqual,
 	epsilonEqualVectors,
-} from "../general/functions.js";
+} from "../general/function.js";
 import {
 	dot,
 	cross2,
@@ -16,7 +16,7 @@ import {
 	scale2,
 	lerp,
 	flip,
-} from "../algebra/vectors.js";
+} from "../algebra/vector.js";
 import { counterClockwiseSubsect2 } from "./radial.js";
 /**
  * @description Check if a point is collinear and between two other points.
@@ -26,7 +26,7 @@ import { counterClockwiseSubsect2 } from "./radial.js";
  * @param {boolean} [inclusive=false] if the point is the same as the endpoints
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {boolean} true if the point lies collinear and between the other two points.
- * @linkcode Math ./src/intersection/general.js 19
+ * @linkcode Math ./src/geometry/lines.js 29
  */
 export const collinearBetween = (p0, p1, p2, inclusive = false, epsilon = EPSILON) => {
 	const similar = [p0, p2]
@@ -40,11 +40,11 @@ export const collinearBetween = (p0, p1, p2, inclusive = false, epsilon = EPSILO
 };
 /**
  * @description linear interpolate between two lines
- * @param {RayLine} a a line with a "vector" and "origin" component
- * @param {RayLine} b a line with a "vector" and "origin" component
+ * @param {VecLine} a a line with a "vector" and "origin" component
+ * @param {VecLine} b a line with a "vector" and "origin" component
  * @param {number} t one scalar between 0 and 1 (not clamped)
  * @returns {number[]} one vector, dimensions matching first parameter
- * @linkcode Math ./src/algebra/vectors.js 212
+ * @linkcode Math ./src/geometry/lines.js 47
  */
 export const lerpLines = (a, b, t) => {
 	const vector = lerp(a.vector, b.vector, t);
@@ -58,11 +58,12 @@ export const lerpLines = (a, b, t) => {
 /**
  * @description Between two lines, make a repeating sequence of
  * evenly-spaced lines to simulate a series of pleats.
- * @param {number} the number of faces, the number of lines will be n-1.
- * @param {RayLine} a a line with a "vector" and "origin" component
- * @param {RayLine} b a line with a "vector" and "origin" component
- * @returns {object[]} an array of lines, objects with "vector" and "origin"
- * @linkcode Math ./src/geometry/pleat.js 39
+ * @param {VecLine} a a line with a "vector" and "origin" component
+ * @param {VecLine} b a line with a "vector" and "origin" component
+ * @param {number} count the number of faces, the number of lines will be n-1.
+ * @param {number} [epsilon=1e-6] an optional epsilon
+ * @returns {VecLine[]} an array of lines, objects with "vector" and "origin"
+ * @linkcode Math ./src/geometry/lines.js 65
  */
 export const pleat = (a, b, count, epsilon = EPSILON) => {
 	const dotProd = dot(a.vector, b.vector);
@@ -100,11 +101,11 @@ export const pleat = (a, b, count, epsilon = EPSILON) => {
  * @description given two lines, find two lines which bisect the given lines,
  * if the given lines have an intersection, or return one
  * line if they are parallel.
- * @param {RayLine} a a line with a "vector" and "origin" component
- * @param {RayLine} b a line with a "vector" and "origin" component
+ * @param {VecLine} a a line with a "vector" and "origin" component
+ * @param {VecLine} b a line with a "vector" and "origin" component
  * @param {number} [epsilon=1e-6] an optional epsilon for testing parallel-ness.
- * @returns {object[]} an array of objects with "vector" and "origin" keys defining a line
- * @linkcode Math ./src/geometry/radial.js 205
+ * @returns {VecLine[]} an array of lines, objects with "vector" and "origin"
+ * @linkcode Math ./src/geometry/lines.js 107
  */
 export const bisectLines2 = (a, b, epsilon = EPSILON) => {
 	const solution = pleat(a, b, 2, epsilon).map(arr => arr[0]);

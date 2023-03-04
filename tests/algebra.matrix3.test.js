@@ -80,6 +80,25 @@ test("scale", () => {
 		.forEach((a, i) => expect(a).toBeCloseTo(m[i]));
 });
 
+test("makeMatrix3Scale", () => {
+	testEqualVectors(
+		math.makeMatrix3Scale(),
+		[1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+	);
+	testEqualVectors(
+		math.makeMatrix3Scale([0.5, 0.5, 0.5]),
+		[0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0],
+	);
+	testEqualVectors(
+		math.makeMatrix3UniformScale(),
+		[1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+	);
+	testEqualVectors(
+		math.makeMatrix3UniformScale(0.5),
+		[0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0],
+	);
+});
+
 test("combine operations", () => {
 	const result = math.multiplyMatrices3(
 		math.makeMatrix3RotateX(Math.PI / 2),

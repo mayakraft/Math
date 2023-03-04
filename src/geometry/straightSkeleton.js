@@ -1,12 +1,12 @@
 /**
  * Math (c) Kraft
  */
-import { excludeR } from "../general/functions.js";
+import { excludeR } from "../general/function.js";
 import {
 	subtract,
 	distance,
 	flip,
-} from "../algebra/vectors.js";
+} from "../algebra/vector.js";
 import {
 	clockwiseBisect2,
 } from "./radial.js";
@@ -116,7 +116,7 @@ const recurseSkeleton = (points, lines, bisectors) => {
  * make sure:
  *  - your polygon is convex (todo: make this algorithm work with non-convex)
  *  - your polygon points are sorted counter-clockwise
- * @linkcode Math ./src/geometry/straight-skeleton.js 123
+ * @linkcode Math ./src/geometry/straightSkeleton.js 119
  */
 const straightSkeleton = (points) => {
 	// first time running this function, create the 2nd and 3rd parameters
