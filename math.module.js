@@ -165,13 +165,20 @@ const midpoint = (v, u) => v.map((n, i) => (n + u[i]) / 2);
 const midpoint2 = (v, u) => scale2(add2(v, u), 0.5);
 const midpoint3 = (v, u) => scale3(add3(v, u), 0.5);
 const average = function () {
-	if (arguments.length === 0) { return []; }
+	if (arguments.length === 0) { return undefined; }
 	const dimension = (arguments[0].length > 0) ? arguments[0].length : 0;
 	const sum = Array(dimension).fill(0);
 	Array.from(arguments)
 		.forEach(vec => sum
 			.forEach((_, i) => { sum[i] += vec[i] || 0; }));
 	return sum.map(n => n / arguments.length);
+};
+const average2 = (...vectors) => {
+	if (!vectors || !vectors.length) { return undefined; }
+	const inverseLength = 1 / vectors.length;
+	return vectors
+		.reduce((a, b) => add2(a, b), [0, 0])
+		.map(c => c * inverseLength);
 };
 const lerp = (v, u, t) => {
 	const inv = 1.0 - t;
@@ -217,6 +224,27 @@ const resize = (dimension, vector) => (vector.length === dimension
 	: Array(dimension).fill(0).map((z, i) => (vector[i] ? vector[i] : z)));
 const resizeUp = (a, b) => [a, b]
 	.map(v => resize(Math.max(a.length, b.length), v));
+const basisVectors2 = (vector = [1, 0]) => {
+	const normalized = normalize2(vector);
+	return [normalized, rotate90(normalized)];
+};
+const basisVectors3 = (vector = [1, 0, 0]) => {
+	const normalized = normalize3(vector);
+	const crosses = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+		.map(v => cross3(v, normalized));
+	const index = crosses
+		.map(magnitude3)
+		.map((n, i) => ({ n, i }))
+		.sort((a, b) => b.n - a.n)
+		.map(el => el.i)
+		.shift();
+	const perpendicular = normalize3(crosses[index]);
+	return [normalized, perpendicular, cross3(normalized, perpendicular)];
+};
+const basisVectors = (vector) => (vector.length === 2
+	? basisVectors2(vector)
+	: basisVectors3(vector)
+);
 
 const vector = /*#__PURE__*/Object.freeze({
 	__proto__: null,
@@ -224,6 +252,10 @@ const vector = /*#__PURE__*/Object.freeze({
 	add2,
 	add3,
 	average,
+	average2,
+	basisVectors,
+	basisVectors2,
+	basisVectors3,
 	cross2,
 	cross3,
 	degenerate,
@@ -345,6 +377,20 @@ const searchMethods = /*#__PURE__*/Object.freeze({
 	smallestComparisonSearch
 });
 
+const projectPointOnPlane = (point, vector = [1, 0, 0], origin = [0, 0, 0]) => {
+	const point3 = resize(3, point);
+	const originToPoint = subtract3(point3, resize(3, origin));
+	const normalized = normalize3(resize(3, vector));
+	const magnitude = dot3(normalized, originToPoint);
+	const planeToPoint = scale3(normalized, magnitude);
+	return subtract3(point3, planeToPoint);
+};
+
+const planeMethods = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	projectPointOnPlane
+});
+
 const sortAgainstItem = (array, item, compareFn) => array
 	.map((el, i) => ({ i, n: compareFn(el, item) }))
 	.sort((a, b) => a.n - b.n)
@@ -385,11 +431,52 @@ const radialSortPointIndices2 = (points, epsilon = EPSILON) => {
 				.sort((a, b) => a.len - b.len)
 				.map(el => el.i))));
 };
+const radialSortUnitVectors2 = (vectors) => {
+	const quadrantConditions = [
+		v => v[0] >= 0 && v[1] >= 0,
+		v => v[0] < 0 && v[1] >= 0,
+		v => v[0] < 0 && v[1] < 0,
+		v => v[0] >= 0 && v[1] < 0,
+	];
+	const quadrantSorts = [
+		(a, b) => vectors[b][0] - vectors[a][0],
+		(a, b) => vectors[b][0] - vectors[a][0],
+		(a, b) => vectors[a][0] - vectors[b][0],
+		(a, b) => vectors[a][0] - vectors[b][0],
+	];
+	const vectorsQuadrant = vectors
+		.map(vec => quadrantConditions
+			.map((fn, i) => (fn(vec) ? i : undefined))
+			.filter(a => a !== undefined)
+			.shift());
+	const quadrantsVectors = [[], [], [], []];
+	vectorsQuadrant.forEach((q, v) => { quadrantsVectors[q].push(v); });
+	return quadrantsVectors
+		.flatMap((indices, i) => indices.sort(quadrantSorts[i]));
+};
+const radialSortPointIndices3 = (
+	points,
+	vector = [1, 0, 0],
+	origin = [0, 0, 0],
+) => {
+	const threeVectors = basisVectors3(vector);
+	const basis = [threeVectors[1], threeVectors[2], threeVectors[0]];
+	const projectedPoints = points
+		.map(point => projectPointOnPlane(point, vector, origin));
+	const projectedVectors = projectedPoints
+		.map(point => subtract(point, origin));
+	const pointsUV = projectedVectors
+		.map(vec => [dot(vec, basis[0]), dot(vec, basis[1])]);
+	const vectorsUV = pointsUV.map(normalize2);
+	return radialSortUnitVectors2(vectorsUV);
+};
 
 const sortMethods = /*#__PURE__*/Object.freeze({
 	__proto__: null,
 	clusterIndicesOfSortedNumbers,
 	radialSortPointIndices2,
+	radialSortPointIndices3,
+	radialSortUnitVectors2,
 	sortAgainstItem,
 	sortPointsAlongVector
 });
@@ -445,7 +532,7 @@ const multiplyMatrices2 = (m1, m2) => [
 const determinant2 = m => m[0] * m[3] - m[1] * m[2];
 const invertMatrix2 = (m) => {
 	const det = determinant2(m);
-	if (Math.abs(det) < 1e-6
+	if (Math.abs(det) < 1e-12
 		|| Number.isNaN(det)
 		|| !Number.isFinite(m[4])
 		|| !Number.isFinite(m[5])) {
@@ -561,7 +648,7 @@ const determinant3 = m => (
 );
 const invertMatrix3 = (m) => {
 	const det = determinant3(m);
-	if (Math.abs(det) < 1e-6 || Number.isNaN(det)
+	if (Math.abs(det) < 1e-12 || Number.isNaN(det)
 		|| !Number.isFinite(m[9]) || !Number.isFinite(m[10]) || !Number.isFinite(m[11])) {
 		return undefined;
 	}
@@ -707,7 +794,7 @@ const determinant4 = (m) => {
 };
 const invertMatrix4 = (m) => {
 	const det = determinant4(m);
-	if (Math.abs(det) < 1e-6 || Number.isNaN(det)
+	if (Math.abs(det) < 1e-12 || Number.isNaN(det)
 		|| !Number.isFinite(m[12]) || !Number.isFinite(m[13]) || !Number.isFinite(m[14])) {
 		return undefined;
 	}
@@ -951,8 +1038,7 @@ const counterClockwiseSubsect2 = (vectorA, vectorB, divisions) => {
 	return counterClockwiseSubsectRadians(angleA, angleB, divisions)
 		.map(angleToVector);
 };
-const counterClockwiseOrderRadians = (...args) => {
-	const radians = args.flat();
+const counterClockwiseOrderRadians = (radians) => {
 	const counter_clockwise = radians
 		.map((_, i) => i)
 		.sort((a, b) => radians[a] - radians[b]);
@@ -960,23 +1046,18 @@ const counterClockwiseOrderRadians = (...args) => {
 		.slice(counter_clockwise.indexOf(0), counter_clockwise.length)
 		.concat(counter_clockwise.slice(0, counter_clockwise.indexOf(0)));
 };
-const counterClockwiseOrder2 = function () {
-	return counterClockwiseOrderRadians(
-		semiFlattenArrays(arguments).map(vectorToAngle),
-	);
-};
-const counterClockwiseSectorsRadians = function () {
-	const radians = Array.from(arguments).flat();
-	const ordered = counterClockwiseOrderRadians(radians)
-		.map(i => radians[i]);
-	return ordered.map((rad, i, arr) => [rad, arr[(i + 1) % arr.length]])
-		.map(pair => counterClockwiseAngleRadians(pair[0], pair[1]));
-};
-const counterClockwiseSectors2 = function () {
-	return counterClockwiseSectorsRadians(
-		semiFlattenArrays(arguments).map(vectorToAngle),
-	);
-};
+const counterClockwiseOrder2 = (vectors) => (
+	counterClockwiseOrderRadians(vectors.map(vectorToAngle))
+);
+const counterClockwiseSectorsRadians = (radians) => (
+	counterClockwiseOrderRadians(radians)
+		.map(i => radians[i])
+		.map((rad, i, arr) => [rad, arr[(i + 1) % arr.length]])
+		.map(pair => counterClockwiseAngleRadians(pair[0], pair[1]))
+);
+const counterClockwiseSectors2 = (vectors) => (
+	counterClockwiseSectorsRadians(vectors.map(vectorToAngle))
+);
 const threePointTurnDirection = (p0, p1, p2, epsilon = EPSILON) => {
 	const v = normalize2(subtract2(p1, p0));
 	const u = normalize2(subtract2(p2, p0));
@@ -1047,13 +1128,13 @@ const convexHullMethods = /*#__PURE__*/Object.freeze({
 
 const collinearBetween = (p0, p1, p2, inclusive = false, epsilon = EPSILON) => {
 	const similar = [p0, p2]
-		.map(p => epsilonEqualVectors(p1, p))
+		.map(p => epsilonEqualVectors(p1, p, epsilon))
 		.reduce((a, b) => a || b, false);
 	if (similar) { return inclusive; }
 	const vectors = [[p0, p1], [p1, p2]]
 		.map(segment => subtract(segment[1], segment[0]))
 		.map(vector => normalize(vector));
-	return epsilonEqual(1.0, dot(...vectors), epsilon);
+	return epsilonEqual(1.0, dot(...vectors), EPSILON);
 };
 const lerpLines = (a, b, t) => {
 	const vector = lerp(a.vector, b.vector, t);
@@ -1246,7 +1327,7 @@ const polygonMethods = /*#__PURE__*/Object.freeze({
 const overlapLinePoint = (
 	{ vector, origin },
 	point,
-	lineDomain = excludeL,
+	lineDomain = includeL,
 	epsilon = EPSILON,
 ) => {
 	const p2p = subtract2(point, origin);
@@ -1260,8 +1341,8 @@ const overlapLinePoint = (
 const overlapLineLine = (
 	a,
 	b,
-	aDomain = excludeL,
-	bDomain = excludeL,
+	aDomain = includeL,
+	bDomain = includeL,
 	epsilon = EPSILON,
 ) => {
 	const denominator0 = cross2(a.vector, b.vector);
@@ -1272,16 +1353,21 @@ const overlapLineLine = (
 		if (Math.abs(cross2(a2b, a.vector)) > epsilon) { return false; }
 		const aPt1 = b2a;
 		const aPt2 = add2(aPt1, a.vector);
+		const aPt3 = midpoint2(aPt1, aPt2);
 		const bPt1 = a2b;
 		const bPt2 = add2(bPt1, b.vector);
+		const bPt3 = midpoint2(bPt1, bPt2);
 		const aProjLen = dot2(a.vector, a.vector);
-		const bProjLen = dot2(a.vector, a.vector);
+		const bProjLen = dot2(b.vector, b.vector);
 		const aProj1 = dot2(aPt1, b.vector) / bProjLen;
 		const aProj2 = dot2(aPt2, b.vector) / bProjLen;
+		const aProj3 = dot2(aPt3, b.vector) / bProjLen;
 		const bProj1 = dot2(bPt1, a.vector) / aProjLen;
 		const bProj2 = dot2(bPt2, a.vector) / aProjLen;
+		const bProj3 = dot2(bPt3, a.vector) / aProjLen;
 		return aDomain(bProj1, epsilon) || aDomain(bProj2, epsilon)
-			|| bDomain(aProj1, epsilon) || bDomain(aProj2, epsilon);
+			|| bDomain(aProj1, epsilon) || bDomain(aProj2, epsilon)
+			|| aDomain(bProj3, epsilon) || bDomain(aProj3, epsilon);
 	}
 	const t0 = cross2(a2b, b.vector) / denominator0;
 	const t1 = cross2(b2a, a.vector) / denominator1;
@@ -1582,11 +1668,21 @@ const geometry = {
 	...convexHullMethods,
 	...lineMethods,
 	...nearestMethods,
+	...planeMethods,
 	...polygonMethods,
 	...radialMethods,
 	straightSkeleton,
 };
 
+const pointInBoundingBox = (point, box, epsilon = EPSILON) => {
+	for (let d = 0; d < point.length; d += 1) {
+		if (point[d] < box.min[d] - epsilon
+			|| point[d] > box.max[d] + epsilon) {
+			return false;
+		}
+	}
+	return true;
+};
 const enclosingBoundingBoxes = (outer, inner, epsilon = EPSILON) => {
 	const dimensions = Math.min(outer.min.length, inner.min.length);
 	for (let d = 0; d < dimensions; d += 1) {
@@ -1610,9 +1706,13 @@ const enclosingPolygonPolygon = (outer, inner, fnInclusive = include) => {
 const encloses = /*#__PURE__*/Object.freeze({
 	__proto__: null,
 	enclosingBoundingBoxes,
-	enclosingPolygonPolygon
+	enclosingPolygonPolygon,
+	pointInBoundingBox
 });
 
+const clipLineInBoundingBox = ({ vector, origin }, { min, max, span }) => {
+	return clipLineConvexPolygon()
+};
 const lineLineParameter = (
 	lineVector,
 	lineOrigin,
@@ -1727,6 +1827,7 @@ const clipPolygonPolygon = (polygon1, polygon2, epsilon = EPSILON) => {
 const clip = /*#__PURE__*/Object.freeze({
 	__proto__: null,
 	clipLineConvexPolygon,
+	clipLineInBoundingBox,
 	clipPolygonPolygon
 });
 

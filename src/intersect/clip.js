@@ -17,6 +17,19 @@ import {
 	flip,
 } from "../algebra/vector.js";
 import { overlapConvexPolygonPoint } from "./overlap.js";
+/**
+ * @description Clip an infinite line inside a bounding box
+ * and return either:
+ * - an array of two points (a segment)
+ * - an array of one point (degenerate segment)
+ * - undefined (no intersection)
+ * @param {VecLine} line a line with a vector and an origin
+ * @param {BoundingBox} box an AABB bounding box
+ * @returns {number[] | undefined} the result.
+ */
+export const clipLineInBoundingBox = ({ vector, origin }, { min, max, span }) => {
+	return clipLineConvexPolygon()
+};
 
 const lineLineParameter = (
 	lineVector,

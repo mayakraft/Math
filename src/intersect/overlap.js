@@ -4,7 +4,7 @@
 import { EPSILON } from "../general/constant.js";
 import {
 	exclude,
-	excludeL,
+	includeL,
 } from "../general/function.js";
 import {
 	normalize2,
@@ -14,6 +14,7 @@ import {
 	distance2,
 	cross2,
 	add2,
+	midpoint2,
 	subtract2,
 	rotate90,
 } from "../algebra/vector.js";
@@ -23,7 +24,7 @@ import {
  * the point lies within endpoint(s).
  * @param {VecLine} line a line in "vector" "origin" form
  * @param {number[]} point one 2D point
- * @parma {function} [lineDomain=excludeL] the domain of the line
+ * @parma {function} [lineDomain=includeL] the domain of the line
  * @param {number} [epsilon=1e-6] an optional epsilon
  * @returns {boolean} is the point collinear to the line,
  * and in the case of ray/segment,
@@ -33,7 +34,7 @@ import {
 export const overlapLinePoint = (
 	{ vector, origin },
 	point,
-	lineDomain = excludeL,
+	lineDomain = includeL,
 	epsilon = EPSILON,
 ) => {
 	const p2p = subtract2(point, origin);
@@ -58,8 +59,8 @@ export const overlapLinePoint = (
 export const overlapLineLine = (
 	a,
 	b,
-	aDomain = excludeL,
-	bDomain = excludeL,
+	aDomain = includeL,
+	bDomain = includeL,
 	epsilon = EPSILON,
 ) => {
 	const denominator0 = cross2(a.vector, b.vector);
@@ -69,22 +70,28 @@ export const overlapLineLine = (
 	if (Math.abs(denominator0) < epsilon) { // parallel
 		if (Math.abs(cross2(a2b, a.vector)) > epsilon) { return false; }
 		// project each line's two endpoints onto the vector of the other line.
+		// todo: project all these points onto one range, see if the ranges overlap
 		const aPt1 = b2a;
 		const aPt2 = add2(aPt1, a.vector);
+		const aPt3 = midpoint2(aPt1, aPt2); // midpoint
 		const bPt1 = a2b;
 		const bPt2 = add2(bPt1, b.vector);
+		const bPt3 = midpoint2(bPt1, bPt2); // midpoint
 		const aProjLen = dot2(a.vector, a.vector);
-		const bProjLen = dot2(a.vector, a.vector);
+		const bProjLen = dot2(b.vector, b.vector);
 		// these will be between 0 and 1 if the two segments overlap
 		const aProj1 = dot2(aPt1, b.vector) / bProjLen;
 		const aProj2 = dot2(aPt2, b.vector) / bProjLen;
+		const aProj3 = dot2(aPt3, b.vector) / bProjLen;
 		const bProj1 = dot2(bPt1, a.vector) / aProjLen;
 		const bProj2 = dot2(bPt2, a.vector) / aProjLen;
+		const bProj3 = dot2(bPt3, a.vector) / aProjLen;
 		// use the supplied function parameters to allow line/ray/segment
 		// clamping and check if either point from either line is inside
 		// the other line's vector, and if the function (l/r/s) allows it
 		return aDomain(bProj1, epsilon) || aDomain(bProj2, epsilon)
-			|| bDomain(aProj1, epsilon) || bDomain(aProj2, epsilon);
+			|| bDomain(aProj1, epsilon) || bDomain(aProj2, epsilon)
+			|| aDomain(bProj3, epsilon) || bDomain(aProj3, epsilon);
 	}
 	const t0 = cross2(a2b, b.vector) / denominator0;
 	const t1 = cross2(b2a, a.vector) / denominator1;
@@ -171,9 +178,11 @@ export const overlapConvexPolygons = (poly1, poly2, epsilon = EPSILON) => {
 };
 /**
  * @description Test if two axis-aligned bounding boxes overlap each other.
+ * By default, the boundaries are treated as inclusive.
  * @param {Box} box1 an axis-aligned bounding box
  * @param {Box} box2 an axis-aligned bounding box
- * @param {number} [epsilon=1e-6] an optional epsilon
+ * @param {number} [epsilon=1e-6] an optional epsilon,
+ * positive value (default) is inclusive, negative is exclusive.
  * @returns {boolean} true if the bounding boxes overlap each other
  * @linkcode Math ./src/intersect/overlap.js 176
  */
@@ -188,6 +197,16 @@ export const overlapBoundingBoxes = (box1, box2, epsilon = EPSILON) => {
 	}
 	return true;
 };
+/**
+ * @param {Segment} segment a segment, an array of two points
+ * @param {Box} box an axis-aligned bounding box
+ * @param {number} [epsilon=1e-6] an optional epsilon,
+ * positive value (default) is inclusive, negative is exclusive.
+ * @returns {boolean} true if the bounding boxes overlap each other
+ * @linkcode Math ./src/intersect/overlap.js 176
+ */
+// export const overlapSegmentBox = (segment, box, epsilon = EPSILON) => {};
+
 // really great function and it works for non-convex polygons
 // but it has inconsistencies around inclusive and exclusive points
 // when the lie along the polygon edge.

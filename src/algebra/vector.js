@@ -220,13 +220,27 @@ export const midpoint3 = (v, u) => scale3(add3(v, u), 0.5);
  * @linkcode Math ./src/algebra/vectors.js 220
  */
 export const average = function () {
-	if (arguments.length === 0) { return []; }
+	if (arguments.length === 0) { return undefined; }
 	const dimension = (arguments[0].length > 0) ? arguments[0].length : 0;
 	const sum = Array(dimension).fill(0);
 	Array.from(arguments)
 		.forEach(vec => sum
 			.forEach((_, i) => { sum[i] += vec[i] || 0; }));
 	return sum.map(n => n / arguments.length);
+};
+/**
+ * @description the average of N number of vectors (not numbers),
+ * similar to midpoint but this can accept more than 2 inputs.
+ * @param {number[]} ...args any number of input vectors
+ * @returns {number[]} one vector, dimension matching first parameter
+ * @linkcode Math ./src/algebra/vectors.js 220
+ */
+export const average2 = (...vectors) => {
+	if (!vectors || !vectors.length) { return undefined; }
+	const inverseLength = 1 / vectors.length;
+	return vectors
+		.reduce((a, b) => add2(a, b), [0, 0])
+		.map(c => c * inverseLength);
 };
 /**
  * @description linear interpolate between two vectors
@@ -398,3 +412,45 @@ export const resizeUp = (a, b) => [a, b]
  */
 // export const resizeDown = (a, b) => [a, b]
 //   .map(v => resize(Math.min(a.length, b.length), v));
+/**
+ * @description Using a given 2D vector as the first basis vector for
+ * two-dimensions, return two normalized basis vectors, the second
+ * vector being the 90 degree rotation of the first.
+ */
+export const basisVectors2 = (vector = [1, 0]) => {
+	const normalized = normalize2(vector);
+	return [normalized, rotate90(normalized)];
+};
+/**
+ * @description Using a 3D vector as the first basis vector
+ * find additional perpendicular vectors which, taken together,
+ * span 3D space most effectively (vectors are perpendicular).
+ */
+export const basisVectors3 = (vector = [1, 0, 0]) => {
+	const normalized = normalize3(vector);
+	// find a good candidate for a second basis vector
+	const crosses = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+		.map(v => cross3(v, normalized));
+	// before normalizing the cross products, find the result with
+	// the largest magnitude, use this for the second basis vector
+	const index = crosses
+		.map(magnitude3)
+		.map((n, i) => ({ n, i }))
+		.sort((a, b) => b.n - a.n)
+		.map(el => el.i)
+		.shift();
+	// normalize the second basis vector
+	const perpendicular = normalize3(crosses[index]);
+	// the third basis vector is the cross product of the previous two
+	return [normalized, perpendicular, cross3(normalized, perpendicular)];
+};
+/**
+ * @description Given a vector (2D or 3D), using this vector as the
+ * first basis vector, find additional perpendicular vectors which
+ * all three span the space (2D or 3D) most effectively
+ * (the vectors are all perpendicular).
+ */
+export const basisVectors = (vector) => (vector.length === 2
+	? basisVectors2(vector)
+	: basisVectors3(vector)
+);

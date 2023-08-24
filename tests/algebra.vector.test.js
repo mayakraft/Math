@@ -188,7 +188,7 @@ test("midpoint", () => {
 
 test("average function", () => {
 	// improper use
-	expect(math.average().length).toBe(0);
+	expect(math.average()).toBe(undefined);
 	expect(math.average(0, 1, 2).length).toBe(0);
 	expect(math.average([], [], []).length).toBe(0);
 	// correct
@@ -204,6 +204,15 @@ test("average function", () => {
 		[4, 5, 6],
 		math.average([1, 2, 3], [4, 5, 6], [7, 8, 9]),
 	);
+});
+
+test("average2", () => {
+	expect(math.average2()).toBe(undefined);
+	expect(math.average2([0, 1], [2, 3])[0]).toBe(1);
+	expect(math.average2([0, 1], [2, 3])[1]).toBe(2);
+	expect(math.average2([], [], []).length).toBe(2);
+	expect(math.average2([], [], [])[0]).toBe(NaN);
+	expect(math.average2([], [], [])[1]).toBe(NaN);
 });
 
 test("lerp", () => {

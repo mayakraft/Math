@@ -8,8 +8,11 @@ import {
 	distance2,
 	dot,
 	dot2,
+	subtract,
 	subtract2,
+	basisVectors3,
 } from "../algebra/vector.js";
+import { projectPointOnPlane } from "../geometry/plane.js";
 import { minimum2DPointIndex } from "./search.js";
 /**
  * @description Provide a comparison function and use it to sort an array
@@ -96,4 +99,63 @@ export const radialSortPointIndices2 = (points, epsilon = EPSILON) => {
 				.map(i => ({ i, len: distance2(points[i], points[first]) }))
 				.sort((a, b) => a.len - b.len)
 				.map(el => el.i))));
+};
+/**
+ *       (+y)
+ *        |
+ *  -d +c |  +d +c
+ *        |
+ * -------|------- (+x, [1, 0])
+ *        |
+ *  -d -c |  +d -c
+ *        |
+ *
+ * 1 | 0
+ * -----
+ * 2 | 3
+ */
+export const radialSortUnitVectors2 = (vectors) => {
+	const quadrantConditions = [
+		v => v[0] >= 0 && v[1] >= 0,
+		v => v[0] < 0 && v[1] >= 0,
+		v => v[0] < 0 && v[1] < 0,
+		v => v[0] >= 0 && v[1] < 0,
+	];
+	const quadrantSorts = [
+		(a, b) => vectors[b][0] - vectors[a][0],
+		(a, b) => vectors[b][0] - vectors[a][0],
+		(a, b) => vectors[a][0] - vectors[b][0],
+		(a, b) => vectors[a][0] - vectors[b][0],
+	];
+	const vectorsQuadrant = vectors
+		.map(vec => quadrantConditions
+			.map((fn, i) => (fn(vec) ? i : undefined))
+			.filter(a => a !== undefined)
+			.shift());
+	const quadrantsVectors = [[], [], [], []];
+	vectorsQuadrant.forEach((q, v) => { quadrantsVectors[q].push(v); });
+	// sort by: decreasing, decreasing, increasing, increasing x values
+	return quadrantsVectors
+		.flatMap((indices, i) => indices.sort(quadrantSorts[i]));
+};
+/**
+ *
+ */
+export const radialSortPointIndices3 = (
+	points,
+	vector = [1, 0, 0],
+	origin = [0, 0, 0],
+) => {
+	// using the plane's normal, generate three orthogonal vectors
+	const threeVectors = basisVectors3(vector);
+	// set the plane's normal to the final axis (z-axis)
+	const basis = [threeVectors[1], threeVectors[2], threeVectors[0]];
+	const projectedPoints = points
+		.map(point => projectPointOnPlane(point, vector, origin));
+	const projectedVectors = projectedPoints
+		.map(point => subtract(point, origin));
+	const pointsUV = projectedVectors
+		.map(vec => [dot(vec, basis[0]), dot(vec, basis[1])]);
+	const vectorsUV = pointsUV.map(normalize2);
+	return radialSortUnitVectors2(vectorsUV);
 };

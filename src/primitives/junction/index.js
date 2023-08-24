@@ -26,7 +26,7 @@ export default {
 			const vectors = getVectorOfVectors(arguments)
 				.map(v => Constructors.vector(v));
 			const radians = vectors.map(v => Math.atan2(v[1], v[0]));
-			const order = counterClockwiseOrderRadians(...radians);
+			const order = counterClockwiseOrderRadians(radians);
 			this.vectors = order.map(i => vectors[i]);
 			this.radians = order.map(i => radians[i]);
 			this.order = invertOrderArray(order);
