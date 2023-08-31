@@ -12,7 +12,7 @@ import {
 } from "../algebra/vector.js";
 /**
  * @description Convert a 2D vector to an angle in radians.
- * @param {number[]} v an input vector
+ * @param {[number, number]} v a 2D vector
  * @returns {number} the angle in radians
  * @linkcode Math ./src/general/convert.js 17
  */
@@ -20,7 +20,7 @@ export const vectorToAngle = v => Math.atan2(v[1], v[0]);
 /**
  * @description Convert an angle in radians to a 2D vector.
  * @param {number} a the angle in radians
- * @returns {number[]} a 2D vector
+ * @returns {[number, number]} a 2D vector
  * @linkcode Math ./src/general/convert.js 24
  */
 export const angleToVector = a => [Math.cos(a), Math.sin(a)];
@@ -30,6 +30,7 @@ export const angleToVector = a => [Math.cos(a), Math.sin(a)];
  * If there are more than two points, the rest will be ignored.
  * @param {number[][]} points two points, each point being an array of numbers.
  * @returns {VecLine} an object with "vector" and "origin".
+ * @linkcode
  */
 export const pointsToLine = (...args) => {
 	const points = getArrayOfVectors(...args);

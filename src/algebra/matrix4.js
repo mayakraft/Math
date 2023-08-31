@@ -172,14 +172,21 @@ export const makeMatrix4Translate = (x = 0, y = 0, z = 0) => [...identity4x3, x,
 // i0 and i1 direct which columns and rows are filled
 // sgn manages right hand rule
 const singleAxisRotate4 = (angle, origin, i0, i1, sgn) => {
-	const mat = makeMatrix4Translate(...origin);
 	const cos = Math.cos(angle);
 	const sin = Math.sin(angle);
-	mat[i0 * 4 + i0] = cos;
-	mat[i0 * 4 + i1] = (sgn ? +1 : -1) * sin;
-	mat[i1 * 4 + i0] = (sgn ? -1 : +1) * sin;
-	mat[i1 * 4 + i1] = cos;
-	return mat;
+	const rotate = [...identity4x4];
+	rotate[i0 * 4 + i0] = cos;
+	rotate[i0 * 4 + i1] = (sgn ? +1 : -1) * sin;
+	rotate[i1 * 4 + i0] = (sgn ? -1 : +1) * sin;
+	rotate[i1 * 4 + i1] = cos;
+	const origin3 = [0, 1, 2].map(i => origin[i] || 0);
+	const trans = [...identity4x4];
+	const trans_inv = [...identity4x4];
+	[12, 13, 14].forEach((i, j) => {
+		trans[i] = -origin3[j];
+		trans_inv[i] = origin3[j];
+	});
+	return multiplyMatrices4(trans_inv, multiplyMatrices4(rotate, trans));
 };
 
 /**

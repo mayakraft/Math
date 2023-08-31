@@ -2,8 +2,8 @@
  * Math (c) Kraft
  */
 import { EPSILON } from "../general/constant.js";
-import { include } from "../general/function.js";
-import { overlapConvexPolygonPoint } from "./overlap.js";
+// import { include } from "../general/function.js";
+// import { overlapConvexPolygonPoint } from "./overlap.js";
 /**
  * @description Is a point fully contained inside of a bounding box?
  * @param {number[]} point the point
@@ -56,14 +56,14 @@ export const enclosingBoundingBoxes = (outer, inner, epsilon = EPSILON) => {
  * @todo: should one function be include and the other exclude?
  * @linkcode Math ./src/intersect/encloses.js 38
  */
-export const enclosingPolygonPolygon = (outer, inner, fnInclusive = include) => {
-	// these points should be *not inside* (false)
-	const outerGoesInside = outer
-		.map(p => overlapConvexPolygonPoint(inner, p, fnInclusive))
-		.reduce((a, b) => a || b, false);
-	// these points should be *inside* (true)
-	const innerGoesOutside = inner
-		.map(p => overlapConvexPolygonPoint(inner, p, fnInclusive))
-		.reduce((a, b) => a && b, true);
-	return (!outerGoesInside && innerGoesOutside);
-};
+// export const enclosingPolygonPolygon = (outer, inner, fnInclusive = include) => {
+// 	// these points should be *not inside* (false)
+// 	const outerGoesInside = outer
+// 		.map(p => overlapConvexPolygonPoint(inner, p, fnInclusive))
+// 		.reduce((a, b) => a || b, false);
+// 	// these points should be *inside* (true)
+// 	const innerGoesOutside = inner
+// 		.map(p => overlapConvexPolygonPoint(inner, p, fnInclusive))
+// 		.reduce((a, b) => a && b, true);
+// 	return (!outerGoesInside && innerGoesOutside);
+// };

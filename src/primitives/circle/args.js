@@ -2,7 +2,7 @@
  * Math (c) Kraft
  */
 import Constructors from "../constructors.js";
-import { getCircle } from "../../types/get.js";
+import { getCircle } from "../../general/get.js";
 /**
  * circle constructors:
  * circle(1, [4,5]) radius:1, origin:4,5

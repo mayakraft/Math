@@ -7,19 +7,20 @@ import {
 	subtract,
 	average,
 	magnitude,
+	resize,
+	resizeUp,
 } from "../../algebra/vector.js";
 import { multiplyMatrix3Vector3 } from "../../algebra/matrix3.js";
-import { resize, resizeUp } from "../../types/resize.js";
 import {
 	includeS,
 	excludeS,
 	clampSegment,
-} from "../../algebra/function.js";
+} from "../../general/function.js";
 import {
 	getMatrix3x4,
 	getSegment,
 	getVector,
-} from "../../types/get.js";
+} from "../../general/get.js";
 import methods from "./methods.js";
 
 export default {

@@ -7,26 +7,26 @@ import {
 	signedArea,
 	centroid,
 	boundingBox,
-} from "../../geometry/polygons.js";
-import splitConvexPolygon from "../../geometry/split-polygon.js";
-import straightSkeleton from "../../geometry/straight-skeleton.js";
+} from "../../geometry/polygon.js";
+import { splitConvexPolygon } from "../../intersect/split.js";
+import straightSkeleton from "../../geometry/straightSkeleton.js";
 import {
 	getVector,
 	getMatrix3x4,
 	getLine,
-} from "../../types/get.js";
+} from "../../general/get.js";
 import {
 	resize,
-} from "../../types/resize.js";
+} from "../../algebra/vector.js";
 import {
 	includeL,
-} from "../../algebra/function.js";
-import Intersect from "../../intersection/intersect.js";
-import Overlap from "../../intersection/overlap.js";
-import clipLineConvexPolygon from "../../geometry/clip-line-polygon.js";
+} from "../../general/function.js";
+import Intersect from "../../intersect/intersectMethod.js";
+import Overlap from "../../intersect/overlapMethod.js";
+import { clipLineConvexPolygon } from "../../intersect/clip.js";
 import {
 	nearestPointOnPolygon,
-} from "../../algebra/nearest.js";
+} from "../../geometry/nearest.js";
 
 // a polygon is expecting to have these properties:
 // this - an array of vectors in [] form

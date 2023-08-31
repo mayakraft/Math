@@ -1,16 +1,14 @@
 /**
  * Math (c) Kraft
  */
-import {
-	getVector,
-} from "../../types/get.js";
+import { getVector } from "../../general/get.js";
 import {
 	pathInfo,
 	ellipticalArcTo,
 } from "../ellipse/path.js";
-import { nearestPointOnCircle } from "../../algebra/nearest.js";
-import Intersect from "../../intersection/intersect.js";
-import Overlap from "../../intersection/overlap.js";
+import { nearestPointOnCircle } from "../../geometry/nearest.js";
+import Intersect from "../../intersect/intersectMethod.js";
+import Overlap from "../../intersect/overlapMethod.js";
 import Constructors from "../constructors.js";
 
 // // (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+

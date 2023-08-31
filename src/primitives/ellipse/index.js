@@ -2,10 +2,8 @@
  * Math (c) Kraft
  */
 import Constructors from "../constructors.js";
-import {
-	resize,
-	flattenArrays,
-} from "../../types/resize.js";
+import { resize } from "../../algebra/vector.js";
+import { flattenArrays } from "../../general/array.js";
 
 import {
 	pathInfo,

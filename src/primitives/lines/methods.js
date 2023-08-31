@@ -1,29 +1,26 @@
 /**
  * Math (c) Kraft
  */
-import { EPSILON } from "../../algebra/constant.js";
-import { bisectLines2 } from "../../geometry/radial.js";
-import { nearestPointOnLine } from "../../algebra/nearest.js";
+import { EPSILON } from "../../general/constant.js";
+import { bisectLines2 } from "../../geometry/line.js";
+import { nearestPointOnLine } from "../../geometry/nearest.js";
 import Constructors from "../constructors.js";
-import intersect from "../../intersection/intersect.js";
-import overlap from "../../intersection/overlap.js";
-import overlapLinePoint from "../../intersection/overlap-line-point.js";
-
-import {
-	resize,
-	resizeUp,
-} from "../../types/resize.js";
+import intersect from "../../intersect/intersectMethod.js";
+import overlap from "../../intersect/overlapMethod.js";
+import { overlapLinePoint } from "../../intersect/overlap.js";
 
 import {
 	getVector,
 	getLine,
 	getMatrix3x4,
-} from "../../types/get.js";
+} from "../../general/get.js";
 
 import {
 	add,
 	parallel,
 	degenerate,
+	resize,
+	resizeUp,
 } from "../../algebra/vector.js";
 
 import {
@@ -64,7 +61,7 @@ const LinesMethods = {
 	nearestPoint: function () {
 		const point = getVector(arguments);
 		return Constructors.vector(
-			nearestPointOnLine(this.vector, this.origin, point, this.clip_function),
+			nearestPointOnLine(this, point, this.clip_function),
 		);
 	},
 	// this works with lines and rays, it should be overwritten for segments

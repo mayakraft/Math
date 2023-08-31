@@ -3,16 +3,16 @@
  */
 import Constructors from "../constructors.js";
 import {
-	getVectorOfVectors,
+	getArrayOfVectors,
 	getLine,
-} from "../../types/get.js";
-import Intersect from "../../intersection/intersect.js";
+} from "../../general/get.js";
+import Intersect from "../../intersect/intersectMethod.js";
 
 // normal, origin definition
 export default {
 	plane: {
 		A: function () {
-			const args = getVectorOfVectors(...arguments);
+			const args = getArrayOfVectors(...arguments);
 			this.normal = Constructors.vector((args.length > 0 ? args[0] : null));
 			this.origin = Constructors.vector((args.length > 1 ? args[1] : null));
 		},
@@ -33,7 +33,7 @@ export default {
 		S: {
 			// three points in 3D space
 			fromPoints: function () {
-				// const points = getVectorOfVectors(arguments);
+				// const points = getArrayOfVectors(arguments);
 				// return this.constructor({
 				//   normal: points[0],
 				//   origin: points[1],

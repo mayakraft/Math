@@ -1,7 +1,7 @@
 /**
  * Math (c) Kraft
  */
-import typeOf from "../types/typeof.js";
+import typeOf from "../general/typeOf.js";
 import {
 	overlapConvexPolygons,
 	overlapConvexPolygonPoint,

@@ -40,7 +40,7 @@ const smallestVectorSearch = (vectors, axis, compFn, epsilon) => {
 	// find the set of all vectors that share the smallest X value within an epsilon
 	let smallSet = [0];
 	for (let i = 1; i < vectors.length; i += 1) {
-		switch (compFn(vectors[i][axis], vectors[smallSet[0]][axis], epsilon)) {
+		switch (compFn(vectors[smallSet[0]][axis], vectors[i][axis], epsilon)) {
 		case 0: smallSet.push(i); break;
 		case 1: smallSet = [i]; break;
 		default: break;

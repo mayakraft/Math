@@ -6,9 +6,9 @@ import Constructors from "../constructors.js";
 import {
 	getVector,
 	getMatrix2,
-} from "../../types/get.js";
+} from "../../general/get.js";
 
-import { cleanNumber } from "../../types/resize.js";
+import { cleanNumber } from "../../general/number.js";
 
 import {
 	multiplyMatrix2Vector2,

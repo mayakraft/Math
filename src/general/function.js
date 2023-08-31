@@ -15,7 +15,8 @@ import { EPSILON } from "./constant.js";
 export const epsilonEqual = (a, b, epsilon = EPSILON) => Math.abs(a - b) < epsilon;
 /**
  * @description Compare two numbers within an epsilon of each other,
- * so that "1": a < b, "-1": a > b, and "0": a ~= b (epsilon equal).
+ * so that "-1": a < b, "+1": a > b, and "0": a ~= b (epsilon equal).
+ * This can be used inside Javascript's Array.sort() to sort increasing.
  * @param {number} a any number
  * @param {number} b any number
  * @param {number} [epsilon=1e-6] an optional epsilon
@@ -23,7 +24,7 @@ export const epsilonEqual = (a, b, epsilon = EPSILON) => Math.abs(a - b) < epsil
  * @linkcode Math ./src/general/functions.js 23
  */
 export const epsilonCompare = (a, b, epsilon = EPSILON) => (
-	epsilonEqual(a, b, epsilon) ? 0 : Math.sign(b - a)
+	epsilonEqual(a, b, epsilon) ? 0 : Math.sign(a - b)
 );
 /**
  * @description are two vectors equal to each other within an epsilon.

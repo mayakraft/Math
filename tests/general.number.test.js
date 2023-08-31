@@ -26,7 +26,7 @@ test("cleanNumber", () => {
 
 test("cleanNumber invalid input", () => {
 	// this is the most decimal places javascript uses
-	expect(math.cleanNumber("50.00000000001")).toBe("50.00000000001");
+	expect(math.cleanNumber("50.00000000001")).toBe(50.00000000001);
 	expect(math.cleanNumber(undefined)).toBe(undefined);
 	expect(math.cleanNumber(true)).toBe(true);
 	expect(math.cleanNumber(false)).toBe(false);

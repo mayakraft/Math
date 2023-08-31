@@ -9,12 +9,12 @@ import {
 } from "../../algebra/vector.js";
 
 import {
-	getVectorOfVectors,
-} from "../../types/get.js";
+	getArrayOfVectors,
+} from "../../general/get.js";
 
 export default {
 	fromPoints: function () {
-		const points = getVectorOfVectors(arguments);
+		const points = getArrayOfVectors(arguments);
 		return this.constructor({
 			vector: subtract(points[1], points[0]),
 			origin: points[0],
@@ -28,7 +28,7 @@ export default {
 		});
 	},
 	perpendicularBisector: function () {
-		const points = getVectorOfVectors(arguments);
+		const points = getArrayOfVectors(arguments);
 		return this.constructor({
 			vector: rotate90(subtract(points[1], points[0])),
 			origin: average(points[0], points[1]),

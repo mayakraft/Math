@@ -14,7 +14,7 @@ import general from "./general/index.js";
 import algebra from "./algebra/index.js";
 import geometry from "./geometry/index.js";
 import intersectMethods from "./intersect/index.js";
-// import primitives from "./primitives/index.js";
+import primitives from "./primitives/index.js";
 
 /**
  * @typedef VecLine
@@ -57,19 +57,19 @@ import intersectMethods from "./intersect/index.js";
  * @description A small math library with a focus on linear algebra,
  * computational geometry, and computing the intersection of shapes.
  */
-const math = {
+// const math = {
+// 	...general,
+// 	...algebra,
+// 	...geometry,
+// 	...intersectMethods,
+// };
+const math = primitives;
+// const math = Object.create(null);
+Object.assign(math, {
 	...general,
 	...algebra,
 	...geometry,
 	...intersectMethods,
-};
-// const math = primitives;
-// const math = Object.create(null);
-// Object.assign(math, {
-//  ...general,
-//  ...types,
-//  ...algebra,
-//  ...geometry,
-//  ...intersection,
-// });
+	// ...types,
+});
 export default math;

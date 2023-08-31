@@ -11,8 +11,8 @@ import {
 } from "../../geometry/radial.js";
 import {
 	getVector,
-	getVectorOfVectors,
-} from "../../types/get.js";
+	getArrayOfVectors,
+} from "../../general/get.js";
 
 const invertOrderArray = (arr) => {
 	const new_arr = [];
@@ -23,7 +23,7 @@ const invertOrderArray = (arr) => {
 export default {
 	junction: {
 		A: function () {
-			const vectors = getVectorOfVectors(arguments)
+			const vectors = getArrayOfVectors(arguments)
 				.map(v => Constructors.vector(v));
 			const radians = vectors.map(v => Math.atan2(v[1], v[0]));
 			const order = counterClockwiseOrderRadians(radians);

@@ -2,18 +2,13 @@
  * Math (c) Kraft
  */
 import Constructors from "../constructors.js";
-import { epsilonEqualVectors } from "../../algebra/function.js";
+import { epsilonEqualVectors } from "../../general/function.js";
 import { counterClockwiseBisect2 } from "../../geometry/radial.js";
-
-import {
-	resize,
-	resizeUp,
-} from "../../types/resize.js";
 
 import {
 	getVector,
 	getMatrix3x4,
-} from "../../types/get.js";
+} from "../../general/get.js";
 
 import {
 	magnitude,
@@ -30,6 +25,8 @@ import {
 	rotate90,
 	rotate270,
 	parallel,
+	resize,
+	resizeUp,
 } from "../../algebra/vector.js";
 
 import {
@@ -40,7 +37,7 @@ import {
 	multiplyMatrix3Vector3,
 } from "../../algebra/matrix3.js";
 
-import overlap from "../../intersection/overlap.js";
+import overlap from "../../intersect/overlapMethod.js";
 
 const table = {
 	preserve: { // don't transform the return type. preserve it

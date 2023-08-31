@@ -3,12 +3,12 @@
  */
 import Constructors from "../constructors.js";
 import methods from "../shared/polygon.js";
-import { boundingBox } from "../../geometry/polygons.js";
-import { include, exclude } from "../../algebra/function.js";
+import { boundingBox } from "../../geometry/polygon.js";
+import { include, exclude } from "../../general/function.js";
 import {
 	getRect,
-	getVectorOfVectors,
-} from "../../types/get.js";
+	getArrayOfVectors,
+} from "../../general/get.js";
 
 /**
  * this Rectangle type is aligned to the axes for speedy calculation.
@@ -60,7 +60,7 @@ export default {
 		}),
 		S: {
 			fromPoints: function () {
-				const box = boundingBox(getVectorOfVectors(arguments));
+				const box = boundingBox(getArrayOfVectors(arguments));
 				return Constructors.rect(box.min[0], box.min[1], box.span[0], box.span[1]);
 			},
 		},

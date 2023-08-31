@@ -7,11 +7,11 @@ import {
 	getVector,
 	getLine,
 	getMatrix3x4,
-} from "../../types/get.js";
+} from "../../general/get.js";
 
 import {
 	resize,
-} from "../../types/resize.js";
+} from "../../algebra/vector.js";
 
 import {
 	isIdentity3x4,

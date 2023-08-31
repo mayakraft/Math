@@ -1,5 +1,9 @@
 # Math for origami
 
+> **This project repository has moved to [https://github.com/robbykraft/Origami](https://github.com/robbykraft/Origami)**
+>
+> This repository is no longer updated. This module has been absorbed into the main Rabbit Ear repository inside `src/math/`.
+
 [![Build Status](https://travis-ci.org/robbykraft/Math.svg?branch=master)](https://travis-ci.org/robbykraft/Math)
 
 This is the math engine for an [origami library](https://rabbitear.org). It has no dependencies, and it's small. It includes basic linear algebra, geometric intersections with an inclusive or exclusive epsilon, and a few other computational geometry related things.
@@ -24,7 +28,9 @@ This library is also included in [Rabbit Ear](https://github.com/robbykraft/Orig
 
 ## examples
 
-Examples can be found in the [Rabbit Ear documentation](https://rabbitear.org/book/math.html)
+One example is included in this repository, at `examples/intersection`.
+
+Many more examples can be found in the [Rabbit Ear documentation](https://rabbitear.org/book/math.html)
 
 ## license
 

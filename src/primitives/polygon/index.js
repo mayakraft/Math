@@ -2,11 +2,11 @@
  * Math (c) Kraft
  */
 import methods from "../shared/polygon.js";
-import { semiFlattenArrays } from "../../types/resize.js";
-import { include, exclude } from "../../algebra/function.js";
+import { semiFlattenArrays } from "../../general/array.js";
+import { include, exclude } from "../../general/function.js";
 import { subtract } from "../../algebra/vector.js";
-import { convexHull } from "../../geometry/convex-hull.js";
-import { makePolygonCircumradius } from "../../geometry/polygons.js";
+import { convexHull } from "../../geometry/convexHull.js";
+import { makePolygonCircumradius } from "../../geometry/polygon.js";
 
 export default {
 	polygon: {

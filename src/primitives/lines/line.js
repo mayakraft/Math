@@ -2,19 +2,19 @@
  * Math (c) Kraft
  */
 import Constructors from "../constructors.js";
-import { resize } from "../../types/resize.js";
-import { getLine } from "../../types/get.js";
+import { getLine } from "../../general/get.js";
 import {
 	vecLineToUniqueLine,
 	uniqueLineToVecLine,
-} from "../../types/parameterize.js";
+} from "../../general/convert.js";
 import {
 	includeL,
 	excludeL,
-} from "../../algebra/function.js";
+} from "../../general/function.js";
 import {
 	add,
 	scale,
+	resize,
 } from "../../algebra/vector.js";
 import Static from "./static.js";
 import methods from "./methods.js";

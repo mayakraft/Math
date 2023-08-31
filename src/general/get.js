@@ -1,7 +1,9 @@
 /**
  * Math (c) Kraft
  */
-// import { identity3x4 } from "../algebra/matrix3.js";
+import { distance2 } from "../algebra/vector.js";
+import { identity2x3 } from "../algebra/matrix2.js";
+import { identity3x4 } from "../algebra/matrix3.js";
 import { flattenArrays, semiFlattenArrays } from "./array.js";
 /**
  * @description Coerce the function arguments into a vector.
@@ -60,26 +62,94 @@ export const getLine = function () {
 		? vectorOriginForm(getVector(args))
 		: vectorOriginForm(...args.map(a => getVector(a)));
 };
-// const maps3x4 = [
-// 	[0, 1, 3, 4, 9, 10],
-// 	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-// 	[0, 1, 2, undefined, 3, 4, 5, undefined, 6, 7, 8, undefined, 9, 10, 11],
-// ];
-// [11, 7, 3].forEach(i => delete maps3x4[2][i]);
-// // eslint-disable-next-line no-nested-ternary
-// const matrixMap3x4 = len => (len < 8
-// 	? maps3x4[0]
-// 	: (len < 13 ? maps3x4[1] : maps3x4[2]));
-// /**
-//  * @description Get a 3x4 matrix
-//  *
-//  * @returns {number[]} array of 12 numbers, or undefined if bad inputs
-// */
-// export const getMatrix3x4 = function () {
-// 	const mat = flattenArrays(arguments);
-// 	const matrix = [...identity3x4];
-// 	matrixMap3x4(mat.length)
-// 		// .filter((_, i) => mat[i] != null)
-// 		.forEach((n, i) => { if (mat[i] != null) { matrix[n] = mat[i]; } });
-// 	return matrix;
-// };
+
+/**
+ * a matrix2 is a 2x3 matrix, 2x2 with a column to represent translation
+ *
+ * @returns {number[]} array of 6 numbers, or undefined if bad inputs
+*/
+export const getMatrix2 = function () {
+	const m = getVector(arguments);
+	if (m.length === 6) { return m; }
+	if (m.length > 6) { return [m[0], m[1], m[2], m[3], m[4], m[5]]; }
+	if (m.length < 6) {
+		return identity2x3.map((n, i) => m[i] || n);
+	}
+	return [...identity2x3];
+};
+const maps3x4 = [
+	[0, 1, 3, 4, 9, 10],
+	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+	[0, 1, 2, undefined, 3, 4, 5, undefined, 6, 7, 8, undefined, 9, 10, 11],
+];
+[11, 7, 3].forEach(i => delete maps3x4[2][i]);
+// eslint-disable-next-line no-nested-ternary
+const matrixMap3x4 = len => (len < 8
+	? maps3x4[0]
+	: (len < 13 ? maps3x4[1] : maps3x4[2]));
+/**
+ * @description Get a 3x4 matrix
+ *
+ * @returns {number[]} array of 12 numbers, or undefined if bad inputs
+*/
+export const getMatrix3x4 = function () {
+	const mat = flattenArrays(arguments);
+	const matrix = [...identity3x4];
+	matrixMap3x4(mat.length)
+		// .filter((_, i) => mat[i] != null)
+		.forEach((n, i) => { if (mat[i] != null) { matrix[n] = mat[i]; } });
+	return matrix;
+};
+
+export const get_rect_params = (x = 0, y = 0, width = 0, height = 0) => ({
+	x, y, width, height,
+});
+
+export const getRect = function () {
+	const list = flattenArrays(arguments);
+	if (list.length > 0
+		&& typeof list[0] === "object"
+		&& list[0] !== null
+		&& !Number.isNaN(list[0].width)) {
+		return get_rect_params(...["x", "y", "width", "height"]
+			.map(c => list[0][c])
+			.filter(a => a !== undefined));
+	}
+	const numbers = list.filter(n => typeof n === "number");
+	const rect_params = numbers.length < 4
+		? [, , ...numbers]
+		: numbers;
+	return get_rect_params(...rect_params);
+};
+
+/**
+ * radius is the first parameter so that the origin can be N-dimensional
+ * ...args is a list of numbers that become the origin.
+ */
+const get_circle_params = (radius = 1, ...args) => ({
+	radius,
+	origin: [...args],
+});
+
+export const getCircle = function () {
+	const vectors = getArrayOfVectors(arguments);
+	const numbers = flattenArrays(arguments).filter(a => typeof a === "number");
+	if (arguments.length === 2) {
+		if (vectors[1].length === 1) {
+			return get_circle_params(vectors[1][0], ...vectors[0]);
+		}
+		if (vectors[0].length === 1) {
+			return get_circle_params(vectors[0][0], ...vectors[1]);
+		}
+		if (vectors[0].length > 1 && vectors[1].length > 1) {
+			return get_circle_params(distance2(...vectors), ...vectors[0]);
+		}
+	} else {
+		switch (numbers.length) {
+		case 0: return get_circle_params(1, 0, 0, 0);
+		case 1: return get_circle_params(numbers[0], 0, 0, 0);
+		default: return get_circle_params(numbers.pop(), ...numbers);
+		}
+	}
+	return get_circle_params(1, 0, 0, 0);
+};
